@@ -5,7 +5,6 @@ date: 2011-10-04 20:47
 comments: true
 sharing: true
 footer: true
-sidebar: false
 ---
 "Wakatta!" is Japanese for "I get it!". This is not really a blog about Japanese; it is about computer science, mathematics and science in general.
 

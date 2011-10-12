@@ -4,11 +4,13 @@ title: "Seven Languages in Seven Weeks Ruby Day 1"
 date: 2011-10-11 13:21
 comments: true
 categories: [Books]
-tags: [7language7weeks, ruby]
+tags: [7languages7weeks, ruby]
 ---
 The first day of the first language ([Ruby](http://www.ruby-lang.org/)) in [Seven Languages in Seven Weeks](http://pragprog.com/book/btlang/seven-languages-in-seven-weeks), is fun and refreshing (especially after a long day with Java).
 <!--more-->
 This is of course mostly due to the nature of Ruby, a language that is unapologetically designed to improve the programmer's experience.
+
+Basic types are introduced, as well as various looping and branching mechanisms.
 
 The exercises were painless, and the required code very short.
 
@@ -69,7 +71,7 @@ I could then go over more basic looping constructs, like `while`, but they reall
 
 Bonus problem: Guessing game
 ----------------------------
-Here, a basic looping construct like `while` feels natural (at least to me, which is why I used it). The code is fairly simple, there is no error checking on input, but hey, it's just day 1.
+Here, a basic looping construct like `while` feels natural (at least to me). The code is fairly simple, there is no error checking on input, but hey, it's just day 1.
 
 {% include_code Guessing Game lang:ruby guess.rb %}
 

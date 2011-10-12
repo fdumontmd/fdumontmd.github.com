@@ -5,6 +5,7 @@ date: 2011-10-12 15:05
 comments: true
 categories: [Book]
 tags: [7langages7weeks, ruby]
+series: "Seven Languages in Seven Weeks"
 ---
 Day 2 is about defining things, functions, classes, as well as a second look at basic containers.
 <!--more-->
@@ -43,7 +44,7 @@ end
 Better initializer method for Tree
 ----------------------------------
 This one is not hard either. I'm using two class methods, one as a factory method (`self.build`), the other as the real processor (`self.h_to_children`):
-{% include_code Tree builder lang:ruby tree.rb %}
+{% include_code Tree builder lang:ruby 7l7w/ruby/tree.rb %}
 
 First `self.h_to_children`: its purpose it to turn a list of key, value pairs (each key being a String, and each value a Hash or nil) into a list of Trees. It uses the [`collect`](http://www.ruby-doc.org/core-1.9.2/Enumerable.html#method-i-collect) method to transform each key, value pair into a Tree (recursively converting the value on the way).
 
@@ -71,7 +72,7 @@ produces
 Simple grep
 -----------
 As stated in the book, it is very simple to implement a basic `grep` function in Ruby. Here's one that relies on the magic variable [`ARGF`](http://www.ruby-doc.org/core-1.9.2/ARGF.html) (oddly enough, it is documented as a constant of the [`Object`](http://www.ruby-doc.org/core-1.9.2/Object.html) class):
-{% include_code Simple grep lang:ruby grep.rb %}
+{% include_code Simple grep lang:ruby 7l7w/ruby/grep.rb %}
 
 ```
 $ ./grep.rb grep grep.rb
@@ -109,7 +110,7 @@ Finally, if there are file names to iterate over, I need to check for errors, pr
 
 The new code has a function to make a header from the file name if needed (that is, when there are more than one file to process).
  
-{% include_code Slightly better grep lang:ruby grep2.rb %}
+{% include_code Slightly better grep lang:ruby 7l7w/ruby/grep2.rb %}
 
 ```
 $ ./grep2.rb grep grep.rb

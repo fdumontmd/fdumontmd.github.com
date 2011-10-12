@@ -1,10 +1,12 @@
 ---
 layout: post
 title: "Seven Languages in Seven Weeks"
+short_title: "Intro"
 date: 2011-10-11 12:08
 comments: true
 categories: Books
 tags: [7languages7weeks, pragprog]
+series: "Seven Languages in Seven Weeks"
 ---
 [Seven Languages in Seven Weeks](http://pragprog.com/book/btlang/seven-languages-in-seven-weeks), by Bruce Tate, is an interesting take on the concept of language tutorial.
 <!--more-->

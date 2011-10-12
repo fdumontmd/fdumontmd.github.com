@@ -5,6 +5,7 @@ date: 2011-10-11 13:21
 comments: true
 categories: [Books]
 tags: [7languages7weeks, ruby]
+series: "Seven Languages in Seven Weeks"
 ---
 The first day of the first language ([Ruby](http://www.ruby-lang.org/)) in [Seven Languages in Seven Weeks](http://pragprog.com/book/btlang/seven-languages-in-seven-weeks), is fun and refreshing (especially after a long day with Java).
 <!--more-->
@@ -73,6 +74,6 @@ Bonus problem: Guessing game
 ----------------------------
 Here, a basic looping construct like `while` feels natural (at least to me). The code is fairly simple, there is no error checking on input, but hey, it's just day 1.
 
-{% include_code Guessing Game lang:ruby guess.rb %}
+{% include_code Guessing Game lang:ruby 7l7w/ruby/guess.rb %}
 
 And this wraps up day 1.

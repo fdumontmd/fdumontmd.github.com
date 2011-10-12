@@ -1,0 +1,11 @@
+{% if page and page.series %}
+<section>
+	<h1>{{page.series}} Series</h1>
+	{% assign series_posts = site.series_posts %}
+		<ul>
+		{% for p in series_posts %}
+			<li class="post"><a href="{{ root_url }}{{ p.url }}">{{ p.short_title }}</a></li>
+		{% endfor %}
+		</ul>
+</section>
+{% endif %}

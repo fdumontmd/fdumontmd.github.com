@@ -25,9 +25,10 @@ The second one is a bit trickier. Jekyll exposes the post data not directly, but
 My plugin replaces `render` to insert the `series_posts`, an array of all the posts with the same `series` attribute.
 
 But to display the list of posts, I need a short title, so also added support for that. A short title is computed in the overridden `to_liquid` method. The computation is the following:
-* if there is a short_title attribute in the YAML Front Matter, use it
-* otherwise, if the name of the series is a prefix of the post title, remove it from the title and use the rest
-* otherwise use the post title.
+
+ *  if there is a short_title attribute in the YAML Front Matter, use it
+ *  otherwise, if the name of the series is a prefix of the post title, remove it from the title and use the rest
+ *  otherwise use the post title.
 
 To display the series posts in the sidebar, I'm using this code:
 {% include_code series.html lang:html %}

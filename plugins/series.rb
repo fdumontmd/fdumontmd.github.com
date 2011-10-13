@@ -5,7 +5,7 @@ module Jekyll
     
     def series_posts(posts)
       if self.data.has_key?("series")
-        posts.find_all {|post| post.data["series"] == self.data["series"] }
+        (posts.find_all {|post| post.data["series"] == self.data["series"] }).reverse
       else
         []
       end

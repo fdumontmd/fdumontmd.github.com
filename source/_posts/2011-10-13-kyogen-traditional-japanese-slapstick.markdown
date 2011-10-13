@@ -1,0 +1,60 @@
+---
+layout: post
+title: "Kyogen - Traditional Japanese Slapstick"
+date: 2011-10-13 12:43
+comments: true
+categories: Japan
+tag: japan, culture
+---
+Yesterday my wife and I went to a of representation [Kyôgen](http://en.wikipedia.org/wiki/Ky%C5%8Dgen), one of Japanese traditional theater. This [representation](http://yorozukyogen.jp/), while mostly in Japanese, was designed for (English speaking) foreigners.
+<!--more-->
+Kyôgen's origin is the same as [Noh](http://en.wikipedia.org/wiki/Noh), but while the latter is for drama, the former is for comedy. They are both more than 6 centuries old, extremely formalized and sophisticated, and distinctively Japanese.
+
+Comedy is, to some extent, specific to a culture. A common theme is the crossing of boundaries; obviously these are easy to cross in a country such as Japan, and many untalented entertainers keep their audience laughing merely by using a context inappropriate language (typically casual bordering on vulgar).
+
+Fortunately, Kyôgen is both approachable and enjoyable, if one is willing to put some efforts. Yesterday's performance was supplemented with explanations in English (provided by former *talento* [Thane Camus](http://en.wikipedia.org/wiki/Thane_Camus)), about the history of the art, the plots (most of Kyôgen's stories are centuries old, so knowing the plot is not exactly a problem), and cultural details that are required to understand the jokes.
+
+The performers were from the Nomura family. This family has been performing Kyôgen for 300 years, or nine generations. Interestingly, a lineage in Japan is something fairly flexible: if there is no heir, a child can be adopted, and becomes for all purposes a full member of the family. This has happened in many famous lineages, and the current Nomura family actually came from such an member adopted as the second generation.
+
+The Performance
+===============
+
+Like all traditional Japanese arts, Kyôgen is highly stylized. The speech is unrealistic; the intonation is used to amplify meaning or turn the voice into a rhythmic instrument. Movements are more restrained (this is not [Kabuki](http://en.wikipedia.org/wiki/Kabuki)), but sometimes very symbolic.
+
+To compensate for this behavioural debauchery, the stage itself is empty. The audience is invited to fill the blanks with their imagination.
+
+As my Japanese is useless for even the most basic situations, I was expecting great difficulties to follow the plays, lost between the strange intonation and the archaic vocabulary. Yet I found this was not the case. The meaning was conveyed not by the words themselves, but by the music of the voices, and a general knowledge of the stories was enough to understand the situations. And my general weakness in Japanese made me all the prouder when I occasionally managed to grasp a few words or a sentence.
+
+The Plays
+=========
+
+Kaminari
+--------
+
+The first play is called  雷 Kaminari (Thunder). In Japan, Kaminari was believed to be a god, and ranked high among the things that Japanese feared (the list is 地震、雷、火事、親父, jichin, kaminari, kaji, oyaji, or earthquakes, thunder, fires, father).
+
+In this story, a quack doctor moves east from Kyoto, looking for new victims to rebuild his fortune. On the way, he is caught out in the field by thunder. Just as he finishes scaring the poor doctor, Kaminari slips and falls from the cloud, and lands on his butt nearby.
+
+Learning that the man is a doctor, Kaminari insists to be cured by him (he had injured his hip). Eventually, the doctor manages to do so, and the god thanks him by ensuring 800 years of good weather.
+
+As this was my first experience with Kyôgen, it took me a while to get into the story (the intro had a long monologue by the doctor, which I could not really follow). But the humbling of the god was entertaining (he is shown as both terrifying to the doctor, and a cry baby).
+
+Bo-shibari
+----------
+
+A master has to go on a trip, and is concerned that his two servants are going to drink his sake (again). With the help of the first one, he ties the arms of the second to a stick (hence the meaning of the play, Tied to a Stick), then ties the arms of the first behind his back. He then leaves.
+
+The servants, however, are still determined to drink sake. After some effort, they manage to do so, and the master on his return find them both drunk and enjoying themselves a lot.
+
+This play was much easier for me to follow and enjoy. The situation is clearly understandable, and reminiscent of plots from early movies (including Chaplin's).
+
+The scene of the servant tied to the stick, trying to drink his cup of sake from his stretched arm was genius, and probably one the best physical comedy acts I've seen.
+
+Another comedic moment was the dancing: both servants, already very drunk, attempt to perform a formal dance. This dance had been performed before the play to the benefit of the foreign audience, so they would know what it was supposed to look like. Comparatively, the efforts of the servants were funny indeed, wriggling and jumping around, but to be honest, I think that it felt a bit flat with the foreign audience, while the Japanese one was roaring with laughters.
+
+Epilogue
+========
+
+As I said at the start, Kyôgen requires some investment to be fully appreciated. This time, the organizers were providing most of the information required to understand the situations. This is commendable.
+
+Overall, the whole audience seemed to have ad a great time. I certainly did. I will be looking forward to seeing part 2 of Kyôgen for Foreigners, next March.

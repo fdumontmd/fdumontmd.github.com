@@ -19,17 +19,17 @@ In line with today's topic, exercises are about defining and executing methods.
 
 ### Fibonacci sequence
 
-I change the exercise a bit: I defined the fibonacci sequence for Number, and it uses the number it is called on as the argument. So I compute `40 fib` rather than `fib(40)`. For this reason I have to use `call target` when I want to refer to the original argument explicitly.
+I change the exercise a bit: I defined the fibonacci sequence for Number, and it uses the number it is called on as the argument. So I compute `40 fib` rather than `fib(40)`. For this reason I have to use `self` when I want to refer to the original argument explicitly.
 
 The recursive (and slow) method translated directly from the definition:
 {% codeblock Fibonacci sequence, recursive lang:io %}
-Number fib := method(if (call target < 2, 1, (((call target) - 1) fib + ((call target) - 2) fib)))
+Number fib := method(if (self < 2, 1, ((self - 1) fib + (self - 2) fib)))
 {% endcodeblock %}
 
 For the iterative method, I'm using a intermediate function with accumulators to build the result (I have easier time thinking in functional than imperative terms):
 {% codeblock Fibonacci sequence, iterative functional lang:io %}
 Number fibrec := method(a, b, n, if(n <= 1, b, fibrec(b, a+b, n-1)))
-Number fib := method(fibrec(1, 1, call target))
+Number fib := method(fibrec(1, 1, self))
 {% endcodeblock %}
 
 Finally, an iterative imperative method, with explicit looping (the iteration starts at 2 because the `for` method iterates up to and including the upper bound):
@@ -37,7 +37,7 @@ Finally, an iterative imperative method, with explicit looping (the iteration st
 Number fib := method(
 	a := 1
 	b := 1
-	for(i, 2, call target,
+	for(i, 2, self,
 		c := b
 		b := a + b
 		a := c
@@ -75,7 +75,7 @@ arr flatten reduce(+)
 Using the `reduce` method, it is easy to compute the sum of a list. The [`size`](http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/size) method can then be used to compute the average:
 {% codeblock Reimplementing average lang:io %}
 List myAverage := method(
-call target reduce(+) / call target size
+	self reduce(+) / self size
 )
 {% endcodeblock %}
 If the list is empty, the `reduce` method returns `nil`, so we get an exception (as `nil` does not respond to the `/` method). But this is consistent with the existing [`average`](http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/average) method.
@@ -88,11 +88,11 @@ Technically, this solution already raises an [`Exception`](http://www.iolanguage
 OperatorTable addOperator("+?", 3)
 Number +? := method(num,
 	if(num hasProto(Number),
-		call target + num,
+		self + num,
 		Exception raise("Not a number")))
 
 List myAverage := method(
-	call target reduce(+?) / call target size
+	self reduce(+?) / self size
 )
 
 list(1,2,3, "hello") myAverage

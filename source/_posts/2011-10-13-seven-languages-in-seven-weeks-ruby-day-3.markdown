@@ -3,7 +3,7 @@ layout: post
 title: "Seven Languages in Seven Weeks Ruby Day 3"
 date: 2011-10-13 15:30
 comments: true
-categories: [Book]
+categories: [Books]
 tags: [7langages7weeks, ruby]
 series: "Seven Languages in Seven Weeks"
 ---

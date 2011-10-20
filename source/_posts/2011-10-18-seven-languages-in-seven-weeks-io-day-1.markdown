@@ -21,9 +21,9 @@ Today's exercises explore various basic aspects of the language.
 ### Io is typed
 
 Trying to evaluate
-```
+{% codeblock Testing typing lang:io %}
 Io> 1 + "one"
-```
+{% endcodeblock %}
 generates an error:
 ```
 Exception: argument 0 to method '+' must be a Number, not a 'Sequence'
@@ -35,21 +35,21 @@ The error message in this case is fairly clear and verbose, fortunately.
 ### False values
 
 0 and the empty strings are both true, while `nil` is false:
-```
+{% codeblock Testing false lang:io %}
 Io> 0 and true
 ==> true
 Io> "" and true
 ==> true
 Io> nil and true
 ==> false
-```
+{% endcodeblock %}
 
 ### Slots in an object
 
 The method [`slotNames`](http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/slotNames) gives the list of slots:
-```
+{% codeblock Listing slots lang:io %}
 Object slotNames
-```
+{% endcodeblock %}
 returns
 ```
 ==> list(serializedSlotsWithNames, isNil, serialized, relativeDoFile, prependProto, pause, <, futureSend, contextWithSlot, return, @, currentCoro, break, isIdenticalTo, ancestorWithSlot, getSlot, setSlotWithType, method, evalArgAndReturnNil, lazySlot, resend, isTrue, isKindOf, asSimpleString, while, setProtos, shallowCopy, init, removeProto, proto, stopStatus, clone, actorRun, serializedSlots, setSlot, removeAllSlots, handleActorException, become, apropos, hasSlot, -, doFile, doString, uniqueId, setIsActivatable, print, <=, launchFile, doRelativeFile, thisLocalContext, type, write, isLaunchScript, ifNonNil, >, thisContext, removeSlot, block, writeln, perform, doMessage, @@, switch, evalArg, list, deprecatedWarning, for, ?, ifError, try, asString, asyncSend, coroDo, do, performWithArgList, yield, argIsActivationRecord, slotNames, hasLocalSlot, wait, message, argIsCall, isActivatable, println, !=, foreachSlot, not, inlineMethod, .., coroDoLater, loop, ancestors, raiseIfError, newSlot, and, appendProto, cloneWithoutInit, slotSummary, continue, setProto, super, hasProto, ifNonNilEval, justSerialized, if, ==, or, protos, >=, returnIfNonNil, , uniqueHexId, removeAllProtos, slotValues, coroFor, coroWith, actorProcessQueue, thisMessage, ifNil, memorySize, returnIfError, hasDirtySlot, slotDescriptionMap, updateSlot, compare, ownsSlots, evalArgAndReturnSelf, getLocalSlot, in, markClean, isError, ifNilEval)
@@ -68,7 +68,7 @@ Each operator is mapped to a method:
 The difference between `updateSlot` and `setSlot` is simple: `setSlot` creates and set the value of a slot, whereas `updateSlot` only updates the value of an _existing_ slot.
 
 `newSlot` is the same as `setSlot`, but it creates a setter method:
-```
+{% codeblock Assignment operators lang:io %}
 Io> Vehicle := Object clone
 ==>  Vehicle_0x7fc3dbeb7110:
   type             = "Vehicle"
@@ -85,19 +85,19 @@ Io> Ferrari colour ::= "red"
 ==> red
 Io> Ferrari slotNames
 ==> list(setColour, type, colour)
-```
+{% endcodeblock %}
 
 ### Execute the code in a slot given its name
 
 The `getSlot` method returns the value for the named slot. Apparently if the value is a method, this calls the method as well, if there are no arguments (otherwise the method object is returned):
-```
+{% codeblock Executing method by name lang:io %}
 Io> Object getSlot("isNil")
 ==> false
 Io> nil getSlot("isNil")
 ==> true
 Io> Object getSlot("compare")
 ==> Object_compare()
-```
+{% endcodeblock %}
 
 Wrapping up day 1
 -----------------

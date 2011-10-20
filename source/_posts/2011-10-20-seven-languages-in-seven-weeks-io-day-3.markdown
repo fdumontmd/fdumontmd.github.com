@@ -141,4 +141,4 @@ that [Io](http://www.iolanguage.com/) is interesting, but in the sense and to th
 
 The terseness and uniformity of syntax achieves quite a great deal; the actor model is modern and hip, although the cooperative concurrency isn't.
 
-This is a language that requires commitment; it isn't clear it deserves so much.
+This is a language that requires commitment; it is less clear it deserves so much.

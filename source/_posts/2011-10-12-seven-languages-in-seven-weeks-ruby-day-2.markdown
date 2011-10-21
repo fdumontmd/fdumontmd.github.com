@@ -15,8 +15,11 @@ But that's a topic for another book (which I really look forward to reading).
 
 Back to this one.
 
-Print the contents of an array of sixteen numbers, 4 numbers at a time
-----------------------------------------------------------------------
+Exercises
+---------
+
+### Print the contents of an array of sixteen numbers, 4 numbers at a time
+
 First, without `each_slice`:
 {% codeblock Slicing, the hard way lang:ruby %}
 def print_slices(arr, slice=4)
@@ -41,8 +44,8 @@ def print_each_slice(arr, slice=4)
 end
 {% endcodeblock %}
 
-Better initializer method for Tree
-----------------------------------
+### Better initializer method for Tree
+
 This one is not hard either. I'm using two class methods, one as a factory method (`self.build`), the other as the real processor (`self.h_to_children`):
 {% include_code Tree builder lang:ruby 7l7w/ruby/tree.rb %}
 
@@ -69,8 +72,8 @@ produces
 #<Tree:0x007ff891895300 @children=[#<Tree:0x007ff891895698 @children=[#<Tree:0x007ff891895828 @children=[], @name="child 1">, #<Tree:0x007ff8918956c0 @children=[], @name="child 2">], @name="dad">, #<Tree:0x007ff891895350 @children=[#<Tree:0x007ff8918954b8 @children=[], @name="child 3">, #<Tree:0x007ff8918953c8 @children=[], @name="child 4">], @name="uncle">], @name="root"> 
 ```
 
-Simple grep
------------
+### Simple grep
+
 As stated in the book, it is very simple to implement a basic `grep` function in Ruby. Here's one that relies on the magic variable [`ARGF`](http://www.ruby-doc.org/core-1.9.2/ARGF.html) (oddly enough, it is documented as a constant of the [`Object`](http://www.ruby-doc.org/core-1.9.2/Object.html) class):
 {% include_code Simple grep lang:ruby 7l7w/ruby/grep.rb %}
 

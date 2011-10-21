@@ -14,10 +14,12 @@ Third and final day on Ruby. This time, metaprogramming techniques are covered.
 
 Ruby as a really powerful set of tools for metaprogramming, but a good understanding of Ruby's metamodel and some of its darker corners is required to fully benefit from them.
 
+Exercises
+---------
+
 But first let's finish the homework (day 3 has only a short one).
 
-Improved Acts as CSV module
----------------------------
+### Improved Acts as CSV module
 
 {% include_code Acts as CSV module lang:ruby 7l7w/ruby/acts_as_csv_module.rb %}
 
@@ -85,8 +87,8 @@ Ruby's execution mode is similar to Common Lisp's. Actually, Common Lisp makes i
 
 Still, despite the potential for obfuscation, metaprogramming (combined with Ruby's low ceremony syntax) supports the creation of elegant DSL and simplifies program architectures. It is a way to centralizes complexity, and drain it from the rest of the code.
 
-About Ruby
-----------
+### About Ruby
+
 I really like Ruby. Even as the bastard child of Perl and Smalltalk that it is, it has a level of consistency and cohesion that well thought. Each of its shortcoming (Ruby can be rather slow, and as noted above metaprogramming can become very complex) is a reasonable trade off, and it can be argued that the advantages these trades off bought more than compensate for the shortcomings.
 
 More importantly, the Ruby ecosystem is bristling with interesting tools and ideas, and it really is fascinating to explore.

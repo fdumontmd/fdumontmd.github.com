@@ -8,6 +8,11 @@ subtitle: Like Eureka!, only cooler
 author: Frédéric Dumont
 simple_search: http://google.com/search
 
+# Default date format is "ordinal" (resulting in "July 22nd 2007")
+# You can customize the format as defined in
+# http://www.ruby-doc.org/core-1.9.2/Time.html#method-i-strftime
+date_format: "ordinal"
+
 # RSS / Email (optional) subscription links (change if using something like Feedburner)
 subscribe_rss: /atom.xml
 subscribe_email:
@@ -34,9 +39,12 @@ pagination_dir: blog  # Directory base for pagination URLs eg. /blog/page/2/
 recent_posts: 5       # Posts in the sidebar Recent Posts section
 excerpt_link: "Read on &rarr;"  # "Continue reading" link text at the bottom of excerpted articles
 
+titlecase: true       # Converts page and post titles to tilecase
+
 # list each of the sidebar modules you want to include, in the order you want them to appear.
 # To add custom asides, create files in /source/_includes/custom/asides/ and add them to the list like 'custom/asides/custom_aside_name.html'
-default_asides: [asides/recent_posts.html, asides/github.html, asides/twitter.html, asides/delicious.html, asides/pinboard.html]
+default_asides: [asides/recent_posts.html, asides/github.html, asides/twitter.html, asides/delicious.html, asides/pinboard.html, asides/googleplus.html]
+
 # Each layout uses the default asides, but they can have their own asides instead. Simply uncomment the lines below
 # and add an array with the asides you want to use.
 blog_index_asides: [custom/asides/about.html, asides/recent_posts.html, asides/github.html, asides/twitter.html, asides/delicious.html, asides/pinboard.html]
@@ -61,9 +69,14 @@ twitter_follow_button: true
 twitter_show_follower_count: false
 twitter_tweet_button: true
 
-# Google Plus
+# Google +1
 google_plus_one: true
 google_plus_one_size: medium
+
+# Google Plus Profile
+# Hidden: No visible button, just add author information to search results
+googleplus_user:
+googleplus_hidden: false
 
 # Pinboard
 pinboard_user:
@@ -78,4 +91,11 @@ disqus_short_name: wakatta-blog
 disqus_show_comment_count: false
 
 # Google Analytics
+<<<<<<< HEAD
 google_analytics_tracking_id: UA-26245052-1
+=======
+google_analytics_tracking_id:
+   
+# Facebook Like
+facebook_like: true   
+>>>>>>> a81ef5e28bc2abb846a2a3da04dd43aa7ca547a1

@@ -91,11 +91,7 @@ disqus_short_name: wakatta-blog
 disqus_show_comment_count: false
 
 # Google Analytics
-<<<<<<< HEAD
 google_analytics_tracking_id: UA-26245052-1
-=======
-google_analytics_tracking_id:
    
 # Facebook Like
 facebook_like: true   
->>>>>>> a81ef5e28bc2abb846a2a3da04dd43aa7ca547a1

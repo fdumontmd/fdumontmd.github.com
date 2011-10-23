@@ -1,0 +1,654 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Ruby Day 2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Day 2 is about defining things, functions, classes, as well as a second look at basic containers. Blocks are covered as well. It is hard to overstate &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Ruby Day 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+  
+
+<time datetime="2011-10-12T15:05:00+09:00" pubdate>Oct 12<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Day 2 is about defining things, functions, classes, as well as a second look at basic containers.</p>
+
+<!--more-->
+
+
+<p>Blocks are covered as well. It is hard to overstate their importance in making a language flexible and expressive. In a language like Ruby with regular evaluation (i.e. not lazy), blocks (with an unobtrusive syntax) are essential to implement embedded DSL (alternatives are laziness, as in Haskell, or more selective mechanisms to control evaluation, such as lisp&#8217;s macros, or Io&#8217;s method call meta-API).</p>
+
+<p>But that&#8217;s a topic for another book (which I really look forward to reading).</p>
+
+<p>Back to this one.</p>
+
+<h2>Exercises</h2>
+
+<h3>Print the contents of an array of sixteen numbers, 4 numbers at a time</h3>
+
+<p>First, without <code>each_slice</code>:</p>
+
+<figure class='code'><figcaption><span>Slicing, the hard way  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">print_slices</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">slice</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">acc</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">arr</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">acc</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">acc</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="n">slice</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="n">acc</span>
+</span><span class='line'>      <span class="n">acc</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="n">acc</span> <span class="k">if</span> <span class="n">acc</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The implementation is simple enough, the values are accumulated until there&#8217;s enough. I&#8217;m using the <code>p</code> printing command because neither <code>puts</code> nor <code>print</code> do exactly what I need: <code>puts</code> prints each element on a different line; <code>print</code> does not add a newline.</p>
+
+<p>Then, the easy (and natural way):</p>
+
+<figure class='code'><figcaption><span>Slicing the righ way  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">print_each_slice</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">slice</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">arr</span><span class="o">.</span><span class="n">each_slice</span><span class="p">(</span><span class="n">slice</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="nb">p</span> <span class="n">a</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Better initializer method for Tree</h3>
+
+<p>This one is not hard either. I&#8217;m using two class methods, one as a factory method (<code>self.build</code>), the other as the real processor (<code>self.h_to_children</code>):</p>
+
+<figure class='code'><figcaption><span>Tree builder  (tree.rb)</span> <a href='/downloads/code/7l7w/ruby/tree.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Tree</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:children</span><span class="p">,</span> <span class="ss">:node_name</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">children</span><span class="o">=[]</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@children</span> <span class="o">=</span> <span class="n">children</span>
+</span><span class='line'>    <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">build</span><span class="p">(</span><span class="nb">hash</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">children</span> <span class="o">=</span> <span class="n">h_to_children</span><span class="p">(</span><span class="nb">hash</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">children</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>      <span class="n">children</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="no">Tree</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">visit_all</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">visit</span> <span class="o">&amp;</span><span class="n">block</span>
+</span><span class='line'>    <span class="n">children</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">c</span><span class="o">|</span> <span class="n">c</span><span class="o">.</span><span class="n">visit_all</span> <span class="o">&amp;</span><span class="n">block</span> <span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">block</span><span class="o">.</span><span class="n">call</span> <span class="nb">self</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">h_to_children</span><span class="p">(</span><span class="nb">hash</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class='line'>      <span class="nb">hash</span><span class="o">.</span><span class="n">collect</span> <span class="p">{</span><span class="o">|</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="o">|</span> <span class="no">Tree</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="no">Tree</span><span class="o">::</span><span class="n">h_to_children</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First <code>self.h_to_children</code>: its purpose it to turn a list of key, value pairs (each key being a String, and each value a Hash or nil) into a list of Trees. It uses the <a href="http://www.ruby-doc.org/core-1.9.2/Enumerable.html#method-i-collect"><code>collect</code></a> method to transform each key, value pair into a Tree (recursively converting the value on the way).</p>
+
+<p><code>self.build</code> takes the list of Trees; if there&#8217;s only one, it is our root. Otherwise, it creates a new root, using the list of Trees as children.</p>
+
+<figure class='code'><figcaption><span>Building a Tree  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">test_hash</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;grandpa&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;dad&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;child 1&#39;</span> <span class="o">=&gt;</span> <span class="p">{},</span> <span class="s1">&#39;child 2&#39;</span> <span class="o">=&gt;</span> <span class="p">{}},</span>
+</span><span class='line'>    <span class="s1">&#39;uncle&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;child 3&#39;</span> <span class="o">=&gt;</span> <span class="p">{},</span> <span class="s1">&#39;child 4&#39;</span> <span class="o">=&gt;</span> <span class="p">{}</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Tree</span><span class="o">::</span><span class="n">build</span><span class="p">(</span><span class="n">test_hash</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#&lt;Tree:0x007fb9599119b8 @children=[#&lt;Tree:0x007fb9599142d0 @children=[#&lt;Tree:0x007fb959914488 @children=[], @name="child 1"&gt;, #&lt;Tree:0x007fb9599142f8 @children=[], @name="child 2"&gt;], @name="dad"&gt;, #&lt;Tree:0x007fb959911a08 @children=[#&lt;Tree:0x007fb959914190 @children=[], @name="child 3"&gt;, #&lt;Tree:0x007fb959911a58 @children=[], @name="child 4"&gt;], @name="uncle"&gt;], @name="grandpa"&gt; </span></code></pre></td></tr></table></div></figure>
+
+
+<p>while</p>
+
+<figure class='code'><figcaption><span>Building a Tree part 2  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Tree</span><span class="o">::</span><span class="n">build</span><span class="p">(</span><span class="n">test_hash</span><span class="o">[</span><span class="s1">&#39;grandpa&#39;</span><span class="o">]</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#&lt;Tree:0x007ff891895300 @children=[#&lt;Tree:0x007ff891895698 @children=[#&lt;Tree:0x007ff891895828 @children=[], @name="child 1"&gt;, #&lt;Tree:0x007ff8918956c0 @children=[], @name="child 2"&gt;], @name="dad"&gt;, #&lt;Tree:0x007ff891895350 @children=[#&lt;Tree:0x007ff8918954b8 @children=[], @name="child 3"&gt;, #&lt;Tree:0x007ff8918953c8 @children=[], @name="child 4"&gt;], @name="uncle"&gt;], @name="root"&gt; </span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Simple grep</h3>
+
+<p>As stated in the book, it is very simple to implement a basic <code>grep</code> function in Ruby. Here&#8217;s one that relies on the magic variable <a href="http://www.ruby-doc.org/core-1.9.2/ARGF.html"><code>ARGF</code></a> (oddly enough, it is documented as a constant of the <a href="http://www.ruby-doc.org/core-1.9.2/Object.html"><code>Object</code></a> class):</p>
+
+<figure class='code'><figcaption><span>Simple grep  (grep.rb)</span> <a href='/downloads/code/7l7w/ruby/grep.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">grep</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">f</span><span class="o">.</span><span class="n">each_line</span><span class="o">.</span><span class="n">with_index</span> <span class="p">{</span><span class="o">|</span><span class="n">l</span><span class="p">,</span> <span class="n">i</span><span class="o">|</span> <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">l</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">grep</span><span class="p">(</span><span class="no">ARGV</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span> <span class="no">ARGF</span><span class="o">.</span><span class="n">read</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./grep.rb grep grep.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>3: def grep(t, f)
+</span><span class='line'>7: grep(ARGV.shift, ARGF.read)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It is not very satisfactory, however. Grepping over several files does not distinguish between them, and the line number becomes meaningless:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./grep.rb def *.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>3: def grep(t, f)
+</span><span class='line'>13: def grep(header,text, file)
+</span><span class='line'>17: def make_header(filename, required)
+</span><span class='line'>36: def play()
+</span><span class='line'>50: def print_slices(arr, slice=4)
+</span><span class='line'>64: def print_each_slice(arr, slice=4)
+</span><span class='line'>72:   def initialize(name, children=[])
+</span><span class='line'>77:   def self.build(hash)
+</span><span class='line'>86:   def visit_all(&block)
+</span><span class='line'>91:   def visit(&block)
+</span><span class='line'>96:     def self.h_to_children(hash = {})</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Certainly there must be a better way. The code below is an attempt at that. Some of the complexity comes from my attempt to mimic the original <code>grep</code> behaviour when dealing with one or many files. With only one file, it does not print the file name. With many, it does.</p>
+
+<p>Also, I revert to reading from <code>ARGF.read</code> when there is no filename, that is, when I should read from <code>stdin</code> (which <code>ARGF.read</code> does when <code>ARGV</code> is empty).</p>
+
+<p>Finally, if there are file names to iterate over, I need to check for errors, print a statement, and continue.</p>
+
+<p>The new code has a function to make a header from the file name if needed (that is, when there are more than one file to process).</p>
+
+<figure class='code'><figcaption><span>Slightly better grep  (grep2.rb)</span> <a href='/downloads/code/7l7w/ruby/grep2.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">grep</span><span class="p">(</span><span class="n">header</span><span class="p">,</span><span class="n">text</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">file</span><span class="o">.</span><span class="n">each_line</span><span class="o">.</span><span class="n">with_index</span> <span class="p">{</span><span class="o">|</span><span class="n">line</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span> <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">header</span><span class="si">}#{</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">make_header</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">required</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">required</span> <span class="p">?</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> - &quot;</span> <span class="p">:</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">text</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">shift</span>
+</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">grep</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="no">ARGF</span><span class="p">)</span> <span class="k">unless</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">ARGV</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">filename</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>    <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">grep</span><span class="p">(</span><span class="n">make_header</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">header</span><span class="p">),</span> <span class="n">text</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="no">Exception</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Error reading file </span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./grep2.rb grep grep.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces the same output as the previous version:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>3: def grep(t, f)
+</span><span class='line'>7: grep(ARGV.shift, ARGF.read)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>whereas</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./grep2.rb def *.rb not_there</span></code></pre></td></tr></table></div></figure>
+
+
+<p>is more informative and more reliable (the first version would just crash on non readable file names):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grep.rb - 3: def grep(t, f)
+</span><span class='line'>grep2.rb - 3: def grep(header,text, file)
+</span><span class='line'>grep2.rb - 7: def make_header(filename, required)
+</span><span class='line'>guess.rb - 1: def play()
+</span><span class='line'>slices.rb - 1: def print_slices(arr, slice=4)
+</span><span class='line'>slices.rb - 15: def print_each_slice(arr, slice=4)
+</span><span class='line'>tree.rb - 4:   def initialize(name, children=[])
+</span><span class='line'>tree.rb - 9:   def self.build(hash)
+</span><span class='line'>tree.rb - 18:   def visit_all(&block)
+</span><span class='line'>tree.rb - 23:   def visit(&block)
+</span><span class='line'>tree.rb - 28:     def self.h_to_children(hash = {})
+</span><span class='line'>Error reading file not_there</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that wraps it up for day 2.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+  
+
+<time datetime="2011-10-12T15:05:00+09:00" pubdate>Oct 12<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/" title="Previous Post: Seven Languages in Seven Weeks Ruby Day 1">&laquo; Seven Languages in Seven Weeks Ruby Day 1</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/10/13/writing-a-jeckyl-plugin/" title="next Post: Writing a Jeckyl Plugin">Writing a Jeckyl Plugin &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Languages in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/">Ruby Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/">Ruby Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">Ruby Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Io Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Io Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Io Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">About Io</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Prolog Day 1</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Seven Languages in Seven Weeks Prolog Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">Seven Languages in Seven Weeks - About Io</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Seven Languages in Seven Weeks Io Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Seven Languages in Seven Weeks Io Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Seven Languages in Seven Weeks Io Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

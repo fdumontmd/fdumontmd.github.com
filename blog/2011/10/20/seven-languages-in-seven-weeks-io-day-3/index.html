@@ -1,0 +1,639 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Io Day 3 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Third and final day with Io (as far as the book is concerned). This time Io metaprogramming abilities are used to bend the language into strange &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Io Day 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+  
+
+<time datetime="2011-10-20T15:16:00+09:00" pubdate>Oct 20<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Third and final day with Io (as far as the book is concerned). This time Io metaprogramming abilities are used to bend the language into strange shapes.</p>
+
+<!--more-->
+
+
+<p>Of course, metaprogramming bends the mind just as much at the language, and this last day is quite a ride.</p>
+
+<p>Everything is up for redefinition, and new syntactic structure can be added as well. Operators were covered in <a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2">Day 2</a>. Today curly braces and square brackets are covered as well. The neat thing is that the method used for the iterpretation is looked up using the same logic as other methods. So it is possible to define a square bracket syntax to access list items simply with:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">List</span> <span class="n">squareBrackets</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">at</span><span class="o">(</span><span class="n">i</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With the definition above, it becomes possible to use the familiar bracket syntax:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">)[</span><span class="mf">1</span><span class="o">]</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="mf">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Updates are not possible (as far as I can tell), however, so for that usage it is less expressive than the <code>[]</code> and <code>[]=</code> methods in Ruby.</p>
+
+<p>The content inside the braces or brackets must be a comma separated list, each element acting as an argument for the <code>curlyBrackets</code> or <code>squareBrackets</code> methods (no link as I could not find any documentation for either method).</p>
+
+<p>A moderately annoying problem with operator extensions is that they are not available in the file in which they are defined.</p>
+
+<p>The last topic covered was concurrency. Io implements an actor model, like all the cool kids (<a href="http://www.erlang.org/">Erlang</a>, <a href="http://www.scala-lang.org/">Scala</a>, &#8230;). The book doesn&#8217;t go into details. And the available documentation is sparse as well. But from what I could gather, the model is cooperative concurrency, and an asynchronous message is a simple extension of the standard one, with one caveat: the <code>call sender</code> information is lost when asynchronous messages are used. Or more precisely, <code>call sender</code> does not return the original initiator of the call, but the piece of logic in the target coroutine that handles the dispatching of messages. So to return a answer, the sender must be passed as argument.</p>
+
+<p>For instance:</p>
+
+<figure class='code'><figcaption><span>Actors  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Agent</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">Agent</span> <span class="n">msg</span> <span class="o">:=</span> <span class="s">&quot;message&quot;</span>
+</span><span class='line'><span class="n">agent1</span> <span class="o">:=</span> <span class="n">Agent</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">agent1</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;agent1 pinged&quot;</span>
+</span><span class='line'><span class="n">agent2</span> <span class="o">:=</span> <span class="n">Agent</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">agent2</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;agent2 ponged&quot;</span>
+</span><span class='line'><span class="n">agent1</span> <span class="n">ping</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">cutoff</span><span class="o">,</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">cutoff</span> <span class="o">&gt;</span> <span class="mf">0</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">wait</span><span class="o">(</span><span class="n">Random</span> <span class="n">value</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">5</span><span class="o">)</span> <span class="n">floor</span><span class="o">)</span>
+</span><span class='line'>      <span class="s">&quot;Received message: &quot;</span> <span class="n">print</span>
+</span><span class='line'>      <span class="n">message</span> <span class="n">println</span>
+</span><span class='line'>      <span class="n">sender</span> <span class="o">@@</span><span class="n">pong</span><span class="o">(</span><span class="n">self</span><span class="o">,</span> <span class="n">msg</span><span class="o">,</span> <span class="n">cutoff</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">yield</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">yield</span><span class="o">))</span>
+</span><span class='line'><span class="n">agent2</span> <span class="n">pong</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">cutoff</span><span class="o">,</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">cutoff</span> <span class="o">&gt;</span> <span class="mf">0</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">wait</span><span class="o">(</span><span class="n">Random</span> <span class="n">value</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">5</span><span class="o">)</span> <span class="n">floor</span><span class="o">)</span>
+</span><span class='line'>      <span class="s">&quot;Received message: &quot;</span> <span class="n">print</span>
+</span><span class='line'>      <span class="n">message</span> <span class="n">println</span>
+</span><span class='line'>      <span class="n">sender</span> <span class="o">@@</span><span class="n">ping</span><span class="o">(</span><span class="n">self</span><span class="o">,</span> <span class="n">msg</span><span class="o">,</span> <span class="n">cutoff</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">yield</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">yield</span><span class="o">))</span>
+</span><span class='line'><span class="n">agent1</span> <span class="o">@@</span><span class="n">ping</span><span class="o">(</span><span class="n">agent2</span><span class="o">,</span> <span class="n">agent2</span> <span class="n">msg</span><span class="o">,</span> <span class="mf">5</span><span class="o">)</span>
+</span><span class='line'><span class="n">Coroutine</span> <span class="n">currentCoroutine</span> <span class="n">pause</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code above will spawn two agents, and they will exchange messages (5 times here).</p>
+
+<h2>Exercises</h2>
+
+<p>Today&#8217;s exercises are only on metaprogramming, essentially syntax extension.</p>
+
+<h3>Indenting XML output</h3>
+
+<p>To indent properly, the Builder must keep track of the nesting depth. This is done with a slot, and a few utility methods. The <code>depth</code> slot is the nesting depth, it is changed with <code>nest</code> (increase) and <code>unnest</code> (decrease), which should bracket the code that processes children. Finally, <code>indent</code> emits the required amount of blank space.</p>
+
+<figure class='code'><figcaption><span> (builder_indent.io)</span> <a href='/downloads/code/7l7w/io/builder_indent.io'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Builder</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">depth</span> <span class="o">:=</span> <span class="mf">0</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">indent</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="n">repeat</span><span class="o">(</span><span class="s">&quot;  &quot;</span> <span class="n">print</span><span class="o">))</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">nest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">+</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">unnest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">forward</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">indent</span>
+</span><span class='line'>  <span class="n">writeln</span><span class="o">(</span><span class="s">&quot;&lt;&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">,</span> <span class="s">&quot;&gt;&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">nest</span>
+</span><span class='line'>  <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span> <span class="n">foreach</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">content</span> <span class="o">:=</span> <span class="n">self</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">arg</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">if</span><span class="o">(</span><span class="n">content</span> <span class="n">type</span> <span class="o">==</span> <span class="s">&quot;Sequence&quot;</span><span class="o">,</span> <span class="n">indent</span><span class="o">;</span> <span class="n">writeln</span><span class="o">(</span><span class="n">content</span><span class="o">)))</span>
+</span><span class='line'>  <span class="n">unnest</span>
+</span><span class='line'>  <span class="n">indent</span>
+</span><span class='line'>  <span class="n">writeln</span><span class="o">(</span><span class="s">&quot;&lt;/&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">,</span> <span class="s">&quot;&gt;&quot;</span><span class="o">))</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">ul</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">li</span><span class="o">(</span><span class="s">&quot;Io&quot;</span><span class="o">),</span>
+</span><span class='line'>  <span class="n">li</span><span class="o">(</span><span class="s">&quot;Lua&quot;</span><span class="o">),</span>
+</span><span class='line'>  <span class="n">li</span><span class="o">(</span><span class="s">&quot;JavaScript&quot;</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces the following</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;ul&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    Io
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    Lua
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    JavaScript
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>&lt;/ul&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Bracket syntax for list</h3>
+
+<p>This is not difficult: the implementation just creates an empty list, then <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/append"><code>append</code></a> each arguments to the list, before returning it:</p>
+
+<figure class='code'><figcaption><span>Bracket syntax for list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">squareBrackets</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>     <span class="n">l</span> <span class="o">:=</span> <span class="n">List</span> <span class="k">clone</span>
+</span><span class='line'>     <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span> <span class="n">foreach</span><span class="o">(</span><span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>          <span class="n">l</span> <span class="n">append</span><span class="o">(</span><span class="n">arg</span><span class="o">)</span>
+</span><span class='line'>     <span class="o">)</span>
+</span><span class='line'>     <span class="n">l</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The result is:</p>
+
+<figure class='code'><figcaption><span>Building a list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="o">[</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">]</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Attribute syntax for XML Builder</h3>
+
+<p>The last exercise is a bit tricky. The code as presented in the code mixes parsing and output. The problem now is that the first argument could be the attribute list, rather than a child element. The solution is to stop printing the result as we parse it, and instead to build a string representation of the XML.</p>
+
+<figure class='code'><figcaption><span> (builder_attrib.io)</span> <a href='/downloads/code/7l7w/io/builder_attrib.io'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Builder</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">depth</span> <span class="o">:=</span> <span class="mf">0</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">indent</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">buf</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span> <span class="n">asMutable</span><span class="o">;</span> <span class="n">depth</span> <span class="n">repeat</span><span class="o">(</span><span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;  &quot;</span><span class="o">));</span> <span class="n">buf</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">nest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">+</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">unnest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Builder</span> <span class="n">forward</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span> <span class="n">asMutable</span>
+</span><span class='line'>  <span class="n">args</span> <span class="o">:=</span> <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">indent</span><span class="o">,</span> <span class="s">&quot;&lt;&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">args</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mf">0</span> <span class="n">and</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">args</span> <span class="n">at</span><span class="o">(</span><span class="mf">0</span><span class="o">))</span> <span class="n">type</span> <span class="o">==</span> <span class="s">&quot;Map&quot;</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">h</span> <span class="o">:=</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">args</span> <span class="n">removeFirst</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">h</span> <span class="n">keys</span> <span class="n">foreach</span><span class="o">(</span><span class="n">k</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="s">&quot;=\&quot;&quot;</span><span class="o">,</span> <span class="n">h</span> <span class="n">at</span><span class="o">(</span><span class="n">k</span><span class="o">),</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">)))</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;&gt;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">nest</span>
+</span><span class='line'>  <span class="n">args</span> <span class="n">foreach</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">content</span> <span class="o">:=</span> <span class="n">self</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">arg</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">if</span><span class="o">(</span><span class="n">content</span> <span class="n">isMutable</span><span class="o">,</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">content</span><span class="o">),</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">indent</span><span class="o">,</span> <span class="n">content</span><span class="o">,</span> <span class="s">&quot;\n&quot;</span><span class="o">)))</span>
+</span><span class='line'>  <span class="n">unnest</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">indent</span><span class="o">,</span> <span class="s">&quot;&lt;/&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">,</span> <span class="s">&quot;&gt;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">buf</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">OperatorTable</span> <span class="n">addAssignOperator</span><span class="o">(</span><span class="s">&quot;:&quot;</span><span class="o">,</span> <span class="s">&quot;atPutColon&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Map</span> <span class="n">atPutColon</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">self</span> <span class="n">atPut</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">call</span> <span class="n">evalArgAt</span><span class="o">(</span><span class="mf">0</span><span class="o">)</span> <span class="n">asMutable</span> <span class="n">removePrefix</span><span class="o">(</span><span class="s">&quot;\&quot;&quot;</span><span class="o">)</span> <span class="n">removeSuffix</span><span class="o">(</span><span class="s">&quot;\&quot;&quot;</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">call</span> <span class="n">evalArgAt</span><span class="o">(</span><span class="mf">1</span><span class="o">))</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">curlyBrackets</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">r</span> <span class="o">:=</span> <span class="n">Map</span> <span class="k">clone</span>
+</span><span class='line'>  <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span> <span class="n">foreach</span><span class="o">(</span><span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">r</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">arg</span><span class="o">))</span>
+</span><span class='line'>  <span class="n">r</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once loaded, it can interpret the following (using <code>print</code> to display the generated text):</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Builder</span> <span class="n">ul</span><span class="o">({</span><span class="s">&quot;author&quot;</span><span class="err">:</span> <span class="s">&quot;Tate&quot;</span><span class="o">},</span> <span class="n">li</span><span class="o">(</span><span class="s">&quot;Io&quot;</span><span class="o">),</span> <span class="n">li</span><span class="o">(</span><span class="s">&quot;Lua&quot;</span><span class="o">),</span> <span class="n">li</span><span class="o">(</span><span class="s">&quot;JavaScript&quot;</span><span class="o">))</span> <span class="n">print</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>as</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;ul author="Tate"&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    Io
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    Lua
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    JavaScript
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>&lt;/ul&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping day 3 and Io</h2>
+
+<p>that <a href="http://www.iolanguage.com/">Io</a> is interesting, but in the sense and to the extent that <a href="http://en.wikipedia.org/wiki/Brainfuck">Brainfuck</a> is interesting. And I don&#8217;t necessarily mean that in a bad way.</p>
+
+<p>The terseness and uniformity of syntax achieves quite a great deal; the actor model is modern and hip, although the cooperative concurrency isn&#8217;t.</p>
+
+<p>This is a language that requires commitment; it is less clear it deserves so much.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+  
+
+<time datetime="2011-10-20T15:16:00+09:00" pubdate>Oct 20<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/" title="Previous Post: Seven Languages in Seven Weeks Io Day 2">&laquo; Seven Languages in Seven Weeks Io Day 2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/" title="next Post: Seven Languages in Seven Weeks - About Io">Seven Languages in Seven Weeks - About Io &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Languages in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/">Ruby Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/">Ruby Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">Ruby Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Io Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Io Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Io Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">About Io</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Prolog Day 1</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Seven Languages in Seven Weeks Prolog Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">Seven Languages in Seven Weeks - About Io</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Seven Languages in Seven Weeks Io Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Seven Languages in Seven Weeks Io Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Seven Languages in Seven Weeks Io Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,2049 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Wakatta!]]></title>
+  <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
+  <link href="http://blog.wakatta.jp/"/>
+  <updated>2011-10-23T21:00:19+09:00</updated>
+  <id>http://blog.wakatta.jp/</id>
+  <author>
+    <name><![CDATA[Frédéric Dumont]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Prolog Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/"/>
+    <updated>2011-10-23T16:45:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1</id>
+    <content type="html"><![CDATA[<p>The third language in the series is <a href="http://en.wikipedia.org/wiki/Prolog">Prolog</a>. I first encountered it at university many years ago, and found it a really exciting and different language.</p>
+
+<!--more-->
+
+
+<p>The exercises we had to do at the time were significantly more complex (computing symbolic derivatives and integrals) that what the book proposes, so I have to say I didn&#8217;t really learn anything.</p>
+
+<h2>About Prolog</h2>
+
+<p>Prolog is really different. A lot of languages claim to be, but with unification and backtracking as the core control mechanisms, Prolog certainly stands apart.</p>
+
+<p>Basically, Prolog could be seen as a kind of database engine: it is possible to define relations that represent set of facts, as in the <a href="http://en.wikipedia.org/wiki/Relational_model">Relational model</a>. But the notion of rules takes Prolog beyond that: each rules defines how to create new facts from known ones (either defined, or previously created from rules too); and each query is an attempt to find a fact that matches the query terms.</p>
+
+<p>Given the definition above, it might seem surprising that Prolog could be good for anything but logic. Yet this is a <a href="http://en.wikipedia.org/wiki/Prolog#Turing_completeness">Turing Complete language</a>, and there are many other areas where a Prolog solution can feel quite natural.</p>
+
+<p>Still, logic is the main strength of Prolog (which comes from the French <em>Pro</em>grammation <em>Log</em>ique), and a number of limitations of the implementations restricts it to that niche.</p>
+
+<h3>A note on building GNU Prolog 1.4.0 on MacOS X 10.7 (Lion)</h3>
+
+<p>The book recommends using <a href="http://www.gprolog.org/">GNU Prolog</a> (for reasons that will become clear on Day 3), but I have been using <a href="http://www.swi-prolog.org/">SWI Prolog</a> since I first needed a reliable Prolog engine at university, so I started the exercises with the latter.</p>
+
+<p>Eventually, I tried to port my code to GNU Prolog, and found that it would crash. In practice, this is what the error looks like:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>GNU Prolog 1.4.0
+</span><span class='line'>By Daniel Diaz
+</span><span class='line'>Copyright (C) 1999-2011 Daniel Diaz
+</span><span class='line'>| ?- I1 is 1 + 1.
+</span><span class='line'>
+</span><span class='line'>Fatal Error: Segmentation Violation</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In other words, a basic arithmetic operation causes a segmentation fault.</p>
+
+<p>Fortunately, the <a href="http://lists.gnu.org/archive/html/users-prolog/">users-prolog mailing list</a> had the <a href="http://lists.gnu.org/archive/html/users-prolog/2011-07/msg00013.html">answer</a>: Lion uses llvm-gcc by default, which causes problems for a number of software packages.</p>
+
+<p>I use <a href="http://mxcl.github.com/homebrew/">Homebrew</a> to install new packages; the formula for GNU Prolog contains a declaration that requires the build to use gcc instead of llvm-gcc. But because gcc is actually llvm-gcc, somehow this declaration is not working. So, digging a bit deeper, I found another <a href="http://stevesmiscellany.com/journal/brew_xcode_llvm_and_the_gcc">post</a> with the solution: an explicit <code>--use-gcc</code> flag.</p>
+
+<p>So with the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo brew install gnu-prolog --use-gcc</span></code></pre></td></tr></table></div></figure>
+
+
+<p>GNU Prolog compiles into something useable.</p>
+
+<h2>Exercises</h2>
+
+<p>The exercises today are very basic,</p>
+
+<h3>A knowledge base about books</h3>
+
+<p>Rather than a collection of my favourite books (which would take too long), I just input a few from the <a href="http://pragprog.com/">Pragmatic Bookshelf</a>:</p>
+
+<figure class='code'><figcaption><span>Book Knowledge Base  (books.pl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/prolog/books.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="c1">% book(A, B) means A wrote book B</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">bruce_tate</span><span class="p">,</span> <span class="s-Atom">seven_languages_in_seven_weeks</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">dave_thomas</span><span class="p">,</span> <span class="s-Atom">programming_ruby</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">chad_fowler</span><span class="p">,</span> <span class="s-Atom">programming_ruby</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="s-Atom">programming_ruby</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">chad_fowler</span><span class="p">,</span> <span class="s-Atom">rails_recipes</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">chad_fowler</span><span class="p">,</span> <span class="s-Atom">the_passionate_programmer</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="s-Atom">pragmatic_thinking_and_learning</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="s-Atom">pragmatic_unit_testing</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="s-Atom">practices_of_an_agile_developer</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Querying it:</p>
+
+<figure class='code'><figcaption><span>Querying the book knowledge base  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="nv">B</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">programming_ruby</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">pragmatic_thinking_and_learning</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">pragmatic_unit_testing</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">practices_of_an_agile_developer</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>a</code> after the first answer is the command to display all the solutions.</p>
+
+<h3>Music Knowledge Base</h3>
+
+<figure class='code'><figcaption><span>Music Knowledge Base  (music.pl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/prolog/music.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="c1">% plays(A, B) means A plays B</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">jimmy_hendrix</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">eric_clapton</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">jimmy_page</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">neil_young</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">diana_krall</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">harry_connick_jr</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">ray_charles</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">jerry_lee_lewis</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">% style(A, B) means A plays B style music</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">jimmy_hendrix</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">jimmy_page</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">neil_young</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">jerry_lee_lewis</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">diana_krall</span><span class="p">,</span> <span class="s-Atom">jazz</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">harry_connick_jr</span><span class="p">,</span> <span class="s-Atom">jazz</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">rays_charles</span><span class="p">,</span> <span class="s-Atom">blues</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">eric_clapton</span><span class="p">,</span> <span class="s-Atom">blues</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then finding all the known guitar players is just:</p>
+
+<figure class='code'><figcaption><span>Guitar Players  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">plays</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">jimmy_hendrix</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">eric_clapton</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">jimmy_page</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">neil_young</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not an exercise, but just to highlight the similarity with the relational model, here is a kind of join:</p>
+
+<figure class='code'><figcaption><span>Rock Piano Players  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">style</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">),</span> <span class="nf">plays</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">jerry_lee_lewis</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And this wraps up Day 1.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks - About Io]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/"/>
+    <updated>2011-10-21T09:14:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/21/seven-languages-in-seven-weeks-about-io</id>
+    <content type="html"><![CDATA[<p><a href="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-3">Yesterday</a> in wrapping up I dismissed the language in a very terse manner; I thought I should expand on this.</p>
+
+<!--more-->
+
+
+<p>Io intends to be a number of things:</p>
+
+<ul>
+<li>an embedded language</li>
+<li>a concurrent language with actor model</li>
+<li>a prototype based language</li>
+</ul>
+
+
+<p>The problem is that each of these is well covered by more popular alternatives. <a href="http://www.lua.org/">Lua</a> is designed as an embedded language and widely used as such. <a href="http://www.erlang.org/">Erlang</a> is the typical actor based concurrent language, and once again, widely used as such (interestingly, on the <a href="http://iolanguage.com/about/faq/">Io FAQ page</a>, there is a reference to a benchmark highlighting the performance of coroutine based servers. But the coroutine based server is actually about an Erlang server, <a href="http://yaws.hyber.org/">Yaws</a>). And new languages, such as <a href="http://www.scala-lang.org/">Scala</a>, also implements the actor model.</p>
+
+<p>As for prototype based language, I am not sure there is an intrinsic value in such a design choice (which is why I hesitate to call it a feature). But JavaScript is also a prototype based language, and once again, it is very widely used.</p>
+
+<p>Does that mean there is no place for Io? I wouldn&#8217;t say so; but the main problem I have with the language is that I just can&#8217;t figure where such a language would shine.</p>
+
+<p>A <a href="http://lambda-the-ultimate.org/node/2596">thread</a> on <a href="http://lambda-the-ultimate.org/">Lambda the Ultimate</a> introduces interesting arguments both for and against the language. The pro links in particular are intriguing. Various new behaviours can be implemented on the language. But then the question becomes: would such behaviours be in any way useful for solving real problems, rather than as an intellectual exercise?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Io Day 3]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/"/>
+    <updated>2011-10-20T15:16:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3</id>
+    <content type="html"><![CDATA[<p>Third and final day with Io (as far as the book is concerned). This time Io metaprogramming abilities are used to bend the language into strange shapes.</p>
+
+<!--more-->
+
+
+<p>Of course, metaprogramming bends the mind just as much at the language, and this last day is quite a ride.</p>
+
+<p>Everything is up for redefinition, and new syntactic structure can be added as well. Operators were covered in <a href="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2">Day 2</a>. Today curly braces and square brackets are covered as well. The neat thing is that the method used for the iterpretation is looked up using the same logic as other methods. So it is possible to define a square bracket syntax to access list items simply with:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">List</span> <span class="n">squareBrackets</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">at</span><span class="o">(</span><span class="n">i</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With the definition above, it becomes possible to use the familiar bracket syntax:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">)[</span><span class="mf">1</span><span class="o">]</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="mf">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Updates are not possible (as far as I can tell), however, so for that usage it is less expressive than the <code>[]</code> and <code>[]=</code> methods in Ruby.</p>
+
+<p>The content inside the braces or brackets must be a comma separated list, each element acting as an argument for the <code>curlyBrackets</code> or <code>squareBrackets</code> methods (no link as I could not find any documentation for either method).</p>
+
+<p>A moderately annoying problem with operator extensions is that they are not available in the file in which they are defined.</p>
+
+<p>The last topic covered was concurrency. Io implements an actor model, like all the cool kids (<a href="http://www.erlang.org/">Erlang</a>, <a href="http://www.scala-lang.org/">Scala</a>, &#8230;). The book doesn&#8217;t go into details. And the available documentation is sparse as well. But from what I could gather, the model is cooperative concurrency, and an asynchronous message is a simple extension of the standard one, with one caveat: the <code>call sender</code> information is lost when asynchronous messages are used. Or more precisely, <code>call sender</code> does not return the original initiator of the call, but the piece of logic in the target coroutine that handles the dispatching of messages. So to return a answer, the sender must be passed as argument.</p>
+
+<p>For instance:</p>
+
+<figure class='code'><figcaption><span>Actors  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Agent</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">Agent</span> <span class="n">msg</span> <span class="o">:=</span> <span class="s">&quot;message&quot;</span>
+</span><span class='line'><span class="n">agent1</span> <span class="o">:=</span> <span class="n">Agent</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">agent1</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;agent1 pinged&quot;</span>
+</span><span class='line'><span class="n">agent2</span> <span class="o">:=</span> <span class="n">Agent</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">agent2</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;agent2 ponged&quot;</span>
+</span><span class='line'><span class="n">agent1</span> <span class="n">ping</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">cutoff</span><span class="o">,</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">cutoff</span> <span class="o">&gt;</span> <span class="mf">0</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">wait</span><span class="o">(</span><span class="n">Random</span> <span class="n">value</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">5</span><span class="o">)</span> <span class="n">floor</span><span class="o">)</span>
+</span><span class='line'>      <span class="s">&quot;Received message: &quot;</span> <span class="n">print</span>
+</span><span class='line'>      <span class="n">message</span> <span class="n">println</span>
+</span><span class='line'>      <span class="n">sender</span> <span class="o">@@</span><span class="n">pong</span><span class="o">(</span><span class="n">self</span><span class="o">,</span> <span class="n">msg</span><span class="o">,</span> <span class="n">cutoff</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">yield</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">yield</span><span class="o">))</span>
+</span><span class='line'><span class="n">agent2</span> <span class="n">pong</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">cutoff</span><span class="o">,</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">cutoff</span> <span class="o">&gt;</span> <span class="mf">0</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">wait</span><span class="o">(</span><span class="n">Random</span> <span class="n">value</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">5</span><span class="o">)</span> <span class="n">floor</span><span class="o">)</span>
+</span><span class='line'>      <span class="s">&quot;Received message: &quot;</span> <span class="n">print</span>
+</span><span class='line'>      <span class="n">message</span> <span class="n">println</span>
+</span><span class='line'>      <span class="n">sender</span> <span class="o">@@</span><span class="n">ping</span><span class="o">(</span><span class="n">self</span><span class="o">,</span> <span class="n">msg</span><span class="o">,</span> <span class="n">cutoff</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">yield</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">yield</span><span class="o">))</span>
+</span><span class='line'><span class="n">agent1</span> <span class="o">@@</span><span class="n">ping</span><span class="o">(</span><span class="n">agent2</span><span class="o">,</span> <span class="n">agent2</span> <span class="n">msg</span><span class="o">,</span> <span class="mf">5</span><span class="o">)</span>
+</span><span class='line'><span class="n">Coroutine</span> <span class="n">currentCoroutine</span> <span class="n">pause</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code above will spawn two agents, and they will exchange messages (5 times here).</p>
+
+<h2>Exercises</h2>
+
+<p>Today&#8217;s exercises are only on metaprogramming, essentially syntax extension.</p>
+
+<h3>Indenting XML output</h3>
+
+<p>To indent properly, the Builder must keep track of the nesting depth. This is done with a slot, and a few utility methods. The <code>depth</code> slot is the nesting depth, it is changed with <code>nest</code> (increase) and <code>unnest</code> (decrease), which should bracket the code that processes children. Finally, <code>indent</code> emits the required amount of blank space.</p>
+
+<figure class='code'><figcaption><span> (builder_indent.io)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/io/builder_indent.io'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Builder</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">depth</span> <span class="o">:=</span> <span class="mf">0</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">indent</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="n">repeat</span><span class="o">(</span><span class="s">&quot;  &quot;</span> <span class="n">print</span><span class="o">))</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">nest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">+</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">unnest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">forward</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">indent</span>
+</span><span class='line'>  <span class="n">writeln</span><span class="o">(</span><span class="s">&quot;&lt;&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">,</span> <span class="s">&quot;&gt;&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">nest</span>
+</span><span class='line'>  <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span> <span class="n">foreach</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">content</span> <span class="o">:=</span> <span class="n">self</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">arg</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">if</span><span class="o">(</span><span class="n">content</span> <span class="n">type</span> <span class="o">==</span> <span class="s">&quot;Sequence&quot;</span><span class="o">,</span> <span class="n">indent</span><span class="o">;</span> <span class="n">writeln</span><span class="o">(</span><span class="n">content</span><span class="o">)))</span>
+</span><span class='line'>  <span class="n">unnest</span>
+</span><span class='line'>  <span class="n">indent</span>
+</span><span class='line'>  <span class="n">writeln</span><span class="o">(</span><span class="s">&quot;&lt;/&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">,</span> <span class="s">&quot;&gt;&quot;</span><span class="o">))</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">ul</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">li</span><span class="o">(</span><span class="s">&quot;Io&quot;</span><span class="o">),</span>
+</span><span class='line'>  <span class="n">li</span><span class="o">(</span><span class="s">&quot;Lua&quot;</span><span class="o">),</span>
+</span><span class='line'>  <span class="n">li</span><span class="o">(</span><span class="s">&quot;JavaScript&quot;</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces the following</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;ul&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    Io
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    Lua
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    JavaScript
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>&lt;/ul&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Bracket syntax for list</h3>
+
+<p>This is not difficult: the implementation just creates an empty list, then <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/append"><code>append</code></a> each arguments to the list, before returning it:</p>
+
+<figure class='code'><figcaption><span>Bracket syntax for list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">squareBrackets</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>     <span class="n">l</span> <span class="o">:=</span> <span class="n">List</span> <span class="k">clone</span>
+</span><span class='line'>     <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span> <span class="n">foreach</span><span class="o">(</span><span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>          <span class="n">l</span> <span class="n">append</span><span class="o">(</span><span class="n">arg</span><span class="o">)</span>
+</span><span class='line'>     <span class="o">)</span>
+</span><span class='line'>     <span class="n">l</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The result is:</p>
+
+<figure class='code'><figcaption><span>Building a list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="o">[</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">]</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Attribute syntax for XML Builder</h3>
+
+<p>The last exercise is a bit tricky. The code as presented in the code mixes parsing and output. The problem now is that the first argument could be the attribute list, rather than a child element. The solution is to stop printing the result as we parse it, and instead to build a string representation of the XML.</p>
+
+<figure class='code'><figcaption><span> (builder_attrib.io)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/io/builder_attrib.io'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Builder</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">depth</span> <span class="o">:=</span> <span class="mf">0</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">indent</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">buf</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span> <span class="n">asMutable</span><span class="o">;</span> <span class="n">depth</span> <span class="n">repeat</span><span class="o">(</span><span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;  &quot;</span><span class="o">));</span> <span class="n">buf</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">nest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">+</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">unnest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Builder</span> <span class="n">forward</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span> <span class="n">asMutable</span>
+</span><span class='line'>  <span class="n">args</span> <span class="o">:=</span> <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">indent</span><span class="o">,</span> <span class="s">&quot;&lt;&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">args</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mf">0</span> <span class="n">and</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">args</span> <span class="n">at</span><span class="o">(</span><span class="mf">0</span><span class="o">))</span> <span class="n">type</span> <span class="o">==</span> <span class="s">&quot;Map&quot;</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">h</span> <span class="o">:=</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">args</span> <span class="n">removeFirst</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">h</span> <span class="n">keys</span> <span class="n">foreach</span><span class="o">(</span><span class="n">k</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="s">&quot;=\&quot;&quot;</span><span class="o">,</span> <span class="n">h</span> <span class="n">at</span><span class="o">(</span><span class="n">k</span><span class="o">),</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">)))</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;&gt;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">nest</span>
+</span><span class='line'>  <span class="n">args</span> <span class="n">foreach</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">content</span> <span class="o">:=</span> <span class="n">self</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">arg</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">if</span><span class="o">(</span><span class="n">content</span> <span class="n">isMutable</span><span class="o">,</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">content</span><span class="o">),</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">indent</span><span class="o">,</span> <span class="n">content</span><span class="o">,</span> <span class="s">&quot;\n&quot;</span><span class="o">)))</span>
+</span><span class='line'>  <span class="n">unnest</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">indent</span><span class="o">,</span> <span class="s">&quot;&lt;/&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">,</span> <span class="s">&quot;&gt;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">buf</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">OperatorTable</span> <span class="n">addAssignOperator</span><span class="o">(</span><span class="s">&quot;:&quot;</span><span class="o">,</span> <span class="s">&quot;atPutColon&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Map</span> <span class="n">atPutColon</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">self</span> <span class="n">atPut</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">call</span> <span class="n">evalArgAt</span><span class="o">(</span><span class="mf">0</span><span class="o">)</span> <span class="n">asMutable</span> <span class="n">removePrefix</span><span class="o">(</span><span class="s">&quot;\&quot;&quot;</span><span class="o">)</span> <span class="n">removeSuffix</span><span class="o">(</span><span class="s">&quot;\&quot;&quot;</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">call</span> <span class="n">evalArgAt</span><span class="o">(</span><span class="mf">1</span><span class="o">))</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">curlyBrackets</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">r</span> <span class="o">:=</span> <span class="n">Map</span> <span class="k">clone</span>
+</span><span class='line'>  <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span> <span class="n">foreach</span><span class="o">(</span><span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">r</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">arg</span><span class="o">))</span>
+</span><span class='line'>  <span class="n">r</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once loaded, it can interpret the following (using <code>print</code> to display the generated text):</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Builder</span> <span class="n">ul</span><span class="o">({</span><span class="s">&quot;author&quot;</span><span class="err">:</span> <span class="s">&quot;Tate&quot;</span><span class="o">},</span> <span class="n">li</span><span class="o">(</span><span class="s">&quot;Io&quot;</span><span class="o">),</span> <span class="n">li</span><span class="o">(</span><span class="s">&quot;Lua&quot;</span><span class="o">),</span> <span class="n">li</span><span class="o">(</span><span class="s">&quot;JavaScript&quot;</span><span class="o">))</span> <span class="n">print</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>as</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;ul author="Tate"&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    Io
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    Lua
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt;
+</span><span class='line'>    JavaScript
+</span><span class='line'>  &lt;/li&gt;
+</span><span class='line'>&lt;/ul&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping day 3 and Io</h2>
+
+<p>that <a href="http://www.iolanguage.com/">Io</a> is interesting, but in the sense and to the extent that <a href="http://en.wikipedia.org/wiki/Brainfuck">Brainfuck</a> is interesting. And I don&#8217;t necessarily mean that in a bad way.</p>
+
+<p>The terseness and uniformity of syntax achieves quite a great deal; the actor model is modern and hip, although the cooperative concurrency isn&#8217;t.</p>
+
+<p>This is a language that requires commitment; it is less clear it deserves so much.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Io Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/"/>
+    <updated>2011-10-19T23:48:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2</id>
+    <content type="html"><![CDATA[<p>Day 2 covers method definition and it&#8217;s potential. Io manages to express quite a few interesting things in its minimal syntax.</p>
+
+<!--more-->
+
+
+<p>The more interesting features of methods are the <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Message"><code>Message</code></a> meta information (the ability of a method invocation to introspect both the caller, callee, and the parameters), and the selective parameter evaluation, which supports the creation of new control operations (such as fancy loop or conditionals).</p>
+
+<h2>Exercises</h2>
+
+<p>In line with today&#8217;s topic, exercises are about defining and executing methods.</p>
+
+<h3>Fibonacci sequence</h3>
+
+<p>I change the exercise a bit: I defined the fibonacci sequence for Number, and it uses the number it is called on as the argument. So I compute <code>40 fib</code> rather than <code>fib(40)</code>. For this reason I have to use <code>self</code> when I want to refer to the original argument explicitly.</p>
+
+<p>The recursive (and slow) method translated directly from the definition:</p>
+
+<figure class='code'><figcaption><span>Fibonacci sequence, recursive  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="k">if</span> <span class="o">(</span><span class="n">self</span> <span class="o">&lt;</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="o">((</span><span class="n">self</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span> <span class="n">fib</span> <span class="o">+</span> <span class="o">(</span><span class="n">self</span> <span class="o">-</span> <span class="mf">2</span><span class="o">)</span> <span class="n">fib</span><span class="o">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the iterative method, I&#8217;m using a intermediate function with accumulators to build the result (I have easier time thinking in functional than imperative terms):</p>
+
+<figure class='code'><figcaption><span>Fibonacci sequence, iterative functional  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fibrec</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mf">1</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">fibrec</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">,</span> <span class="n">n</span><span class="o">-</span><span class="mf">1</span><span class="o">)))</span>
+</span><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">fibrec</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="n">self</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, an iterative imperative method, with explicit looping (the iteration starts at 2 because the <code>for</code> method iterates up to and including the upper bound):</p>
+
+<figure class='code'><figcaption><span>Fibonacci sequence, iterative imperative  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">a</span> <span class="o">:=</span> <span class="mf">1</span>
+</span><span class='line'>  <span class="n">b</span> <span class="o">:=</span> <span class="mf">1</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="n">self</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">c</span> <span class="o">:=</span> <span class="n">b</span>
+</span><span class='line'>      <span class="n">b</span> <span class="o">:=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</span><span class='line'>      <span class="n">a</span> <span class="o">:=</span> <span class="n">c</span>
+</span><span class='line'>  <span class="o">)</span>
+</span><span class='line'>  <span class="n">b</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Change <code>/</code> to return 0 when divided by 0</h3>
+
+<p>First I save the original definition of <code>/</code>, then I update the operator slot with the new definition:</p>
+
+<figure class='code'><figcaption><span>Redefining division  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">oldDiv</span> <span class="o">:=</span> <span class="n">Number</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">Number</span> <span class="n">updateSlot</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">,</span> <span class="k">method</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span>  <span class="n">oldDiv</span><span class="o">(</span><span class="n">d</span><span class="o">))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Add up all the numbers in a two dimensional array</h3>
+
+<p>Assuming the array is implemented as a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List"><code>List</code></a> of list, the following invocation will sum the numbers:</p>
+
+<figure class='code'><figcaption><span>Summing over nested lists  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">arr</span> <span class="o">:=</span> <span class="n">list</span><span class="o">(</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">4</span><span class="o">,</span><span class="mf">5</span><span class="o">,</span><span class="mf">6</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">7</span><span class="o">,</span><span class="mf">8</span><span class="o">,</span><span class="mf">9</span><span class="o">))</span>
+</span><span class='line'><span class="n">arr</span> <span class="n">reduce</span><span class="o">(</span><span class="n">xs</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">xs</span> <span class="o">+</span> <span class="o">(</span><span class="n">x</span> <span class="n">reduce</span><span class="o">(+,</span> <span class="mf">0</span><span class="o">)),</span> <span class="mf">0</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The initial value is supplied explicitly; otherwise <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/reduce"><code>reduce</code></a> would use the first value, which is not a number but a list.</p>
+
+<p>Alternatively (and much shorter):</p>
+
+<figure class='code'><figcaption><span>Summing over nested lists, the easy way  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">arr</span> <span class="o">:=</span> <span class="n">list</span><span class="o">(</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">4</span><span class="o">,</span><span class="mf">5</span><span class="o">,</span><span class="mf">6</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">7</span><span class="o">,</span><span class="mf">8</span><span class="o">,</span><span class="mf">9</span><span class="o">))</span>
+</span><span class='line'><span class="n">arr</span> <span class="n">flatten</span> <span class="n">reduce</span><span class="o">(+)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Define <code>myAverage</code></h3>
+
+<p>Using the <code>reduce</code> method, it is easy to compute the sum of a list. The <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/size"><code>size</code></a> method can then be used to compute the average:</p>
+
+<figure class='code'><figcaption><span>Reimplementing average  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">List</span> <span class="n">myAverage</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">self</span> <span class="n">reduce</span><span class="o">(+)</span> <span class="o">/</span> <span class="n">self</span> <span class="n">size</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If the list is empty, the <code>reduce</code> method returns <code>nil</code>, so we get an exception (as <code>nil</code> does not respond to the <code>/</code> method). But this is consistent with the existing <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/average"><code>average</code></a> method.</p>
+
+<h4>Throwing Exception</h4>
+
+<p>Technically, this solution already raises an <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Exception"><code>Exception</code></a> when one of the elements is not a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Number"><code>Number</code></a>, but here is how I would implement explicit type checking:</p>
+
+<figure class='code'><figcaption><span>Reimplementing average  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">OperatorTable</span> <span class="n">addOperator</span><span class="o">(</span><span class="s">&quot;+?&quot;</span><span class="o">,</span> <span class="mf">3</span><span class="o">)</span>
+</span><span class='line'><span class="n">Number</span> <span class="o">+</span><span class="err">?</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">num</span><span class="o">,</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">num</span> <span class="n">hasProto</span><span class="o">(</span><span class="n">Number</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">self</span> <span class="o">+</span> <span class="n">num</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">Exception</span> <span class="n">raise</span><span class="o">(</span><span class="s">&quot;Not a number&quot;</span><span class="o">)))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">List</span> <span class="n">myAverage</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">self</span> <span class="n">reduce</span><span class="o">(+</span><span class="err">?</span><span class="o">)</span> <span class="o">/</span> <span class="n">self</span> <span class="n">size</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">,</span> <span class="s">&quot;hello&quot;</span><span class="o">)</span> <span class="n">myAverage</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I am using a new operator, <code>+?</code>, with the same priority as <code>+</code>, and explicitly check the prototype with <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/hasProto"><code>hasProto</code></a>.</p>
+
+<h3>Two-dimensional list prototype</h3>
+
+<p>First I clone a specialization of <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List"><code>List</code></a> as the implementation to the two dimensional array.</p>
+
+<p>The initialization simply creates then grows the internal lists to the appropriate size, and stores the original parameters as slots:</p>
+
+<figure class='code'><figcaption><span>Two dimensional arrays, initialization  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="o">:=</span> <span class="n">List</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">dim2</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">d</span> <span class="o">:=</span> <span class="n">Dim2</span> <span class="k">clone</span> <span class="n">setSize</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="n">map</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">list</span><span class="o">()</span> <span class="n">setSize</span><span class="o">(</span><span class="n">y</span><span class="o">))</span>
+</span><span class='line'>  <span class="n">d</span> <span class="n">newSlot</span><span class="o">(</span><span class="s">&quot;x&quot;</span><span class="o">,</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">d</span> <span class="n">newSlot</span><span class="o">(</span><span class="s">&quot;y&quot;</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">d</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The accessor methods can use the dimension slots to check for out of bound access:</p>
+
+<figure class='code'><figcaption><span>Two dimensional array, accessor methods  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">checkBounds</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">xg</span><span class="o">,</span> <span class="n">yg</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">xg</span> <span class="n">or</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">yg</span> <span class="n">or</span> <span class="n">xg</span> <span class="o">&lt;</span> <span class="mf">0</span> <span class="n">or</span> <span class="n">yg</span> <span class="o">&lt;</span> <span class="mf">0</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">raise</span><span class="o">(</span><span class="s">&quot;Indexes out of bound&quot;</span><span class="o">)))</span>
+</span><span class='line'><span class="n">Dim2</span> <span class="n">get</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">checkBounds</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span> <span class="n">at</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="n">at</span><span class="o">(</span><span class="n">y</span><span class="o">))</span>
+</span><span class='line'><span class="n">Dim2</span> <span class="n">set</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">v</span><span class="o">,</span> <span class="n">checkBounds</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span> <span class="n">at</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="n">atPut</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span> <span class="n">d</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The method <code>checkBounds</code> guarantees an exception is raised if the position parameters are not within bounds. The method <code>get</code> simply invokes <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/at"><code>at</code></a> twice to get at the data; <code>set</code> first locate the right sub list with <code>at</code>, then update the correct value with <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/atPut"><code>atPut</code></a>, and finally returns the updated array.</p>
+
+<h3>Two-dimensional list transpose method</h3>
+
+<p>With <code>Dim2</code> defined as above, the <code>transpose</code> method is trivial:</p>
+
+<figure class='code'><figcaption><span>Two-dimensional list transpose method  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">transpose</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">d</span> <span class="o">:=</span> <span class="n">dim2</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="n">x</span><span class="o">-</span><span class="mf">1</span><span class="o">,</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="n">y</span><span class="o">-</span><span class="mf">1</span><span class="o">,</span> <span class="n">d</span> <span class="n">set</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">get</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">))</span>
+</span><span class='line'>  <span class="n">d</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Just initialize a new array, swapping the dimensions, then iterate over both dimensions, swapping the parameters for the <code>get</code> and the <code>set</code> methods.</p>
+
+<h3>Matrix Input/Output</h3>
+
+<p>First the method <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/asString"><code>asString</code></a> can be used to get the string representation of an object, including the two-dimensional list.</p>
+
+<p>However, the default <code>asString</code> returns the same representation as for regular nested lists. In order to read the object from the string, <code>asString</code> has to be overridden to emit something specific.</p>
+
+<figure class='code'><figcaption><span>Two-dimensional array asString  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">asString</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="o">:=</span> <span class="s">&quot;twodim(&quot;</span> <span class="n">asMutable</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">x</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">y</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">foreach</span><span class="o">(</span><span class="n">l</span><span class="o">,</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">);</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">l</span> <span class="n">asString</span><span class="o">))</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;)&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">buf</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this defined, a two dimensional list has a unique representation:</p>
+
+<figure class='code'><figcaption><span>asString example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">dim2</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this in place, I can define a <code>twodim</code> function that creates an instance of <code>Dim2</code> and fills it with the passed data:</p>
+
+<figure class='code'><figcaption><span>twodim method  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">twodim</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">d</span> <span class="o">:=</span> <span class="n">dim2</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="n">x</span><span class="o">-</span><span class="mf">1</span><span class="o">,</span> <span class="n">d</span> <span class="n">atPut</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">call</span> <span class="n">sender</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">call</span> <span class="n">message</span> <span class="n">argAt</span><span class="o">(</span><span class="n">i</span><span class="o">+</span><span class="mf">2</span><span class="o">)))</span>
+</span><span class='line'>  <span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>twodim</code> method is not defined on <code>Dim2</code>, but globally, so that the content of a string representing a <code>Dim2</code> instance can be parsed in any context.</p>
+
+<p>With this in place, the object can be serialized and unserialized, using the <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/doString"><code>doString</code></a> method (which evaluates the string in the target context):</p>
+
+<figure class='code'><figcaption><span>Testing serialization  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">d</span> <span class="o">:=</span> <span class="n">dim2</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">))</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="k">for</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="n">d</span> <span class="n">set</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="o">)))</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="k">doString</span><span class="o">(</span><span class="n">d</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the last step is to store the string representation in a file, and read from it:</p>
+
+<figure class='code'><figcaption><span>Writing to a file  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">d</span> <span class="o">:=</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span><span class='line'><span class="n">f</span> <span class="o">:=</span> <span class="n">File</span> <span class="n">with</span><span class="o">(</span><span class="s">&quot;foo.txt&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">remove</span>
+</span><span class='line'><span class="n">f</span> <span class="n">openForUpdating</span>
+</span><span class='line'><span class="n">f</span> <span class="n">write</span><span class="o">(</span><span class="n">d</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">close</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Unsurprisingly, the content of the file is</p>
+
+<figure class='code'><figcaption><span>Serialized Two-dimensional list instance  (foo.txt)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/io/foo.txt'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Reading is just as simple:</p>
+
+<figure class='code'><figcaption><span>Reading from a file  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">f</span> <span class="o">:=</span> <span class="n">File</span> <span class="n">with</span><span class="o">(</span><span class="s">&quot;foo.txt&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">openForReading</span>
+</span><span class='line'><span class="n">d1</span> <span class="o">:=</span> <span class="k">doString</span><span class="o">(</span><span class="n">f</span> <span class="n">readLine</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">close</span>
+</span><span class='line'><span class="n">d1</span>
+</span><span class='line'><span class="n">d</span> <span class="o">==</span> <span class="n">d1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The original <code>Dim2</code> instance is equal to the unserialized one. I did not really expected that (I didn&#8217;t write any comparison code for the new object), but Io provided a sensible implementation anyway.</p>
+
+<p>Note: theres is a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/serialized"><code>serialized</code></a> method, but it&#8217;s output representation in the case of <code>Dim2</code> is the same as the one for <code>List</code>. There should be a way to override <code>serialized</code> as well, but it&#8217;s exact semantic is not clear to me.</p>
+
+<h3>Guess a Number Game</h3>
+
+<p>Given the above, the last exercise a walk in the park. Getting the number from the standard input was a bit harder to figure out. For some reason, on Mac OS X, reading from the standard input also displays <code>nil</code>; I guess it is a bug, although not a very serious one.</p>
+
+<figure class='code'><figcaption><span>Guess a Number Game  (guess.io)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/io/guess.io'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">getGuess</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">in</span> <span class="o">:=</span> <span class="n">File</span> <span class="n">standardInput</span>
+</span><span class='line'>    <span class="s">&quot;Enter your guess&quot;</span> <span class="n">println</span>
+</span><span class='line'>    <span class="n">in</span> <span class="n">readLine</span> <span class="n">asNumber</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">runGame</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">target</span> <span class="o">:=</span> <span class="n">Random</span> <span class="n">value</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">101</span><span class="o">)</span> <span class="n">floor</span>
+</span><span class='line'>    <span class="s">&quot;I am thinking of a number between 1 and 100. Can you guess it?&quot;</span> <span class="n">println</span>
+</span><span class='line'>  <span class="n">found</span> <span class="o">:=</span> <span class="no">false</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">10</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">g</span> <span class="o">:=</span> <span class="n">getGuess</span>
+</span><span class='line'>      <span class="k">if</span><span class="o">(</span><span class="n">target</span> <span class="o">==</span> <span class="n">g</span><span class="o">,</span> <span class="n">found</span> <span class="o">=</span> <span class="no">true</span><span class="o">;</span> <span class="n">break</span><span class="o">,</span> <span class="s">&quot;Nope, try again&quot;</span> <span class="n">println</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">if</span><span class="o">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mf">1</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">g</span> <span class="o">&gt;</span> <span class="n">target</span><span class="o">,</span> <span class="s">&quot;smaller&quot;</span> <span class="n">println</span><span class="o">,</span> <span class="s">&quot;bigger&quot;</span> <span class="n">println</span><span class="o">)))</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">found</span><span class="o">,</span>
+</span><span class='line'>      <span class="s">&quot;You guessed it!&quot;</span> <span class="n">println</span><span class="o">,</span>
+</span><span class='line'>      <span class="s">&quot;Sorry, the number was &quot;</span> <span class="n">print</span><span class="o">;</span> <span class="n">target</span> <span class="n">println</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping up</h2>
+
+<p>Well, that was quite a day. The exercises did not cover the more advanced use of method (such as implicit argument evaluation), but otherwise gave the opportunity to define useful behaviours, and play with important classes from the standard library.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Io Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/"/>
+    <updated>2011-10-18T21:12:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1</id>
+    <content type="html"><![CDATA[<p>The language for this week is <a href="http://iolanguage.com/">Io</a>, a prototype-based language. The language embraces minimalism, down to the documentation (which is really terse).</p>
+
+<!--more-->
+
+
+<p>JavaScript is another prototype-based language (although admittedly not minimalist); Bruce Tate explains his choice of Io over JavaScript by observing that JavaScript is already well known. That might be the case, but I wonder whether the prototype nature of JavaScript is well known as well.</p>
+
+<p>Anyway, this week is about Io. As stated above, it is a prototype-based language (meaning there is no difference between class and object), with a simple and regular message passing syntax and semantic.</p>
+
+<h2>Exercises</h2>
+
+<p>Today&#8217;s exercises explore various basic aspects of the language.</p>
+
+<h3>Io is typed</h3>
+
+<p>Trying to evaluate</p>
+
+<figure class='code'><figcaption><span>Testing typing  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="mf">1</span> <span class="o">+</span> <span class="s">&quot;one&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>generates an error:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Exception: argument 0 to method '+' must be a Number, not a 'Sequence'
+</span><span class='line'>---------
+</span><span class='line'>message '+' in 'Command Line' on line 1</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The error message in this case is fairly clear and verbose, fortunately.</p>
+
+<h3>False values</h3>
+
+<p>0 and the empty strings are both true, while <code>nil</code> is false:</p>
+
+<figure class='code'><figcaption><span>Testing false  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="mf">0</span> <span class="n">and</span> <span class="no">true</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">true</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="s">&quot;&quot;</span> <span class="n">and</span> <span class="no">true</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">true</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="no">nil</span> <span class="n">and</span> <span class="no">true</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Slots in an object</h3>
+
+<p>The method <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/slotNames"><code>slotNames</code></a> gives the list of slots:</p>
+
+<figure class='code'><figcaption><span>Listing slots  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Object</span> <span class="n">slotNames</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>returns</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>==&gt; list(serializedSlotsWithNames, isNil, serialized, relativeDoFile, prependProto, pause, &lt;, futureSend, contextWithSlot, return, @, currentCoro, break, isIdenticalTo, ancestorWithSlot, getSlot, setSlotWithType, method, evalArgAndReturnNil, lazySlot, resend, isTrue, isKindOf, asSimpleString, while, setProtos, shallowCopy, init, removeProto, proto, stopStatus, clone, actorRun, serializedSlots, setSlot, removeAllSlots, handleActorException, become, apropos, hasSlot, -, doFile, doString, uniqueId, setIsActivatable, print, &lt;=, launchFile, doRelativeFile, thisLocalContext, type, write, isLaunchScript, ifNonNil, &gt;, thisContext, removeSlot, block, writeln, perform, doMessage, @@, switch, evalArg, list, deprecatedWarning, for, ?, ifError, try, asString, asyncSend, coroDo, do, performWithArgList, yield, argIsActivationRecord, slotNames, hasLocalSlot, wait, message, argIsCall, isActivatable, println, !=, foreachSlot, not, inlineMethod, .., coroDoLater, loop, ancestors, raiseIfError, newSlot, and, appendProto, cloneWithoutInit, slotSummary, continue, setProto, super, hasProto, ifNonNilEval, justSerialized, if, ==, or, protos, &gt;=, returnIfNonNil, , uniqueHexId, removeAllProtos, slotValues, coroFor, coroWith, actorProcessQueue, thisMessage, ifNil, memorySize, returnIfError, hasDirtySlot, slotDescriptionMap, updateSlot, compare, ownsSlots, evalArgAndReturnSelf, getLocalSlot, in, markClean, isError, ifNilEval)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Difference between =, := and ::=</h3>
+
+<p>The difference is explained in the <a href="http://www.iolanguage.com/scm/io/docs/IoGuide.html">Io Guide</a>, in the <a href="http://www.iolanguage.com/scm/io/docs/IoGuide.html#Syntax-Assignment">Assignments</a> section, in terms of equivalent methods.</p>
+
+<p>Each operator is mapped to a method:</p>
+
+<ul>
+<li><code>=</code> is mapped to <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/updateSlot"><code>updateSlot</code></a></li>
+<li><code>:=</code> is mapped to <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/setSlot"><code>setSlot</code></a></li>
+<li><code>::=</code> is mapped to <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/newSlot"><code>newSlot</code></a></li>
+</ul>
+
+
+<p>The difference between <code>updateSlot</code> and <code>setSlot</code> is simple: <code>setSlot</code> creates and set the value of a slot, whereas <code>updateSlot</code> only updates the value of an <em>existing</em> slot.</p>
+
+<p><code>newSlot</code> is the same as <code>setSlot</code>, but it creates a setter method:</p>
+
+<figure class='code'><figcaption><span>Assignment operators  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Vehicle</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="o">==&gt;</span>  <span class="n">Vehicle_0x7fc3dbeb7110</span><span class="err">:</span>
+</span><span class='line'>  <span class="n">type</span>             <span class="o">=</span> <span class="s">&quot;Vehicle&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Vehicle</span> <span class="n">description</span> <span class="o">:=</span> <span class="s">&quot;a fast car&quot;</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">a</span> <span class="n">fast</span> <span class="n">car</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Vehicle</span> <span class="n">slotNames</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">list</span><span class="o">(</span><span class="n">description</span><span class="o">,</span> <span class="n">type</span><span class="o">)</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Ferrari</span> <span class="o">:=</span> <span class="n">Vehicle</span> <span class="k">clone</span>
+</span><span class='line'><span class="o">==&gt;</span>  <span class="n">Ferrari_0x7fc3dbe4f2e0</span><span class="err">:</span>
+</span><span class='line'>  <span class="n">type</span>             <span class="o">=</span> <span class="s">&quot;Ferrari&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Ferrari</span> <span class="n">colour</span> <span class="o">::=</span> <span class="s">&quot;red&quot;</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">red</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Ferrari</span> <span class="n">slotNames</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">list</span><span class="o">(</span><span class="n">setColour</span><span class="o">,</span> <span class="n">type</span><span class="o">,</span> <span class="n">colour</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Execute the code in a slot given its name</h3>
+
+<p>The <code>getSlot</code> method returns the value for the named slot. Apparently if the value is a method, this calls the method as well, if there are no arguments (otherwise the method object is returned):</p>
+
+<figure class='code'><figcaption><span>Executing method by name  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Object</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;isNil&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">false</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="no">nil</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;isNil&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">true</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Object</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;compare&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">Object_compare</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping up day 1</h2>
+
+<p>So Io has a minimal and consistent syntax. The objects can be easily introspected, and the operators are mapped to methods which can be redefined.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Ruby Day 3]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/"/>
+    <updated>2011-10-13T15:30:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3</id>
+    <content type="html"><![CDATA[<p>Third and final day on Ruby. This time, metaprogramming techniques are covered.</p>
+
+<!--more-->
+
+
+<p><a href="http://en.wikipedia.org/wiki/Metaprogramming">Metaprogramming</a> allows a program to write programs, or more interestingly, to modify itself. The structure of the running program is made available to introspection API, and can be updated or extended.</p>
+
+<p>Ruby as a really powerful set of tools for metaprogramming, but a good understanding of Ruby&#8217;s metamodel and some of its darker corners is required to fully benefit from them.</p>
+
+<h2>Exercises</h2>
+
+<p>But first let&#8217;s finish the homework (day 3 has only a short one).</p>
+
+<h3>Improved Acts as CSV module</h3>
+
+<figure class='code'><figcaption><span>Acts as CSV module  (acts_as_csv_module.rb)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/ruby/acts_as_csv_module.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActsAsCsv</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethod</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">ClassMethod</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">acts_as_csv</span>
+</span><span class='line'>      <span class="kp">include</span> <span class="no">InstanceMethods</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">InstanceMethods</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">read</span>
+</span><span class='line'>      <span class="vi">@csv_contents</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>      <span class="n">filename</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">downcase</span> <span class="o">+</span> <span class="s1">&#39;.txt&#39;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@headers</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">gets</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">file</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span>
+</span><span class='line'>        <span class="vi">@csv_contents</span> <span class="o">&lt;&lt;</span> <span class="n">row</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:headers</span><span class="p">,</span> <span class="ss">:csv_contents</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">each</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@csv_contents</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">r</span><span class="o">|</span> <span class="n">block</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="no">CsvRow</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@headers</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>      <span class="n">read</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">CsvRow</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@headers</span> <span class="o">=</span> <span class="n">h</span>
+</span><span class='line'>    <span class="vi">@row</span> <span class="o">=</span> <span class="n">r</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">method_missing</span> <span class="nb">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span>
+</span><span class='line'>    <span class="n">h</span> <span class="o">=</span> <span class="nb">name</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>    <span class="vi">@row</span><span class="o">[</span><span class="vi">@headers</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">RubyCsv</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">ActsAsCsv</span>
+</span><span class='line'>  <span class="n">acts_as_csv</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code is fairly straightforward. The new class <code>CsvRow</code> does most of the job. It uses <code>method_missing</code> to access the relevant column. There is no error checking, so please don&#8217;t make mistakes&#8230;</p>
+
+<p>The codes behaves as intended:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>csv = RubyCsv.new
+</span><span class='line'>csv.each {|row| puts row.one}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>does print</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>lions</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As an alternative, the code below creates the methods during the initialization of the instance. There could (should?) be an easier way, but I could not find one. The new methods are added to the singleton class, so each instance has its own set.</p>
+
+<figure class='code'><figcaption><span>Using define_method rather than method_missing  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CsvRow</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@headers</span> <span class="o">=</span> <span class="n">h</span>
+</span><span class='line'>    <span class="vi">@row</span> <span class="o">=</span> <span class="n">r</span>
+</span><span class='line'>    <span class="n">singleton</span> <span class="o">=</span> <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span><span class="p">;</span> <span class="nb">self</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>    <span class="n">h</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">singleton</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:define_method</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span> <span class="p">{</span> <span class="n">r</span><span class="o">[</span><span class="n">h</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code uses the <code>send</code> method because <code>define_method</code> must be used from within the class (it is a private method), but when I open the class I change the scope and loose access to the original parameters <code>h</code> and <code>r</code>.</p>
+
+<p>With such modification, the codes still executes as required.</p>
+
+<h2>Wrapping up day 3</h2>
+
+<p>This chapter was short, certainly, but it gives a tantalizing overview of metaprogramming.</p>
+
+<p>However, these techniques bring to light the fact that Ruby does not have definitions, only code that defines things, and that the evaluation order of this code matters. This becomes clearer when trying to modifies classes as they are being define.</p>
+
+<p>Consider the following fragment. The <code>Path</code> class does nothing really important, but it could for instance wrap methods with a proxy. For this it needs to know the methods that are defined on the target class.</p>
+
+<p><code>Target1</code> and <code>Target2</code> both define the same methods (through the use of <code>attr_accessor</code>), but <code>Target1</code> includes <code>Patch</code> first, then define the attribute, while <code>Target2</code> includes <code>Patch</code> last.</p>
+
+<figure class='code'><figcaption><span>Evaluation order matters  (meta.rb)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/ruby/meta.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Patch</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="n">klass</span><span class="o">.</span><span class="n">instance_methods</span><span class="o">.</span><span class="n">member?</span><span class="p">(</span><span class="ss">:my_attribute</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Target1</span>
+</span><span class='line'>  <span class="nb">print</span> <span class="s2">&quot;In Target1: &quot;</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Patch</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:my_attribute</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Target2</span>
+</span><span class='line'>  <span class="nb">print</span> <span class="s2">&quot;In Target2: &quot;</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:my_attribute</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Patch</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When executed, the code produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>In Target1: false
+</span><span class='line'>In Target2: true</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So in Ruby, it is fair to say that there are no declarations, only instructions, all of them executed in order (some of these instructions create functions, classes, or blocks to be executed later).</p>
+
+<p>Indeed, the following program fails to execute:</p>
+
+<figure class='code'><figcaption><span>Evaluation order really matters&#8230;  (eval.rb)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/ruby/eval.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">hello</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">hello</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Hello, world&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>while the equivalent Perl one succeeds:</p>
+
+<figure class='code'><figcaption><span>&#8230; or not depending on the language  (eval.pl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/ruby/eval.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='perl'><span class='line'><span class="n">hello</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">sub </span><span class="nf">hello</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Hello, world\n&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is because Perl processes the definitions first, then executes the instructions in order.</p>
+
+<p>Ruby&#8217;s execution mode is similar to Common Lisp&#8217;s. Actually, Common Lisp makes is even more complex by virtue of being a compiled language with various phases (eval, compile and load), allowing (and sometimes requiring) selective evaluation of various parts of the code. Hopefully Ruby metaprogramming will not be that complex.</p>
+
+<p>Still, despite the potential for obfuscation, metaprogramming (combined with Ruby&#8217;s low ceremony syntax) supports the creation of elegant DSL and simplifies program architectures. It is a way to centralizes complexity, and drain it from the rest of the code.</p>
+
+<h3>About Ruby</h3>
+
+<p>I really like Ruby. Even as the bastard child of Perl and Smalltalk that it is, it has a level of consistency and cohesion that well thought. Each of its shortcoming (Ruby can be rather slow, and as noted above metaprogramming can become very complex) is a reasonable trade off, and it can be argued that the advantages these trades off bought more than compensate for the shortcomings.</p>
+
+<p>More importantly, the Ruby ecosystem is bristling with interesting tools and ideas, and it really is fascinating to explore.</p>
+
+<p>Despite its different origin, Ruby is a Lisp for the 21st century.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Kyogen - Traditional Japanese Slapstick]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/13/kyogen-traditional-japanese-slapstick/"/>
+    <updated>2011-10-13T12:43:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/13/kyogen-traditional-japanese-slapstick</id>
+    <content type="html"><![CDATA[<p>Yesterday my wife and I went to a of representation <a href="http://en.wikipedia.org/wiki/Ky%C5%8Dgen">Kyôgen</a>, one of Japanese traditional theater. This <a href="http://yorozukyogen.jp/">representation</a>, while mostly in Japanese, was designed for (English speaking) foreigners.</p>
+
+<!--more-->
+
+
+<p>Kyôgen&#8217;s origin is the same as <a href="http://en.wikipedia.org/wiki/Noh">Noh</a>, but while the latter is for drama, the former is for comedy. They are both more than 6 centuries old, extremely formalized and sophisticated, and distinctively Japanese.</p>
+
+<p>Comedy is, to some extent, specific to a culture. A common theme is the crossing of boundaries; obviously these are easy to cross in a country such as Japan, and many untalented entertainers keep their audience laughing merely by using a context inappropriate language (typically casual bordering on vulgar).</p>
+
+<p>Fortunately, Kyôgen is both approachable and enjoyable, if one is willing to put some efforts. Yesterday&#8217;s performance was supplemented with explanations in English (provided by former <em>talento</em> <a href="http://en.wikipedia.org/wiki/Thane_Camus">Thane Camus</a>), about the history of the art, the plots (most of Kyôgen&#8217;s stories are centuries old, so knowing the plot is not exactly a problem), and cultural details that are required to understand the jokes.</p>
+
+<p>The performers were from the Nomura family. This family has been performing Kyôgen for 300 years, or nine generations. Interestingly, a lineage in Japan is something fairly flexible: if there is no heir, a child can be adopted, and becomes for all purposes a full member of the family. This has happened in many famous lineages, and the current Nomura family actually came from such an member adopted as the second generation.</p>
+
+<h2>The Performance</h2>
+
+<p>Like all traditional Japanese arts, Kyôgen is highly stylized. The speech is unrealistic; the intonation is used to amplify meaning or turn the voice into a rhythmic instrument. Movements are more restrained (this is not <a href="http://en.wikipedia.org/wiki/Kabuki">Kabuki</a>), but sometimes very symbolic.</p>
+
+<p>To compensate for this behavioural debauchery, the stage itself is empty. The audience is invited to fill the blanks with their imagination.</p>
+
+<p>As my Japanese is useless for even the most basic situations, I was expecting great difficulties to follow the plays, lost between the strange intonation and the archaic vocabulary. Yet I found this was not the case. The meaning was conveyed not by the words themselves, but by the music of the voices, and a general knowledge of the stories was enough to understand the situations. And my general weakness in Japanese made me all the prouder when I occasionally managed to grasp a few words or a sentence.</p>
+
+<h2>The Plays</h2>
+
+<h3>Kaminari</h3>
+
+<p>The first play is called  雷 Kaminari (Thunder). In Japan, Kaminari was believed to be a god, and ranked high among the things that Japanese feared (the list is 地震、雷、火事、親父, jichin, kaminari, kaji, oyaji, or earthquakes, thunder, fires, father).</p>
+
+<p>In this story, a quack doctor moves east from Kyoto, looking for new victims to rebuild his fortune. On the way, he is caught out in the field by thunder. Just as he finishes scaring the poor doctor, Kaminari slips and falls from the cloud, and lands on his butt nearby.</p>
+
+<p>Learning that the man is a doctor, Kaminari insists to be cured by him (he had injured his hip). Eventually, the doctor manages to do so, and the god thanks him by ensuring 800 years of good weather.</p>
+
+<p>As this was my first experience with Kyôgen, it took me a while to get into the story (the intro had a long monologue by the doctor, which I could not really follow). But the humbling of the god was entertaining (he is shown as both terrifying to the doctor, and a cry baby).</p>
+
+<h3>Bo-shibari</h3>
+
+<p>A master has to go on a trip, and is concerned that his two servants are going to drink his sake (again). With the help of the first one, he ties the arms of the second to a stick (hence the meaning of the play, Tied to a Stick), then ties the arms of the first behind his back. He then leaves.</p>
+
+<p>The servants, however, are still determined to drink sake. After some effort, they manage to do so, and the master on his return find them both drunk and enjoying themselves a lot.</p>
+
+<p>This play was much easier for me to follow and enjoy. The situation is clearly understandable, and reminiscent of plots from early movies (including Chaplin&#8217;s).</p>
+
+<p>The scene of the servant tied to the stick, trying to drink his cup of sake from his stretched arm was genius, and probably one the best physical comedy acts I&#8217;ve seen.</p>
+
+<p>Another comedic moment was the dancing: both servants, already very drunk, attempt to perform a formal dance. This dance had been performed before the play to the benefit of the foreign audience, so they would know what it was supposed to look like. Comparatively, the efforts of the servants were funny indeed, wriggling and jumping around, but to be honest, I think that it felt a bit flat with the foreign audience, while the Japanese one was roaring with laughters.</p>
+
+<h2>Epilogue</h2>
+
+<p>As I said at the start, Kyôgen requires some investment to be fully appreciated. This time, the organizers were providing most of the information required to understand the situations. This is commendable.</p>
+
+<p>Overall, the whole audience seemed to have ad a great time. I certainly did. I will be looking forward to seeing part 2 of Kyôgen for Foreigners, next March.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Writing a Jeckyl Plugin]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/"/>
+    <updated>2011-10-13T12:40:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin</id>
+    <content type="html"><![CDATA[<p>This blog is built with <a href="http://octopress.org/">Octopress</a>, itself built on top of <a href="http://jekyllrb.com/">Jekyll</a>, a static site generator.</p>
+
+<!--more-->
+
+
+<p>As I was blogging through <a href="http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks/">Seven Languages in Seven Weeks</a>, I thought it would be neat to have a list of all the posts in that series, accessible from the sidebar.</p>
+
+<p>Essentially, my goal was to be able to add an attribute <code>series</code> to a post, to add it to a named group of posts, and to generate a list of all posts in the same group to add to the sidebar.</p>
+
+<p>The first part is easy. In Jekyll, the <a href="https://github.com/mojombo/jekyll/wiki/YAML-Front-Matter">YAML Front Matter</a> is extensible. So I just added</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>series: "Seven Languages in Seven Weeks"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>to the relevant posts.</p>
+
+<p>The second one is a bit trickier. Jekyll exposes the post data not directly, but through a hash that is built for each post. This hash is built by two methods, <code>render</code> and <code>to_liquid</code>.</p>
+
+<p>My plugin replaces <code>render</code> to insert the <code>series_posts</code>, an array of all the posts with the same <code>series</code> attribute.</p>
+
+<p>But to display the list of posts, I need a short title, so also added support for that. A short title is computed in the overridden <code>to_liquid</code> method. The computation is the following:</p>
+
+<ul>
+<li>if there is a short_title attribute in the YAML Front Matter, use it</li>
+<li>otherwise, if the name of the series is a prefix of the post title, remove it from the title and use the rest</li>
+<li>otherwise use the post title.</li>
+</ul>
+
+
+<p>To display the series posts in the sidebar, I&#8217;m using this code:</p>
+
+<figure class='code'><figcaption><span> (series.html)</span> <a href='http://blog.wakatta.jp/downloads/code/series.html'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>{% if page and page.series %}
+</span><span class='line'><span class="nt">&lt;section&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;h1&gt;</span>{{page.series}} Series<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>  {% assign series_posts = site.series_posts %}
+</span><span class='line'>      <span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>      {% for p in series_posts %}
+</span><span class='line'>          <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;post&quot;</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;{{ root_url }}{{ p.url }}&quot;</span><span class="nt">&gt;</span>{{ p.short_title }}<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+</span><span class='line'>      {% endfor %}
+</span><span class='line'>      <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;/section&gt;</span>
+</span><span class='line'>{% endif %}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code can be found <a href="https://github.com/fdumontmd/jekyll-plugins/tree/master/series">here</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Ruby Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/"/>
+    <updated>2011-10-12T15:05:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2</id>
+    <content type="html"><![CDATA[<p>Day 2 is about defining things, functions, classes, as well as a second look at basic containers.</p>
+
+<!--more-->
+
+
+<p>Blocks are covered as well. It is hard to overstate their importance in making a language flexible and expressive. In a language like Ruby with regular evaluation (i.e. not lazy), blocks (with an unobtrusive syntax) are essential to implement embedded DSL (alternatives are laziness, as in Haskell, or more selective mechanisms to control evaluation, such as lisp&#8217;s macros, or Io&#8217;s method call meta-API).</p>
+
+<p>But that&#8217;s a topic for another book (which I really look forward to reading).</p>
+
+<p>Back to this one.</p>
+
+<h2>Exercises</h2>
+
+<h3>Print the contents of an array of sixteen numbers, 4 numbers at a time</h3>
+
+<p>First, without <code>each_slice</code>:</p>
+
+<figure class='code'><figcaption><span>Slicing, the hard way  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">print_slices</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">slice</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">acc</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">arr</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">acc</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">acc</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="n">slice</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="n">acc</span>
+</span><span class='line'>      <span class="n">acc</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="n">acc</span> <span class="k">if</span> <span class="n">acc</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The implementation is simple enough, the values are accumulated until there&#8217;s enough. I&#8217;m using the <code>p</code> printing command because neither <code>puts</code> nor <code>print</code> do exactly what I need: <code>puts</code> prints each element on a different line; <code>print</code> does not add a newline.</p>
+
+<p>Then, the easy (and natural way):</p>
+
+<figure class='code'><figcaption><span>Slicing the righ way  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">print_each_slice</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">slice</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">arr</span><span class="o">.</span><span class="n">each_slice</span><span class="p">(</span><span class="n">slice</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="nb">p</span> <span class="n">a</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Better initializer method for Tree</h3>
+
+<p>This one is not hard either. I&#8217;m using two class methods, one as a factory method (<code>self.build</code>), the other as the real processor (<code>self.h_to_children</code>):</p>
+
+<figure class='code'><figcaption><span>Tree builder  (tree.rb)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/ruby/tree.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Tree</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:children</span><span class="p">,</span> <span class="ss">:node_name</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">children</span><span class="o">=[]</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@children</span> <span class="o">=</span> <span class="n">children</span>
+</span><span class='line'>    <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">build</span><span class="p">(</span><span class="nb">hash</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">children</span> <span class="o">=</span> <span class="n">h_to_children</span><span class="p">(</span><span class="nb">hash</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">children</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>      <span class="n">children</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="no">Tree</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">visit_all</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">visit</span> <span class="o">&amp;</span><span class="n">block</span>
+</span><span class='line'>    <span class="n">children</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">c</span><span class="o">|</span> <span class="n">c</span><span class="o">.</span><span class="n">visit_all</span> <span class="o">&amp;</span><span class="n">block</span> <span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">block</span><span class="o">.</span><span class="n">call</span> <span class="nb">self</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">h_to_children</span><span class="p">(</span><span class="nb">hash</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class='line'>      <span class="nb">hash</span><span class="o">.</span><span class="n">collect</span> <span class="p">{</span><span class="o">|</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="o">|</span> <span class="no">Tree</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="no">Tree</span><span class="o">::</span><span class="n">h_to_children</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First <code>self.h_to_children</code>: its purpose it to turn a list of key, value pairs (each key being a String, and each value a Hash or nil) into a list of Trees. It uses the <a href="http://www.ruby-doc.org/core-1.9.2/Enumerable.html#method-i-collect"><code>collect</code></a> method to transform each key, value pair into a Tree (recursively converting the value on the way).</p>
+
+<p><code>self.build</code> takes the list of Trees; if there&#8217;s only one, it is our root. Otherwise, it creates a new root, using the list of Trees as children.</p>
+
+<figure class='code'><figcaption><span>Building a Tree  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">test_hash</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;grandpa&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;dad&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;child 1&#39;</span> <span class="o">=&gt;</span> <span class="p">{},</span> <span class="s1">&#39;child 2&#39;</span> <span class="o">=&gt;</span> <span class="p">{}},</span>
+</span><span class='line'>    <span class="s1">&#39;uncle&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;child 3&#39;</span> <span class="o">=&gt;</span> <span class="p">{},</span> <span class="s1">&#39;child 4&#39;</span> <span class="o">=&gt;</span> <span class="p">{}</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Tree</span><span class="o">::</span><span class="n">build</span><span class="p">(</span><span class="n">test_hash</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#&lt;Tree:0x007fb9599119b8 @children=[#&lt;Tree:0x007fb9599142d0 @children=[#&lt;Tree:0x007fb959914488 @children=[], @name="child 1"&gt;, #&lt;Tree:0x007fb9599142f8 @children=[], @name="child 2"&gt;], @name="dad"&gt;, #&lt;Tree:0x007fb959911a08 @children=[#&lt;Tree:0x007fb959914190 @children=[], @name="child 3"&gt;, #&lt;Tree:0x007fb959911a58 @children=[], @name="child 4"&gt;], @name="uncle"&gt;], @name="grandpa"&gt; </span></code></pre></td></tr></table></div></figure>
+
+
+<p>while</p>
+
+<figure class='code'><figcaption><span>Building a Tree part 2  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Tree</span><span class="o">::</span><span class="n">build</span><span class="p">(</span><span class="n">test_hash</span><span class="o">[</span><span class="s1">&#39;grandpa&#39;</span><span class="o">]</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#&lt;Tree:0x007ff891895300 @children=[#&lt;Tree:0x007ff891895698 @children=[#&lt;Tree:0x007ff891895828 @children=[], @name="child 1"&gt;, #&lt;Tree:0x007ff8918956c0 @children=[], @name="child 2"&gt;], @name="dad"&gt;, #&lt;Tree:0x007ff891895350 @children=[#&lt;Tree:0x007ff8918954b8 @children=[], @name="child 3"&gt;, #&lt;Tree:0x007ff8918953c8 @children=[], @name="child 4"&gt;], @name="uncle"&gt;], @name="root"&gt; </span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Simple grep</h3>
+
+<p>As stated in the book, it is very simple to implement a basic <code>grep</code> function in Ruby. Here&#8217;s one that relies on the magic variable <a href="http://www.ruby-doc.org/core-1.9.2/ARGF.html"><code>ARGF</code></a> (oddly enough, it is documented as a constant of the <a href="http://www.ruby-doc.org/core-1.9.2/Object.html"><code>Object</code></a> class):</p>
+
+<figure class='code'><figcaption><span>Simple grep  (grep.rb)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/ruby/grep.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">grep</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">f</span><span class="o">.</span><span class="n">each_line</span><span class="o">.</span><span class="n">with_index</span> <span class="p">{</span><span class="o">|</span><span class="n">l</span><span class="p">,</span> <span class="n">i</span><span class="o">|</span> <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">l</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">grep</span><span class="p">(</span><span class="no">ARGV</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span> <span class="no">ARGF</span><span class="o">.</span><span class="n">read</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./grep.rb grep grep.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>3: def grep(t, f)
+</span><span class='line'>7: grep(ARGV.shift, ARGF.read)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It is not very satisfactory, however. Grepping over several files does not distinguish between them, and the line number becomes meaningless:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./grep.rb def *.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>3: def grep(t, f)
+</span><span class='line'>13: def grep(header,text, file)
+</span><span class='line'>17: def make_header(filename, required)
+</span><span class='line'>36: def play()
+</span><span class='line'>50: def print_slices(arr, slice=4)
+</span><span class='line'>64: def print_each_slice(arr, slice=4)
+</span><span class='line'>72:   def initialize(name, children=[])
+</span><span class='line'>77:   def self.build(hash)
+</span><span class='line'>86:   def visit_all(&block)
+</span><span class='line'>91:   def visit(&block)
+</span><span class='line'>96:     def self.h_to_children(hash = {})</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Certainly there must be a better way. The code below is an attempt at that. Some of the complexity comes from my attempt to mimic the original <code>grep</code> behaviour when dealing with one or many files. With only one file, it does not print the file name. With many, it does.</p>
+
+<p>Also, I revert to reading from <code>ARGF.read</code> when there is no filename, that is, when I should read from <code>stdin</code> (which <code>ARGF.read</code> does when <code>ARGV</code> is empty).</p>
+
+<p>Finally, if there are file names to iterate over, I need to check for errors, print a statement, and continue.</p>
+
+<p>The new code has a function to make a header from the file name if needed (that is, when there are more than one file to process).</p>
+
+<figure class='code'><figcaption><span>Slightly better grep  (grep2.rb)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/ruby/grep2.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">grep</span><span class="p">(</span><span class="n">header</span><span class="p">,</span><span class="n">text</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">file</span><span class="o">.</span><span class="n">each_line</span><span class="o">.</span><span class="n">with_index</span> <span class="p">{</span><span class="o">|</span><span class="n">line</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span> <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">header</span><span class="si">}#{</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">make_header</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">required</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">required</span> <span class="p">?</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> - &quot;</span> <span class="p">:</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">text</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">shift</span>
+</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">grep</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="no">ARGF</span><span class="p">)</span> <span class="k">unless</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">ARGV</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">filename</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>    <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">grep</span><span class="p">(</span><span class="n">make_header</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">header</span><span class="p">),</span> <span class="n">text</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="no">Exception</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Error reading file </span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./grep2.rb grep grep.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces the same output as the previous version:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>3: def grep(t, f)
+</span><span class='line'>7: grep(ARGV.shift, ARGF.read)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>whereas</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./grep2.rb def *.rb not_there</span></code></pre></td></tr></table></div></figure>
+
+
+<p>is more informative and more reliable (the first version would just crash on non readable file names):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grep.rb - 3: def grep(t, f)
+</span><span class='line'>grep2.rb - 3: def grep(header,text, file)
+</span><span class='line'>grep2.rb - 7: def make_header(filename, required)
+</span><span class='line'>guess.rb - 1: def play()
+</span><span class='line'>slices.rb - 1: def print_slices(arr, slice=4)
+</span><span class='line'>slices.rb - 15: def print_each_slice(arr, slice=4)
+</span><span class='line'>tree.rb - 4:   def initialize(name, children=[])
+</span><span class='line'>tree.rb - 9:   def self.build(hash)
+</span><span class='line'>tree.rb - 18:   def visit_all(&block)
+</span><span class='line'>tree.rb - 23:   def visit(&block)
+</span><span class='line'>tree.rb - 28:     def self.h_to_children(hash = {})
+</span><span class='line'>Error reading file not_there</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that wraps it up for day 2.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Ruby Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/"/>
+    <updated>2011-10-11T13:21:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1</id>
+    <content type="html"><![CDATA[<p>The first day of the first language (<a href="http://www.ruby-lang.org/">Ruby</a>) in <a href="http://pragprog.com/book/btlang/seven-languages-in-seven-weeks">Seven Languages in Seven Weeks</a>, is fun and refreshing (especially after a long day with Java).</p>
+
+<!--more-->
+
+
+<p>This is of course mostly due to the nature of Ruby, a language that is unapologetically designed to improve the programmer&#8217;s experience.</p>
+
+<p>Basic types are introduced, as well as various looping and branching mechanisms.</p>
+
+<h2>Exercises</h2>
+
+<p>The exercises were painless, and the required code very short.</p>
+
+<h3>Print the string &#8220;Hello, world&#8221;</h3>
+
+<p>That should be easy enough. The simplest solution is to use <code>puts</code>:</p>
+
+<figure class='code'><figcaption><span>Hello, World  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Hello, world&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The difference between <code>puts</code> and <code>print</code> is that the former adds a new line, while the latter does not. So, a less natural way would be:</p>
+
+<figure class='code'><figcaption><span>Hello, World done wrong  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">print</span> <span class="s2">&quot;Hello, world/n&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, <code>p</code> is used to inspect its argument, so it is not usable in this context: as the argument is a string, <code>p</code> would print it enclosed with double quotes.</p>
+
+<h3>In “Hello, Ruby,” find the index of the word “Ruby.”</h3>
+
+<p>The <a href="http://www.ruby-doc.org/core-1.9.2/String.html#method-i-index">index</a> method on the <a href="http://www.ruby-doc.org/core-1.9.2/String.html">String</a> class is just what we need:</p>
+
+<figure class='code'><figcaption><span>Hello, Ruby  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="s2">&quot;Hello, Ruby&quot;</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;Ruby&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>index</code> method is actually more flexible, and regular expressions can be used as well.</p>
+
+<h3>Print your name ten times</h3>
+
+<p>The most natural way is to use the <a href="http://www.ruby-doc.org/core-1.9.2/Integer.html#method-i-times">times</a> from the <a href="http://www.ruby-doc.org/core-1.9.2/Integer.html">Integer</a> class:</p>
+
+<figure class='code'><figcaption><span>Hello, many times  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">10</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Frederic&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This produces just what is needed. Alternatives will be looked at in the next exercise.</p>
+
+<h3>Print the string “This is sentence number i,” with i changing from 1 to 10</h3>
+
+<p>Once again, I could use the <code>times</code> method:</p>
+
+<figure class='code'><figcaption><span>Counting sentences  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">10</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="o">|</span> <span class="n">i</span> <span class="o">|</span> <span class="nb">puts</span> <span class="s2">&quot;This is sentence number </span><span class="si">#{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The problem this time is that the range is from 0 to 9, so I have to add 1 to the variable before printing it.</p>
+
+<p><a href="http://www.ruby-doc.org/core-1.9.2/Range.html">Ranges</a> can be used as well:</p>
+
+<figure class='code'><figcaption><span>Counting over range  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span> <span class="n">i</span> <span class="o">|</span> <span class="nb">puts</span> <span class="s2">&quot;This is sentence number </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Alternatively, I could build an enumerator using the <a href="http://www.ruby-doc.org/core-1.9.2/Integer.html#method-i-upto">upto</a> method:</p>
+
+<figure class='code'><figcaption><span>Counting over enumerator  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span> <span class="n">i</span> <span class="o">|</span> <span class="nb">puts</span> <span class="s2">&quot;This is sentence number </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In these last two the index variable ranges over the correct values.</p>
+
+<p>I could then go over more basic looping constructs, like <code>while</code>, but they really do not bring much here.</p>
+
+<h3>Bonus problem: Guessing game</h3>
+
+<p>Here, a basic looping construct like <code>while</code> feels natural (at least to me). The code is fairly simple, there is no error checking on input, but hey, it&#8217;s just day 1.</p>
+
+<figure class='code'><figcaption><span>Guessing Game  (guess.rb)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/ruby/guess.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">play</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">target</span> <span class="o">=</span> <span class="nb">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">guess</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span><span class='line'>  <span class="k">while</span> <span class="n">target</span> <span class="o">!=</span> <span class="n">guess</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s1">&#39;Guess a number&#39;</span>
+</span><span class='line'>    <span class="n">guess</span> <span class="o">=</span> <span class="nb">gets</span><span class="p">()</span><span class="o">.</span><span class="n">to_i</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s1">&#39;too high&#39;</span> <span class="k">if</span> <span class="n">target</span> <span class="o">&lt;</span> <span class="n">guess</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s1">&#39;too low&#39;</span> <span class="k">if</span> <span class="n">target</span> <span class="o">&gt;</span> <span class="n">guess</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s1">&#39;got it&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">play</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And this wraps up day 1.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks/"/>
+    <updated>2011-10-11T12:08:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks</id>
+    <content type="html"><![CDATA[<p><a href="http://pragprog.com/book/btlang/seven-languages-in-seven-weeks">Seven Languages in Seven Weeks</a>, by Bruce Tate, is an interesting take on the concept of language tutorial.</p>
+
+<!--more-->
+
+
+<p>A language tutorial is, by its nature, limited it what it can cover. But languages are not isolated, and comparing several of them, even superficially, can highlight family traits, or put in contrast fundamental design choices.</p>
+
+<p>This is the approach chosen by Bruce Tate in his Seven Languages in Seven Weeks: to introduce seven languages, each one in three days (leaving 4 days of rest, or perhaps work), and to rely on previous knowledge to clarify new concepts.</p>
+
+<p>So for the next few weeks, I will be blogging through this book.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A New Blog? Why?]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/11/a-new-blog-why/"/>
+    <updated>2011-10-11T11:40:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/11/a-new-blog-why</id>
+    <content type="html"><![CDATA[<p>One gazillion blogs on the intertube, many of them with just a couple of posts. Is there really a need for a new one?</p>
+
+<!--more-->
+
+
+<blockquote><p>Everybody does have a book in them, but in most cases that&#8217;s where it should stay.</p><footer><strong>Christopher Hitchens</strong><cite><a href='http://www.goodreads.com/author/quotes/3956.Christopher_Hitchens'>www.goodreads.com/author/quotes/&hellip;</a></cite></footer></blockquote>
+
+
+<p>And that is, perhaps, also true of blogs.</p>
+
+<p>So why a new blog? Because I can, that&#8217;s why.</p>
+
+<p>Well, that and the fact that Wakatta!, unlike any other blogs, is mine, so it makes it immediately relevant to me. As to whether it should matter, check the rationale two sentences back.</p>
+
+<p>So let&#8217;s get the ball rolling, shall we?</p>
+
+<p>Tomorrow, I&#8217;ll talk about the merits of procrastination.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Wakatta | Wakatta!]]></title>
+  <link href="http://blog.wakatta.jp/blog/categories/wakatta/atom.xml" rel="self"/>
+  <link href="http://blog.wakatta.jp/"/>
+  <updated>2011-10-23T21:00:19+09:00</updated>
+  <id>http://blog.wakatta.jp/</id>
+  <author>
+    <name><![CDATA[Frédéric Dumont]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A New Blog? Why?]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/11/a-new-blog-why/"/>
+    <updated>2011-10-11T11:40:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/11/a-new-blog-why</id>
+    <content type="html"><![CDATA[<p>One gazillion blogs on the intertube, many of them with just a couple of posts. Is there really a need for a new one?</p>
+
+<!--more-->
+
+
+<p><blockquote><p>Everybody does have a book in them, but in most cases that's where it should stay.</p><footer><strong>Christopher Hitchens</strong><cite><a href='http://www.goodreads.com/author/quotes/3956.Christopher_Hitchens'>www.goodreads.com/author/quotes/&hellip;</a></cite></footer></blockquote></p>
+
+<p>And that is, perhaps, also true of blogs.</p>
+
+<p>So why a new blog? Because I can, that's why.</p>
+
+<p>Well, that and the fact that Wakatta!, unlike any other blogs, is mine, so it makes it immediately relevant to me. As to whether it should matter, check the rationale two sentences back.</p>
+
+<p>So let's get the ball rolling, shall we?</p>
+
+<p>Tomorrow, I'll talk about the merits of procrastination.</p>
+]]></content>
+  </entry>
+  
+</feed>

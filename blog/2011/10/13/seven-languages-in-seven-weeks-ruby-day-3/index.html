@@ -1,0 +1,590 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Ruby Day 3 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Third and final day on Ruby. This time, metaprogramming techniques are covered. Metaprogramming allows a program to write programs, or more &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Ruby Day 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+  
+
+<time datetime="2011-10-13T15:30:00+09:00" pubdate>Oct 13<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Third and final day on Ruby. This time, metaprogramming techniques are covered.</p>
+
+<!--more-->
+
+
+<p><a href="http://en.wikipedia.org/wiki/Metaprogramming">Metaprogramming</a> allows a program to write programs, or more interestingly, to modify itself. The structure of the running program is made available to introspection API, and can be updated or extended.</p>
+
+<p>Ruby as a really powerful set of tools for metaprogramming, but a good understanding of Ruby&#8217;s metamodel and some of its darker corners is required to fully benefit from them.</p>
+
+<h2>Exercises</h2>
+
+<p>But first let&#8217;s finish the homework (day 3 has only a short one).</p>
+
+<h3>Improved Acts as CSV module</h3>
+
+<figure class='code'><figcaption><span>Acts as CSV module  (acts_as_csv_module.rb)</span> <a href='/downloads/code/7l7w/ruby/acts_as_csv_module.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActsAsCsv</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethod</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">ClassMethod</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">acts_as_csv</span>
+</span><span class='line'>      <span class="kp">include</span> <span class="no">InstanceMethods</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">InstanceMethods</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">read</span>
+</span><span class='line'>      <span class="vi">@csv_contents</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>      <span class="n">filename</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">downcase</span> <span class="o">+</span> <span class="s1">&#39;.txt&#39;</span>
+</span><span class='line'>      <span class="n">file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@headers</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">gets</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">file</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span>
+</span><span class='line'>        <span class="vi">@csv_contents</span> <span class="o">&lt;&lt;</span> <span class="n">row</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:headers</span><span class="p">,</span> <span class="ss">:csv_contents</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">each</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@csv_contents</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">r</span><span class="o">|</span> <span class="n">block</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="no">CsvRow</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@headers</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>      <span class="n">read</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">CsvRow</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@headers</span> <span class="o">=</span> <span class="n">h</span>
+</span><span class='line'>    <span class="vi">@row</span> <span class="o">=</span> <span class="n">r</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">method_missing</span> <span class="nb">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span>
+</span><span class='line'>    <span class="n">h</span> <span class="o">=</span> <span class="nb">name</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>    <span class="vi">@row</span><span class="o">[</span><span class="vi">@headers</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">RubyCsv</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">ActsAsCsv</span>
+</span><span class='line'>  <span class="n">acts_as_csv</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code is fairly straightforward. The new class <code>CsvRow</code> does most of the job. It uses <code>method_missing</code> to access the relevant column. There is no error checking, so please don&#8217;t make mistakes&#8230;</p>
+
+<p>The codes behaves as intended:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>csv = RubyCsv.new
+</span><span class='line'>csv.each {|row| puts row.one}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>does print</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>lions</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As an alternative, the code below creates the methods during the initialization of the instance. There could (should?) be an easier way, but I could not find one. The new methods are added to the singleton class, so each instance has its own set.</p>
+
+<figure class='code'><figcaption><span>Using define_method rather than method_missing  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CsvRow</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@headers</span> <span class="o">=</span> <span class="n">h</span>
+</span><span class='line'>    <span class="vi">@row</span> <span class="o">=</span> <span class="n">r</span>
+</span><span class='line'>    <span class="n">singleton</span> <span class="o">=</span> <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span><span class="p">;</span> <span class="nb">self</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>    <span class="n">h</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">singleton</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:define_method</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span> <span class="p">{</span> <span class="n">r</span><span class="o">[</span><span class="n">h</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code uses the <code>send</code> method because <code>define_method</code> must be used from within the class (it is a private method), but when I open the class I change the scope and loose access to the original parameters <code>h</code> and <code>r</code>.</p>
+
+<p>With such modification, the codes still executes as required.</p>
+
+<h2>Wrapping up day 3</h2>
+
+<p>This chapter was short, certainly, but it gives a tantalizing overview of metaprogramming.</p>
+
+<p>However, these techniques bring to light the fact that Ruby does not have definitions, only code that defines things, and that the evaluation order of this code matters. This becomes clearer when trying to modifies classes as they are being define.</p>
+
+<p>Consider the following fragment. The <code>Path</code> class does nothing really important, but it could for instance wrap methods with a proxy. For this it needs to know the methods that are defined on the target class.</p>
+
+<p><code>Target1</code> and <code>Target2</code> both define the same methods (through the use of <code>attr_accessor</code>), but <code>Target1</code> includes <code>Patch</code> first, then define the attribute, while <code>Target2</code> includes <code>Patch</code> last.</p>
+
+<figure class='code'><figcaption><span>Evaluation order matters  (meta.rb)</span> <a href='/downloads/code/7l7w/ruby/meta.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Patch</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="n">klass</span><span class="o">.</span><span class="n">instance_methods</span><span class="o">.</span><span class="n">member?</span><span class="p">(</span><span class="ss">:my_attribute</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Target1</span>
+</span><span class='line'>  <span class="nb">print</span> <span class="s2">&quot;In Target1: &quot;</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Patch</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:my_attribute</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Target2</span>
+</span><span class='line'>  <span class="nb">print</span> <span class="s2">&quot;In Target2: &quot;</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:my_attribute</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Patch</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When executed, the code produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>In Target1: false
+</span><span class='line'>In Target2: true</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So in Ruby, it is fair to say that there are no declarations, only instructions, all of them executed in order (some of these instructions create functions, classes, or blocks to be executed later).</p>
+
+<p>Indeed, the following program fails to execute:</p>
+
+<figure class='code'><figcaption><span>Evaluation order really matters&#8230;  (eval.rb)</span> <a href='/downloads/code/7l7w/ruby/eval.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">hello</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">hello</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Hello, world&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>while the equivalent Perl one succeeds:</p>
+
+<figure class='code'><figcaption><span>&#8230; or not depending on the language  (eval.pl)</span> <a href='/downloads/code/7l7w/ruby/eval.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='perl'><span class='line'><span class="n">hello</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">sub </span><span class="nf">hello</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;Hello, world\n&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is because Perl processes the definitions first, then executes the instructions in order.</p>
+
+<p>Ruby&#8217;s execution mode is similar to Common Lisp&#8217;s. Actually, Common Lisp makes is even more complex by virtue of being a compiled language with various phases (eval, compile and load), allowing (and sometimes requiring) selective evaluation of various parts of the code. Hopefully Ruby metaprogramming will not be that complex.</p>
+
+<p>Still, despite the potential for obfuscation, metaprogramming (combined with Ruby&#8217;s low ceremony syntax) supports the creation of elegant DSL and simplifies program architectures. It is a way to centralizes complexity, and drain it from the rest of the code.</p>
+
+<h3>About Ruby</h3>
+
+<p>I really like Ruby. Even as the bastard child of Perl and Smalltalk that it is, it has a level of consistency and cohesion that well thought. Each of its shortcoming (Ruby can be rather slow, and as noted above metaprogramming can become very complex) is a reasonable trade off, and it can be argued that the advantages these trades off bought more than compensate for the shortcomings.</p>
+
+<p>More importantly, the Ruby ecosystem is bristling with interesting tools and ideas, and it really is fascinating to explore.</p>
+
+<p>Despite its different origin, Ruby is a Lisp for the 21st century.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+  
+
+<time datetime="2011-10-13T15:30:00+09:00" pubdate>Oct 13<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/10/13/kyogen-traditional-japanese-slapstick/" title="Previous Post: Kyogen - Traditional Japanese Slapstick">&laquo; Kyogen - Traditional Japanese Slapstick</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/" title="next Post: Seven Languages in Seven Weeks Io Day 1">Seven Languages in Seven Weeks Io Day 1 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Languages in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/">Ruby Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/">Ruby Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">Ruby Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Io Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Io Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Io Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">About Io</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Prolog Day 1</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Seven Languages in Seven Weeks Prolog Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">Seven Languages in Seven Weeks - About Io</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Seven Languages in Seven Weeks Io Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Seven Languages in Seven Weeks Io Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Seven Languages in Seven Weeks Io Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

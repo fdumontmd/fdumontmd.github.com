@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Blog | Wakatta!]]></title>
+  <link href="http://blog.wakatta.jp/blog/categories/blog/atom.xml" rel="self"/>
+  <link href="http://blog.wakatta.jp/"/>
+  <updated>2011-10-23T21:00:19+09:00</updated>
+  <id>http://blog.wakatta.jp/</id>
+  <author>
+    <name><![CDATA[Frédéric Dumont]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Writing a Jeckyl Plugin]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/"/>
+    <updated>2011-10-13T12:40:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin</id>
+    <content type="html"><![CDATA[<p>This blog is built with <a href="http://octopress.org/">Octopress</a>, itself built on top of <a href="http://jekyllrb.com/">Jekyll</a>, a static site generator.</p>
+
+<!--more-->
+
+
+<p>As I was blogging through <a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Seven Languages in Seven Weeks</a>, I thought it would be neat to have a list of all the posts in that series, accessible from the sidebar.</p>
+
+<p>Essentially, my goal was to be able to add an attribute <code>series</code> to a post, to add it to a named group of posts, and to generate a list of all posts in the same group to add to the sidebar.</p>
+
+<p>The first part is easy. In Jekyll, the <a href="https://github.com/mojombo/jekyll/wiki/YAML-Front-Matter">YAML Front Matter</a> is extensible. So I just added</p>
+
+<p><code>
+series: "Seven Languages in Seven Weeks"
+</code></p>
+
+<p>to the relevant posts.</p>
+
+<p>The second one is a bit trickier. Jekyll exposes the post data not directly, but through a hash that is built for each post. This hash is built by two methods, <code>render</code> and <code>to_liquid</code>.</p>
+
+<p>My plugin replaces <code>render</code> to insert the <code>series_posts</code>, an array of all the posts with the same <code>series</code> attribute.</p>
+
+<p>But to display the list of posts, I need a short title, so also added support for that. A short title is computed in the overridden <code>to_liquid</code> method. The computation is the following:</p>
+
+<ul>
+<li>if there is a short_title attribute in the YAML Front Matter, use it</li>
+<li>otherwise, if the name of the series is a prefix of the post title, remove it from the title and use the rest</li>
+<li>otherwise use the post title.</li>
+</ul>
+
+
+<p>To display the series posts in the sidebar, I'm using this code:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (series.html)</span> <a href='/downloads/code/series.html'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>{% if page and page.series %}
+</span><span class='line'><span class="nt">&lt;section&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;h1&gt;</span>{{page.series}} Series<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>	{% assign series_posts = site.series_posts %}
+</span><span class='line'>		<span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>		{% for p in series_posts %}
+</span><span class='line'>			<span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;post&quot;</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;{{ root_url }}{{ p.url }}&quot;</span><span class="nt">&gt;</span>{{ p.short_title }}<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+</span><span class='line'>		{% endfor %}
+</span><span class='line'>		<span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;/section&gt;</span>
+</span><span class='line'>{% endif %}
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The code can be found <a href="https://github.com/fdumontmd/jekyll-plugins/tree/master/series">here</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

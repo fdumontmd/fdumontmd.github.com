@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Writing a Jeckyl Plugin - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="This blog is built with Octopress, itself built on top of Jekyll, a static site generator. As I was blogging through Seven Languages in Seven Weeks, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Writing a Jeckyl Plugin</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+  
+
+<time datetime="2011-10-13T12:40:00+09:00" pubdate>Oct 13<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This blog is built with <a href="http://octopress.org/">Octopress</a>, itself built on top of <a href="http://jekyllrb.com/">Jekyll</a>, a static site generator.</p>
+
+<!--more-->
+
+
+<p>As I was blogging through <a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Seven Languages in Seven Weeks</a>, I thought it would be neat to have a list of all the posts in that series, accessible from the sidebar.</p>
+
+<p>Essentially, my goal was to be able to add an attribute <code>series</code> to a post, to add it to a named group of posts, and to generate a list of all posts in the same group to add to the sidebar.</p>
+
+<p>The first part is easy. In Jekyll, the <a href="https://github.com/mojombo/jekyll/wiki/YAML-Front-Matter">YAML Front Matter</a> is extensible. So I just added</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>series: "Seven Languages in Seven Weeks"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>to the relevant posts.</p>
+
+<p>The second one is a bit trickier. Jekyll exposes the post data not directly, but through a hash that is built for each post. This hash is built by two methods, <code>render</code> and <code>to_liquid</code>.</p>
+
+<p>My plugin replaces <code>render</code> to insert the <code>series_posts</code>, an array of all the posts with the same <code>series</code> attribute.</p>
+
+<p>But to display the list of posts, I need a short title, so also added support for that. A short title is computed in the overridden <code>to_liquid</code> method. The computation is the following:</p>
+
+<ul>
+<li>if there is a short_title attribute in the YAML Front Matter, use it</li>
+<li>otherwise, if the name of the series is a prefix of the post title, remove it from the title and use the rest</li>
+<li>otherwise use the post title.</li>
+</ul>
+
+
+<p>To display the series posts in the sidebar, I&#8217;m using this code:</p>
+
+<figure class='code'><figcaption><span> (series.html)</span> <a href='/downloads/code/series.html'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>{% if page and page.series %}
+</span><span class='line'><span class="nt">&lt;section&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;h1&gt;</span>{{page.series}} Series<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>  {% assign series_posts = site.series_posts %}
+</span><span class='line'>      <span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>      {% for p in series_posts %}
+</span><span class='line'>          <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;post&quot;</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;{{ root_url }}{{ p.url }}&quot;</span><span class="nt">&gt;</span>{{ p.short_title }}<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+</span><span class='line'>      {% endfor %}
+</span><span class='line'>      <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;/section&gt;</span>
+</span><span class='line'>{% endif %}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code can be found <a href="https://github.com/fdumontmd/jekyll-plugins/tree/master/series">here</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+  
+
+<time datetime="2011-10-13T12:40:00+09:00" pubdate>Oct 13<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blog/'>Blog</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/" title="Previous Post: Seven Languages in Seven Weeks Ruby Day 2">&laquo; Seven Languages in Seven Weeks Ruby Day 2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/10/13/kyogen-traditional-japanese-slapstick/" title="next Post: Kyogen - Traditional Japanese Slapstick">Kyogen - Traditional Japanese Slapstick &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Seven Languages in Seven Weeks Prolog Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">Seven Languages in Seven Weeks - About Io</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Seven Languages in Seven Weeks Io Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Seven Languages in Seven Weeks Io Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Seven Languages in Seven Weeks Io Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

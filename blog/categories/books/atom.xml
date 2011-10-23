@@ -1,0 +1,1100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Books | Wakatta!]]></title>
+  <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
+  <link href="http://blog.wakatta.jp/"/>
+  <updated>2011-10-23T21:00:19+09:00</updated>
+  <id>http://blog.wakatta.jp/</id>
+  <author>
+    <name><![CDATA[Frédéric Dumont]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Prolog Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/"/>
+    <updated>2011-10-23T16:45:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1</id>
+    <content type="html"><![CDATA[<p>The third language in the series is <a href="http://en.wikipedia.org/wiki/Prolog">Prolog</a>. I first encountered it at university many years ago, and found it a really exciting and different language.</p>
+
+<!--more-->
+
+
+<p>The exercises we had to do at the time were significantly more complex (computing symbolic derivatives and integrals) that what the book proposes, so I have to say I didn't really learn anything.</p>
+
+<h2>About Prolog</h2>
+
+<p>Prolog is really different. A lot of languages claim to be, but with unification and backtracking as the core control mechanisms, Prolog certainly stands apart.</p>
+
+<p>Basically, Prolog could be seen as a kind of database engine: it is possible to define relations that represent set of facts, as in the <a href="http://en.wikipedia.org/wiki/Relational_model">Relational model</a>. But the notion of rules takes Prolog beyond that: each rules defines how to create new facts from known ones (either defined, or previously created from rules too); and each query is an attempt to find a fact that matches the query terms.</p>
+
+<p>Given the definition above, it might seem surprising that Prolog could be good for anything but logic. Yet this is a <a href="http://en.wikipedia.org/wiki/Prolog#Turing_completeness">Turing Complete language</a>, and there are many other areas where a Prolog solution can feel quite natural.</p>
+
+<p>Still, logic is the main strength of Prolog (which comes from the French <em>Pro</em>grammation <em>Log</em>ique), and a number of limitations of the implementations restricts it to that niche.</p>
+
+<h3>A note on building GNU Prolog 1.4.0 on MacOS X 10.7 (Lion)</h3>
+
+<p>The book recommends using <a href="http://www.gprolog.org/">GNU Prolog</a> (for reasons that will become clear on Day 3), but I have been using <a href="http://www.swi-prolog.org/">SWI Prolog</a> since I first needed a reliable Prolog engine at university, so I started the exercises with the latter.</p>
+
+<p>Eventually, I tried to port my code to GNU Prolog, and found that it would crash. In practice, this is what the error looks like:
+```
+GNU Prolog 1.4.0
+By Daniel Diaz
+Copyright (C) 1999-2011 Daniel Diaz
+| ?- I1 is 1 + 1.</p>
+
+<p>Fatal Error: Segmentation Violation
+```</p>
+
+<p>In other words, a basic arithmetic operation causes a segmentation fault.</p>
+
+<p>Fortunately, the <a href="http://lists.gnu.org/archive/html/users-prolog/">users-prolog mailing list</a> had the <a href="http://lists.gnu.org/archive/html/users-prolog/2011-07/msg00013.html">answer</a>: Lion uses llvm-gcc by default, which causes problems for a number of software packages.</p>
+
+<p>I use <a href="http://mxcl.github.com/homebrew/">Homebrew</a> to install new packages; the formula for GNU Prolog contains a declaration that requires the build to use gcc instead of llvm-gcc. But because gcc is actually llvm-gcc, somehow this declaration is not working. So, digging a bit deeper, I found another <a href="http://stevesmiscellany.com/journal/brew_xcode_llvm_and_the_gcc">post</a> with the solution: an explicit <code>--use-gcc</code> flag.</p>
+
+<p>So with the following:
+<code>
+sudo brew install gnu-prolog --use-gcc
+</code>
+GNU Prolog compiles into something useable.</p>
+
+<h2>Exercises</h2>
+
+<p>The exercises today are very basic,</p>
+
+<h3>A knowledge base about books</h3>
+
+<p>Rather than a collection of my favourite books (which would take too long), I just input a few from the <a href="http://pragprog.com/">Pragmatic Bookshelf</a>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Book Knowledge Base  (books.pl)</span> <a href='/downloads/code/7l7w/prolog/books.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="c1">% book(A, B) means A wrote book B</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">bruce_tate</span><span class="p">,</span> <span class="s-Atom">seven_languages_in_seven_weeks</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">dave_thomas</span><span class="p">,</span> <span class="s-Atom">programming_ruby</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">chad_fowler</span><span class="p">,</span> <span class="s-Atom">programming_ruby</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="s-Atom">programming_ruby</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">chad_fowler</span><span class="p">,</span> <span class="s-Atom">rails_recipes</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">chad_fowler</span><span class="p">,</span> <span class="s-Atom">the_passionate_programmer</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="s-Atom">pragmatic_thinking_and_learning</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="s-Atom">pragmatic_unit_testing</span><span class="p">).</span>
+</span><span class='line'><span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="s-Atom">practices_of_an_agile_developer</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Querying it:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Querying the book knowledge base  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="nv">B</span><span class="p">).</span><span class="s-Atom">&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">programming_ruby</span> <span class="s-Atom">?</span> <span class="s-Atom">a&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">pragmatic_thinking_and_learning&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">pragmatic_unit_testing&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">practices_of_an_agile_developer&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The <code>a</code> after the first answer is the command to display all the solutions.</p>
+
+<h3>Music Knowledge Base</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Music Knowledge Base  (music.pl)</span> <a href='/downloads/code/7l7w/prolog/music.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="c1">% plays(A, B) means A plays B</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">jimmy_hendrix</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">eric_clapton</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">jimmy_page</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">neil_young</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">diana_krall</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">harry_connick_jr</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">ray_charles</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'><span class="nf">plays</span><span class="p">(</span><span class="s-Atom">jerry_lee_lewis</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">% style(A, B) means A plays B style music</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">jimmy_hendrix</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">jimmy_page</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">neil_young</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">jerry_lee_lewis</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">diana_krall</span><span class="p">,</span> <span class="s-Atom">jazz</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">harry_connick_jr</span><span class="p">,</span> <span class="s-Atom">jazz</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">rays_charles</span><span class="p">,</span> <span class="s-Atom">blues</span><span class="p">).</span>
+</span><span class='line'><span class="nf">style</span><span class="p">(</span><span class="s-Atom">eric_clapton</span><span class="p">,</span> <span class="s-Atom">blues</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Then finding all the known guitar players is just:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Guitar Players  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">plays</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span><span class="s-Atom">&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">jimmy_hendrix</span> <span class="s-Atom">?</span> <span class="s-Atom">a&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">eric_clapton&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">jimmy_page&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">neil_young&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Not an exercise, but just to highlight the similarity with the relational model, here is a kind of join:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Rock Piano Players  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">style</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">),</span> <span class="nf">plays</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span><span class="s-Atom">&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">jerry_lee_lewis</span> <span class="s-Atom">?</span> <span class="s-Atom">a&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="s-Atom">p</span><span class="o">&gt;</span><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>And this wraps up Day 1.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks - About Io]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/"/>
+    <updated>2011-10-21T09:14:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/21/seven-languages-in-seven-weeks-about-io</id>
+    <content type="html"><![CDATA[<p><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-3">Yesterday</a> in wrapping up I dismissed the language in a very terse manner; I thought I should expand on this.</p>
+
+<!--more-->
+
+
+<p>Io intends to be a number of things:</p>
+
+<ul>
+<li>an embedded language</li>
+<li>a concurrent language with actor model</li>
+<li>a prototype based language</li>
+</ul>
+
+
+<p>The problem is that each of these is well covered by more popular alternatives. <a href="http://www.lua.org/">Lua</a> is designed as an embedded language and widely used as such. <a href="http://www.erlang.org/">Erlang</a> is the typical actor based concurrent language, and once again, widely used as such (interestingly, on the <a href="http://iolanguage.com/about/faq/">Io FAQ page</a>, there is a reference to a benchmark highlighting the performance of coroutine based servers. But the coroutine based server is actually about an Erlang server, <a href="http://yaws.hyber.org/">Yaws</a>). And new languages, such as <a href="http://www.scala-lang.org/">Scala</a>, also implements the actor model.</p>
+
+<p>As for prototype based language, I am not sure there is an intrinsic value in such a design choice (which is why I hesitate to call it a feature). But JavaScript is also a prototype based language, and once again, it is very widely used.</p>
+
+<p>Does that mean there is no place for Io? I wouldn't say so; but the main problem I have with the language is that I just can't figure where such a language would shine.</p>
+
+<p>A <a href="http://lambda-the-ultimate.org/node/2596">thread</a> on <a href="http://lambda-the-ultimate.org/">Lambda the Ultimate</a> introduces interesting arguments both for and against the language. The pro links in particular are intriguing. Various new behaviours can be implemented on the language. But then the question becomes: would such behaviours be in any way useful for solving real problems, rather than as an intellectual exercise?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Io Day 3]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/"/>
+    <updated>2011-10-20T15:16:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3</id>
+    <content type="html"><![CDATA[<p>Third and final day with Io (as far as the book is concerned). This time Io metaprogramming abilities are used to bend the language into strange shapes.</p>
+
+<!--more-->
+
+
+<p>Of course, metaprogramming bends the mind just as much at the language, and this last day is quite a ride.</p>
+
+<p>Everything is up for redefinition, and new syntactic structure can be added as well. Operators were covered in <a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2">Day 2</a>. Today curly braces and square brackets are covered as well. The neat thing is that the method used for the iterpretation is looked up using the same logic as other methods. So it is possible to define a square bracket syntax to access list items simply with:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">List</span> <span class="n">squareBrackets</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">at</span><span class="o">(</span><span class="n">i</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>With the definition above, it becomes possible to use the familiar bracket syntax:
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">)[</span><span class="mf">1</span><span class="o">]</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="mf">2</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Updates are not possible (as far as I can tell), however, so for that usage it is less expressive than the <code>[]</code> and <code>[]=</code> methods in Ruby.</p>
+
+<p>The content inside the braces or brackets must be a comma separated list, each element acting as an argument for the <code>curlyBrackets</code> or <code>squareBrackets</code> methods (no link as I could not find any documentation for either method).</p>
+
+<p>A moderately annoying problem with operator extensions is that they are not available in the file in which they are defined.</p>
+
+<p>The last topic covered was concurrency. Io implements an actor model, like all the cool kids (<a href="http://www.erlang.org/">Erlang</a>, <a href="http://www.scala-lang.org/">Scala</a>, ...). The book doesn't go into details. And the available documentation is sparse as well. But from what I could gather, the model is cooperative concurrency, and an asynchronous message is a simple extension of the standard one, with one caveat: the <code>call sender</code> information is lost when asynchronous messages are used. Or more precisely, <code>call sender</code> does not return the original initiator of the call, but the piece of logic in the target coroutine that handles the dispatching of messages. So to return a answer, the sender must be passed as argument.</p>
+
+<p>For instance:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Actors  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Agent</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">Agent</span> <span class="n">msg</span> <span class="o">:=</span> <span class="s">&quot;message&quot;</span>
+</span><span class='line'><span class="n">agent1</span> <span class="o">:=</span> <span class="n">Agent</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">agent1</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;agent1 pinged&quot;</span>
+</span><span class='line'><span class="n">agent2</span> <span class="o">:=</span> <span class="n">Agent</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">agent2</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;agent2 ponged&quot;</span>
+</span><span class='line'><span class="n">agent1</span> <span class="n">ping</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">cutoff</span><span class="o">,&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span><span class="o">(</span><span class="n">cutoff</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="mf">0</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">wait</span><span class="o">(</span><span class="n">Random</span> <span class="n">value</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">5</span><span class="o">)</span> <span class="n">floor</span><span class="o">)</span>
+</span><span class='line'>    <span class="s">&quot;Received message: &quot;</span> <span class="n">print</span>
+</span><span class='line'>    <span class="n">message</span> <span class="n">println</span>
+</span><span class='line'>    <span class="n">sender</span> <span class="o">@@</span><span class="n">pong</span><span class="o">(</span><span class="n">self</span><span class="o">,</span> <span class="n">msg</span><span class="o">,</span> <span class="n">cutoff</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">yield</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">yield</span><span class="o">))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">agent2</span> <span class="n">pong</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">sender</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">cutoff</span><span class="o">,&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span><span class="o">(</span><span class="n">cutoff</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="mf">0</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">wait</span><span class="o">(</span><span class="n">Random</span> <span class="n">value</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">5</span><span class="o">)</span> <span class="n">floor</span><span class="o">)</span>
+</span><span class='line'>    <span class="s">&quot;Received message: &quot;</span> <span class="n">print</span>
+</span><span class='line'>    <span class="n">message</span> <span class="n">println</span>
+</span><span class='line'>    <span class="n">sender</span> <span class="o">@@</span><span class="n">ping</span><span class="o">(</span><span class="n">self</span><span class="o">,</span> <span class="n">msg</span><span class="o">,</span> <span class="n">cutoff</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">yield</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">yield</span><span class="o">))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">agent1</span> <span class="o">@@</span><span class="n">ping</span><span class="o">(</span><span class="n">agent2</span><span class="o">,</span> <span class="n">agent2</span> <span class="n">msg</span><span class="o">,</span> <span class="mf">5</span><span class="o">)</span>
+</span><span class='line'><span class="n">Coroutine</span> <span class="n">currentCoroutine</span> <span class="n">pause</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The code above will spawn two agents, and they will exchange messages (5 times here).</p>
+
+<h2>Exercises</h2>
+
+<p>Today's exercises are only on metaprogramming, essentially syntax extension.</p>
+
+<h3>Indenting XML output</h3>
+
+<p>To indent properly, the Builder must keep track of the nesting depth. This is done with a slot, and a few utility methods. The <code>depth</code> slot is the nesting depth, it is changed with <code>nest</code> (increase) and <code>unnest</code> (decrease), which should bracket the code that processes children. Finally, <code>indent</code> emits the required amount of blank space.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (builder_indent.io)</span> <a href='/downloads/code/7l7w/io/builder_indent.io'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Builder</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">depth</span> <span class="o">:=</span> <span class="mf">0</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">indent</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="n">repeat</span><span class="o">(</span><span class="s">&quot;  &quot;</span> <span class="n">print</span><span class="o">))</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">nest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">+</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">unnest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">forward</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>	<span class="n">indent</span>
+</span><span class='line'>	<span class="n">writeln</span><span class="o">(</span><span class="s">&quot;&lt;&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">,</span> <span class="s">&quot;&gt;&quot;</span><span class="o">)</span>
+</span><span class='line'>	<span class="n">nest</span>
+</span><span class='line'>	<span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span> <span class="n">foreach</span><span class="o">(</span>
+</span><span class='line'>		<span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>		<span class="n">content</span> <span class="o">:=</span> <span class="n">self</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">arg</span><span class="o">);</span>
+</span><span class='line'>		<span class="k">if</span><span class="o">(</span><span class="n">content</span> <span class="n">type</span> <span class="o">==</span> <span class="s">&quot;Sequence&quot;</span><span class="o">,</span> <span class="n">indent</span><span class="o">;</span> <span class="n">writeln</span><span class="o">(</span><span class="n">content</span><span class="o">)))</span>
+</span><span class='line'>	<span class="n">unnest</span>
+</span><span class='line'>	<span class="n">indent</span>
+</span><span class='line'>	<span class="n">writeln</span><span class="o">(</span><span class="s">&quot;&lt;/&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">,</span> <span class="s">&quot;&gt;&quot;</span><span class="o">))</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">ul</span><span class="o">(</span>
+</span><span class='line'>	<span class="n">li</span><span class="o">(</span><span class="s">&quot;Io&quot;</span><span class="o">),</span>
+</span><span class='line'>	<span class="n">li</span><span class="o">(</span><span class="s">&quot;Lua&quot;</span><span class="o">),</span>
+</span><span class='line'>	<span class="n">li</span><span class="o">(</span><span class="s">&quot;JavaScript&quot;</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>produces the following</p>
+
+<p>```</p>
+
+<ul>
+  <li>
+    Io
+  </li>
+  <li>
+    Lua
+  </li>
+  <li>
+    JavaScript
+  </li>
+</ul>
+
+
+<p>```</p>
+
+<h3>Bracket syntax for list</h3>
+
+<p>This is not difficult: the implementation just creates an empty list, then <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/append"><code>append</code></a> each arguments to the list, before returning it:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Bracket syntax for list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">squareBrackets</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">l</span> <span class="o">:=</span> <span class="n">List</span> <span class="k">clone</span>
+</span><span class='line'> <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span> <span class="n">foreach</span><span class="o">(</span><span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">l</span> <span class="n">append</span><span class="o">(</span><span class="n">arg</span><span class="o">)</span>
+</span><span class='line'> <span class="o">)</span>
+</span><span class='line'> <span class="n">l</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The result is:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Building a list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="o">[</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">]</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Attribute syntax for XML Builder</h3>
+
+<p>The last exercise is a bit tricky. The code as presented in the code mixes parsing and output. The problem now is that the first argument could be the attribute list, rather than a child element. The solution is to stop printing the result as we parse it, and instead to build a string representation of the XML.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (builder_attrib.io)</span> <a href='/downloads/code/7l7w/io/builder_attrib.io'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Builder</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">depth</span> <span class="o">:=</span> <span class="mf">0</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">indent</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">buf</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span> <span class="n">asMutable</span><span class="o">;</span> <span class="n">depth</span> <span class="n">repeat</span><span class="o">(</span><span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;  &quot;</span><span class="o">));</span> <span class="n">buf</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">nest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">+</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'><span class="n">Builder</span> <span class="n">unnest</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Builder</span> <span class="n">forward</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>	<span class="n">buf</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span> <span class="n">asMutable</span>
+</span><span class='line'>	<span class="n">args</span> <span class="o">:=</span> <span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span>
+</span><span class='line'>	<span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">indent</span><span class="o">,</span> <span class="s">&quot;&lt;&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">)</span>
+</span><span class='line'>	<span class="k">if</span><span class="o">(</span><span class="n">args</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mf">0</span> <span class="n">and</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">args</span> <span class="n">at</span><span class="o">(</span><span class="mf">0</span><span class="o">))</span> <span class="n">type</span> <span class="o">==</span> <span class="s">&quot;Map&quot;</span><span class="o">,</span>
+</span><span class='line'>		<span class="n">h</span> <span class="o">:=</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">args</span> <span class="n">removeFirst</span><span class="o">)</span>
+</span><span class='line'>		<span class="n">h</span> <span class="n">keys</span> <span class="n">foreach</span><span class="o">(</span><span class="n">k</span><span class="o">,</span>
+</span><span class='line'>		<span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="s">&quot;=\&quot;&quot;</span><span class="o">,</span> <span class="n">h</span> <span class="n">at</span><span class="o">(</span><span class="n">k</span><span class="o">),</span> <span class="s">&quot;\&quot;&quot;</span><span class="o">)))</span>
+</span><span class='line'>	<span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;&gt;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>	<span class="n">nest</span>
+</span><span class='line'>	<span class="n">args</span> <span class="n">foreach</span><span class="o">(</span>
+</span><span class='line'>		<span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>		<span class="n">content</span> <span class="o">:=</span> <span class="n">self</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">arg</span><span class="o">);</span>
+</span><span class='line'>		<span class="k">if</span><span class="o">(</span><span class="n">content</span> <span class="n">isMutable</span><span class="o">,</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">content</span><span class="o">),</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">indent</span><span class="o">,</span> <span class="n">content</span><span class="o">,</span> <span class="s">&quot;\n&quot;</span><span class="o">)))</span>
+</span><span class='line'>	<span class="n">unnest</span>
+</span><span class='line'>	<span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">indent</span><span class="o">,</span> <span class="s">&quot;&lt;/&quot;</span><span class="o">,</span> <span class="n">call</span> <span class="n">message</span> <span class="n">name</span><span class="o">,</span> <span class="s">&quot;&gt;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>	<span class="n">buf</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">OperatorTable</span> <span class="n">addAssignOperator</span><span class="o">(</span><span class="s">&quot;:&quot;</span><span class="o">,</span> <span class="s">&quot;atPutColon&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Map</span> <span class="n">atPutColon</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>	<span class="n">self</span> <span class="n">atPut</span><span class="o">(</span>
+</span><span class='line'>		<span class="n">call</span> <span class="n">evalArgAt</span><span class="o">(</span><span class="mf">0</span><span class="o">)</span> <span class="n">asMutable</span> <span class="n">removePrefix</span><span class="o">(</span><span class="s">&quot;\&quot;&quot;</span><span class="o">)</span> <span class="n">removeSuffix</span><span class="o">(</span><span class="s">&quot;\&quot;&quot;</span><span class="o">),</span>
+</span><span class='line'>		<span class="n">call</span> <span class="n">evalArgAt</span><span class="o">(</span><span class="mf">1</span><span class="o">))</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">curlyBrackets</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>	<span class="n">r</span> <span class="o">:=</span> <span class="n">Map</span> <span class="k">clone</span>
+</span><span class='line'>	<span class="n">call</span> <span class="n">message</span> <span class="n">arguments</span> <span class="n">foreach</span><span class="o">(</span><span class="n">arg</span><span class="o">,</span>
+</span><span class='line'>		<span class="n">r</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">arg</span><span class="o">))</span>
+</span><span class='line'>	<span class="n">r</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Once loaded, it can interpret the following (using <code>print</code> to display the generated text):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Builder</span> <span class="n">ul</span><span class="o">({</span><span class="s">&quot;author&quot;</span><span class="err">:</span> <span class="s">&quot;Tate&quot;</span><span class="o">},</span> <span class="n">li</span><span class="o">(</span><span class="s">&quot;Io&quot;</span><span class="o">),</span> <span class="n">li</span><span class="o">(</span><span class="s">&quot;Lua&quot;</span><span class="o">),</span> <span class="n">li</span><span class="o">(</span><span class="s">&quot;JavaScript&quot;</span><span class="o">))</span> <span class="n">print</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>as</p>
+
+<p>```</p>
+
+<ul author="Tate">
+  <li>
+    Io
+  </li>
+  <li>
+    Lua
+  </li>
+  <li>
+    JavaScript
+  </li>
+</ul>
+
+
+<p>```</p>
+
+<h2>Wrapping day 3 and Io</h2>
+
+<p>that <a href="http://www.iolanguage.com/">Io</a> is interesting, but in the sense and to the extent that <a href="http://en.wikipedia.org/wiki/Brainfuck">Brainfuck</a> is interesting. And I don't necessarily mean that in a bad way.</p>
+
+<p>The terseness and uniformity of syntax achieves quite a great deal; the actor model is modern and hip, although the cooperative concurrency isn't.</p>
+
+<p>This is a language that requires commitment; it is less clear it deserves so much.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Io Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/"/>
+    <updated>2011-10-19T23:48:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2</id>
+    <content type="html"><![CDATA[<p>Day 2 covers method definition and it's potential. Io manages to express quite a few interesting things in its minimal syntax.</p>
+
+<!--more-->
+
+
+<p>The more interesting features of methods are the <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Message"><code>Message</code></a> meta information (the ability of a method invocation to introspect both the caller, callee, and the parameters), and the selective parameter evaluation, which supports the creation of new control operations (such as fancy loop or conditionals).</p>
+
+<h2>Exercises</h2>
+
+<p>In line with today's topic, exercises are about defining and executing methods.</p>
+
+<h3>Fibonacci sequence</h3>
+
+<p>I change the exercise a bit: I defined the fibonacci sequence for Number, and it uses the number it is called on as the argument. So I compute <code>40 fib</code> rather than <code>fib(40)</code>. For this reason I have to use <code>self</code> when I want to refer to the original argument explicitly.</p>
+
+<p>The recursive (and slow) method translated directly from the definition:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Fibonacci sequence, recursive  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="k">if</span> <span class="o">(</span><span class="n">self</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="o">((</span><span class="n">self</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span> <span class="n">fib</span> <span class="o">+</span> <span class="o">(</span><span class="n">self</span> <span class="o">-</span> <span class="mf">2</span><span class="o">)</span> <span class="n">fib</span><span class="o">)))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>For the iterative method, I'm using a intermediate function with accumulators to build the result (I have easier time thinking in functional than imperative terms):
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Fibonacci sequence, iterative functional  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fibrec</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">n</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;=</span> <span class="mf">1</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">fibrec</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">,</span> <span class="n">n</span><span class="o">-</span><span class="mf">1</span><span class="o">)))</span>
+</span><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">fibrec</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="n">self</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Finally, an iterative imperative method, with explicit looping (the iteration starts at 2 because the <code>for</code> method iterates up to and including the upper bound):
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Fibonacci sequence, iterative imperative  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">a</span> <span class="o">:=</span> <span class="mf">1</span>
+</span><span class='line'><span class="n">b</span> <span class="o">:=</span> <span class="mf">1</span>
+</span><span class='line'><span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="n">self</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">c</span> <span class="o">:=</span> <span class="n">b</span>
+</span><span class='line'>    <span class="n">b</span> <span class="o">:=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">:=</span> <span class="n">c</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'><span class="n">b</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Change <code>/</code> to return 0 when divided by 0</h3>
+
+<p>First I save the original definition of <code>/</code>, then I update the operator slot with the new definition:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Redefining division  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">oldDiv</span> <span class="o">:=</span> <span class="n">Number</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">Number</span> <span class="n">updateSlot</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">,</span> <span class="k">method</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span>  <span class="n">oldDiv</span><span class="o">(</span><span class="n">d</span><span class="o">))))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Add up all the numbers in a two dimensional array</h3>
+
+<p>Assuming the array is implemented as a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List"><code>List</code></a> of list, the following invocation will sum the numbers:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Summing over nested lists  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">arr</span> <span class="o">:=</span> <span class="n">list</span><span class="o">(</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">4</span><span class="o">,</span><span class="mf">5</span><span class="o">,</span><span class="mf">6</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">7</span><span class="o">,</span><span class="mf">8</span><span class="o">,</span><span class="mf">9</span><span class="o">))</span>
+</span><span class='line'><span class="n">arr</span> <span class="n">reduce</span><span class="o">(</span><span class="n">xs</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">xs</span> <span class="o">+</span> <span class="o">(</span><span class="n">x</span> <span class="n">reduce</span><span class="o">(+,</span> <span class="mf">0</span><span class="o">)),</span> <span class="mf">0</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The initial value is supplied explicitly; otherwise <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/reduce"><code>reduce</code></a> would use the first value, which is not a number but a list.</p>
+
+<p>Alternatively (and much shorter):
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Summing over nested lists, the easy way  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">arr</span> <span class="o">:=</span> <span class="n">list</span><span class="o">(</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">4</span><span class="o">,</span><span class="mf">5</span><span class="o">,</span><span class="mf">6</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">7</span><span class="o">,</span><span class="mf">8</span><span class="o">,</span><span class="mf">9</span><span class="o">))</span>
+</span><span class='line'><span class="n">arr</span> <span class="n">flatten</span> <span class="n">reduce</span><span class="o">(+)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Define <code>myAverage</code></h3>
+
+<p>Using the <code>reduce</code> method, it is easy to compute the sum of a list. The <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/size"><code>size</code></a> method can then be used to compute the average:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Reimplementing average  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">List</span> <span class="n">myAverage</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">self</span> <span class="n">reduce</span><span class="o">(+)</span> <span class="o">/</span> <span class="n">self</span> <span class="n">size</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+If the list is empty, the <code>reduce</code> method returns <code>nil</code>, so we get an exception (as <code>nil</code> does not respond to the <code>/</code> method). But this is consistent with the existing <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/average"><code>average</code></a> method.</p>
+
+<h4>Throwing Exception</h4>
+
+<p>Technically, this solution already raises an <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Exception"><code>Exception</code></a> when one of the elements is not a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Number"><code>Number</code></a>, but here is how I would implement explicit type checking:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Reimplementing average  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">OperatorTable</span> <span class="n">addOperator</span><span class="o">(</span><span class="s">&quot;+?&quot;</span><span class="o">,</span> <span class="mf">3</span><span class="o">)</span>
+</span><span class='line'><span class="n">Number</span> <span class="o">+</span><span class="err">?</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">num</span><span class="o">,&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span><span class="o">(</span><span class="n">num</span> <span class="n">hasProto</span><span class="o">(</span><span class="n">Number</span><span class="o">),</span>
+</span><span class='line'>    <span class="n">self</span> <span class="o">+</span> <span class="n">num</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">Exception</span> <span class="n">raise</span><span class="o">(</span><span class="s">&quot;Not a number&quot;</span><span class="o">)))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">List</span> <span class="n">myAverage</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">self</span> <span class="n">reduce</span><span class="o">(+</span><span class="err">?</span><span class="o">)</span> <span class="o">/</span> <span class="n">self</span> <span class="n">size</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">,</span> <span class="s">&quot;hello&quot;</span><span class="o">)</span> <span class="n">myAverage</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I am using a new operator, <code>+?</code>, with the same priority as <code>+</code>, and explicitly check the prototype with <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/hasProto"><code>hasProto</code></a>.</p>
+
+<h3>Two-dimensional list prototype</h3>
+
+<p>First I clone a specialization of <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List"><code>List</code></a> as the implementation to the two dimensional array.</p>
+
+<p>The initialization simply creates then grows the internal lists to the appropriate size, and stores the original parameters as slots:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Two dimensional arrays, initialization  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="o">:=</span> <span class="n">List</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">dim2</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">d</span> <span class="o">:=</span> <span class="n">Dim2</span> <span class="k">clone</span> <span class="n">setSize</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="n">map</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">list</span><span class="o">()</span> <span class="n">setSize</span><span class="o">(</span><span class="n">y</span><span class="o">))</span>
+</span><span class='line'><span class="n">d</span> <span class="n">newSlot</span><span class="o">(</span><span class="s">&quot;x&quot;</span><span class="o">,</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'><span class="n">d</span> <span class="n">newSlot</span><span class="o">(</span><span class="s">&quot;y&quot;</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span>
+</span><span class='line'><span class="n">d</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The accessor methods can use the dimension slots to check for out of bound access:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Two dimensional array, accessor methods  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">checkBounds</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">xg</span><span class="o">,</span> <span class="n">yg</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">x</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;=</span> <span class="n">xg</span> <span class="n">or</span> <span class="n">y</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;=</span> <span class="n">yg</span> <span class="n">or</span> <span class="n">xg</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mf">0</span> <span class="n">or</span> <span class="n">yg</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mf">0</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">raise</span><span class="o">(</span><span class="s">&quot;Indexes out of bound&quot;</span><span class="o">)))</span>
+</span><span class='line'><span class="n">Dim2</span> <span class="n">get</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">checkBounds</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span> <span class="n">at</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="n">at</span><span class="o">(</span><span class="n">y</span><span class="o">))</span>
+</span><span class='line'><span class="n">Dim2</span> <span class="n">set</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">v</span><span class="o">,</span> <span class="n">checkBounds</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span> <span class="n">at</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="n">atPut</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span> <span class="n">d</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The method <code>checkBounds</code> guarantees an exception is raised if the position parameters are not within bounds. The method <code>get</code> simply invokes <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/at"><code>at</code></a> twice to get at the data; <code>set</code> first locate the right sub list with <code>at</code>, then update the correct value with <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/atPut"><code>atPut</code></a>, and finally returns the updated array.</p>
+
+<h3>Two-dimensional list transpose method</h3>
+
+<p>With <code>Dim2</code> defined as above, the <code>transpose</code> method is trivial:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Two-dimensional list transpose method  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">transpose</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">d</span> <span class="o">:=</span> <span class="n">dim2</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'><span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="n">x</span><span class="o">-</span><span class="mf">1</span><span class="o">,</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="n">y</span><span class="o">-</span><span class="mf">1</span><span class="o">,</span> <span class="n">d</span> <span class="n">set</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">get</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">))</span>
+</span><span class='line'><span class="o">))</span>
+</span><span class='line'><span class="n">d</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Just initialize a new array, swapping the dimensions, then iterate over both dimensions, swapping the parameters for the <code>get</code> and the <code>set</code> methods.</p>
+
+<h3>Matrix Input/Output</h3>
+
+<p>First the method <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/asString"><code>asString</code></a> can be used to get the string representation of an object, including the two-dimensional list.</p>
+
+<p>However, the default <code>asString</code> returns the same representation as for regular nested lists. In order to read the object from the string, <code>asString</code> has to be overridden to emit something specific.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Two-dimensional array asString  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">asString</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">buf</span> <span class="o">:=</span> <span class="s">&quot;twodim(&quot;</span> <span class="n">asMutable</span>
+</span><span class='line'><span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">x</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'><span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">y</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'><span class="n">foreach</span><span class="o">(</span><span class="n">l</span><span class="o">,</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">);</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">l</span> <span class="n">asString</span><span class="o">))</span>
+</span><span class='line'><span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;)&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">buf</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>With this defined, a two dimensional list has a unique representation:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>asString example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">dim2</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>With this in place, I can define a <code>twodim</code> function that creates an instance of <code>Dim2</code> and fills it with the passed data:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>twodim method  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">twodim</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">d</span> <span class="o">:=</span> <span class="n">dim2</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span>
+</span><span class='line'><span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="n">x</span><span class="o">-</span><span class="mf">1</span><span class="o">,</span> <span class="n">d</span> <span class="n">atPut</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">call</span> <span class="n">sender</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">call</span> <span class="n">message</span> <span class="n">argAt</span><span class="o">(</span><span class="n">i</span><span class="o">+</span><span class="mf">2</span><span class="o">)))</span>
+</span><span class='line'><span class="o">))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The <code>twodim</code> method is not defined on <code>Dim2</code>, but globally, so that the content of a string representing a <code>Dim2</code> instance can be parsed in any context.</p>
+
+<p>With this in place, the object can be serialized and unserialized, using the <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/doString"><code>doString</code></a> method (which evaluates the string in the target context):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Testing serialization  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">d</span> <span class="o">:=</span> <span class="n">dim2</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">))</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="k">for</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="n">d</span> <span class="n">set</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="o">)))</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="k">doString</span><span class="o">(</span><span class="n">d</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>So the last step is to store the string representation in a file, and read from it:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Writing to a file  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">d</span> <span class="o">:=</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span><span class='line'><span class="n">f</span> <span class="o">:=</span> <span class="n">File</span> <span class="n">with</span><span class="o">(</span><span class="s">&quot;foo.txt&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">remove</span>
+</span><span class='line'><span class="n">f</span> <span class="n">openForUpdating</span>
+</span><span class='line'><span class="n">f</span> <span class="n">write</span><span class="o">(</span><span class="n">d</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">close</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Unsurprisingly, the content of the file is
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Serialized Two-dimensional list instance  (foo.txt)</span> <a href='/downloads/code/7l7w/io/foo.txt'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Reading is just as simple:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Reading from a file  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">f</span> <span class="o">:=</span> <span class="n">File</span> <span class="n">with</span><span class="o">(</span><span class="s">&quot;foo.txt&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">openForReading</span>
+</span><span class='line'><span class="n">d1</span> <span class="o">:=</span> <span class="k">doString</span><span class="o">(</span><span class="n">f</span> <span class="n">readLine</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">close</span>
+</span><span class='line'><span class="n">d1</span>
+</span><span class='line'><span class="n">d</span> <span class="o">==</span> <span class="n">d1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The original <code>Dim2</code> instance is equal to the unserialized one. I did not really expected that (I didn't write any comparison code for the new object), but Io provided a sensible implementation anyway.</p>
+
+<p>Note: theres is a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/serialized"><code>serialized</code></a> method, but it's output representation in the case of <code>Dim2</code> is the same as the one for <code>List</code>. There should be a way to override <code>serialized</code> as well, but it's exact semantic is not clear to me.</p>
+
+<h3>Guess a Number Game</h3>
+
+<p>Given the above, the last exercise a walk in the park. Getting the number from the standard input was a bit harder to figure out. For some reason, on Mac OS X, reading from the standard input also displays <code>nil</code>; I guess it is a bug, although not a very serious one.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Guess a Number Game  (guess.io)</span> <a href='/downloads/code/7l7w/io/guess.io'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">getGuess</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>	<span class="n">in</span> <span class="o">:=</span> <span class="n">File</span> <span class="n">standardInput</span>
+</span><span class='line'>    <span class="s">&quot;Enter your guess&quot;</span> <span class="n">println</span>
+</span><span class='line'>    <span class="n">in</span> <span class="n">readLine</span> <span class="n">asNumber</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">runGame</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>	<span class="n">target</span> <span class="o">:=</span> <span class="n">Random</span> <span class="n">value</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">101</span><span class="o">)</span> <span class="n">floor</span>
+</span><span class='line'>    <span class="s">&quot;I am thinking of a number between 1 and 100. Can you guess it?&quot;</span> <span class="n">println</span>
+</span><span class='line'>	<span class="n">found</span> <span class="o">:=</span> <span class="no">false</span>
+</span><span class='line'>	<span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">10</span><span class="o">,</span>
+</span><span class='line'>		<span class="n">g</span> <span class="o">:=</span> <span class="n">getGuess</span>
+</span><span class='line'>		<span class="k">if</span><span class="o">(</span><span class="n">target</span> <span class="o">==</span> <span class="n">g</span><span class="o">,</span> <span class="n">found</span> <span class="o">=</span> <span class="no">true</span><span class="o">;</span> <span class="n">break</span><span class="o">,</span> <span class="s">&quot;Nope, try again&quot;</span> <span class="n">println</span><span class="o">)</span>
+</span><span class='line'>		<span class="k">if</span><span class="o">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mf">1</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">g</span> <span class="o">&gt;</span> <span class="n">target</span><span class="o">,</span> <span class="s">&quot;smaller&quot;</span> <span class="n">println</span><span class="o">,</span> <span class="s">&quot;bigger&quot;</span> <span class="n">println</span><span class="o">)))</span>
+</span><span class='line'>	<span class="k">if</span><span class="o">(</span><span class="n">found</span><span class="o">,</span>
+</span><span class='line'>		<span class="s">&quot;You guessed it!&quot;</span> <span class="n">println</span><span class="o">,</span>
+</span><span class='line'>		<span class="s">&quot;Sorry, the number was &quot;</span> <span class="n">print</span><span class="o">;</span> <span class="n">target</span> <span class="n">println</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>Wrapping up</h2>
+
+<p>Well, that was quite a day. The exercises did not cover the more advanced use of method (such as implicit argument evaluation), but otherwise gave the opportunity to define useful behaviours, and play with important classes from the standard library.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Io Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/"/>
+    <updated>2011-10-18T21:12:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1</id>
+    <content type="html"><![CDATA[<p>The language for this week is <a href="http://iolanguage.com/">Io</a>, a prototype-based language. The language embraces minimalism, down to the documentation (which is really terse).</p>
+
+<!--more-->
+
+
+<p>JavaScript is another prototype-based language (although admittedly not minimalist); Bruce Tate explains his choice of Io over JavaScript by observing that JavaScript is already well known. That might be the case, but I wonder whether the prototype nature of JavaScript is well known as well.</p>
+
+<p>Anyway, this week is about Io. As stated above, it is a prototype-based language (meaning there is no difference between class and object), with a simple and regular message passing syntax and semantic.</p>
+
+<h2>Exercises</h2>
+
+<p>Today's exercises explore various basic aspects of the language.</p>
+
+<h3>Io is typed</h3>
+
+<p>Trying to evaluate
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Testing typing  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="mf">1</span> <span class="o">+</span> <span class="s">&quot;one&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+generates an error:
+```</p>
+
+<h2>Exception: argument 0 to method '+' must be a Number, not a 'Sequence'</h2>
+
+<p>message '+' in 'Command Line' on line 1
+```
+The error message in this case is fairly clear and verbose, fortunately.</p>
+
+<h3>False values</h3>
+
+<p>0 and the empty strings are both true, while <code>nil</code> is false:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Testing false  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="mf">0</span> <span class="n">and</span> <span class="no">true</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">true</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="s">&quot;&quot;</span> <span class="n">and</span> <span class="no">true</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">true</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="no">nil</span> <span class="n">and</span> <span class="no">true</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">false</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Slots in an object</h3>
+
+<p>The method <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/slotNames"><code>slotNames</code></a> gives the list of slots:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Listing slots  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Object</span> <span class="n">slotNames</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+returns
+<code>
+==&gt; list(serializedSlotsWithNames, isNil, serialized, relativeDoFile, prependProto, pause, &lt;, futureSend, contextWithSlot, return, @, currentCoro, break, isIdenticalTo, ancestorWithSlot, getSlot, setSlotWithType, method, evalArgAndReturnNil, lazySlot, resend, isTrue, isKindOf, asSimpleString, while, setProtos, shallowCopy, init, removeProto, proto, stopStatus, clone, actorRun, serializedSlots, setSlot, removeAllSlots, handleActorException, become, apropos, hasSlot, -, doFile, doString, uniqueId, setIsActivatable, print, &lt;=, launchFile, doRelativeFile, thisLocalContext, type, write, isLaunchScript, ifNonNil, &gt;, thisContext, removeSlot, block, writeln, perform, doMessage, @@, switch, evalArg, list, deprecatedWarning, for, ?, ifError, try, asString, asyncSend, coroDo, do, performWithArgList, yield, argIsActivationRecord, slotNames, hasLocalSlot, wait, message, argIsCall, isActivatable, println, !=, foreachSlot, not, inlineMethod, .., coroDoLater, loop, ancestors, raiseIfError, newSlot, and, appendProto, cloneWithoutInit, slotSummary, continue, setProto, super, hasProto, ifNonNilEval, justSerialized, if, ==, or, protos, &gt;=, returnIfNonNil, , uniqueHexId, removeAllProtos, slotValues, coroFor, coroWith, actorProcessQueue, thisMessage, ifNil, memorySize, returnIfError, hasDirtySlot, slotDescriptionMap, updateSlot, compare, ownsSlots, evalArgAndReturnSelf, getLocalSlot, in, markClean, isError, ifNilEval)
+</code></p>
+
+<h3>Difference between =, := and ::=</h3>
+
+<p>The difference is explained in the <a href="http://www.iolanguage.com/scm/io/docs/IoGuide.html">Io Guide</a>, in the <a href="http://www.iolanguage.com/scm/io/docs/IoGuide.html#Syntax-Assignment">Assignments</a> section, in terms of equivalent methods.</p>
+
+<p>Each operator is mapped to a method:</p>
+
+<ul>
+<li><code>=</code> is mapped to <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/updateSlot"><code>updateSlot</code></a></li>
+<li><code>:=</code> is mapped to <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/setSlot"><code>setSlot</code></a></li>
+<li><code>::=</code> is mapped to <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/newSlot"><code>newSlot</code></a></li>
+</ul>
+
+
+<p>The difference between <code>updateSlot</code> and <code>setSlot</code> is simple: <code>setSlot</code> creates and set the value of a slot, whereas <code>updateSlot</code> only updates the value of an <em>existing</em> slot.</p>
+
+<p><code>newSlot</code> is the same as <code>setSlot</code>, but it creates a setter method:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Assignment operators  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Vehicle</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="o">==&gt;</span>  <span class="n">Vehicle_0x7fc3dbeb7110</span><span class="err">:</span>
+</span><span class='line'>  <span class="n">type</span>             <span class="o">=</span> <span class="s">&quot;Vehicle&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Vehicle</span> <span class="n">description</span> <span class="o">:=</span> <span class="s">&quot;a fast car&quot;</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">a</span> <span class="n">fast</span> <span class="n">car</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Vehicle</span> <span class="n">slotNames</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">list</span><span class="o">(</span><span class="n">description</span><span class="o">,</span> <span class="n">type</span><span class="o">)</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Ferrari</span> <span class="o">:=</span> <span class="n">Vehicle</span> <span class="k">clone</span>
+</span><span class='line'><span class="o">==&gt;</span>  <span class="n">Ferrari_0x7fc3dbe4f2e0</span><span class="err">:</span>
+</span><span class='line'>  <span class="n">type</span>             <span class="o">=</span> <span class="s">&quot;Ferrari&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Ferrari</span> <span class="n">colour</span> <span class="o">::=</span> <span class="s">&quot;red&quot;</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">red</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Ferrari</span> <span class="n">slotNames</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">list</span><span class="o">(</span><span class="n">setColour</span><span class="o">,</span> <span class="n">type</span><span class="o">,</span> <span class="n">colour</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Execute the code in a slot given its name</h3>
+
+<p>The <code>getSlot</code> method returns the value for the named slot. Apparently if the value is a method, this calls the method as well, if there are no arguments (otherwise the method object is returned):
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Executing method by name  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Object</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;isNil&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">false</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="no">nil</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;isNil&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">true</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Object</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;compare&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">Object_compare</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>Wrapping up day 1</h2>
+
+<p>So Io has a minimal and consistent syntax. The objects can be easily introspected, and the operators are mapped to methods which can be redefined.</p>
+]]></content>
+  </entry>
+  
+</feed>

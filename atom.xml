@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-10-23T21:00:19+09:00</updated>
+  <updated>2011-10-24T13:07:23+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,644 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Prolog Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/"/>
+    <updated>2011-10-23T23:10:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2</id>
+    <content type="html"><![CDATA[<p>The second day with Prolog is about the main data structure (the list) and the writing of rules.</p>
+
+<!--more-->
+
+
+<h3>Lists</h3>
+
+<p>Lists in Prolog are just the same as in Lisp: either empty, or a pair with the head (a single element) and the rest of the list:</p>
+
+<figure class='code'><figcaption><span>Lists in Prolog  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span> <span class="o">=</span> <span class="nv">L</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">].</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">H</span> <span class="o">=</span> <span class="m">1</span>
+</span><span class='line'><span class="nv">T</span> <span class="o">=</span> <span class="p">[</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nv">E1</span><span class="p">|[</span><span class="nv">E2</span><span class="p">|</span><span class="nv">T</span><span class="p">]].</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">E1</span> <span class="o">=</span> <span class="m">1</span>
+</span><span class='line'><span class="nv">E2</span> <span class="o">=</span> <span class="m">2</span>
+</span><span class='line'><span class="nv">T</span> <span class="o">=</span> <span class="p">[</span><span class="m">3</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nv">E1</span><span class="p">,</span> <span class="nv">E2</span><span class="p">,</span> <span class="nv">E3</span><span class="p">].</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">E1</span> <span class="o">=</span> <span class="m">1</span>
+</span><span class='line'><span class="nv">E2</span> <span class="o">=</span> <span class="m">2</span>
+</span><span class='line'><span class="nv">E3</span> <span class="o">=</span> <span class="m">3</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Rules</h3>
+
+<p>Rules are superficially similar to the definition of functions in functional languages (especially <a href="http://www.erlang.org/">Erlang</a>), but the similarity is treacherous. In both, rules or functions can have multiple definitions, each with different patterns; in both, the pattern must match for the rules to fire or the function to be executed; but in functional languages, only the body of the first matching pattern will be executed, whereas in Prolog all the matching patterns can fire (there are ways to control that, but they are not covered in this book).</p>
+
+<p>Another way in which they differ is that they do not return a value: whatever they return must be unified against one of the parameters. While this might appear clumsy, it has a significant benefit: rules can relate parameters in more than one direction (see the section &#8216;Using Rules in Both Directions&#8217; in the book). Consider this:</p>
+
+<figure class='code'><figcaption><span>Rules invocation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">length</span><span class="p">([</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">],</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="m">3</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">length</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="m">3</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first query is a typical invocation; the second ask what a list of length 3 might look like. Rules do not always support such multiple interpretations, and it is not always easy to know which does. But writing such rules is like writing functions that handle infinite data structure in Haskell: a necessary step on the way from superficial knowledge of the language to deeper understanding.</p>
+
+<p>The second answer is a list of 3, unbound variables. Combined with other rules,</p>
+
+<p>Sometimes the alternative interpretation is unbounded. Consider <a href="http://www.gprolog.org/manual/gprolog.html#htoc209"><code>member</code></a>:</p>
+
+<figure class='code'><figcaption><span>member invocation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">member</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">X</span> <span class="o">=</span> <span class="m">1</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">X</span> <span class="o">=</span> <span class="m">2</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">X</span> <span class="o">=</span> <span class="m">3</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">member</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">|</span><span class="k">_</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="m">1</span><span class="p">|</span><span class="k">_</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="m">1</span><span class="p">|</span><span class="k">_</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="m">1</span><span class="p">|</span><span class="k">_</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="m">1</span><span class="p">|</span><span class="k">_</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="m">1</span><span class="p">|</span><span class="k">_</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="m">1</span><span class="p">|</span><span class="k">_</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="m">1</span><span class="p">|</span><span class="k">_</span><span class="p">]</span> <span class="s-Atom">?</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first query will match for each element (3 in total), as <code>X</code> is unconstrained. But the second query tries to find what a list that contains 1 look like; obviously there is an infinite number of such list (so I aborted the query after the 8 first answers).</p>
+
+<p>I could constrain the list in different ways, for instance:</p>
+
+<figure class='code'><figcaption><span>Constrained member invocation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">length</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="m">3</span><span class="p">),</span> <span class="nf">member</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="k">_</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="m">1</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or more interestingly, querying the sublists of length 3 of another list:</p>
+
+<figure class='code'><figcaption><span>Sublists of length 3  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">length</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="m">3</span><span class="p">),</span> <span class="nf">sublist</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">2</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">4</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, if you have read the book already past Prolog Day 3, think about what the kind of code above could have done to reduce the list of variables.</p>
+
+<h3>Higher-order Rules</h3>
+
+<p>Prolog would be a very limited language without a way to build queries from individual components. Fortunately, it comes  with a number of predicates that let you do just that.</p>
+
+<p><a href="http://www.gprolog.org/manual/gprolog.html#htoc67"><code>call</code></a> is one such predicates, and it is fairly powerful.</p>
+
+<p>The most basic invocation just specifies the target predicate, then the arguments, each as a separate argument to <code>call</code>:</p>
+
+<figure class='code'><figcaption><span>call invocation </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">call</span><span class="p">(</span><span class="s-Atom">length</span><span class="p">,</span> <span class="nv">L</span><span class="p">,</span> <span class="m">3</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Passing the predicate as a atom via a variable is also supported:</p>
+
+<figure class='code'><figcaption><span>Dynamic predicate invocation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nv">P</span> <span class="o">=</span> <span class="s-Atom">length</span><span class="p">,</span> <span class="nf">call</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">L</span><span class="p">,</span> <span class="m">3</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">]</span>
+</span><span class='line'><span class="nv">P</span> <span class="o">=</span> <span class="s-Atom">length</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The actual predicate could come from even stranger places:</p>
+
+<figure class='code'><figcaption><span>Dynamic predicate computation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">member</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="p">[</span><span class="s-Atom">length</span><span class="p">]),</span> <span class="nf">call</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">L</span><span class="p">,</span> <span class="m">3</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">]</span>
+</span><span class='line'><span class="nv">P</span> <span class="o">=</span> <span class="s-Atom">length</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, <code>call</code> supports a kind of currying (partial application): the first argument can specify it&#8217;s first parameters:</p>
+
+<figure class='code'><figcaption><span>Dynamic predicate computation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">member</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="p">[</span><span class="nf">member</span><span class="p">(</span><span class="s-Atom">x</span><span class="p">),</span> <span class="nf">member</span><span class="p">(</span><span class="s-Atom">y</span><span class="p">)]),</span> <span class="nf">length</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="m">2</span><span class="p">),</span> <span class="nf">call</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="s-Atom">x</span><span class="p">,</span><span class="k">_</span><span class="p">]</span>
+</span><span class='line'><span class="nv">P</span> <span class="o">=</span> <span class="nf">member</span><span class="p">(</span><span class="s-Atom">x</span><span class="p">)</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="s-Atom">x</span><span class="p">]</span>
+</span><span class='line'><span class="nv">P</span> <span class="o">=</span> <span class="nf">member</span><span class="p">(</span><span class="s-Atom">x</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="s-Atom">y</span><span class="p">,</span><span class="k">_</span><span class="p">]</span>
+</span><span class='line'><span class="nv">P</span> <span class="o">=</span> <span class="nf">member</span><span class="p">(</span><span class="s-Atom">y</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="s-Atom">y</span><span class="p">]</span>
+</span><span class='line'><span class="nv">P</span> <span class="o">=</span> <span class="nf">member</span><span class="p">(</span><span class="s-Atom">y</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here <code>P</code> is unified with two partially applied predicates, <code>member(x)</code> and <code>member(y)</code>. Then each is applied to a list of length 2. Note that backtracking works across <code>call</code>.</p>
+
+<p>As a side note: a predicate followed by a list of arguments (either variables or atoms or other valid Prolog values) is called a structure. It is a kind of names tuple. In a Prolog file, it can be used to define facts. At the Prolog prompt, it can be used to run queries. But it can also be used as generic data structure, or as argument to <code>call</code> and similar functions.</p>
+
+<h2>Exercises</h2>
+
+<p>After the preamble above, the exercises won&#8217;t be too taxing.</p>
+
+<h3>Hanoi Tower</h3>
+
+<p>This was not exactly an exercise, but the implementation is really simple. It doesn&#8217;t take too long to come up with a recursive algorithm (and for those who really can&#8217;t, check the Wikipedia <a href="http://en.wikipedia.org/wiki/Tower_of_Hanoi">page</a>):</p>
+
+<ul>
+<li>to move one disk from a peg to another, just do it;</li>
+<li>to move a stack of disks from one peg to a second one, first move all but the last disk to the third peg, move the last disk to the second peg, then move all the disks previously moved from third to second.</li>
+</ul>
+
+
+<p>A translation in Prolog is equally simple:</p>
+
+<figure class='code'><figcaption><span>Hanoi Tower  (hanoi.pl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/prolog/hanoi.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="nf">hanoi</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">move</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span> <span class="s-Atom">left</span><span class="p">,</span> <span class="s-Atom">right</span><span class="p">,</span> <span class="s-Atom">center</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">move</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="nv">P1</span><span class="p">,</span> <span class="nv">P2</span><span class="p">,</span> <span class="k">_</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">move_one</span><span class="p">(</span><span class="nv">P1</span><span class="p">,</span> <span class="nv">P2</span><span class="p">).</span>
+</span><span class='line'><span class="nf">move</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span> <span class="nv">P1</span><span class="p">,</span> <span class="nv">P2</span><span class="p">,</span> <span class="nv">P3</span><span class="p">)</span> <span class="p">:-</span>
+</span><span class='line'>    <span class="nv">N</span> <span class="o">&gt;</span> <span class="m">1</span><span class="p">,</span> <span class="nv">N1</span> <span class="o">is</span> <span class="nv">N</span> <span class="o">-</span> <span class="m">1</span><span class="p">,</span>
+</span><span class='line'>    <span class="nf">move</span><span class="p">(</span><span class="nv">N1</span><span class="p">,</span> <span class="nv">P1</span><span class="p">,</span> <span class="nv">P3</span><span class="p">,</span> <span class="nv">P2</span><span class="p">),</span>
+</span><span class='line'>    <span class="nf">move</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="nv">P1</span><span class="p">,</span> <span class="nv">P2</span><span class="p">,</span> <span class="nv">P3</span><span class="p">),</span>
+</span><span class='line'>    <span class="nf">move</span><span class="p">(</span><span class="nv">N1</span><span class="p">,</span> <span class="nv">P3</span><span class="p">,</span> <span class="nv">P2</span><span class="p">,</span> <span class="nv">P1</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">move_one</span><span class="p">(</span><span class="nv">P1</span><span class="p">,</span> <span class="nv">P2</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">format</span><span class="p">(</span><span class="s2">&quot;Move disk from ~k to ~k&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">P1</span><span class="p">,</span> <span class="nv">P2</span><span class="p">]),</span> <span class="s-Atom">nl</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It should be easy to match the algorithm to the implementation.</p>
+
+<figure class='code'><figcaption><span>Testing Hanoi implementation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">hanoi</span><span class="p">(</span><span class="m">3</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Move</span> <span class="s-Atom">disk</span> <span class="s-Atom">from</span> <span class="s-Atom">left</span> <span class="s-Atom">to</span> <span class="s-Atom">right</span>
+</span><span class='line'><span class="nv">Move</span> <span class="s-Atom">disk</span> <span class="s-Atom">from</span> <span class="s-Atom">left</span> <span class="s-Atom">to</span> <span class="s-Atom">center</span>
+</span><span class='line'><span class="nv">Move</span> <span class="s-Atom">disk</span> <span class="s-Atom">from</span> <span class="s-Atom">right</span> <span class="s-Atom">to</span> <span class="s-Atom">center</span>
+</span><span class='line'><span class="nv">Move</span> <span class="s-Atom">disk</span> <span class="s-Atom">from</span> <span class="s-Atom">left</span> <span class="s-Atom">to</span> <span class="s-Atom">right</span>
+</span><span class='line'><span class="nv">Move</span> <span class="s-Atom">disk</span> <span class="s-Atom">from</span> <span class="s-Atom">center</span> <span class="s-Atom">to</span> <span class="s-Atom">left</span>
+</span><span class='line'><span class="nv">Move</span> <span class="s-Atom">disk</span> <span class="s-Atom">from</span> <span class="s-Atom">center</span> <span class="s-Atom">to</span> <span class="s-Atom">right</span>
+</span><span class='line'><span class="nv">Move</span> <span class="s-Atom">disk</span> <span class="s-Atom">from</span> <span class="s-Atom">left</span> <span class="s-Atom">to</span> <span class="s-Atom">right</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">true</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Not expressions</h3>
+
+<p>Prolog cannot handle not expressions properly. Fundamentally, all it can say is whether a query can be proven to true. If it says no, it just means it could not be proven true, which is slightly different from being proven false.</p>
+
+<p>Because Prolog is a Turing complete language, it could also fail to return an answer to a specific query, meaning either the query is false, or it just needs a bit more time to be proven true&#8230;</p>
+
+<p>There are newer languages (<a href="http://coq.inria.fr/">Coq</a> for instance) that were designed as not Turing complete (which makes them interesting. Anybody can invent a Turing complete language. It takes far more work to come up with a useful language that isn&#8217;t complete), and can handle not expressions over larger logic domains.</p>
+
+<h3>Reverse elements in a list</h3>
+
+<p>I am using an accumulator to build the reverse. Note that in Prolog, predicates have a specific number of arguments called the predicate arity. Predicates with the same name but different arity are different predicates. In the solution below, I have two predicates: <code>my_reverse/2</code> and <code>my_reverse/3</code>.</p>
+
+<figure class='code'><figcaption><span>my_reverse  (reverse.pl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/prolog/reverse.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="nf">my_reverse</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="nv">R</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">compound</span><span class="p">(</span><span class="nv">R</span><span class="p">),</span> <span class="p">!,</span> <span class="nf">my_reverse</span><span class="p">(</span><span class="nv">R</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'><span class="nf">my_reverse</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="nv">R</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">my_reverse</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="nv">R</span><span class="p">,</span> <span class="p">[]).</span>
+</span><span class='line'><span class="nf">my_reverse</span><span class="p">([],</span> <span class="nv">A</span><span class="p">,</span> <span class="nv">A</span><span class="p">).</span>
+</span><span class='line'><span class="nf">my_reverse</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span> <span class="nv">R</span><span class="p">,</span> <span class="nv">A</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">my_reverse</span><span class="p">(</span><span class="nv">T</span><span class="p">,</span> <span class="nv">R</span><span class="p">,</span> <span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nv">A</span><span class="p">]).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&#8217;s ignore the first line for a moment. <code>my_reverse/2</code> invokes <code>my_reverse/3</code>, passing an empty accumulator. <code>my_reverse/3</code> just iterates over the element of the list, adding them to the accumulator. When it runs out of element, the accumulator becomes the result.</p>
+
+<p>First, the code works for at least the basic case:</p>
+
+<figure class='code'><figcaption><span>my_reverse, basic case  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">my_reverse</span><span class="p">([</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">],</span> <span class="nv">R</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>More interestingly, the code also works when the parameters are both variables, or partially defined lists:</p>
+
+<figure class='code'><figcaption><span>my_reverse, undefined or partially defined parameters  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">my_reverse</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="nv">R</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="nv">A</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">A</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="nv">A</span><span class="p">,</span><span class="nv">B</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">B</span><span class="p">,</span><span class="nv">A</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="nv">A</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">C</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">C</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">A</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="nv">A</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">C</span><span class="p">,</span><span class="nv">D</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">D</span><span class="p">,</span><span class="nv">C</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">A</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="nv">A</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">C</span><span class="p">,</span><span class="nv">D</span><span class="p">,</span><span class="nv">E</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">E</span><span class="p">,</span><span class="nv">D</span><span class="p">,</span><span class="nv">C</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">A</span><span class="p">]</span> <span class="s-Atom">?</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">|</span><span class="k">_</span><span class="p">],</span> <span class="nf">my_reverse</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="nv">R</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="nv">A</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">A</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="nv">A</span><span class="p">,</span><span class="nv">B</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">B</span><span class="p">,</span><span class="nv">A</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="nv">A</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">C</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">C</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">A</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="nv">A</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">C</span><span class="p">,</span><span class="nv">D</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">D</span><span class="p">,</span><span class="nv">C</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">A</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="nv">A</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">C</span><span class="p">,</span><span class="nv">D</span><span class="p">,</span><span class="nv">E</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="nv">E</span><span class="p">,</span><span class="nv">D</span><span class="p">,</span><span class="nv">C</span><span class="p">,</span><span class="nv">B</span><span class="p">,</span><span class="nv">A</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="m">1</span> <span class="s-Atom">ms</span><span class="p">)</span> <span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first query just states that both lists are reverse of each other, but does not mention any content. There is an infinite number of such list, and the code dutifully return them in order; the fresh variables used as elements for the first list are indeed in reverse order in the second.</p>
+
+<p>The second query specifies a prefix, but not the end of the first parameter. Once again, there is an infinite number of possible answers, a few of which are shown above.</p>
+
+<p>Now back to the first line in the definition: the code checks if the second parameter is <a href="http://www.gprolog.org/manual/gprolog.html#htoc71"><code>compound</code></a>, in other word if it is at least partially defined. This is to make the following query work:</p>
+
+<figure class='code'><figcaption><span>my_reverse, reversed parameters  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">my_reverse</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Without this line, the first result would be returned, but then Prolog would hang looking for a second (non existing) result. I must admit I do not fully understand why (rules with multiple interpretations are complex to design). I also make sure this rule is the only one to match but using the cut <code>!</code> operator: once the rule has started to match, any backtracking that could have happened in this rule is <em>cut</em>. In other words, the second pattern will not match, even though it could.</p>
+
+<p>Backtracking introduced by previous rules is still available:</p>
+
+<figure class='code'><figcaption><span>cut and backtracking  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">member</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="p">[[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">],</span> <span class="p">[</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">]]),</span> <span class="nf">my_reverse</span><span class="p">(</span><span class="nv">R</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">]</span>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="m">6</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here, the <code>member</code> clause can backtrack over the two elements; the cut in <code>my_reverse</code> does not prevent it.</p>
+
+<h3>The smallest element in a list</h3>
+
+<p>This time the code is not fancy at all. Using arithmetic operators (such as min) tends to constraint the code in a way that prevent fancy use (as in <code>my_reverse</code> above). So <code>my_min</code> does what it needs to do as simply as possible:</p>
+
+<figure class='code'><figcaption><span>my_min  (min.pl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/prolog/min.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="nf">my_min</span><span class="p">([</span><span class="nv">M</span><span class="p">],</span> <span class="nv">M</span><span class="p">).</span>
+</span><span class='line'><span class="nf">my_min</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span> <span class="nv">M</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">my_min</span><span class="p">(</span><span class="nv">T</span><span class="p">,</span> <span class="nv">M1</span><span class="p">),</span> <span class="nv">M</span> <span class="o">is</span> <span class="nf">min</span><span class="p">(</span><span class="nv">H</span><span class="p">,</span> <span class="nv">M1</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Either there&#8217;s only one element in the list, and this is the minimum, or the minimum of a list is the minimum between the first element of the list, and the minimum of the rest of the list.</p>
+
+<h3>Sort the elements of a list</h3>
+
+<p>For this exercise, I will use the insert sort. Slow but easy. Faster implementations are provided as standard predicates in decent Prologs anyway.</p>
+
+<figure class='code'><figcaption><span>, my_sort  (sort.pl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/prolog/sort.pl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="nf">my_sort</span><span class="p">([],</span> <span class="p">[]).</span>
+</span><span class='line'><span class="nf">my_sort</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span> <span class="nv">S2</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">my_sort</span><span class="p">(</span><span class="nv">T</span><span class="p">,</span> <span class="nv">S1</span><span class="p">),</span> <span class="nf">my_insert</span><span class="p">(</span><span class="nv">H</span><span class="p">,</span> <span class="nv">S1</span><span class="p">,</span> <span class="nv">S2</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">my_insert</span><span class="p">(</span><span class="nv">H</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[</span><span class="nv">H</span><span class="p">]).</span>
+</span><span class='line'><span class="nf">my_insert</span><span class="p">(</span><span class="nv">H</span><span class="p">,</span> <span class="p">[</span><span class="nv">S1</span><span class="p">|</span><span class="nv">S1T</span><span class="p">],</span> <span class="p">[</span><span class="nv">H</span><span class="p">|[</span><span class="nv">S1</span><span class="p">|</span><span class="nv">S1T</span><span class="p">]])</span> <span class="p">:-</span> <span class="nv">H</span> <span class="o">=&lt;</span> <span class="nv">S1</span><span class="p">.</span>
+</span><span class='line'><span class="nf">my_insert</span><span class="p">(</span><span class="nv">H</span><span class="p">,</span> <span class="p">[</span><span class="nv">S1</span><span class="p">|</span><span class="nv">S1T</span><span class="p">],</span> <span class="p">[</span><span class="nv">S1</span><span class="p">|</span><span class="nv">S1T2</span><span class="p">])</span> <span class="p">:-</span> <span class="nv">H</span> <span class="o">&gt;</span> <span class="nv">S1</span><span class="p">,</span> <span class="nf">my_insert</span><span class="p">(</span><span class="nv">H</span><span class="p">,</span> <span class="nv">S1T</span><span class="p">,</span> <span class="nv">S1T2</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once again, nothing fancy: the empty list is already sorted; to sort a larger list, sort the tail of the list, then insert the head at the right position.</p>
+
+<p>To insert an element in a sorted list, if the list is empty, then the singleton list with that element is the answer. Otherwise, compare the element to the head: if smaller, the element is prefixed as new head of the list; otherwise, insert the element in the rest of the list.</p>
+
+<h2>Wrapping up Day 2</h2>
+
+<p>As I mentioned <a href="http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1">yesterday</a>, Prolog really is different. I suspect many readers among those who had no previous exposure to this language must have been left rather confused. The problem is that Prolog introduces a lot of features (unification, pattern matching, backtracking) that are unusual in mainstream languages. Perhaps a different order in the languages (Erlang first?) would have helped assimilate some of these features before tackling backtracking.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Languages in Seven Weeks Prolog Day 1]]></title>

@@ -54,7 +54,13 @@
         <loc>
             http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/
         </loc>
-        <lastmod>2011-10-23T20:59:57+09:00</lastmod>
+        <lastmod>2011-10-23T23:44:09+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/
+        </loc>
+        <lastmod>2011-10-24T13:06:24+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/about/</loc>
@@ -62,7 +68,7 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2011-10-23T20:59:57+09:00</lastmod>
+        <lastmod>2011-10-24T13:06:24+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
@@ -74,6 +80,6 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2011-10-23T20:59:57+09:00</lastmod>
+        <lastmod>2011-10-24T13:06:24+09:00</lastmod>
     </url>
 </urlset>

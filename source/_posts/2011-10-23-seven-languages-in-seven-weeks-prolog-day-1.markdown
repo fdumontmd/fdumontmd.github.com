@@ -4,7 +4,7 @@ title: "Seven Languages in Seven Weeks Prolog Day 1"
 date: 2011-10-23 16:45
 comments: true
 categories:  [Books]
-tags: [7languages7weeks, io]
+tags: [7languages7weeks, prolog]
 series: "Seven Languages in Seven Weeks"
 ---
 The third language in the series is [Prolog](http://en.wikipedia.org/wiki/Prolog). I first encountered it at university many years ago, and found it a really exciting and different language. 

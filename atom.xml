@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-10-24T23:08:53+09:00</updated>
+  <updated>2011-10-25T12:16:17+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,35 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[It has been a bad year for geniuses...]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/"/>
+    <updated>2011-10-25T11:45:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot</id>
+    <content type="html"><![CDATA[<p>It has been a bad year, a bad month even, for computer geniuses: <a href="http://en.wikipedia.org/wiki/Steve_jobs">Steve Jobs</a>, <a href="http://en.wikipedia.org/wiki/Dennis_Ritchie">Dennis Ritchie</a>, and now <a href="http://en.wikipedia.org/wiki/John_McCarthy_%28computer_scientist%29">John McCarthy</a>.</p>
+
+<!--more-->
+
+
+
+
+<blockquote><p>Lisp has jokingly been called &#8220;the most intelligent way to misuse a computer&#8221;. I think that description is a great compliment because it transmits the full flavor of liberation: it has assisted a number of our most gifted fellow humans in thinking previously impossible thoughts.</p><footer><strong>Edsger Dijkstra</strong><cite>CACM 15:10</cite></footer></blockquote>
+
+
+<p>It is hard to speculate what the world would have looked like without them.</p>
+
+<p>Certainly, people were doing exciting work at <a href="http://en.wikipedia.org/wiki/PARC_%28company%29">Xerox PARC</a> in Paolo Alto but it was Steve Jobs who turned these ideas into a commercial success. And then he went on and did it again with other interesting but not quite polished ideas, such as selling music on the Internet, or tablet computers.</p>
+
+<p>Dennis Ritchie invented not just another language (<a href="http://en.wikipedia.org/wiki/C_language">C</a>), but a new way to teach languages in his book &#8221;<a href="http://en.wikipedia.org/wiki/The_C_Programming_Language">The C Programming Language</a>&#8221;, as well as a different breed of operating systems (the <a href="http://en.wikipedia.org/wiki/Unix">UNIX</a> family).</p>
+
+<p>And John McCarthy, through <a href="http://en.wikipedia.org/wiki/Lisp_%28programming_language%29">Lisp</a>, not only introduced automatic memory management, but allowed other smart people to think differently about programing and expressivity. Today&#8217;s many languages own much of their syntax to C (unfortunately), but most of them derive their power from ideas first dreamed in Lisp.</p>
+
+<p>&#8220;Think different&#8221;, for them, was clearly more than just a slogan.</p>
+
+<p>Unfortunately, it is the nature computer history that most of the giants are now reaching an age when obituaries are getting more likely, and another birthday party slightly less so.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Languages in Seven Weeks Prolog Day 3]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-10-25T12:16:17+09:00</updated>
+  <updated>2011-10-29T00:37:26+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,911 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Scala Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/"/>
+    <updated>2011-10-28T16:43:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1</id>
+    <content type="html"><![CDATA[<p>The language for this week is <a href="http://www.scala-lang.org/">Scala</a>, which attempts (among other things) to brings functional programming and a new concurrency model to the JVM.</p>
+
+<!--more-->
+
+
+<p>This was a language I was really keen to know more about. I am using Java a lot, professionally, so I am always looking for options in this ecosystem. I am pretty sure the next book after this one will be a Scala book.</p>
+
+<h2>Scala Types</h2>
+
+<p>The first thing we learn about Scala is that it is &#8220;strongly typed.&#8221; This is not a very helpful description, as the <a href="http://en.wikipedia.org/wiki/Strong_typing">definition</a> is fairly loose. And the proof offered by the author that the language is strongly typed is strange:</p>
+
+<figure class='code'><figcaption><span>Scala is strongly typed?  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="mi">4</span> <span class="o">*</span> <span class="s">&quot;abc&quot;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">console</span><span class="o">&gt;:</span><span class="mi">8</span><span class="k">:</span> <span class="kt">error:</span> <span class="kt">overloaded</span> <span class="kt">method</span> <span class="kt">value</span> <span class="kt">*</span> <span class="kt">with</span> <span class="kt">alternatives:</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span><span class="nc">Double</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Float</span><span class="o">)</span><span class="nc">Float</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span><span class="nc">Long</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="nc">Int</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Char</span><span class="o">)</span><span class="nc">Int</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Short</span><span class="o">)</span><span class="nc">Int</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Byte</span><span class="o">)</span><span class="nc">Int</span>
+</span><span class='line'> <span class="n">cannot</span> <span class="n">be</span> <span class="n">applied</span> <span class="n">to</span> <span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="nc">String</span><span class="o">)</span>
+</span><span class='line'>              <span class="mi">4</span> <span class="o">*</span> <span class="s">&quot;abc&quot;</span>
+</span><span class='line'>                <span class="o">^</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So a string cannot be multiplied by a number? By this standard, <a href="http://en.wikipedia.org/wiki/C_%28programming_language%29">C</a> is strongly typed as well:</p>
+
+<figure class='code'><figcaption><span>What about C?  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span><span class="n">str</span> <span class="o">=</span> <span class="s">&quot;abc&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">str</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ gcc -o typed typed.c 
+</span><span class='line'>typed.c: In function ‘main’:
+</span><span class='line'>typed.c:6: error: invalid operands to binary * (have ‘int’ and ‘char *’)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As Scala has a theoretical background, perhaps it is useful to move to the language of <a href="http://en.wikipedia.org/wiki/Type_theory">Type Theory</a>.</p>
+
+<p>A more useful definition than strong typing, is whether a type system is expressive: what do types of expressions tell about how the expressions can be combined, and what to expect when these expressions are evaluated. From this perspective, C types are unexpressive (barely above assembly language), Java&#8217;s much better, <a href="http://caml.inria.fr/ocaml/">OCaml</a>, and <a href="http://haskell.org/haskellwiki/Haskell">Haskell</a> better still, and <a href="http://coq.inria.fr/">Coq</a> and other dependently-typed languages are perhaps the most expressive of all.</p>
+
+<blockquote><p>A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute.</p><footer><strong>Benjamin C. Pierce, Types and Programming Languages,</strong><cite><a href='http://www.cis.upenn.edu/~bcpierce/tapl/'>www.cis.upenn.edu/~bcpierce/&hellip;</a></cite></footer></blockquote>
+
+
+<p>From this perspective, type expressivity is a static (i.e. compile time) feature only. The dynamic equivalent is a type is a tag, i.e. the runtime information about what operations a value supports, so it is impossible to prove any behaviour as impossible before running the program.</p>
+
+<p>Another scale to judge a type system is how verbose it is. In C, as in Java, the type of everything has to be declared. In dynamic languages, no type is needed (or even possible). OCaml and Haskell can figure out the type of most expressions with no need for declarations (which are still useful for documentation). Scala falls somewhere between Java and OCaml. It has <a href="http://en.wikipedia.org/wiki/Type_inference">type inference</a> over portions of a program.</p>
+
+<p>So when it comes to Scala types (or any type system, really), I have two criteria: whether it is expressive enough to be used to enforce specific properties over portions of a program, and whether it is concise enough that using it does not become a major effort.</p>
+
+<h2>Scala syntax</h2>
+
+<p>Scala reminds me of OCaml, vaguely. The syntax is fairly concise (especially compared to Java). Scala has list comprehension (as in Python or Haskell), ranges, singletons (<code>object</code>), and mixins (<code>trait</code>).</p>
+
+<p>The syntax for the definition of functions (that is, methods that return a value) is somewhat strange, as it requires an equal sign:</p>
+
+<figure class='code'><figcaption><span>Function definition  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">my_fun</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Procedures (methods that return nothing) only need one when they are defined as returning <code>Unit</code> (which is <code>void</code> for Scala):</p>
+
+<figure class='code'><figcaption><span>Function definition  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">my_proc</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="n">str</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">my_proc2</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="n">str</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nothing overly complex, and if I believe the error message (&#8220;warning: Detected apparent refinement of Unit; are you missing an &#8216;=&#8217; sign?&#8221;), the reason for this syntax is to support other constructs. Still, I had this error a few times as I wrote my code, before I finally internalized the rule.</p>
+
+<p>The rest of the syntax (as introduced today) is straightforward, and easy to get used to (at least for me).</p>
+
+<h2>Exercises</h2>
+
+<p>For a first day, the exercise was rather demanding.</p>
+
+<h3>Tic-Tac-Toe</h3>
+
+<p>My first version is, admittedly, ugly. I build a list of the possible lines (i.e. rows, columns or  diagonals) in the board (as a list of pairs of indices) in <code>lines</code>, then in the function <code>winner</code> I iterate over this list and check if the positions for each pair have the same content, and if this content belong to a player or not.</p>
+
+<p>For the bonus part, I use <code>print_board</code>, which displays a board with numbers on unused locations, and <code>play</code>, which asks players in turn for their move, checks whether the move is valid, whether it is a winning move, and switches between players when needed.</p>
+
+<p>The <code>play</code> function relies on variables more than I would like, but on the other hand it is harder to model a board with no update at all.</p>
+
+<figure class='code'><figcaption><span>Tic-Tac-Toe  (tictactoe.scala)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/scala/tictactoe.scala'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">board</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">.</span><span class="n">ofDim</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="mi">3</span><span class="o">)</span><span class="k">:</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Char</span><span class="o">]]</span>
+</span><span class='line'><span class="k">val</span> <span class="n">lines</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(((</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">),(</span><span class="mi">1</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="mi">2</span><span class="o">,</span><span class="mi">2</span><span class="o">)),</span> <span class="o">((</span><span class="mi">0</span><span class="o">,</span><span class="mi">2</span><span class="o">),(</span><span class="mi">1</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="mi">2</span><span class="o">,</span><span class="mi">0</span><span class="o">)))</span> <span class="o">++</span> <span class="o">(</span><span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">).</span><span class="n">flatMap</span><span class="o">((</span><span class="n">i</span><span class="k">:</span><span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">List</span><span class="o">(((</span><span class="mi">0</span><span class="o">,</span><span class="n">i</span><span class="o">),</span> <span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="n">i</span><span class="o">),</span> <span class="o">(</span><span class="mi">2</span><span class="o">,</span><span class="n">i</span><span class="o">)),</span> <span class="o">((</span><span class="n">i</span><span class="o">,</span><span class="mi">0</span><span class="o">),(</span><span class="n">i</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="n">i</span><span class="o">,</span><span class="mi">2</span><span class="o">))))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">get</span><span class="o">(</span><span class="n">b</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Char</span><span class="o">]],</span> <span class="n">i</span><span class="k">:</span> <span class="o">(</span><span class="kt">Int</span><span class="o">,</span><span class="kt">Int</span><span class="o">))</span><span class="k">:</span> <span class="kt">Char</span> <span class="o">=</span> <span class="n">b</span><span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="n">_1</span><span class="o">)(</span><span class="n">i</span><span class="o">.</span><span class="n">_2</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">winner</span><span class="o">(</span><span class="n">b</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Char</span><span class="o">]])</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">lines</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span><span class="o">(</span><span class="n">i1</span><span class="o">,</span><span class="n">i2</span><span class="o">,</span><span class="n">i3</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>     <span class="k">if</span> <span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="n">b</span><span class="o">,</span><span class="n">i1</span><span class="o">)</span> <span class="o">==</span> <span class="n">get</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">i2</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">get</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">i2</span><span class="o">)</span> <span class="o">==</span> <span class="n">get</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">i3</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>       <span class="k">if</span> <span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">i1</span><span class="o">)</span> <span class="o">==</span> <span class="-Symbol">&#39;X</span><span class="err">&#39;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>         <span class="n">println</span><span class="o">(</span><span class="s">&quot;Player X is the winner&quot;</span><span class="o">);</span>
+</span><span class='line'>         <span class="k">return</span> <span class="kc">true</span>
+</span><span class='line'>       <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">i1</span><span class="o">)</span> <span class="o">==</span> <span class="-Symbol">&#39;O</span><span class="err">&#39;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>         <span class="n">println</span><span class="o">(</span><span class="s">&quot;Player Y is the winner&quot;</span><span class="o">);</span>
+</span><span class='line'>         <span class="k">return</span> <span class="kc">true</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="kc">false</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">print_board</span><span class="o">(</span><span class="n">b</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Char</span><span class="o">]])</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="s">&quot;-----&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="sc">&#39;|&#39;</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">j</span> <span class="k">&lt;-</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">c</span> <span class="k">=</span> <span class="n">get</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span><span class="n">j</span><span class="o">))</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">print</span><span class="o">(</span><span class="n">i</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">print</span><span class="o">(</span><span class="n">c</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="sc">&#39;|&#39;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="s">&quot;-----&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">print_board_clear</span><span class="o">(</span><span class="n">b</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Char</span><span class="o">]])</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="s">&quot;-----&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">b</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">line</span> <span class="k">=&gt;</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="sc">&#39;|&#39;</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">line</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">c</span> <span class="k">=&gt;</span> <span class="n">print</span><span class="o">(</span><span class="n">c</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="sc">&#39;|&#39;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="s">&quot;-----&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">init_board</span><span class="o">(</span><span class="n">b</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Char</span><span class="o">]])</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="n">j</span> <span class="k">&lt;-</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">b</span><span class="o">(</span><span class="n">i</span><span class="o">)(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="sc">&#39; &#39;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">init_board</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;Test on empty board&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">winner</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">print_board</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'><span class="n">board</span><span class="o">(</span><span class="mi">1</span><span class="o">)(</span><span class="mi">1</span><span class="o">)=</span><span class="-Symbol">&#39;X</span><span class="err">&#39;</span>
+</span><span class='line'><span class="n">print_board</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'><span class="n">board</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="mi">0</span><span class="o">)=</span><span class="-Symbol">&#39;O</span><span class="err">&#39;</span>
+</span><span class='line'><span class="n">print_board</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'><span class="n">board</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="mi">2</span><span class="o">)=</span><span class="-Symbol">&#39;X</span><span class="err">&#39;</span>
+</span><span class='line'><span class="n">print_board</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'><span class="n">board</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="mi">1</span><span class="o">)=</span><span class="-Symbol">&#39;O</span><span class="err">&#39;</span>
+</span><span class='line'><span class="n">print_board</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'><span class="n">board</span><span class="o">(</span><span class="mi">2</span><span class="o">)(</span><span class="mi">0</span><span class="o">)=</span><span class="-Symbol">&#39;X</span><span class="err">&#39;</span>
+</span><span class='line'><span class="n">print_board</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;After game:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">winner</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;And now play:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">init_board</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">play</span><span class="o">(</span><span class="n">b</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Char</span><span class="o">]])</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">init_board</span><span class="o">(</span><span class="n">b</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">var</span> <span class="n">playerX</span> <span class="k">=</span> <span class="kc">true</span>
+</span><span class='line'>  <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="mi">9</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span> <span class="n">i</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="n">print_board</span><span class="o">(</span><span class="n">b</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">var</span> <span class="n">valid_pos</span> <span class="k">=</span> <span class="kc">false</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(!</span><span class="n">valid_pos</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">playerX</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">print</span><span class="o">(</span><span class="s">&quot;Player X&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">print</span><span class="o">(</span><span class="s">&quot;Player O&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">println</span><span class="o">(</span><span class="s">&quot; move:&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">ln</span> <span class="k">=</span> <span class="n">readLine</span><span class="o">().</span><span class="n">toInt</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">i</span> <span class="k">=</span> <span class="o">(</span><span class="n">ln</span> <span class="o">-</span><span class="mi">1</span> <span class="o">)</span> <span class="o">/</span> <span class="mi">3</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">j</span> <span class="k">=</span> <span class="o">(</span><span class="n">ln</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">%</span> <span class="mi">3</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">b</span><span class="o">(</span><span class="n">i</span><span class="o">)(</span><span class="n">j</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">&#39; &#39;</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="s">&quot;Invalid position. Try again&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">playerX</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">b</span><span class="o">(</span><span class="n">i</span><span class="o">)(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="-Symbol">&#39;X</span><span class="err">&#39;</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="n">b</span><span class="o">(</span><span class="n">i</span><span class="o">)(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="-Symbol">&#39;O</span><span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">valid_pos</span> <span class="k">=</span> <span class="kc">true</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">playerX</span> <span class="k">=</span> <span class="o">!</span><span class="n">playerX</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">winner</span><span class="o">(</span><span class="n">b</span><span class="o">))</span>
+</span><span class='line'>      <span class="k">return</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="s">&quot;Draw!&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">play</span><span class="o">(</span><span class="n">board</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When running it, it will first test the code by playing a predefined game. Then the bonus code is run, and an interactive game can be tried:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ scala tictactoe.scala 
+</span><span class='line'>Test on empty board
+</span><span class='line'>-----
+</span><span class='line'>|123|
+</span><span class='line'>|456|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>-----
+</span><span class='line'>|123|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>-----
+</span><span class='line'>|O23|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>-----
+</span><span class='line'>|O2X|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>-----
+</span><span class='line'>|OOX|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>-----
+</span><span class='line'>|OOX|
+</span><span class='line'>|4X6|
+</span><span class='line'>|X89|
+</span><span class='line'>-----
+</span><span class='line'>After game:
+</span><span class='line'>Player X is the winner
+</span><span class='line'>And now play:
+</span><span class='line'>-----
+</span><span class='line'>|123|
+</span><span class='line'>|456|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>1 Player X move:
+</span><span class='line'>5
+</span><span class='line'>-----
+</span><span class='line'>|123|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>2 Player O move:
+</span><span class='line'>1
+</span><span class='line'>-----
+</span><span class='line'>|O23|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>3 Player X move:
+</span><span class='line'>2
+</span><span class='line'>-----
+</span><span class='line'>|OX3|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>4 Player O move:
+</span><span class='line'>4
+</span><span class='line'>-----
+</span><span class='line'>|OX3|
+</span><span class='line'>|OX6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>5 Player X move:
+</span><span class='line'>8
+</span><span class='line'>Player X is the winner</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The interactive code is not great (see below for an improvement); especially a draw</p>
+
+<h4>Tic-Tac-Toe with class</h4>
+
+<p>A second version, slightly cleaned up (but presumably still ugly), this time in a class. Only one variable remains (the board); everything else is immutable.</p>
+
+<figure class='code'><figcaption><span>Tic-Tac-Toe with class  (tictactoe_class.scala)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/scala/tictactoe_class.scala'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">TicTacToe</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">players</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;O&quot;</span><span class="o">,</span> <span class="s">&quot;X&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">lines</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(((</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">),(</span><span class="mi">1</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="mi">2</span><span class="o">,</span><span class="mi">2</span><span class="o">)),</span> <span class="o">((</span><span class="mi">0</span><span class="o">,</span><span class="mi">2</span><span class="o">),(</span><span class="mi">1</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="mi">2</span><span class="o">,</span><span class="mi">0</span><span class="o">)))</span> <span class="o">++</span> <span class="o">(</span><span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">).</span><span class="n">flatMap</span><span class="o">((</span><span class="n">i</span><span class="k">:</span><span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">List</span><span class="o">(((</span><span class="mi">0</span><span class="o">,</span><span class="n">i</span><span class="o">),</span> <span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="n">i</span><span class="o">),</span> <span class="o">(</span><span class="mi">2</span><span class="o">,</span><span class="n">i</span><span class="o">)),</span> <span class="o">((</span><span class="n">i</span><span class="o">,</span><span class="mi">0</span><span class="o">),(</span><span class="n">i</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="n">i</span><span class="o">,</span><span class="mi">2</span><span class="o">))))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">board</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">.</span><span class="n">ofDim</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="mi">3</span><span class="o">)</span><span class="k">:</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Char</span><span class="o">]]</span>
+</span><span class='line'>  <span class="n">init_board</span><span class="o">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">get</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="o">(</span><span class="kt">Int</span><span class="o">,</span><span class="kt">Int</span><span class="o">))</span><span class="k">:</span> <span class="kt">Char</span> <span class="o">=</span> <span class="n">board</span><span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="n">_1</span><span class="o">)(</span><span class="n">i</span><span class="o">.</span><span class="n">_2</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">init_board</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="n">j</span> <span class="k">&lt;-</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">board</span><span class="o">(</span><span class="n">i</span><span class="o">)(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="sc">&#39; &#39;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">isWinner</span><span class="o">()</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">lines</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span><span class="o">(</span><span class="n">i1</span><span class="o">,</span><span class="n">i2</span><span class="o">,</span><span class="n">i3</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="n">i1</span><span class="o">)</span> <span class="o">==</span> <span class="n">get</span><span class="o">(</span><span class="n">i2</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">get</span><span class="o">(</span><span class="n">i2</span><span class="o">)</span> <span class="o">==</span> <span class="n">get</span><span class="o">(</span><span class="n">i3</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="n">i1</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">&#39; &#39;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">true</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">print_board_with_num</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="s">&quot;-----&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="sc">&#39;|&#39;</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="n">j</span> <span class="k">&lt;-</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">c</span> <span class="k">=</span> <span class="n">get</span><span class="o">((</span><span class="n">i</span><span class="o">,</span><span class="n">j</span><span class="o">))</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="n">i</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="n">c</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="n">println</span><span class="o">(</span><span class="sc">&#39;|&#39;</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="s">&quot;-----&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">play</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="mi">9</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span> <span class="n">move</span> <span class="k">=&gt;</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">play_one_move</span><span class="o">(</span><span class="n">players</span><span class="o">(</span><span class="n">move</span> <span class="o">%</span> <span class="mi">2</span><span class="o">)))</span>
+</span><span class='line'>        <span class="k">return</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="s">&quot;Draw!&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">play_one_move</span><span class="o">(</span><span class="n">player</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">print_board_with_num</span><span class="o">()</span>
+</span><span class='line'>    <span class="k">val</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="n">get_move</span><span class="o">(</span><span class="n">player</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">board</span><span class="o">(</span><span class="n">i</span><span class="o">)(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="n">player</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">isWinner</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">println</span><span class="o">(</span><span class="s">&quot;Player &quot;</span> <span class="o">+</span> <span class="n">player</span> <span class="o">+</span> <span class="s">&quot; won!&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">true</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">get_move</span><span class="o">(</span><span class="n">player</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="o">(</span><span class="kt">Int</span><span class="o">,</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="s">&quot;Player &quot;</span> <span class="o">+</span> <span class="n">player</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="s">&quot; move: &quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">ln</span> <span class="k">=</span> <span class="n">readLine</span><span class="o">().</span><span class="n">toInt</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">i</span> <span class="k">=</span> <span class="o">(</span><span class="n">ln</span> <span class="o">-</span><span class="mi">1</span> <span class="o">)</span> <span class="o">/</span> <span class="mi">3</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">j</span> <span class="k">=</span> <span class="o">(</span><span class="n">ln</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">%</span> <span class="mi">3</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">board</span><span class="o">(</span><span class="n">i</span><span class="o">)(</span><span class="n">j</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">&#39; &#39;</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="s">&quot;Invalid position. Try again&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">(</span><span class="n">i</span><span class="o">,</span><span class="n">j</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="o">(-</span><span class="mi">1</span><span class="o">,-</span><span class="mi">1</span><span class="o">)</span>                      <span class="c1">// actually, can&#39;t happen but compiler doesn&#39;t know</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">game</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">TicTacToe</span>
+</span><span class='line'><span class="n">game</span><span class="o">.</span><span class="n">play</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It still handles normal victory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ scala  tictactoe_class.scala 
+</span><span class='line'>-----
+</span><span class='line'>|123|
+</span><span class='line'>|456|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>Player X move: 5
+</span><span class='line'>-----
+</span><span class='line'>|123|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>Player O move: 1
+</span><span class='line'>-----
+</span><span class='line'>|O23|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>Player X move: 2
+</span><span class='line'>-----
+</span><span class='line'>|OX3|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>Player O move: 4
+</span><span class='line'>-----
+</span><span class='line'>|OX3|
+</span><span class='line'>|OX6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>Player X move: 8
+</span><span class='line'>Player X won!</span></code></pre></td></tr></table></div></figure>
+
+
+<p>as well as the more common case of draw:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ scala  tictactoe_class.scala 
+</span><span class='line'>-----
+</span><span class='line'>|123|
+</span><span class='line'>|456|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>Player X move: 5
+</span><span class='line'>-----
+</span><span class='line'>|123|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>Player O move: 1
+</span><span class='line'>-----
+</span><span class='line'>|O23|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>Player X move: 2
+</span><span class='line'>-----
+</span><span class='line'>|OX3|
+</span><span class='line'>|4X6|
+</span><span class='line'>|789|
+</span><span class='line'>-----
+</span><span class='line'>Player O move: 8
+</span><span class='line'>-----
+</span><span class='line'>|OX3|
+</span><span class='line'>|4X6|
+</span><span class='line'>|7O9|
+</span><span class='line'>-----
+</span><span class='line'>Player X move: 3
+</span><span class='line'>-----
+</span><span class='line'>|OXX|
+</span><span class='line'>|4X6|
+</span><span class='line'>|7O9|
+</span><span class='line'>-----
+</span><span class='line'>Player O move: 7
+</span><span class='line'>-----
+</span><span class='line'>|OXX|
+</span><span class='line'>|4X6|
+</span><span class='line'>|OO9|
+</span><span class='line'>-----
+</span><span class='line'>Player X move: 4
+</span><span class='line'>-----
+</span><span class='line'>|OXX|
+</span><span class='line'>|XX6|
+</span><span class='line'>|OO9|
+</span><span class='line'>-----
+</span><span class='line'>Player O move: 6
+</span><span class='line'>-----
+</span><span class='line'>|OXX|
+</span><span class='line'>|XXO|
+</span><span class='line'>|OO9|
+</span><span class='line'>-----
+</span><span class='line'>Player X move: 9
+</span><span class='line'>Draw!</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping Up Day 1</h2>
+
+<p>Scala seems easy enough to get started with. The syntax is readable; the semantic close enough to Java&#8217;s (and other mainstream languages) that there is little surprise.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[It has been a bad year for geniuses...]]></title>

@@ -3,7 +3,7 @@ layout: post
 title: "Seven Languages in Seven Weeks Prolog Day 1"
 date: 2011-10-23 16:45
 comments: true
-categories:  [Books]
+categories: [Books]
 tags: [7languages7weeks, prolog]
 series: "Seven Languages in Seven Weeks"
 ---

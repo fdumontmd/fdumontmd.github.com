@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-10-29T00:37:26+09:00</updated>
+  <updated>2011-10-31T13:29:29+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,442 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Scala Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/"/>
+    <updated>2011-10-29T10:33:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2</id>
+    <content type="html"><![CDATA[<p>Second day is dedicated to containers, mostly. Lists, Sets and Maps, some of their most useful methods, and the use of code blocks (anonymous functions)</p>
+
+<!--more-->
+
+
+<p>The various containers are nothing new or special for Java programmers, but the anonymous functions are an effective way to greatly increase the power of existing iteration methods by having them accept arbitrary logic to process each element. This is nothing new or special for functional programmers, of course.</p>
+
+<p>While this is possible in Java (where anonymous classes often play this role), the result is less fluid than in functional languages, so it comes less naturally.</p>
+
+<h2>Exercises</h2>
+
+<h3>Using foldLeft to compute sum of string sizes.</h3>
+
+<p>Not as challenging an exercise as <a href="http://blog.wakatta.jp/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">yesterday&#8217;s</a>. Still, it shows how light and easy to use Scala&#8217;s anonymous functions are.</p>
+
+<p>A first version with the <code>foldLeft</code> method:</p>
+
+<figure class='code'><figcaption><span>foldLeft  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">list</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;three&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">java.lang.String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="n">one</span><span class="o">,</span> <span class="n">two</span><span class="o">,</span> <span class="n">three</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="n">list</span><span class="o">.</span><span class="n">foldLeft</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">{(</span><span class="n">sum</span><span class="o">,</span> <span class="n">s</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">size</span> <span class="o">}</span>
+</span><span class='line'><span class="n">sum</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">11</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A second version with the <code>/:</code> operator. The anonymous function is of course strictly identical.</p>
+
+<figure class='code'><figcaption><span>foldLeft operator  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">list</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;three&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">java.lang.String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="n">one</span><span class="o">,</span> <span class="n">two</span><span class="o">,</span> <span class="n">three</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="o">(</span><span class="mi">0</span> <span class="o">/:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{(</span><span class="n">sum</span><span class="o">,</span> <span class="n">s</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">size</span> <span class="o">}</span>
+</span><span class='line'><span class="n">sum</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">11</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Censor trait</h3>
+
+<p>Looking for a Scala documentation of <code>String</code> is somewhat frustrating, because there&#8217;s none. But that in turns means that Scala just uses Java&#8217;s <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/lang/String.html">String</a>.</p>
+
+<p>Java String comes with a method that seems to do just what is needed here: <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/lang/String.html#replaceAll%28java.lang.String,%20java.lang.String%29"><code>replaceAll</code></a>.</p>
+
+<figure class='code'><figcaption><span>replaceAll  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;one two three&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;TWO&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">res1</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">one</span> <span class="nc">TWO</span> <span class="n">three</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>replaceAll, word boundaries  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;she sells shells&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;\\bshe\\b&quot;</span><span class="o">,</span> <span class="s">&quot;the lady&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">res2</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">the</span> <span class="n">lady</span> <span class="n">sells</span> <span class="n">shells</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>replaceAll, case insensitive  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;She sells shells&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;(?i)\\bshe\\b&quot;</span><span class="o">,</span> <span class="s">&quot;the lady&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">res3</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">the</span> <span class="n">lady</span> <span class="n">sells</span> <span class="n">shells</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As seen in the last two examples, the first argument is actually a regular expression. For a while, I toyed with the idea of using Scala&#8217;s <a href="http://www.scala-lang.org/api/current/scala/util/matching/Regex.html"><code>Regex.replaceAllIn</code></a>, so I could check whether the match was capitalized or all upper case and insert the replacement word with identical case, as Emacs does. But this is a whole lot more work, and generic code can only handle a few cases (all lower case, all upper case and capitalized) satisfactorily.</p>
+
+<p>The first version iterates over the pairs in the censored words map, and for each one replaces each basic forms of the censored word by the same form of its replacement (the forms being capitalized, lower case and upper case).</p>
+
+<figure class='code'><figcaption><span>Censor, version 1  (censor.scala)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/scala/censor.scala'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">Censor</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">words</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&quot;Shoot&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;Pucky&quot;</span><span class="o">,</span> <span class="s">&quot;Darn&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;Beans&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">var</span> <span class="n">result</span> <span class="k">=</span> <span class="n">text</span>
+</span><span class='line'>      <span class="n">words</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span> <span class="n">p</span> <span class="k">=&gt;</span>
+</span><span class='line'>          <span class="n">result</span> <span class="k">=</span> <span class="n">result</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">imm</span><span class="o">(</span><span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span>
+</span><span class='line'>      <span class="o">)</span>
+</span><span class='line'>      <span class="n">result</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* capitalize */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">c</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="n">toUpper</span> <span class="o">+</span> <span class="n">str</span><span class="o">.</span><span class="n">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toLowerCase</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* lowercase */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">l</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toLowerCase</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* uppercase */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">u</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toUpperCase</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* make matcher method */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">mm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'>  <span class="cm">/* make case insensitive matcher method */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">imm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;(?i)\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I like the way Scala allows me to write extremely short code for utility methods (like <code>c</code>, <code>l</code>, &#8230;).</p>
+
+<p>One problem with this version is that there&#8217;s a mutable variable. Using <code>foldLeft</code>, the mutable variable is no longer needed:</p>
+
+<figure class='code'><figcaption><span>Censor, version 2  (censor_fold.scala)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/scala/censor_fold.scala'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">Censor</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">words</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&quot;Shoot&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;Pucky&quot;</span><span class="o">,</span> <span class="s">&quot;Darn&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;Beans&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="n">text</span> <span class="o">/:</span> <span class="n">words</span><span class="o">)</span> <span class="o">{</span> <span class="o">(</span><span class="n">t</span><span class="o">,</span> <span class="n">p</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">imm</span><span class="o">(</span><span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span> <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* capitalize */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">c</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="n">toUpper</span> <span class="o">+</span> <span class="n">str</span><span class="o">.</span><span class="n">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toLowerCase</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* lowercase */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">l</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toLowerCase</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* uppercase */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">u</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toUpperCase</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* make matcher method */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">mm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'>  <span class="cm">/* make case insensitive matcher method */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">imm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;(?i)\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With the code above, the world is now safe from the threat of rude language:</p>
+
+<figure class='code'><figcaption><span>Censor test code  (censor_test.scala)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/scala/censor_test.scala'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">Test</span><span class="o">(</span><span class="k">val</span> <span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Censor</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getText</span><span class="o">()</span> <span class="k">=</span> <span class="n">text</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getCensoredText</span><span class="o">()</span> <span class="k">=</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">test</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Test</span><span class="o">(</span><span class="s">&quot;Phil Wenneck: God damn it!\n&quot;</span> <span class="o">+</span>
+</span><span class='line'><span class="s">&quot;Alan Garner: Gosh darn it!\n&quot;</span><span class="o">+</span>
+</span><span class='line'><span class="s">&quot;Phil Wenneck: Shit!\n&quot;</span><span class="o">+</span>
+</span><span class='line'><span class="s">&quot;Alan Garner: Shoot!&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;Original text:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="n">test</span><span class="o">.</span><span class="n">getText</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;Censored text:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="n">test</span><span class="o">.</span><span class="n">getCensoredText</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Original text:
+</span><span class='line'>Phil Wenneck: God damn it!
+</span><span class='line'>Alan Garner: Gosh darn it!
+</span><span class='line'>Phil Wenneck: Shit!
+</span><span class='line'>Alan Garner: Shoot!
+</span><span class='line'>Censored text:
+</span><span class='line'>Phil Wenneck: God damn it!
+</span><span class='line'>Alan Garner: Gosh beans it!
+</span><span class='line'>Phil Wenneck: Shit!
+</span><span class='line'>Alan Garner: Pucky!</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Loading from file</h4>
+
+<p>To load censored words from a file, I first need to define a format. To keep things simple, each pair is on one line, separated by one or more spaces.</p>
+
+<p>The <a href="http://www.scala-lang.org/api/current/index.html#scala.io.Source"><code>Source</code></a> object contains a useful <code>fromFile</code> method (unfortunately, not documented directly. You have to dig it from the source file). Then it is possible to <code>foldLeft</code> the lines to populate the replacement map.</p>
+
+<p>The rest of the code is identical.</p>
+
+<figure class='code'><figcaption><span>Censor, loading from a file  (censor_load.scala)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/scala/censor_load.scala'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">Censor</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">var</span> <span class="n">words</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">()</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">String</span><span class="o">]</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">def</span> <span class="n">load</span><span class="o">(</span><span class="n">file</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">import</span> <span class="nn">scala.io.Source</span>
+</span><span class='line'>      <span class="n">words</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromFile</span><span class="o">(</span><span class="n">file</span><span class="o">).</span><span class="n">getLines</span><span class="o">.</span><span class="n">foldLeft</span><span class="o">(</span><span class="n">words</span><span class="o">)</span> <span class="o">{</span> <span class="o">(</span><span class="n">map</span><span class="o">,</span> <span class="n">line</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">line</span><span class="o">.</span><span class="n">trim</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">val</span> <span class="n">pair</span> <span class="k">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="o">(</span><span class="s">&quot;\\s+&quot;</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">map</span> <span class="o">+</span> <span class="o">((</span><span class="n">pair</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">pair</span><span class="o">(</span><span class="mi">1</span><span class="o">)))</span>
+</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="n">map</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">def</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="n">text</span> <span class="o">/:</span> <span class="n">words</span><span class="o">)</span> <span class="o">{</span> <span class="o">(</span><span class="n">t</span><span class="o">,</span> <span class="n">p</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">imm</span><span class="o">(</span><span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span> <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* capitalize */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">c</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="n">toUpper</span> <span class="o">+</span> <span class="n">str</span><span class="o">.</span><span class="n">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toLowerCase</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* lowercase */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">l</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toLowerCase</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* uppercase */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">u</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toUpperCase</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* make matcher method */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">mm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'>  <span class="cm">/* make case insensitive matcher method */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">imm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;(?i)\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* testing */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Test</span><span class="o">(</span><span class="k">val</span> <span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Censor</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">load</span><span class="o">(</span><span class="s">&quot;censor.txt&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getText</span><span class="o">()</span> <span class="k">=</span> <span class="n">text</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getCensoredText</span><span class="o">()</span> <span class="k">=</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">test</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Test</span><span class="o">(</span><span class="s">&quot;Phil Wenneck: God damn it!\n&quot;</span> <span class="o">+</span>
+</span><span class='line'><span class="s">&quot;Alan Garner: Gosh darn it!\n&quot;</span><span class="o">+</span>
+</span><span class='line'><span class="s">&quot;Phil Wenneck: Shit!\n&quot;</span><span class="o">+</span>
+</span><span class='line'><span class="s">&quot;Alan Garner: Shoot!&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;\nOriginal text:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="n">test</span><span class="o">.</span><span class="n">getText</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;\nCensored text:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="n">test</span><span class="o">.</span><span class="n">getCensoredText</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;\nImproved censored text:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">test</span><span class="o">.</span><span class="n">load</span><span class="o">(</span><span class="s">&quot;censor2.txt&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="n">test</span><span class="o">.</span><span class="n">getCensoredText</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>outputs:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ scala censor_load.scala 
+</span><span class='line'>
+</span><span class='line'>Original text:
+</span><span class='line'>Phil Wenneck: God damn it!
+</span><span class='line'>Alan Garner: Gosh darn it!
+</span><span class='line'>Phil Wenneck: Shit!
+</span><span class='line'>Alan Garner: Shoot!
+</span><span class='line'>
+</span><span class='line'>Censored text:
+</span><span class='line'>Phil Wenneck: God damn it!
+</span><span class='line'>Alan Garner: Gosh bean it!
+</span><span class='line'>Phil Wenneck: Shit!
+</span><span class='line'>Alan Garner: Pucky!
+</span><span class='line'>
+</span><span class='line'>Improved censored text:
+</span><span class='line'>Phil Wenneck: God d--n it!
+</span><span class='line'>Alan Garner: Gosh bean it!
+</span><span class='line'>Phil Wenneck: S--t!
+</span><span class='line'>Alan Garner: Pucky!</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>censor.txt  (censor.txt)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/scala/censor.txt'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>shoot   pucky
+</span><span class='line'>darn    bean
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span>censor2.txt  (censor2.txt)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/scala/censor2.txt'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>shit    s--t
+</span><span class='line'>damn    d--n
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping up Day 2</h2>
+
+<p>Scala&#8217;s syntax is clearly much shorter than Java&#8217;s, and fairly expressive as well. The code flows, is more concise, and feels natural (assuming that you think functional code feels natural, as I do).</p>
+
+<p>Moreover, looking at the <a href="www.scala-lang.org/api/current/index.html">online documentation</a>, I can see that there&#8217;s more depth to Scala&#8217;s type system than can be covered in such a book. This is another area I look forward to investigating further.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Languages in Seven Weeks Scala Day 1]]></title>

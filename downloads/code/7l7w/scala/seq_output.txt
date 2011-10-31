@@ -1,0 +1,6 @@
+Sequential run:
+Size for http://www.amazon.com: 12869997
+Size for http://www.twitter.com: 291445
+Size for http://www.google.com: 280876
+Size for http://www.cnn.com: 11343152
+Method took 667.821383 seconds.

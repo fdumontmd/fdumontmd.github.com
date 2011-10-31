@@ -1,0 +1,1020 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Scala Day 3 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="On the last day with Scala, the book introduces the XML support and concurrency. Scala and XML XML is a rather unfortunate part of modern computing, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Scala Day 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+  
+
+<time datetime="2011-10-30T22:18:00+09:00" pubdate>Oct 30<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>On the last day with Scala, the book introduces the XML support and concurrency.</p>
+
+<!--more-->
+
+
+<h2>Scala and XML</h2>
+
+<p>XML is a rather unfortunate part of modern computing, one that is tedious with most languages.</p>
+
+<p>Scala chose to solve this by making XML part of the language. This means that the following fragment (from Burak&#8217;s draft <a href="http://burak.emir.googlepages.com/scalaxbook.docbk.html">scala xml book</a>, linked to from <a href="http://www.scala-lang.org/node/131">A Tour of Scala: XML Processing</a>):</p>
+
+<figure class='code'><figcaption><span>Scala and XML  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">labPhoneBook</span> <span class="k">=</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">phonebook</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">descr</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="nc">This</span> <span class="n">is</span> <span class="n">the</span> <span class="o">&lt;</span><span class="n">b</span><span class="o">&gt;</span><span class="n">phonebook</span><span class="o">&lt;/</span><span class="n">b</span><span class="o">&gt;</span> <span class="n">of</span> <span class="n">the</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;http://acme.org&quot;</span><span class="o">&gt;</span><span class="nc">ACME</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">corporation</span><span class="o">.</span>
+</span><span class='line'>      <span class="o">&lt;/</span><span class="n">descr</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">entry</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="nc">Burak</span> <span class="nc">Emir</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="n">phone</span> <span class="n">where</span><span class="o">=</span><span class="s">&quot;work&quot;</span><span class="o">&gt;+</span><span class="mi">41</span> <span class="mi">21</span> <span class="mi">693</span> <span class="mi">68</span> <span class="mi">67</span><span class="o">&lt;/</span><span class="n">phone</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;/</span><span class="n">entry</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;/</span><span class="n">phonebook</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="n">labPhoneBook</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>stores an XML fragment, not a string, in <code>labPhoneBook</code>.</p>
+
+<p>Braces can be used to insert Scala code directly into the XML:</p>
+
+<figure class='code'><figcaption><span>Scala: dynamic XML  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">name</span> <span class="k">=</span> <span class="s">&quot;Fred&quot;</span>
+</span><span class='line'><span class="n">name</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="nc">Fred</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">fragment</span> <span class="k">=</span> <span class="o">&lt;</span><span class="n">blog</span><span class="o">&gt;</span>
+</span><span class='line'>     <span class="o">|</span> <span class="o">&lt;</span><span class="n">post</span><span class="o">&gt;</span>
+</span><span class='line'>     <span class="o">|</span> <span class="o">&lt;</span><span class="n">author</span><span class="o">&gt;{</span><span class="n">name</span><span class="o">}&lt;/</span><span class="n">author</span><span class="o">&gt;</span>
+</span><span class='line'>     <span class="o">|</span> <span class="o">&lt;/</span><span class="n">post</span><span class="o">&gt;</span>
+</span><span class='line'>     <span class="o">|</span> <span class="o">&lt;/</span><span class="n">blog</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">fragment</span><span class="k">:</span> <span class="kt">scala.xml.Elem</span> <span class="o">=</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">blog</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">post</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">author</span><span class="o">&gt;</span><span class="nc">Fred</span><span class="o">&lt;/</span><span class="n">author</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">post</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">blog</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The interactive Scala shell recognizes XML fragments, so it knew the expression was not complete until <code>&lt;/blog&gt;</code>. Very, very nice.</p>
+
+<p>Braces can also be used to extract information from the XML, as seen in the book. This, combined with the <code>\</code> XPath projection operator (which, of course, returns a data structure that can be iterated over with the usual methods), provides a very pleasant way to parse XML.</p>
+
+<p>There is far more to Scala&#8217;s XML support (see the link above). I don&#8217;t usually do much XML processing (most of my handling of XML is performed through dedicated libraries that abstract XML away entirely), but if I had to, I&#8217;d certainly would give a Scala a try.</p>
+
+<h2>Scala Concurrency</h2>
+
+<h2>Exercises</h2>
+
+<h3>Displaying links</h3>
+
+<p>To collect the links, I thought about using HTML or XML parsing, but could not find a parser robust enough to handle the pages. In the end, I just used a regular expression.</p>
+
+<p>The code is fairly short:</p>
+
+<ul>
+<li>first import the relevant package and class</li>
+<li>define the regular expression</li>
+<li>slightly reorganize <code>PageLoader</code> to list all the links found through the regular expression; the links are added to a <code>Set</code> to ensure unicity, then iterated over</li>
+</ul>
+
+
+<figure class='code'><figcaption><span>Displaying links  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.util.matching.Regex</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">linkPattern</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Regex</span><span class="o">(</span><span class="s">&quot;&quot;&quot;&lt;a +href=\&quot;([^\&quot;]+)\&quot;[^&gt;]*&gt;&quot;&quot;&quot;</span><span class="o">,</span> <span class="s">&quot;link&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">PageLoader</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getPageSize</span><span class="o">(</span><span class="n">url</span> <span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">text</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromURL</span><span class="o">(</span><span class="n">url</span><span class="o">).</span><span class="n">mkString</span>
+</span><span class='line'>    <span class="o">((</span><span class="nc">Set</span><span class="o">()</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">/:</span> <span class="n">linkPattern</span><span class="o">.</span><span class="n">findAllIn</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="n">matchData</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">md</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">s</span> <span class="o">+</span> <span class="n">md</span><span class="o">.</span><span class="n">group</span><span class="o">(</span><span class="s">&quot;link&quot;</span><span class="o">)</span> <span class="o">}</span> <span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">link</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">url</span> <span class="o">+</span> <span class="s">&quot; =&gt; &quot;</span> <span class="o">+</span> <span class="n">link</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>    <span class="n">text</span><span class="o">.</span><span class="n">length</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code to add the links to a Set is not the simplest I could think of, but it is the simplest that worked. The problem I have is that the collections methods other return iterators, but I cannot simply build a new collection from an interator. I guess there must be a simpler way, but right now it is eluding me.</p>
+
+<p>Full code:</p>
+
+<figure class='code'><figcaption><span>sizer.scala, full code  (sizer.scala)</span> <a href='/downloads/code/7l7w/scala/sizer.scala'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.io._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.actors._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">Actor._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.util.matching.Regex</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">linkPattern</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Regex</span><span class="o">(</span><span class="s">&quot;&quot;&quot;&lt;a +href=\&quot;([^\&quot;]+)\&quot;[^&gt;]*&gt;&quot;&quot;&quot;</span><span class="o">,</span> <span class="s">&quot;link&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">PageLoader</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getPageSize</span><span class="o">(</span><span class="n">url</span> <span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">text</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromURL</span><span class="o">(</span><span class="n">url</span><span class="o">).</span><span class="n">mkString</span>
+</span><span class='line'>    <span class="o">((</span><span class="nc">Set</span><span class="o">()</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">/:</span> <span class="n">linkPattern</span><span class="o">.</span><span class="n">findAllIn</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="n">matchData</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">md</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">s</span> <span class="o">+</span> <span class="n">md</span><span class="o">.</span><span class="n">group</span><span class="o">(</span><span class="s">&quot;link&quot;</span><span class="o">)</span> <span class="o">}</span> <span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">link</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">url</span> <span class="o">+</span> <span class="s">&quot; =&gt; &quot;</span> <span class="o">+</span> <span class="n">link</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>    <span class="n">text</span><span class="o">.</span><span class="n">length</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">urls</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;http://www.amazon.com/&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;http://www.twitter.com/&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;http://www.google.com/&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;http://www.cnn.com/&quot;</span> <span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">timeMethod</span><span class="o">(</span><span class="n">method</span><span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">start</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">nanoTime</span>
+</span><span class='line'>  <span class="n">method</span><span class="o">()</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">end</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">nanoTime</span>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="s">&quot;Method took &quot;</span> <span class="o">+</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">)/</span><span class="mf">1000000000.0</span> <span class="o">+</span> <span class="s">&quot; seconds.&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">getPageSizeSequentially</span><span class="o">()</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">url</span> <span class="k">&lt;-</span> <span class="n">urls</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="s">&quot;Size for &quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="nc">PageLoader</span><span class="o">.</span><span class="n">getPageSize</span><span class="o">(</span><span class="n">url</span><span class="o">))</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">getPageSizeConcurrently</span><span class="o">()</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">caller</span> <span class="k">=</span> <span class="n">self</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">url</span> <span class="k">&lt;-</span> <span class="n">urls</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">actor</span> <span class="o">{</span> <span class="n">caller</span> <span class="o">!</span> <span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="nc">PageLoader</span><span class="o">.</span><span class="n">getPageSize</span><span class="o">(</span><span class="n">url</span><span class="o">))</span> <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">urls</span><span class="o">.</span><span class="n">size</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">receive</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">size</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="s">&quot;Size for &quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="n">size</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;Sequential run:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">timeMethod</span> <span class="o">{</span> <span class="n">getPageSizeSequentially</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;Concurrent run&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">timeMethod</span> <span class="o">{</span> <span class="n">getPageSizeConcurrently</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Following links</h3>
+
+<p>This exercise build on the previous one. Now that we have the links, we should try to follow them and add their size.</p>
+
+<p>First, the links should be somewhat normalized. A basic idea would be to make sure each contains a host; those that do not would be prefixed with the main url (the logic is not fool proof: checking the errors, I found a few javascript fragments that were interpreted as a link.)</p>
+
+<p>Then there is a second, more serious issue: some links take forever to load. So I rewrote the fetching logic to add a timeout. Because <code>try</code> blocks are actually expression in Scala, I just return an empty string as the content of pages that cannot be read.</p>
+
+<p>Finally, at this stage I found it hard to propagate the concurrency method (sequential or parallel) down to the <code>PageLoader.getPageSize</code> method, I just implemented the two methods in separate versions:</p>
+
+<h5>Sequential version</h5>
+
+<p>This version takes over 10 minutes to run on my machine.</p>
+
+<figure class='code'><figcaption><span>sizer_links.scala  (sizer_links_seq.scala)</span> <a href='/downloads/code/7l7w/scala/sizer_links_seq.scala'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.io._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.actors._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">Actor._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.util.matching.Regex</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">linkPattern</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Regex</span><span class="o">(</span><span class="s">&quot;&quot;&quot;&lt;a +href=\&quot;([^\&quot;]+)\&quot;[^&gt;]*&gt;&quot;&quot;&quot;</span><span class="o">,</span> <span class="s">&quot;link&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">PageLoader</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getPageSize</span><span class="o">(</span><span class="n">url</span> <span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">withLinks</span> <span class="k">:</span> <span class="kt">Boolean</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//println(&quot;Reading &quot; + url)</span>
+</span><span class='line'>    <span class="k">import</span> <span class="nn">java.net._</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">urlCon</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">URL</span><span class="o">(</span><span class="n">url</span><span class="o">).</span><span class="n">openConnection</span>
+</span><span class='line'>    <span class="n">urlCon</span><span class="o">.</span><span class="n">setConnectTimeout</span><span class="o">(</span><span class="mi">5000</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">urlCon</span><span class="o">.</span><span class="n">setReadTimeout</span><span class="o">(</span><span class="mi">5000</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">text</span> <span class="k">=</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">Source</span><span class="o">.</span><span class="n">fromInputStream</span><span class="o">(</span><span class="n">urlCon</span><span class="o">.</span><span class="n">getInputStream</span><span class="o">).</span><span class="n">mkString</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Exception</span> <span class="o">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>          <span class="nc">Console</span><span class="o">.</span><span class="n">err</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&quot;Could not read [&quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s">&quot;]&quot;</span><span class="o">)</span>
+</span><span class='line'>          <span class="s">&quot;&quot;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">size</span> <span class="k">=</span> <span class="n">text</span><span class="o">.</span><span class="n">length</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">withLinks</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">links</span> <span class="k">=</span> <span class="o">((</span><span class="nc">Set</span><span class="o">()</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">/:</span> <span class="n">linkPattern</span><span class="o">.</span><span class="n">findAllIn</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="n">matchData</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">md</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">link</span> <span class="k">=</span> <span class="n">md</span><span class="o">.</span><span class="n">group</span><span class="o">(</span><span class="s">&quot;link&quot;</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">s</span> <span class="o">+</span> <span class="o">(</span><span class="k">if</span> <span class="o">(</span><span class="n">link</span><span class="o">.</span><span class="n">indexOf</span><span class="o">(</span><span class="s">&quot;http&quot;</span><span class="o">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">link</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">&#39;/&#39;</span><span class="o">)</span>
+</span><span class='line'>                <span class="o">(</span><span class="n">url</span> <span class="o">+</span> <span class="n">link</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">else</span>
+</span><span class='line'>                <span class="o">(</span><span class="n">url</span> <span class="o">+</span> <span class="sc">&#39;/&#39;</span> <span class="o">+</span> <span class="n">link</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">}</span> <span class="k">else</span>
+</span><span class='line'>              <span class="n">link</span>
+</span><span class='line'>            <span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="o">(</span><span class="n">size</span> <span class="o">/:</span> <span class="n">links</span><span class="o">)</span> <span class="o">{</span> <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">link</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">s</span> <span class="o">+</span> <span class="nc">PageLoader</span><span class="o">.</span><span class="n">getPageSize</span><span class="o">(</span><span class="n">link</span><span class="o">,</span> <span class="kc">false</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span>
+</span><span class='line'>      <span class="n">size</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">urls</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;http://www.amazon.com&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;http://www.twitter.com&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;http://www.google.com&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;http://www.cnn.com&quot;</span> <span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">timeMethod</span><span class="o">(</span><span class="n">method</span> <span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">start</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">nanoTime</span>
+</span><span class='line'>  <span class="n">method</span><span class="o">()</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">end</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">nanoTime</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="s">&quot;Method took &quot;</span> <span class="o">+</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="mf">1000000000.0</span> <span class="o">+</span> <span class="s">&quot; seconds.&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">getPageSizeSequentially</span><span class="o">()</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">url</span> <span class="k">&lt;-</span> <span class="n">urls</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="s">&quot;Size for &quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="nc">PageLoader</span><span class="o">.</span><span class="n">getPageSize</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="kc">true</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;Sequential run:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">timeMethod</span> <span class="o">{</span> <span class="n">getPageSizeSequentially</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Output:</p>
+
+<figure class='code'><figcaption><span> (seq_output.txt)</span> <a href='/downloads/code/7l7w/scala/seq_output.txt'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>Sequential run:
+</span><span class='line'>Size for http://www.amazon.com: 12869997
+</span><span class='line'>Size for http://www.twitter.com: 291445
+</span><span class='line'>Size for http://www.google.com: 280876
+</span><span class='line'>Size for http://www.cnn.com: 11343152
+</span><span class='line'>Method took 667.821383 seconds.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Parallel version</h4>
+
+<p>This version takes about 100 seconds (less than a sixth of the sequential version). Obviously, the code is more complex, but clearly much faster as well.</p>
+
+<figure class='code'><figcaption><span>sizer_links.scala  (sizer_links_par.scala)</span> <a href='/downloads/code/7l7w/scala/sizer_links_par.scala'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.io._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.actors._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">Actor._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.util.matching.Regex</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">linkPattern</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Regex</span><span class="o">(</span><span class="s">&quot;&quot;&quot;&lt;a +href=\&quot;([^\&quot;]+)\&quot;[^&gt;]*&gt;&quot;&quot;&quot;</span><span class="o">,</span> <span class="s">&quot;link&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">PageLoader</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getPageSize</span><span class="o">(</span><span class="n">url</span> <span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">withLinks</span> <span class="k">:</span> <span class="kt">Boolean</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//println(&quot;Reading &quot; + url)</span>
+</span><span class='line'>    <span class="k">import</span> <span class="nn">java.net._</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">urlCon</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">URL</span><span class="o">(</span><span class="n">url</span><span class="o">).</span><span class="n">openConnection</span>
+</span><span class='line'>    <span class="n">urlCon</span><span class="o">.</span><span class="n">setConnectTimeout</span><span class="o">(</span><span class="mi">5000</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">urlCon</span><span class="o">.</span><span class="n">setReadTimeout</span><span class="o">(</span><span class="mi">5000</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">text</span> <span class="k">=</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">Source</span><span class="o">.</span><span class="n">fromInputStream</span><span class="o">(</span><span class="n">urlCon</span><span class="o">.</span><span class="n">getInputStream</span><span class="o">).</span><span class="n">mkString</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Exception</span> <span class="o">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>          <span class="nc">Console</span><span class="o">.</span><span class="n">err</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&quot;Could not read [&quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s">&quot;]&quot;</span><span class="o">)</span>
+</span><span class='line'>          <span class="s">&quot;&quot;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">size</span> <span class="k">=</span> <span class="n">text</span><span class="o">.</span><span class="n">length</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">withLinks</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">links</span> <span class="k">=</span> <span class="o">((</span><span class="nc">Set</span><span class="o">()</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">/:</span> <span class="n">linkPattern</span><span class="o">.</span><span class="n">findAllIn</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="n">matchData</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">md</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">link</span> <span class="k">=</span> <span class="n">md</span><span class="o">.</span><span class="n">group</span><span class="o">(</span><span class="s">&quot;link&quot;</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">s</span> <span class="o">+</span> <span class="o">(</span><span class="k">if</span> <span class="o">(</span><span class="n">link</span><span class="o">.</span><span class="n">indexOf</span><span class="o">(</span><span class="s">&quot;http&quot;</span><span class="o">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">link</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">&#39;/&#39;</span><span class="o">)</span>
+</span><span class='line'>                <span class="o">(</span><span class="n">url</span> <span class="o">+</span> <span class="n">link</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">else</span>
+</span><span class='line'>                <span class="o">(</span><span class="n">url</span> <span class="o">+</span> <span class="sc">&#39;/&#39;</span> <span class="o">+</span> <span class="n">link</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">}</span> <span class="k">else</span>
+</span><span class='line'>              <span class="n">link</span>
+</span><span class='line'>            <span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">val</span> <span class="n">caller</span> <span class="k">=</span> <span class="n">self</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="n">link</span> <span class="k">&lt;-</span> <span class="n">links</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">actor</span> <span class="o">{</span> <span class="n">caller</span> <span class="o">!</span> <span class="o">(</span><span class="n">link</span><span class="o">,</span> <span class="nc">PageLoader</span><span class="o">.</span><span class="n">getPageSize</span><span class="o">(</span><span class="n">link</span><span class="o">,</span> <span class="kc">false</span><span class="o">)</span> <span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="o">(</span><span class="n">size</span> <span class="o">/:</span> <span class="n">links</span><span class="o">)</span> <span class="o">{</span> <span class="o">(</span><span class="n">sum</span><span class="o">,</span> <span class="n">link</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="n">receive</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">case</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">s</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>            <span class="n">sum</span> <span class="o">+</span> <span class="n">s</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span>
+</span><span class='line'>      <span class="n">size</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">urls</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;http://www.amazon.com&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;http://www.twitter.com&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;http://www.google.com&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;http://www.cnn.com&quot;</span> <span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">timeMethod</span><span class="o">(</span><span class="n">method</span> <span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">start</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">nanoTime</span>
+</span><span class='line'>  <span class="n">method</span><span class="o">()</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">end</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">nanoTime</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="s">&quot;Method took &quot;</span> <span class="o">+</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="mf">1000000000.0</span> <span class="o">+</span> <span class="s">&quot; seconds.&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">getPageSizeConcurrently</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">caller</span> <span class="k">=</span> <span class="n">self</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">url</span> <span class="k">&lt;-</span> <span class="n">urls</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">actor</span> <span class="o">{</span> <span class="n">caller</span> <span class="o">!</span> <span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="nc">PageLoader</span><span class="o">.</span><span class="n">getPageSize</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="kc">true</span><span class="o">))</span> <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">urls</span><span class="o">.</span><span class="n">size</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">receive</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">size</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="s">&quot;Size for &quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="n">size</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="s">&quot;Concurrent run:&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">timeMethod</span> <span class="o">{</span> <span class="n">getPageSizeConcurrently</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Output:</p>
+
+<figure class='code'><figcaption><span> (par_output.txt)</span> <a href='/downloads/code/7l7w/scala/par_output.txt'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>Concurrent run:
+</span><span class='line'>Size for http://www.google.com: 280972
+</span><span class='line'>Size for http://www.twitter.com: 291430
+</span><span class='line'>Size for http://www.amazon.com: 12387773
+</span><span class='line'>Size for http://www.cnn.com: 11463136
+</span><span class='line'>Method took 103.645557 seconds.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping up Day 3 and Scala</h2>
+
+<p>I really feel I would enjoy working full time with Scala. I disagree with the author statement that Scala has an academic syntax. It does not take that much time to get used to, and it feels quite lighter than Java&#8217;s (of course, coming from Ruby would provide an entirely different perspective).</p>
+
+<p>As I was doing the exercises, I found a few dark corners, most notably about collections and iterators.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">Welcome</span> <span class="n">to</span> <span class="nc">Scala</span> <span class="n">version</span> <span class="mf">2.9</span><span class="o">.</span><span class="mf">1.f</span><span class="n">inal</span> <span class="o">(</span><span class="nc">Java</span> <span class="nc">HotSpot</span><span class="o">(</span><span class="nc">TM</span><span class="o">)</span> <span class="mi">64</span><span class="o">-</span><span class="nc">Bit</span> <span class="nc">Server</span> <span class="nc">VM</span><span class="o">,</span> <span class="nc">Java</span> <span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_26</span><span class="o">).</span>
+</span><span class='line'><span class="nc">Type</span> <span class="n">in</span> <span class="n">expressions</span> <span class="n">to</span> <span class="n">have</span> <span class="n">them</span> <span class="n">evaluated</span><span class="o">.</span>
+</span><span class='line'><span class="nc">Type</span> <span class="k">:</span><span class="kt">help</span> <span class="kt">for</span> <span class="kt">more</span> <span class="kt">information.</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">scala&gt;</span> <span class="kt">import</span> <span class="kt">scala.util.matching.Regex</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.util.matching.Regex</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">re</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Regex</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">re</span><span class="k">:</span> <span class="kt">scala.util.matching.Regex</span> <span class="o">=</span> <span class="n">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">str</span> <span class="k">=</span> <span class="s">&quot;abracadabra&quot;</span>
+</span><span class='line'><span class="n">str</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">abracadabra</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">matches</span> <span class="k">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findAllIn</span><span class="o">(</span><span class="n">str</span><span class="o">).</span><span class="n">matchData</span>
+</span><span class='line'><span class="n">matches</span><span class="k">:</span> <span class="kt">java.lang.Object</span> <span class="kt">with</span> <span class="kt">Iterator</span><span class="o">[</span><span class="kt">scala.util.matching.Regex.Match</span><span class="o">]</span> <span class="k">=</span> <span class="n">non</span><span class="o">-</span><span class="n">empty</span> <span class="n">iterator</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="n">matches</span> <span class="n">foreach</span> <span class="o">{</span><span class="n">md</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">md</span><span class="o">)}</span>
+</span><span class='line'><span class="n">a</span>
+</span><span class='line'><span class="n">a</span>
+</span><span class='line'><span class="n">a</span>
+</span><span class='line'><span class="n">a</span>
+</span><span class='line'><span class="n">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">matches</span><span class="o">.</span><span class="n">size</span><span class="o">)</span>
+</span><span class='line'><span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code just finds regular expression matches in a string, prints each of them, them prints how many it found (at least that&#8217;s what I expected it would do).</p>
+
+<p>But apparently, the <code>foreach</code> method consumes the data, and <code>size</code> returns 0.</p>
+
+<p>Scala tries to tell me something with its warning about a <code>non-empty iterator</code>. Unfortunately, the same code run non interactively does not display any warning.</p>
+
+<p>Obviously, it is not safe to keep references to some intermediate data structures (like iterators). I hope that as I learn more about the language, I will also learn to recognize such situations.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+  
+
+<time datetime="2011-10-30T22:18:00+09:00" pubdate>Oct 30<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/" title="Previous Post: Seven Languages in Seven Weeks Scala Day 2">&laquo; Seven Languages in Seven Weeks Scala Day 2</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Languages in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/">Ruby Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/">Ruby Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">Ruby Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Io Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Io Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Io Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">About Io</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Prolog Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Prolog Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Prolog Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Scala Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Scala Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Scala Day 3</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Seven Languages in Seven Weeks Scala Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Seven Languages in Seven Weeks Scala Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Seven Languages in Seven Weeks Scala Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/">It has been a bad year for geniuses...</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Seven Languages in Seven Weeks Prolog Day 3</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

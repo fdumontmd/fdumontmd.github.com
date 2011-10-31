@@ -207,7 +207,7 @@
 <span class='line-number'>24</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">Censor</span> <span class="o">{</span>
 </span><span class='line'>  <span class="k">val</span> <span class="n">words</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&quot;Shoot&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;Pucky&quot;</span><span class="o">,</span> <span class="s">&quot;Darn&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;Beans&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
 </span><span class='line'>      <span class="k">var</span> <span class="n">result</span> <span class="k">=</span> <span class="n">text</span>
 </span><span class='line'>      <span class="n">words</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span> <span class="n">p</span> <span class="k">=&gt;</span>
 </span><span class='line'>          <span class="n">result</span> <span class="k">=</span> <span class="n">result</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">imm</span><span class="o">(</span><span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span>
@@ -216,18 +216,18 @@
 </span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* capitalize */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">c</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="n">toUpper</span> <span class="o">+</span> <span class="n">str</span><span class="o">.</span><span class="n">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toLowerCase</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">c</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">str</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="n">toUpper</span> <span class="o">+</span> <span class="n">str</span><span class="o">.</span><span class="n">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toLowerCase</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* lowercase */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">l</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toLowerCase</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">l</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toLowerCase</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* uppercase */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">u</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toUpperCase</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">u</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toUpperCase</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* make matcher method */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">mm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">mm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="s">&quot;\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
 </span><span class='line'>  <span class="cm">/* make case insensitive matcher method */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">imm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;(?i)\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">imm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="s">&quot;(?i)\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -259,23 +259,23 @@
 <span class='line-number'>20</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">Censor</span> <span class="o">{</span>
 </span><span class='line'>  <span class="k">val</span> <span class="n">words</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&quot;Shoot&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;Pucky&quot;</span><span class="o">,</span> <span class="s">&quot;Darn&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;Beans&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
 </span><span class='line'>      <span class="o">(</span><span class="n">text</span> <span class="o">/:</span> <span class="n">words</span><span class="o">)</span> <span class="o">{</span> <span class="o">(</span><span class="n">t</span><span class="o">,</span> <span class="n">p</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">imm</span><span class="o">(</span><span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span> <span class="o">}</span>
 </span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* capitalize */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">c</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="n">toUpper</span> <span class="o">+</span> <span class="n">str</span><span class="o">.</span><span class="n">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toLowerCase</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">c</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">str</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="n">toUpper</span> <span class="o">+</span> <span class="n">str</span><span class="o">.</span><span class="n">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toLowerCase</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* lowercase */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">l</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toLowerCase</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">l</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toLowerCase</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* uppercase */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">u</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toUpperCase</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">u</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toUpperCase</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* make matcher method */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">mm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">mm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="s">&quot;\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
 </span><span class='line'>  <span class="cm">/* make case insensitive matcher method */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">imm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;(?i)\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">imm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="s">&quot;(?i)\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -415,23 +415,23 @@
 </span><span class='line'>      <span class="o">}</span>
 </span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>  
-</span><span class='line'>  <span class="k">def</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">censor</span><span class="o">(</span><span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
 </span><span class='line'>      <span class="o">(</span><span class="n">text</span> <span class="o">/:</span> <span class="n">words</span><span class="o">)</span> <span class="o">{</span> <span class="o">(</span><span class="n">t</span><span class="o">,</span> <span class="n">p</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">c</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">mm</span><span class="o">(</span><span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">l</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">replaceAll</span><span class="o">(</span><span class="n">imm</span><span class="o">(</span><span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_1</span><span class="o">)),</span> <span class="n">u</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span> <span class="o">}</span>
 </span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* capitalize */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">c</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="n">toUpper</span> <span class="o">+</span> <span class="n">str</span><span class="o">.</span><span class="n">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toLowerCase</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">c</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">str</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="n">toUpper</span> <span class="o">+</span> <span class="n">str</span><span class="o">.</span><span class="n">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toLowerCase</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* lowercase */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">l</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toLowerCase</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">l</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toLowerCase</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* uppercase */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">u</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toUpperCase</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">u</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="n">str</span><span class="o">.</span><span class="n">toUpperCase</span>
 </span><span class='line'>  
 </span><span class='line'>  <span class="cm">/* make matcher method */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">mm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">mm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="s">&quot;\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
 </span><span class='line'>  <span class="cm">/* make case insensitive matcher method */</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">imm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;(?i)\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">imm</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="s">&quot;(?i)\\b&quot;</span> <span class="o">+</span> <span class="n">str</span> <span class="o">+</span> <span class="s">&quot;\\b&quot;</span>
 </span><span class='line'><span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="cm">/* testing */</span>
@@ -570,6 +570,8 @@
         <a class="basic-alignment left" href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/" title="Previous Post: Seven Languages in Seven Weeks Scala Day 1">&laquo; Seven Languages in Seven Weeks Scala Day 1</a>
       
       
+        <a class="basic-alignment right" href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/" title="next Post: Seven Languages in Seven Weeks Scala Day 3">Seven Languages in Seven Weeks Scala Day 3 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -622,11 +624,17 @@
 		
 			<li class="post"><a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Scala Day 2</a></li>
 		
+			<li class="post"><a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Scala Day 3</a></li>
+		
 		</ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Seven Languages in Seven Weeks Scala Day 3</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Seven Languages in Seven Weeks Scala Day 2</a>
@@ -642,10 +650,6 @@
     
       <li class="post">
         <a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Seven Languages in Seven Weeks Prolog Day 3</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Seven Languages in Seven Weeks Prolog Day 2</a>
       </li>
     
   </ul>

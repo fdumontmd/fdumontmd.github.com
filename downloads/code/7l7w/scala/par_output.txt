@@ -1,0 +1,6 @@
+Concurrent run:
+Size for http://www.google.com: 280972
+Size for http://www.twitter.com: 291430
+Size for http://www.amazon.com: 12387773
+Size for http://www.cnn.com: 11463136
+Method took 103.645557 seconds.

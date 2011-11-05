@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-10-31T17:54:48+09:00</updated>
+  <updated>2011-11-05T19:23:11+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,311 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Erlang Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/"/>
+    <updated>2011-11-04T12:51:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1</id>
+    <content type="html"><![CDATA[<p>New week, new language. This time is the turn of <a href="http://www.erlang.org/">Erlang</a>, which comes from <a href="http://www.ericsson.com/">Ericsson</a> (the phone company), and was used internally on internal products before being unleashed on the world.</p>
+
+<!--more-->
+
+
+<p>With it&#8217;s root in the telecom industry, it is not surprising that Erlang has a particular focus on availability and reliability; it comes with a strong set of tools for network applications, but little for end user interaction (the GUI is minimalist).</p>
+
+<p>The most surprising aspect of Erlang&#8217;s origin, perhaps, is that the first version was an interpreter written in Prolog (actually, Erlang was meant as kind of extension to Prolog).</p>
+
+<p>This is particularly obvious in Erlang&#8217;s syntax. Prolog programmers should feel mostly at home.</p>
+
+<h2>Erlang is functional</h2>
+
+<p>Erlang is also a purely functional language, with little to no updates (there are updatable stores, but you really have to look for them). Variables can be assigned a value only once, using a mechanism similar to unification (further assignments are valid only to the extend that both sides are identical, or the left hand is an unassigned variable).</p>
+
+<figure class='code'><figcaption><span>Erlang: assignment  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Eshell</span> <span class="nv">V5</span><span class="p">.</span><span class="mi">8</span><span class="p">.</span><span class="mi">5</span>  <span class="p">(</span><span class="n">abort</span> <span class="n">with</span> <span class="err">^</span><span class="nv">G</span><span class="p">)</span>
+</span><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nv">V</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">V</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nv">V</span> <span class="o">=</span> <span class="mi">4</span><span class="p">.</span>
+</span><span class='line'><span class="o">**</span> <span class="n">exception</span> <span class="nn">error</span><span class="p">:</span> <span class="n">no</span> <span class="n">match</span> <span class="k">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="n">value</span> <span class="mi">4</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nv">V</span> <span class="o">=</span> <span class="nv">X</span><span class="p">.</span>
+</span><span class='line'><span class="o">*</span> <span class="mi">1</span><span class="p">:</span> <span class="n">variable</span> <span class="n">&#39;X&#39;</span> <span class="n">is</span> <span class="n">unbound</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="nv">X</span> <span class="o">=</span> <span class="nv">V</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Erlang recursion</h2>
+
+<p>The book introduces recursion in the module “yet_again”. Now, recursion is nothing special (few languages don&#8217;t support it), but functional languages tend to rely on it, so they often have a special optimization called <a href="http://en.wikipedia.org/wiki/Tail_call">tail recursion</a>.</p>
+
+<p>Typically, any function call allocate some space on the stack, which is usually a limited resource. A language that relies on recursion rather than iteration risks to run out of stack.</p>
+
+<p>Tail recursion is an optimization technique that replaces a function call by a jump, reusing the stack space already allocated. It effectively turns a recursion into an iteration.</p>
+
+<p>In the book, both defined functions (<code>another_factorial</code> and <code>another_fib</code>) use non tail recursion (also referred to as body recursion). It is clear that <code>another_fib</code>&#8217;s performance is going to be terrible (it is doubly recursive); I was surprised to find that <code>another_factorial</code>&#8217;s performance is actually pretty good.</p>
+
+<p>I wrote tail recursive versions of both functions (simply using an accumulator):</p>
+
+<figure class='code'><figcaption><span>My Yet Again module  (yet_again.erl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/erlang/yet_again.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">yet_again</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">another_factorial</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">another_fib</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">tr_fact</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">tr_fib</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">check_time</span><span class="o">/</span><span class="mi">2</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">another_factorial</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="nf">another_factorial</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">N</span> <span class="o">*</span> <span class="n">another_factorial</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">1</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">another_fib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="nf">another_fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="nf">another_fib</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">another_fib</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">another_fib</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">2</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">tr_fact</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="nf">tr_fact</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tr_fact</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">N</span><span class="p">).</span>
+</span><span class='line'><span class="nf">tr_fact</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">A</span><span class="p">;</span>
+</span><span class='line'><span class="nf">tr_fact</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span> <span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tr_fact</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">N</span><span class="o">*</span><span class="nv">A</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">tr_fib</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tr_fib</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span>
+</span><span class='line'><span class="nf">tr_fib</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nv">A</span><span class="p">,</span> <span class="p">_)</span> <span class="o">-&gt;</span> <span class="nv">A</span><span class="p">;</span>
+</span><span class='line'><span class="nf">tr_fib</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span> <span class="nv">A</span><span class="p">,</span> <span class="nv">B</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tr_fib</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">B</span><span class="p">,</span> <span class="nv">A</span><span class="o">+</span><span class="nv">B</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">check_time</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">filter</span><span class="p">(</span><span class="nn">timer</span><span class="p">:</span><span class="n">tc</span><span class="p">(</span><span class="n">yet_again</span><span class="p">,</span> <span class="nv">F</span><span class="p">,</span> <span class="p">[</span><span class="nv">N</span><span class="p">])).</span>
+</span><span class='line'><span class="nf">filter</span><span class="p">({</span><span class="nv">N</span><span class="p">,</span> <span class="p">_})</span> <span class="o">-&gt;</span> <span class="nv">N</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I also added some code to measure the time of any of these functions.</p>
+
+<p>Clearly, <code>tr_fib</code> is much faster than <code>another_fib</code> (the former is, through tail recursion optimization, iterative, while the latter is double recursive). But it turns out that <code>another_factorial</code> is systematically faster (although not by much) than <code>tr_fact</code>, at least on my machine, even for pretty large input numbers.</p>
+
+<p>I could not find a definitive reason why this is so (the closest I came was suggested by this <a href="http://erlang.org/pipermail/erlang-questions/2007-July/028155.html">post</a> and subsequent messages, which suggest the order of multiplication in the tail recursive version causes the accumulator to grow quickly and triggers more garbage collection than the body recursive version).</p>
+
+<p>Still, it is enough to draw a few conclusions:</p>
+
+<ul>
+<li>never assume anything about the performance of a piece of code without measuring it;</li>
+<li>Erlang&#8217;s stack handling is awesome;</li>
+<li>Erlang&#8217;s optimization is just as impressive.</li>
+</ul>
+
+
+<h2>Exercises</h2>
+
+<h3>Couting words</h3>
+
+<p>I define a word as a sequence (at least 1) of non-space characters. I use two functions: one that looks for the beginning of words, and one that look for the end of words. That way I always know what state I&#8217;m in (between words, or in one), and can keep the count correctly.</p>
+
+<p>Both functions are body-recursive, which as seen above is probably not a problem.</p>
+
+<figure class='code'><figcaption><span>Counting Words  (cw.erl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/erlang/cw.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">cw</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">count_words</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">count_words</span><span class="p">([])</span> <span class="o">-&gt;</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="nf">count_words</span><span class="p">([</span><span class="mi">32</span><span class="p">|</span><span class="nv">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">count_words</span><span class="p">(</span><span class="nv">T</span><span class="p">);</span>
+</span><span class='line'><span class="nf">count_words</span><span class="p">(</span><span class="nv">WS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">skip_word</span><span class="p">(</span><span class="nv">WS</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">skip_word</span><span class="p">([])</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="nf">skip_word</span><span class="p">([</span><span class="mi">32</span><span class="p">|</span><span class="nv">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">+</span><span class="n">count_words</span><span class="p">(</span><span class="nv">T</span><span class="p">);</span>
+</span><span class='line'><span class="nf">skip_word</span><span class="p">([_|</span><span class="nv">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">skip_word</span><span class="p">(</span><span class="nv">T</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing the module:</p>
+
+<figure class='code'><figcaption><span>Testing Module cw  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">cw</span><span class="p">:</span><span class="n">count_words</span><span class="p">(</span><span class="s">&quot;   a  lot   of   space   &quot;</span><span class="p">).</span>
+</span><span class='line'><span class="mi">4</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">cw</span><span class="p">:</span><span class="n">count_words</span><span class="p">(</span><span class="s">&quot;not a lot of space&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="mi">5</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">cw</span><span class="p">:</span><span class="n">count_words</span><span class="p">(</span><span class="s">&quot;word&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Counting to 10</h3>
+
+<p>Erlang has a good support in the standard library for usual functional programming idioms, such as generating lists, and applying a function over elements of a list.</p>
+
+<figure class='code'><figcaption><span>Counting to 10  (count.erl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/erlang/count.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">count</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">count_to_10</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">count_to</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">count_up_to</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">count_to_10</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">count_to</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">count_to</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">L</span> <span class="o">=</span> <span class="n">count_up_to</span><span class="p">(</span><span class="nv">N</span><span class="p">),</span>
+</span><span class='line'>  <span class="nn">lists</span><span class="p">:</span><span class="n">map</span><span class="p">(</span><span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">io</span><span class="p">:</span><span class="n">fwrite</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~w</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">X</span><span class="p">])</span> <span class="k">end</span><span class="p">,</span> <span class="nv">L</span><span class="p">),</span>
+</span><span class='line'>  <span class="nv">L</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">count_up_to</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">lists</span><span class="p">:</span><span class="n">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nv">N</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code is more generic than strictly required (which is always good):</p>
+
+<figure class='code'><figcaption><span>Testing Module count  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">count</span><span class="p">:</span><span class="n">count_to_10</span><span class="p">().</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">4</span>
+</span><span class='line'><span class="mi">5</span>
+</span><span class='line'><span class="mi">6</span>
+</span><span class='line'><span class="mi">7</span>
+</span><span class='line'><span class="mi">8</span>
+</span><span class='line'><span class="mi">9</span>
+</span><span class='line'><span class="mi">10</span>
+</span><span class='line'><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">count</span><span class="p">:</span><span class="n">count_to</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">4</span>
+</span><span class='line'><span class="mi">5</span>
+</span><span class='line'><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Matching input</h3>
+
+<p>Nothing fancy here; just basic pattern matching and some calls from the standard library.</p>
+
+<figure class='code'><figcaption><span>Pattern Matching  (check.erl)</span> <a href='http://blog.wakatta.jp/downloads/code/7l7w/erlang/check.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">check</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">print_result</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">check_result</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">print_result</span><span class="p">(</span><span class="nv">M</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">io</span><span class="p">:</span><span class="n">fwrite</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">check_result</span><span class="p">(</span><span class="nv">M</span><span class="p">)]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">check_result</span><span class="p">(</span><span class="n">success</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s">&quot;success&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nf">check_result</span><span class="p">({</span><span class="n">error</span><span class="p">,</span> <span class="nv">Message</span><span class="p">})</span> <span class="o">-&gt;</span> <span class="nn">lists</span><span class="p">:</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;Error: &quot;</span><span class="p">,</span> <span class="nv">Message</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code recognizes the input as requested. Everything else will generate an error.</p>
+
+<figure class='code'><figcaption><span>Testing Module check  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">check</span><span class="p">).</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">check</span><span class="p">}</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">check</span><span class="p">:</span><span class="n">print_result</span><span class="p">(</span><span class="n">success</span><span class="p">).</span>
+</span><span class='line'><span class="n">success</span>
+</span><span class='line'><span class="n">ok</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">check</span><span class="p">:</span><span class="n">print_result</span><span class="p">({</span><span class="n">error</span><span class="p">,</span> <span class="s">&quot;Something went wrong!&quot;</span><span class="p">}).</span>
+</span><span class='line'><span class="nv">Error</span><span class="p">:</span> <span class="nv">Something</span> <span class="n">went</span> <span class="n">wrong</span><span class="o">!</span>
+</span><span class='line'><span class="n">ok</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And so we conclude Day 1.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Languages in Seven Weeks Scala Day 3]]></title>

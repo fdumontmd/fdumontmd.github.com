@@ -77,7 +77,7 @@ Testing both functions, they return the same answer (always a good thing for fun
 
 I have to admit I cannot stand hard coding anything. Whenever I have a choice between hard coding and generating coding, I'll pick the latter every single time.
 
-So for the Tic-Tac-Toe exercise, I wrote code that computes the list of potential victory lines, even though the list for a board of 3 by 3 is much shorter. When Tic-Tac-Toe is finally played on 19 by 19 boards (as grown up games tend to be), my code will be ready...
+So for the Tic-Tac-Toe exercise, I wrote code that computes the list of potential victory lines, even though the list for a board of 3 by 3 is much shorter. When Tic-Tac-Toe is finally played on 19 by 19 boards (as [games for grown ups](http://en.wikipedia.org/wiki/Go_(game\)) tend to be), my code will be ready...
 
 I used a small utility module to transpose a matrix; the code is very similar, and indeed, lifted, from a previous Prolog [exercise](/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/) (the Sudoku one).
 

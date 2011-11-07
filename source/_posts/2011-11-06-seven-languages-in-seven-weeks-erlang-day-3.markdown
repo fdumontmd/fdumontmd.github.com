@@ -16,18 +16,21 @@ Processes can also monitor each others, in various ways, so that a crashed proce
 
 The book rightfully does not claim to be exhaustive in its coverage, but the exercises are rich and complex enough to offer a glimpse of what is possible in Erlang.
 
-Other points, such as the ability to update code while running, are not covered, but participate in the set of features that make Erlang so suited for robust applications.
+Other capabilities, such as the ability to update code while running, are not covered, but participate in the set of features that make Erlang so suited for robust applications.
 
 Exercises
 ---------
 
 ### An OTP service that will restart a process if it dies
 
-That sounds like the [`supervisor`]() module TODO add reference. 
+That sounds like the [`supervisor`](http://www.erlang.org/doc/man/supervisor.html) module's job description. It is not trivial, however: supervised processes must have a descriptor that explains how to start, stop and restart them.
 
 ### Documentation for building a simple OTP server
 
-Perhaps [`gen_server`]() module TODO add reference. Or a link to a tutorial.
+That question a bit open ended. If we are talking about a simple TCP server, then the [`gen_tcp`](http://www.erlang.org/doc/man/gen_tcp.html) module is enough to get a server, as shown in [this post](http://www.joeandmotorboat.com/2008/11/12/a-simple-concurrent-erlang-tcp-server/).
+
+To go further, and add supervisors and other OTP goodies, there is a [tutorial](http://www.trapexit.org/Building_a_Non-blocking_TCP_server_using_OTP_principles) on 
+[trapexit.org](http://www.trapexit.org/) (this community site seems to have plenty of great resources). 
 
 ### Monitor the `translate_service`
 

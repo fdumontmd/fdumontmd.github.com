@@ -26,7 +26,7 @@ Just using pattern matching, the solution is very short an clean.
 
 I named the module `dictionary` as the name `dict` was already used in the standard library. Erlang has a flat module naming system, so conflicts are bound to happen.
 
-As it happens, Erlang [lists:keyfind]() TODO add reference already implements this feature, as shown in `lookup_alt`.
+As it happens, Erlang [`lists:keyfind`](http://www.erlang.org/doc/man/lists.html#keyfind-3) already implements this feature, as shown in `lookup_alt`.
 
 {% include_code Dictionary module lang:erlang 7l7w/erlang/dictionary.erl %}
 
@@ -51,7 +51,7 @@ false
 
 ### Computing prices
 
-Once again, pattern matching makes it really easy to write such function. For extra credit (ok, no credit. Just for fun), I also wrote a function that depends on `lists:map` (TODO add reference). 
+Once again, pattern matching makes it really easy to write such function. For extra credit (ok, no credit. Just for fun), I also wrote a function that depends on [`lists:map`](http://www.erlang.org/doc/man/lists.html#map-2). 
 
 It just shows how easy it is to process lists of things in Erlang or any other decent functional language (one with pattern matching and list comprehension, that is).
 

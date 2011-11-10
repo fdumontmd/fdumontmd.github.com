@@ -81,7 +81,7 @@ Let's see:
 ((((El :< 1) :< 2) :< 3) :< 4) :< 5
 ```
 
-So yes, it is indeed possible to write `foldl` in terms of `foldr`: `foldl f a bs = foldr (flip f) a $ reverse bs`. This answerr the first question, and along the way we have collected some hints on how to do it (I mean, beside using `flip` and `reverse` as above)
+So yes, it is indeed possible to write `foldl` in terms of `foldr`: `foldl f a bs = foldr (flip f) a $ reverse bs`. This answer the first question, and along the way we have collected some hints on how to do it (I mean, beside using `flip` and `reverse` as above)
 
 Planning the solution
 ---------------------
@@ -141,9 +141,11 @@ foldl_alt f (b:bs) = (foldl_alt f bs) . (f' b)
   where f' = flip f
 {% endcodeblock %}
 
+Assuming `foldl f a bs == foldl_alt f bs a`, let's show by induction that `foldl f a (b:bs) == foldl_alt f (b:bs) a`:
+
 ```
 foldl f a (b:bs) == foldl f (f a b) bs            -- by definition of foldl
-                 == foldl_alt f bs (f a b)        -- recursion hypothesis
+                 == foldl_alt f bs (f a b)        -- induction hypothesis
                  == foldl_alt f bs (f' b a)       -- simple replacement
                       where f' = flip f
                  == (foldl_alt f bs) . (f' b) $ a -- point-free notation
@@ -161,17 +163,31 @@ foldl_alt f (b:bs) = comp' (f' b) (foldl_alt f bs)
 Here the composition operator is replaced by `comp'`, which just takes its argument in reversed order. This is done to show the similarity of this current `foldl_alt` with the recursive case of `foldr`. Indeed, `foldl_alt f` is identical to `foldr m id` for some function `m` (for Mystery):
 
 ```
-foldl_alt f [] == id == foldr m id []                            -- by definition of both foldl_alt and foldr
+foldl_alt f [] == id == foldr m id []                            
+	-- by definition of both foldl_alt and foldr
+```
 
-foldl_alt f (b:bs) == comp' (f' b) (foldl_alt f bs)              -- by definition of foldl_alt
+Now I can use induction to show that `foldl_alt f bs == foldr m id bs` implies `foldl_alt f (b:bs) == foldr m id (b:bs)`, and compute `m` at the same time:
+
+```
+foldl_alt f (b:bs) == comp' (f' b) (foldl_alt f bs)              
                         where f' = flip f
                               comp' = flip (.)
-                   == comp' (\a -> f a b) (foldl_alt f bs)       -- expand f' 
+	-- by definition of foldl_alt
+                   == comp' (\a -> f a b) (foldl_alt f bs)        
                         where comp' = flip (.)
-                   == (\g a -> g (f a b)) (foldl_alt f bs)       -- expand comp' - g has type a -> a, and is actually (foldl_alt f bs) 
-                   == (\b' g a -> g (f a b')) b (foldl_alt f bs) -- make b a parameter of the function, and pass it as parameter as well
-                   == foldr (\b' g a -> g (f a b')) (b:bs) id    -- definition of foldr, recursive case
+	-- expand f'
+                   == (\g a -> g (f a b)) (foldl_alt f bs)       
+	-- expand comp' - g has type a -> a, and is bound to (foldl_alt f bs) 
+                   == (\b' g a -> g (f a b')) b (foldl_alt f bs) 
+	-- take b out of the function; replace it with b' that is bound to b
+	               == (\b' g a -> g (f a b')) b (foldr (\b' g a -> g (f a b')) id bs)
+	-- induction hypothesis
+                   == foldr (\b' g a -> g (f a b')) (b:bs) id    
+	-- definition of foldr, recursive case
 ```
+
+When using the induction hypothesis, I replaced `m` with `(\b' g a -> g (f a b'))`. This is because this function is independent of any specific `b`: by construction it would be the same at every step of the induction (except the base case, where it is not use, and therefore can be anything we need it to be).
 
 `b'` as a parameter to the function is bound to `b` as the value in the list. I use different names to make it clear they're different, but of course inside the function I could use `b` as the variable scope is limited to the function.
 

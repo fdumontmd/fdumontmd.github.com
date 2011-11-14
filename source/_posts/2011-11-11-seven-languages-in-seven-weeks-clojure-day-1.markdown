@@ -11,7 +11,7 @@ Sixth week, sixth language, this time [Clojure](http://clojure.org/), the latest
 <!--more-->
 Clojure has the usual features of Lisp: code as data, macros, lists among many other containers (no, Lisp is not just lists), and so on. It also brings other features, such as pattern matching, and treating some containers as functions for specific purposes (both features that [Arc](http://arclanguage.org/), the language that [Paul Graham](http://www.paulgraham.com/) invented, seems also to have). Pattern matching is certainly a welcome feature; I have to see more Clojure code to figure out whether I like the data as function one (I'm sure it allows very neat idioms).
 
-Clojure is also supports lazy evaluation, like Haskell (which is the last language for this book).
+Clojure is also supports a kind of lazy evaluation, but simpler than Haskell's.
 
 Finally, Clojure runs on both the JVM and the CLR, which allows it to go wherever either platform goes (which means pretty much everywhere), and to reuse these platforms' extensive libraries.
 

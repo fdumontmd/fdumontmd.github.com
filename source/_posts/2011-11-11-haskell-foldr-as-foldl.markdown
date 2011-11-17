@@ -6,7 +6,7 @@ comments: true
 categories: [Haskell, Tutorial]
 tags: [haskell]
 ---
-In a previous [post](blog/2011/11/09/haskell-foldl-as-foldr/), I tried to show how to derive the formula expression `foldl` in terms of `foldr`. Unsurprisingly, there is a way to express `foldr` in terms `foldl`: `foldr f a bs = foldl (\g b x -> g (f b x)) id bs a`. Today I'll try to derive this definition.
+In a previous [post](/blog/2011/11/09/haskell-foldl-as-foldr/), I tried to show how to derive the formula expression `foldl` in terms of `foldr`. Unsurprisingly, there is a way to express `foldr` in terms `foldl`: `foldr f a bs = foldl (\g b x -> g (f b x)) id bs a`. Today I'll try to derive this definition.
 <!--more-->
 
 Of course, `foldl` is strict, so it cannot work on infinite lists. Therefore, the new `foldr` would be similarly limited.

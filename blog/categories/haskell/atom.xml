@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Haskell | Wakatta!]]></title>
+  <link href="http://blog.wakatta.jp/blog/categories/haskell/atom.xml" rel="self"/>
+  <link href="http://blog.wakatta.jp/"/>
+  <updated>2011-11-20T14:15:41+09:00</updated>
+  <id>http://blog.wakatta.jp/</id>
+  <author>
+    <name><![CDATA[Frédéric Dumont]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Haskell: foldr as foldl]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/11/11/haskell-foldr-as-foldl/"/>
+    <updated>2011-11-11T08:03:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/11/11/haskell-foldr-as-foldl</id>
+    <content type="html"><![CDATA[<p>In a previous <a href="/blog/2011/11/09/haskell-foldl-as-foldr/">post</a>, I tried to show how to derive the formula expression <code>foldl</code> in terms of <code>foldr</code>. Unsurprisingly, there is a way to express <code>foldr</code> in terms <code>foldl</code>: <code>foldr f a bs = foldl (\g b x -&gt; g (f b x)) id bs a</code>. Today I'll try to derive this definition.</p>
+
+<!--more-->
+
+
+<p>Of course, <code>foldl</code> is strict, so it cannot work on infinite lists. Therefore, the new <code>foldr</code> would be similarly limited.</p>
+
+<p>I'll start again from a standard definition for both functions. First <code>foldr</code>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="ow">::</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span> <span class="p">(</span><span class="n">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Then <code>foldl</code>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">f</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span> <span class="n">b</span><span class="p">)</span> <span class="n">bs</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>Derivation</h2>
+
+<p>Once again, I will use the function building fold rather than value building one. This time, the <code>f</code> argument to <code>foldr</code> has already the right type, so I will not need <code>flip</code>.</p>
+
+<p>I first reorganize the arguments order a bit, putting <code>a</code> at the end:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_alt basic equation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The base case is once again <code>id</code>:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_alt on empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">id</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>and is trivially true:
+```
+foldr f a [] == a                  -- by definition of foldr</p>
+
+<pre><code>         == id a               -- by definition of id
+         == (foldr_alt f []) a -- by definition of foldr_alt
+</code></pre>
+
+<p>```</p>
+
+<p>The recursive case is not surprising either:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_alt on non empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>It follows from the induction hypothesis: given <code>foldr f a bs == foldr_alt f bs a</code>, then <code>foldr f a (b:bs) == foldr_alt f (b:bs) a</code></p>
+
+<p>```
+foldr f a (b:bs) == f b (foldr f a bs)           -- by definition of foldr</p>
+
+<pre><code>             == f b (foldr_alt f bs a)       -- by induction hypothesis
+             == (f b) . (foldr_alt f bs) $ a -- currying and definition of . and $
+             == (foldr_alt f (b:bs)) $ a     -- by definition of foldr_alt
+             == foldr_alt f (b:bs) a         -- uncurrying and definition of $
+</code></pre>
+
+<p>```</p>
+
+<p>But <code>foldl</code> is nowhere to be seen... which is not surprising considering that <code>foldl</code> is tail recursive while <code>foldr</code> and <code>foldr_alt</code> are both body recursive... maybe using an accumulator, we could turn <code>foldr_alt</code> to a tail recursive function.</p>
+
+<p>The initial value for the accumulator must be the identity of the composition function, that is, <code>id</code>.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>accumulator version of foldr_alt  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>foldr_acc</code> is once again easy to define. The base case:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_acc base case  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">acc</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>For the recursive case, notice that <code>f b</code> is composed with the <em>rest</em> of the function to the right. As the accumulator represents the previous part of the function, <code>f b</code> will be composed with this accumulator to the left:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_acc recursive case  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="p">(</span><span class="n">acc</span> <span class="o">.</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">))</span> <span class="n">bs</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The proof is less straightforward; I am not very familiar with equational reasoning, so maybe something simpler is possible. Note that in this proof, I need the list argument to be finite.</p>
+
+<p>First, the base case:
+```
+foldr_alt f [] == id                 -- by definition of foldr_alt</p>
+
+<pre><code>           == foldr_acc f id []  -- by definition of foldr_acc
+</code></pre>
+
+<p>```</p>
+
+<p>For the recursive case, I will not actually use an induction hypothesis. Instead, I will use the fact that the list is finite, and the fact that the composition function is, well, a function. <code>f == g</code> implies <code>acc . f == acc . g</code> for any terminating <code>acc</code>.</p>
+
+<p>```
+acc . foldr_alt f (b1:b2:bs) == acc . (f b1) . (foldr_alt f (b2:bs))</p>
+
+<pre><code>-- by definition of foldr_alt
+                     == acc . (f b1) . (f b2) . (foldr_alt f bs)  
+-- by definition of foldr_alt again
+                     == acc . (f b1) . (f b2) . .. (f bn)         
+-- by induction over the list bs, which must be finite
+                     == foldr_acc f (acc .(f b1) . (f b2) . ... ) []
+-- by definition of foldr_acc f _ []
+                     == foldr_acc f (acc . (f b1) . (f b2) . ..) [bn]  
+-- by definition of foldr_acc, recursive case
+                     == foldr_acc f acc (b1:b2:bs)
+-- by induction over the lenght of (b1:b2:bs), and definition of foldr_acc, recursive case
+</code></pre>
+
+<p>```</p>
+
+<p>The fact that the equation only holds for list of finite lengths should not be surprising, but might still be a limitation of my proof.</p>
+
+<p>With <code>foldr_acc</code> defined as above, converting to <code>foldl</code> is immediate:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr as foldl  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">go</span> <span class="n">id</span> <span class="n">bs</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">go</span> <span class="n">acc</span> <span class="n">b</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">acc</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span> <span class="n">x</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>If I rename <code>acc</code> to <code>g</code>, and move <code>x</code> to the parameter list (uncurrying the <code>go</code> function), I get the original definition.</p>
+
+<p>QED.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Haskell: foldl as foldr]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/"/>
+    <updated>2011-11-09T19:05:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr</id>
+    <content type="html"><![CDATA[<p>A beginner with Haskell is bound to be exposed, usually too early, to some fancy code illustrating either a cool feature of the language, or of its underlying theoretical foundations.</p>
+
+<p>Among others, there is the one-liner lazy Fibonacci definition <code>fibs = 1:1:zipWith (+) fibs (tail fibs)</code>. Another one, the topic of this post, is <code>foldl f a bs = foldr (\b g x -&gt; g (f x b)) id bs a</code>.</p>
+
+<!--more-->
+
+
+<p>Unfortunately for the beginner, the explanation he or she could find on, say, the <a href="http://www.haskell.org/haskellwiki/Foldl_as_foldr">Haskell Wiki</a>, shares the problem of many intermediate Haskell tutorials: they explain moderately complex concepts in terms of more arcane ones.</p>
+
+<p>So here I will attempt to provide a justification of the equation above using fairly simple tools (higher order functions being the most difficult ones).</p>
+
+<h2>Building intuition</h2>
+
+<p>Before even getting to a definition of <code>foldl</code> in terms of <code>foldr</code>, there are a few questions we should ask:</p>
+
+<ul>
+<li>is it even possible?</li>
+<li>how are these two functions different</li>
+<li>what should change to make them similar</li>
+</ul>
+
+
+<p>So first, let's look at each function. The definitions below are very similar to the ones used in <a href="http://www.haskell.org/ghc/">GHC</a> (as you can see <a href="http://www.haskell.org/ghc/docs/7.2.1/html/libraries/base-4.4.0.0/Data-List.html">here</a> when looking at the source of <code>foldl</code> and <code>foldr</code>).</p>
+
+<p>First <code>foldl</code>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">f</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span> <span class="n">b</span><span class="p">)</span> <span class="n">bs</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>foldl</code> is tail recursive: it uses the <code>a</code> parameter as an accumulator.</p>
+
+<p>Then <code>foldr</code>:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="ow">::</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span> <span class="p">(</span><span class="n">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>foldr</code> is body recursive. This is why it is lazy and able to work on infinite list. If the function <code>f</code> is a constructor that is lazy in it's second argument, then it is possible to examine some of the output before evaluating the recursive call.</p>
+
+<p>So far, the two functions appear different. Let's try and look at how they process their arguments.</p>
+
+<p>I define a pair of data types to play the role of the function <code>f</code>. That way, I can look at the structure of calls. I need two because <code>foldl</code> and <code>foldr</code> have different types for <code>f</code></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Helper Data Types  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">data</span> <span class="kt">Fl</span> <span class="n">b</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">Fl</span> <span class="n">b</span><span class="p">)</span> <span class="kt">:&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">b</span> <span class="o">|</span> <span class="kt">El</span>
+</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kr">data</span> <span class="kt">Fr</span> <span class="n">b</span> <span class="ow">=</span> <span class="n">b</span> <span class="kt">:&gt;</span> <span class="p">(</span><span class="kt">Fr</span> <span class="n">b</span><span class="p">)</span> <span class="o">|</span> <span class="kt">Er</span>
+</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>Fl</code> is a data type whose constructor <code>:&lt;</code> can be used in <code>foldl</code>. <code>Fr</code> has constructor <code>:&gt;</code> and can be used in <code>foldr</code>.</p>
+
+<p>Using them:</p>
+
+<p><code>
+*Main&gt; foldl (:&lt;) El [1..5]
+((((El :&lt; 1) :&lt; 2) :&lt; 3) :&lt; 4) :&lt; 5
+*Main&gt; foldr (:&gt;) Er [1..5]
+1 :&gt; (2 :&gt; (3 :&gt; (4 :&gt; (5 :&gt; Er))))
+</code></p>
+
+<p>It seems that, to translate from <code>foldl</code> to <code>foldr</code>, there are two problems:</p>
+
+<ul>
+<li>the function <code>f</code> in <code>foldr</code> uses its parameters in reverse order from the <code>f</code> in <code>foldl</code>. Perhaps something that <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Prelude.html#v:flip"><code>flip</code></a> could help with?</li>
+<li>the list is iterated over in the opposite order. A task for <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Prelude.html#v:reverse"><code>reverse</code></a>?</li>
+</ul>
+
+
+<p>Let's see:</p>
+
+<p><code>
+*Main&gt; foldr (flip (:&lt;)) El [1..5]
+((((El :&lt; 5) :&lt; 4) :&lt; 3) :&lt; 2) :&lt; 1
+*Main&gt; foldr (flip (:&lt;)) El $ reverse [1..5]
+((((El :&lt; 1) :&lt; 2) :&lt; 3) :&lt; 4) :&lt; 5
+</code></p>
+
+<p>So yes, it is indeed possible to write <code>foldl</code> in terms of <code>foldr</code>: <code>foldl f a bs = foldr (flip f) a $ reverse bs</code>. This answer the first question, and along the way we have collected some hints on how to do it (I mean, beside using <code>flip</code> and <code>reverse</code> as above)</p>
+
+<h2>Planning the solution</h2>
+
+<p>Let's look again at <code>foldl</code>:</p>
+
+<p><code>
+*Main&gt; foldl (flip (:&gt;)) Er [1..5]
+5 :&gt; (4 :&gt; (3 :&gt; (2 :&gt; (1 :&gt; Er))))
+</code></p>
+
+<p>This time I pass <code>flip (:&gt;)</code> as the function argument. This is to make <code>:&gt;</code> compatible with <code>foldl</code>. <code>:&gt;</code> is really just like <code>flip (:&lt;)</code>, but it gives a new perspective: <code>:&gt;</code> has type <code>b -&gt; a -&gt; a</code>, which is the same as saying that <code>(:&gt;) b</code> has type <code>a -&gt; a</code> (I apply partially. <code>b :&gt;</code> is the same as <code>(:&gt;) b</code>).</p>
+
+<p>In point-free notation, the result above is identical to <code>(:&gt;) 5 . (:&gt;) 4 . (:&gt;) 3 . (:&gt;) 2 . (:&gt;) 1 $ Er</code>:
+<code>
+*Main&gt; (:&gt;) 5 . (:&gt;) 4 . (:&gt;) 3 . (:&gt;) 2 . (:&gt;) 1 $ Er
+5 :&gt; (4 :&gt; (3 :&gt; (2 :&gt; (1 :&gt; Er))))
+</code></p>
+
+<p>(I'm always happy when ghci agrees with me).</p>
+
+<p>This is great for two reasons:</p>
+
+<ul>
+<li>while we cannot say anything about the original <code>f</code> function (here represented as <code>:&gt;</code>), the function composition <code>.</code> operator is associative, meaning we can put the parenthesis where we (or <code>foldr</code>) wants. In other words, if we manipulate functions <code>(:&gt;) b</code> instead of values, and combine them with composition, we don't have to care about the fact that <code>foldr</code> and <code>foldl</code> nest expressions differently.</li>
+<li>The <code>a</code> parameter, represented here by <code>Er</code>, is removed from the iteration. As <code>foldr</code> and <code>foldl</code> use this parameter differently, if we can abstract it away, this is another difference that disappear.</li>
+</ul>
+
+
+<p>So the solution can be built on two concepts:</p>
+
+<ul>
+<li>use <code>flip f</code> instead of <code>f</code> so that we can operate on functions <code>a -&gt; a</code> instead of values <code>a</code></li>
+<li>use composition over these functions to combine them, then apply the result to the <code>a</code> parameter to get the answer.</li>
+</ul>
+
+
+<h2>Building the solution</h2>
+
+<p>First, I introduce a new function, <code>foldl_alt</code>, that is supposed to implement <code>foldl</code>. The definition of <code>foldl_alt</code> is then rewritten until <code>foldr</code> appears:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt basic equation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>First, let's handle the base case:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt on empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">id</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>This is easily shown true:
+```
+foldl f a [] == a                  -- by definition of foldl</p>
+
+<pre><code>         == id a               -- by definition of id
+         == (foldl_alt f []) a -- by definition of foldl_alt
+</code></pre>
+
+<p>```</p>
+
+<p>The recursive case is simple as well (by recursion):
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt on non empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">f&#39;</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">f&#39;</span> <span class="ow">=</span> <span class="n">flip</span> <span class="n">f</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Assuming <code>foldl f a bs == foldl_alt f bs a</code>, let's show by induction that <code>foldl f a (b:bs) == foldl_alt f (b:bs) a</code>:</p>
+
+<p>```
+foldl f a (b:bs) == foldl f (f a b) bs            -- by definition of foldl</p>
+
+<pre><code>             == foldl_alt f bs (f a b)        -- induction hypothesis
+             == foldl_alt f bs (f' b a)       -- simple replacement
+                  where f' = flip f
+             == (foldl_alt f bs) . (f' b) $ a -- point-free notation
+                  where f' = flip f
+</code></pre>
+
+<p>```</p>
+
+<p>So <code>foldl_alt</code> as currently defined is identical to <code>foldl</code>. The recursive case can be further rewritten as:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt on non empty list, second version  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">comp&#39;</span> <span class="p">(</span><span class="n">f&#39;</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">f&#39;</span>    <span class="ow">=</span> <span class="n">flip</span> <span class="n">f</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="n">comp&#39;</span> <span class="ow">=</span> <span class="n">flip</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Here the composition operator is replaced by <code>comp'</code>, which just takes its argument in reversed order. This is done to show the similarity of this current <code>foldl_alt</code> with the recursive case of <code>foldr</code>. Indeed, <code>foldl_alt f</code> is identical to <code>foldr m id</code> for some function <code>m</code> (for Mystery):</p>
+
+<p>```
+foldl_alt f [] == id == foldr m id []</p>
+
+<pre><code>-- by definition of both foldl_alt and foldr
+</code></pre>
+
+<p>```</p>
+
+<p>Now I can use induction to show that <code>foldl_alt f bs == foldr m id bs</code> implies <code>foldl_alt f (b:bs) == foldr m id (b:bs)</code>, and compute <code>m</code> at the same time:</p>
+
+<p>```
+foldl_alt f (b:bs) == comp' (f' b) (foldl_alt f bs)</p>
+
+<pre><code>                    where f' = flip f
+                          comp' = flip (.)
+-- by definition of foldl_alt
+               == comp' (\a -&gt; f a b) (foldl_alt f bs)        
+                    where comp' = flip (.)
+-- expand f'
+               == (\g a -&gt; g (f a b)) (foldl_alt f bs)       
+-- expand comp' - g has type a -&gt; a, and is bound to (foldl_alt f bs) 
+               == (\b' g a -&gt; g (f a b')) b (foldl_alt f bs) 
+-- take b out of the function; replace it with b' that is bound to b
+               == (\b' g a -&gt; g (f a b')) b (foldr (\b' g a -&gt; g (f a b')) id bs)
+-- induction hypothesis
+               == foldr (\b' g a -&gt; g (f a b')) (b:bs) id    
+-- definition of foldr, recursive case
+</code></pre>
+
+<p>```</p>
+
+<p>When using the induction hypothesis, I replaced <code>m</code> with <code>(\b' g a -&gt; g (f a b'))</code>. This is because this function is independent of any specific <code>b</code>: by construction it would be the same at every step of the induction (except the base case, where it is not use, and therefore can be anything we need it to be).</p>
+
+<p><code>b'</code> as a parameter to the function is bound to <code>b</code> as the value in the list. I use different names to make it clear they're different, but of course inside the function I could use <code>b</code> as the variable scope is limited to the function.</p>
+
+<p>For the same reason, I replace the <code>a</code> above by <code>x</code>, as I need <code>a</code> to represent the original <code>a</code> parameter (once again I could use <code>a</code> for both). This gives:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl as foldr  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="n">b</span> <span class="n">g</span> <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">g</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span> <span class="n">b</span><span class="p">))</span> <span class="n">id</span> <span class="n">bs</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Ok, that was long. I hope it was clear (or clearer).</p>
+
+<p>Next time I'll show how to implement <code>foldr</code> as <code>foldl</code> (minus the laziness).</p>
+]]></content>
+  </entry>
+  
+</feed>

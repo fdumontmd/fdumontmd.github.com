@@ -1,0 +1,579 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Clojure Day 2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Today Clojure&#8217;s coverage is getting beefier with tail recursion (soso), lazy sequences and &#8230; macros! The support for tail recursion is &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Clojure Day 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-12T19:25:00+09:00" pubdate data-updated="true">Nov 12<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Today Clojure&#8217;s coverage is getting beefier with tail recursion (soso), lazy sequences and &#8230; macros!</p>
+
+<!--more-->
+
+
+<p>The support for tail recursion is disappointing. But given that the JVM implementers never actually understood the value of tail recursion (or perhaps they overestimated its cost), it would have been surprising if a language running on top of the JVM had a solution. Scala is similarly limited.</p>
+
+<p>Lazy sequences are cool, but not spectacularly so. It is a more restricted concept than laziness in Haskell. Still, lazy lists form a large part of my use of Haskell&#8217;s laziness (perhaps the only part I can use), so I do not expect to feel limited in any way with Clojure.</p>
+
+<p>Finally, macros. Writing macros separates men from boys. Writing macros that write macros separates gods from men. Macros are good. Abuse of macros can cause headaches, but the good kind (it&#8217;s just your brain swelling).</p>
+
+<h2>Exercises</h2>
+
+<h3>Implementation of common macros in Clojure</h3>
+
+<p>That one is very easy. The web site has a dedicated <a href="http://clojure.org/macros">page</a> with the common macros. The source code is available for each. <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/defmacro"><code>defmacro</code></a> is actually a macro, and its source code is, well, let&#8217;s just say I&#8217;m happy someone else wrote it. And yes, it is a macro that writes macros.</p>
+
+<p>To expand the code of macros, I wrote this small function to recursively expand macro definitions:</p>
+
+<figure class='code'><figcaption><span>rec-expand function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">rec-expand</span> <span class="p">[</span><span class="nv">lst</span><span class="p">]</span>
+</span><span class='line'>          <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">seq? </span><span class="nv">lst</span><span class="p">)</span> <span class="p">(</span><span class="nb">map </span><span class="nv">rec-expand</span> <span class="p">(</span><span class="nb">macroexpand </span><span class="nv">lst</span><span class="p">))</span> <span class="nv">lst</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Without it, it is difficult to see deeply into the code:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (macroexpand '(defn collection-type                                                                                   
+</span><span class='line'>             "Return either :list, :vector or :map, depending of the type of col."                      
+</span><span class='line'>             [col]                                                                                      
+</span><span class='line'>             (cond (list? col) :list
+</span><span class='line'>                   (map? col) :map
+</span><span class='line'>                   (vector? col) :vector)))
+</span><span class='line'>(def collection-type (.withMeta (clojure.core/fn collection-type ([col] (cond (list? col) :list (map? col) :map (vector? col) :vector))) (.meta (var collection-type))))</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/macroexpand"><code>macroexpand</code></a> did not expand the <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/cond"><code>cond</code></a> macros.</p>
+
+<p>With <code>rec-expand</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (rec-expand '(defn collection-type                                                                                   
+</span><span class='line'>             "Return either :list, :vector or :map, depending of the type of col."                      
+</span><span class='line'>             [col]                                                                                      
+</span><span class='line'>             (cond (list? col) :list
+</span><span class='line'>                   (map? col) :map
+</span><span class='line'>                   (vector? col) :vector))) 
+</span><span class='line'>(def collection-type (. (fn* collection-type ([col] (if (list? col) :list (if (map? col) :map (if (vector? col) :vector ()))))) withMeta (. (var collection-type) meta)))</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Implementation of a lazy sequence</h3>
+
+<p>For this exercise, I use <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/lazy-seq"><code>lazy-seq</code></a>, which evaluates its body on demand (and remembers the value).</p>
+
+<p>One first example is a simple reimplementation of <code>(iterate inc n)</code>:</p>
+
+<figure class='code'><figcaption><span>upfrom  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">upfrom</span> <span class="p">[</span><span class="nv">n</span><span class="p">]</span>
+</span><span class='line'>    <span class="s">&quot;[n, n+1, n+2, ....&quot;</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nb">cons </span><span class="nv">n</span> <span class="p">(</span><span class="nf">upfrom</span> <span class="p">(</span><span class="nb">inc </span><span class="nv">n</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (take 10 (upfrom 0))
+</span><span class='line'>(0 1 2 3 4 5 6 7 8 9)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A bit more interesting, perhaps, is a Fibonacci sequence not using <code>map</code>:</p>
+
+<figure class='code'><figcaption><span>Fibonacci sequence  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">fibs</span> <span class="p">[</span><span class="nv">a</span> <span class="nv">b</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Fibonacci sequence starting with a, b, ...&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nb">cons </span><span class="nv">a</span> <span class="p">(</span><span class="nf">fibs</span> <span class="nv">b</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">a</span> <span class="nv">b</span><span class="p">)))))</span>
+</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">fib</span> <span class="p">(</span><span class="nf">fibs</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Computing the 20 first Fibonacci numbers:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (take 20 fib)
+</span><span class='line'>(1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Unless with else condition</h3>
+
+<p>For this exercise, I use two features that were not covered in the book</p>
+
+<ul>
+<li>variable lists of arguments support</li>
+<li>backquote notation</li>
+</ul>
+
+
+<p>Clojure support for variable lists of arguments is nice: there can be a different body for each list, and the last one can a placeholder variable for &#8220;all the remaining arguments&#8221;. The concept of arguments (and variable lists) applies to everything that takes arguments: functions, macros, &#8230; Here I use it to differentiate between basic <code>(unless test body)</code> and <code>(unless test body else)</code>.</p>
+
+<p>Backquote notation is what makes macro useable. Rather than using <code>list</code> to build the form, I use the backquote. Then expressions prefixed with tilde are replaced by their value. Lisps had an identical concept (but comma was used instead of tilde).</p>
+
+<p>This makes macros shorter and easier to read.</p>
+
+<figure class='code'><figcaption><span>extended unless  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defmacro </span><span class="nv">unless</span>
+</span><span class='line'>  <span class="p">([</span><span class="nv">test</span> <span class="nv">body</span><span class="p">]</span> <span class="o">`</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="nv">~test</span><span class="p">)</span> <span class="nv">~body</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">([</span><span class="nv">test</span> <span class="nv">body</span> <span class="nv">alt</span><span class="p">]</span> <span class="o">`</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="nv">~test</span><span class="p">)</span> <span class="nv">~body</span> <span class="nv">~alt</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (unless false (println "Danger!"))
+</span><span class='line'>Danger!
+</span><span class='line'>nil
+</span><span class='line'>user=&gt; (unless true (println "Danger!") (println "No danger...")) 
+</span><span class='line'>No danger...
+</span><span class='line'>nil</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Using defrecord and defprotocol</h3>
+
+<p>Ok, I&#8217;m not very inspired by this exercise. I was thinking of doing the classic shape class hierarchy, but finally settled for an employee protocol:</p>
+
+<figure class='code'><figcaption><span>Employee protocol  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defprotocol</span> <span class="nv">Employee</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">e</span> <span class="nv">h</span><span class="p">])</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">e</span> <span class="nv">a</span><span class="p">]))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first implementation is a manager, which is modeled according to things I&#8217;ve heard about other companies, not mine, where managers are hard-working and have to be pulled from their desk to be fed:</p>
+
+<figure class='code'><figcaption><span>Manager implementation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defrecord</span> <span class="nv">Manager</span> <span class="p">[</span><span class="nv">hobby</span><span class="p">]</span>
+</span><span class='line'>  <span class="nv">Employee</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">h</span><span class="p">]</span>
+</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Working &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours then &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours of &quot;</span> <span class="nv">hobby</span><span class="p">)))</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">a</span><span class="p">]</span>
+</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;You are too modest. You deserve &quot;</span> <span class="p">(</span><span class="nb">* </span><span class="mf">1.1</span> <span class="nv">a</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing the manager:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (def m (Manager. "golf"))
+</span><span class='line'>#'user/m
+</span><span class='line'>user=&gt; (work m 8)
+</span><span class='line'>Working 4 hours then 4 hours of golf
+</span><span class='line'>nil
+</span><span class='line'>user=&gt; (get-raise m 1000)
+</span><span class='line'>You are too modest. You deserve 1100.0
+</span><span class='line'>nil</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Of course we need people to actually do something:</p>
+
+<figure class='code'><figcaption><span>Worker implemenation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defrecord</span> <span class="nv">Worker</span> <span class="p">[]</span>
+</span><span class='line'>  <span class="nv">Employee</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">h</span><span class="p">]</span>
+</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Working &quot;</span> <span class="nv">h</span> <span class="s">&quot; hours then &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours overtime&quot;</span><span class="p">)))</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">a</span><span class="p">]</span>
+</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;There is an economic crisis. Be happy with &quot;</span> <span class="p">(</span><span class="nb">* </span><span class="mf">0.1</span> <span class="nv">a</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing the worker:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (def w (Worker.))
+</span><span class='line'>#'user/w
+</span><span class='line'>user=&gt; (work w 8)
+</span><span class='line'>Working 8 hours then 4 hours overtime
+</span><span class='line'>nil
+</span><span class='line'>user=&gt; (get-raise w 100)
+</span><span class='line'>There is an economic crisis. Be happy with 10.0
+</span><span class='line'>nil</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok, nothing fancy. But looking at the doc I see it is possible to extend basic Java classes, so I think there&#8217;s far more depth to this construct. Otherwise, there&#8217;s always <code>defmacro</code> to play with.</p>
+
+<p>And this completes Day 2.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-12T19:25:00+09:00" pubdate data-updated="true">Nov 12<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/11/11/haskell-foldr-as-foldl/" title="Previous Post: Haskell: foldr as foldl">&laquo; Haskell: foldr as foldl</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/" title="next Post: Seven Languages in Seven Weeks Clojure Day 3">Seven Languages in Seven Weeks Clojure Day 3 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Languages in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/">Ruby Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/">Ruby Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">Ruby Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Io Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Io Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Io Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">About Io</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Prolog Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Prolog Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Prolog Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Scala Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Scala Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Scala Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/">Erlang Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/">Erlang Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/">Erlang Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">Clojure Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Clojure Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Haskell Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Haskell Day 2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/11/haskell-foldr-as-foldl/">Haskell: foldr as foldl</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

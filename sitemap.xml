@@ -2,120 +2,170 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/11/a-new-blog-why/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/
         </loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/
         </loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/13/kyogen-traditional-japanese-slapstick/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/
         </loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/</loc>
-        <lastmod>2011-10-24T22:55:56+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/
         </loc>
-        <lastmod>2011-10-28T16:44:33+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/
         </loc>
-        <lastmod>2011-10-24T13:06:24+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/
         </loc>
-        <lastmod>2011-10-24T23:08:53+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/
         </loc>
-        <lastmod>2011-10-25T12:16:17+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/
         </loc>
-        <lastmod>2011-10-29T00:37:25+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/
         </loc>
-        <lastmod>2011-10-31T13:28:31+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/
         </loc>
-        <lastmod>2011-10-31T17:54:47+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/
         </loc>
-        <lastmod>2011-11-05T19:22:34+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/
+        </loc>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/
+        </loc>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/</loc>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/
+        </loc>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.wakatta.jp/blog/2011/11/11/haskell-foldr-as-foldl/</loc>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/
+        </loc>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/
+        </loc>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/
+        </loc>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/
+        </loc>
+        <lastmod>2011-11-20T14:14:28+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/about/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2011-11-05T19:22:34+09:00</lastmod>
+        <lastmod>2011-11-20T14:14:28+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/</loc>
-        <lastmod>2011-10-23T13:47:54+09:00</lastmod>
+        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2011-11-05T19:22:34+09:00</lastmod>
+        <lastmod>2011-11-20T14:14:28+09:00</lastmod>
     </url>
 </urlset>

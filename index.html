@@ -9,7 +9,7 @@
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="New week, new language. This time is the turn of Erlang, which comes from Ericsson (the phone company), and was used internally on internal products &hellip;">
+  <meta name="description" content="Today introduces the functional aspects of Haskell: higher order functions, partial application of functions and lazy evaluation. ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,377 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-18T09:39:00+09:00" pubdate data-updated="true">Nov 18<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today introduces the functional aspects of Haskell: higher order functions, partial application of functions and lazy evaluation.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-17T07:58:00+09:00" pubdate data-updated="true">Nov 17<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The final language of the book is Haskell. Haskell is challenging and satisfying in many ways. It can be elegant and slow, or, in the hands of experts, elegant and fast (ugly but fast is usually for intermediate users).</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-13T20:30:00+09:00" pubdate data-updated="true">Nov 13<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The final day with Clojure covers its support for concurrent programming. It has a bestiary of concepts that are somewhat similar yet distinct from other modern languages.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-12T19:25:00+09:00" pubdate data-updated="true">Nov 12<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today Clojure&#8217;s coverage is getting beefier with tail recursion (soso), lazy sequences and &#8230; macros!</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/11/haskell-foldr-as-foldl/">Haskell: Foldr as Foldl</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-11T08:03:00+09:00" pubdate data-updated="true">Nov 11<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In a previous <a href="/blog/2011/11/09/haskell-foldl-as-foldr/">post</a>, I tried to show how to derive the formula expression <code>foldl</code> in terms of <code>foldr</code>. Unsurprisingly, there is a way to express <code>foldr</code> in terms <code>foldl</code>: <code>foldr f a bs = foldl (\g b x -&gt; g (f b x)) id bs a</code>. Today I&#8217;ll try to derive this definition.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/11/haskell-foldr-as-foldl/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">Seven Languages in Seven Weeks Clojure Day 1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-11T08:02:00+09:00" pubdate data-updated="true">Nov 11<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sixth week, sixth language, this time <a href="http://clojure.org/">Clojure</a>, the latest attempt to make <a href="http://en.wikipedia.org/wiki/Lisp_(programming_language)">Lisp</a> popular.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/09/haskell-foldl-as-foldr/">Haskell: Foldl as Foldr</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-09T19:05:00+09:00" pubdate data-updated="true">Nov 9<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A beginner with Haskell is bound to be exposed, usually too early, to some fancy code illustrating either a cool feature of the language, or of its underlying theoretical foundations.</p>
+
+<p>Among others, there is the one-liner lazy Fibonacci definition <code>fibs = 1:1:zipWith (+) fibs (tail fibs)</code>. Another one, the topic of this post, is <code>foldl f a bs = foldr (\b g x -&gt; g (f x b)) id bs a</code>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/09/haskell-foldl-as-foldr/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/">Seven Languages in Seven Weeks Erlang Day 3</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-06T10:17:00+09:00" pubdate data-updated="true">Nov 6<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>One last day with Erlang; it was about time we get to perhaps its most significant aspect: its concurrency model, and recipe for error recovery, embodied in its motto, &#8220;Let it crash.&#8221;</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/">Seven Languages in Seven Weeks Erlang Day 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-05T18:22:00+09:00" pubdate data-updated="true">Nov 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Second day with Erlang, this time to cover basic controls, and more functional goodies such as anonymous and higher-order functions, list functions and list comprehensions.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/">Seven Languages in Seven Weeks Erlang Day 1</a></h1>
     
     
@@ -89,9 +460,14 @@
 
 
 
+
+
+
+
   
 
-<time datetime="2011-11-04T12:51:00+09:00" pubdate>Nov 4<span>th</span>, 2011</time>
+
+<time datetime="2011-11-04T12:51:00+09:00" pubdate data-updated="true">Nov 4<span>th</span>, 2011</time>
         
       </p>
     
@@ -105,330 +481,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Seven Languages in Seven Weeks Scala Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-  
-
-<time datetime="2011-10-30T22:18:00+09:00" pubdate>Oct 30<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>On the last day with Scala, the book introduces the XML support and concurrency.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Seven Languages in Seven Weeks Scala Day 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-  
-
-<time datetime="2011-10-29T10:33:00+09:00" pubdate>Oct 29<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Second day is dedicated to containers, mostly. Lists, Sets and Maps, some of their most useful methods, and the use of code blocks (anonymous functions)</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Seven Languages in Seven Weeks Scala Day 1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-  
-
-<time datetime="2011-10-28T16:43:00+09:00" pubdate>Oct 28<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The language for this week is <a href="http://www.scala-lang.org/">Scala</a>, which attempts (among other things) to brings functional programming and a new concurrency model to the JVM.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/">It Has Been a Bad Year for Geniuses&#8230;</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-  
-
-<time datetime="2011-10-25T11:45:00+09:00" pubdate>Oct 25<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>It has been a bad year, a bad month even, for computer geniuses: <a href="http://en.wikipedia.org/wiki/Steve_jobs">Steve Jobs</a>, <a href="http://en.wikipedia.org/wiki/Dennis_Ritchie">Dennis Ritchie</a>, and now <a href="http://en.wikipedia.org/wiki/John_McCarthy_%28computer_scientist%29">John McCarthy</a>.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Seven Languages in Seven Weeks Prolog Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-  
-
-<time datetime="2011-10-24T13:33:00+09:00" pubdate>Oct 24<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The final day with Prolog is called &#8220;Blowing Up Vegas&#8221; in the book, and was certainly intended as a Shock and Awe moment. Unfortunately, it feels more like Razzle Dazzle.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Seven Languages in Seven Weeks Prolog Day 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-  
-
-<time datetime="2011-10-23T23:10:00+09:00" pubdate>Oct 23<span>rd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The second day with Prolog is about the main data structure (the list) and the writing of rules.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Seven Languages in Seven Weeks Prolog Day 1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-  
-
-<time datetime="2011-10-23T16:45:00+09:00" pubdate>Oct 23<span>rd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The third language in the series is <a href="http://en.wikipedia.org/wiki/Prolog">Prolog</a>. I first encountered it at university many years ago, and found it a really exciting and different language.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">Seven Languages in Seven Weeks - About Io</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-  
-
-<time datetime="2011-10-21T09:14:00+09:00" pubdate>Oct 21<span>st</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-3">Yesterday</a> in wrapping up I dismissed the language in a very terse manner; I thought I should expand on this.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Seven Languages in Seven Weeks Io Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-  
-
-<time datetime="2011-10-20T15:16:00+09:00" pubdate>Oct 20<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Third and final day with Io (as far as the book is concerned). This time Io metaprogramming abilities are used to bend the language into strange shapes.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Read on &rarr;</a>
     </footer>
   
 
@@ -456,23 +508,23 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/">Seven Languages in Seven Weeks Erlang Day 1</a>
+        <a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Seven Languages in Seven Weeks Scala Day 3</a>
+        <a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Seven Languages in Seven Weeks Scala Day 2</a>
+        <a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Seven Languages in Seven Weeks Scala Day 1</a>
+        <a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/">It has been a bad year for geniuses&#8230;</a>
+        <a href="/blog/2011/11/11/haskell-foldr-as-foldl/">Haskell: foldr as foldl</a>
       </li>
     
   </ul>
@@ -537,23 +589,8 @@
 </script>
 
 
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
 
 
-  <script type="text/javascript">
-    (function() {
-      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
-      script.src = 'https://apis.google.com/js/plusone.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
-    })();
-  </script>
 
 
 

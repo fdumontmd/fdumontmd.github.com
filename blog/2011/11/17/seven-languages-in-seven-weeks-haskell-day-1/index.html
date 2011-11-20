@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Haskell Day 1 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="The final language of the book is Haskell. Haskell is challenging and satisfying in many ways. It can be elegant and slow, or, in the hands of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Haskell Day 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-17T07:58:00+09:00" pubdate data-updated="true">Nov 17<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>The final language of the book is Haskell. Haskell is challenging and satisfying in many ways. It can be elegant and slow, or, in the hands of experts, elegant and fast (ugly but fast is usually for intermediate users).</p>
+
+<!--more-->
+
+
+<p>I had learned Haskell already, so I did not really benefit from this chapter. Still, some of the exercises were fun (and I tried to improve those that were not).</p>
+
+<h3>On 4 + 1.0</h3>
+
+<p>The book does not explain what happens in this expression, but I believe there is something deep and cool about Haskell here. When typing <code>4 + 1.0</code> in ghci, the output comes back as <code>5.0</code>, as expected. But the actual behaviour is not exactly usual.</p>
+
+<p>Most languages would do that kind of processing:</p>
+
+<ul>
+<li>when parsing, 4 is tagged as integer, while 1.0 is tagged as float;</li>
+<li>at runtime, the operator <code>+</code> checks its arguments:
+
+<ul>
+<li>if the types are different, it promotes the argument with the least general type to the other type. In this case, 4 is promoted to float;</li>
+<li>then it call the addition routine for the correct type.</li>
+</ul>
+</li>
+</ul>
+
+
+<p>Haskell does nothing like that. The type of <code>+</code> is <code>(+) :: Num a =&gt; a -&gt; a -&gt; a</code>. In other words, its arguments must have the same type (it is similar to Ocaml in this regard). Yet the operation succeeds.</p>
+
+<p>This is because what the parser does is similar to replacing the numeric literal by a call to the <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:read"><code>read</code></a> function, with just enough constraints on the type to be compatible with the syntax of the literal.</p>
+
+<p>Let&#8217;s look at that <code>read</code> function. First of all, it cannot be called with no type constraint:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Prelude&gt; read "4.0" :: Int
+</span><span class='line'>*** Exception: Prelude.read: no parse
+</span><span class='line'>Prelude&gt; read "a"
+</span><span class='line'>
+</span><span class='line'>&lt;interactive&gt;:1:1:
+</span><span class='line'>    Ambiguous type variable `a0' in the constraint:
+</span><span class='line'>      (Read a0) arising from a use of `read'
+</span><span class='line'>    Probable fix: add a type signature that fixes these type variable(s)
+</span><span class='line'>    In the expression: read "a"
+</span><span class='line'>    In an equation for `it': it = read "a"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What Haskell says here (quite forcefully) is that it does not know how to interpret the string &#8220;4&#8221; without a specific type to guide it. Lets give it one:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Prelude&gt; read "4" :: Int
+</span><span class='line'>4</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If we propose to read &#8220;4&#8221; as an <code>Int</code>, <code>read "4"</code> returns an <code>Int</code> of value 4. We can try with other types:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Prelude&gt; read "4" :: Float
+</span><span class='line'>4.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Same thing here: we constraint the value of <code>read "4"</code> to be a <code>Float</code>, so it is one. Notice how the type system can feed constraints back into a function through the return value.</p>
+
+<p>So what happened in <code>4 + 1.0</code>? The parser replaced the literals by calls to <code>read</code>, with constraints on literals whose syntax cannot be an Integral value (such as 1.0, which indicates a <code>Float</code>). So what is really executed is</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Prelude&gt; read "4" + (read "1.0" :: Float)
+</span><span class='line'>5.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>+</code> operator constraints both operands to the same type, so <code>read "4"</code> receives the constraint <code>:: Float</code> as well; both operands have the same type, always. There is no implicit conversion happening at run time.</p>
+
+<h3>On ranges</h3>
+
+<p>The book mentions that ranges can be built with fractional numbers, but this is really a bad idea. Haskell does support it, but will use float arithmetic, which has notorious problems for such usage. Consider this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Prelude&gt; [1, 0.9 .. 0]
+</span><span class='line'>[1.0,0.9,0.8,0.7000000000000001,0.6000000000000001,0.5000000000000001,0.40000000000000013,0.30000000000000016,0.20000000000000018,0.1000000000000002,2.220446049250313e-16]
+</span><span class='line'>Prelude&gt; 
+</span><span class='line'>Prelude&gt; map (/ 10) [10, 9 .. 0]
+</span><span class='line'>[1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.0]
+</span><span class='line'>Prelude&gt; </span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first version (fractional ranges) accumulates small errors, but the second version (integral ranges mapped into fractional ranges) is correct.</p>
+
+<h2>Exercises</h2>
+
+<h3>The Haskell wiki</h3>
+
+<p>The wiki is <a href="http://haskell.org/haskellwiki/Haskell">here</a>.</p>
+
+<h3>allEven</h3>
+
+<p>I have 6 (or 7) variants of <code>allEven</code>. The most natural one is <code>allEven_2'</code>, based on <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:filter"><code>filter</code></a>. <code>allEven_5</code> is the same as the book version, but abstract the recursion away in <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:foldr"><code>foldr</code></a>. <code>allEven_6</code> is strict, which means it does not work on infinite list. I tried to explain how it works <a href="/blog/2011/11/11/haskell-foldr-as-foldl/">here</a>. Of course there would never be any good reason to use anything like it, it is merely the kind of jokes Haskell programmers (some of them at least) enjoy (some of the time).</p>
+
+<figure class='code'><figcaption><span> (alleven.hs)</span> <a href='/downloads/code/7l7w/haskell/alleven.hs'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">module</span> <span class="nn">AllEven</span> <span class="kr">where</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- basic definition</span>
+</span><span class='line'><span class="nf">allEven</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">Integer</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+</span><span class='line'><span class="nf">allEven</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">allEven</span> <span class="p">(</span><span class="n">h</span><span class="kt">:</span><span class="n">t</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">if</span> <span class="n">even</span> <span class="n">h</span> <span class="kr">then</span> <span class="n">h</span><span class="kt">:</span><span class="n">allEven</span> <span class="n">t</span> <span class="kr">else</span> <span class="n">allEven</span> <span class="n">t</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- essentially we are filtering, so maybe a filter function would help</span>
+</span><span class='line'><span class="nf">my_filter</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+</span><span class='line'><span class="nf">my_filter</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">my_filter</span> <span class="n">f</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">if</span> <span class="n">f</span> <span class="n">x</span> <span class="kr">then</span> <span class="n">x</span><span class="kt">:</span><span class="n">my_filter</span> <span class="n">f</span> <span class="n">xs</span> <span class="kr">else</span> <span class="n">my_filter</span> <span class="n">f</span> <span class="n">xs</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- so now we can use the my_filter function to write a new allEven:</span>
+</span><span class='line'><span class="nf">allEven_2</span> <span class="n">ls</span> <span class="ow">=</span> <span class="n">my_filter</span> <span class="n">even</span> <span class="n">ls</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- in point free notation,</span>
+</span><span class='line'><span class="nf">allEven_2&#39;</span> <span class="ow">=</span> <span class="n">my_filter</span> <span class="n">even</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- actually, filter already exists:</span>
+</span><span class='line'><span class="nf">allEven_filter</span> <span class="ow">=</span> <span class="n">filter</span> <span class="n">even</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- if even numbers are replaced by a singleton, and odd numbers </span>
+</span><span class='line'><span class="c1">-- by an empty list, when we concatenate, we get the result we want</span>
+</span><span class='line'><span class="nf">allEven_3</span> <span class="ow">=</span> <span class="n">concat</span> <span class="o">.</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="kr">if</span> <span class="n">even</span> <span class="n">x</span> <span class="kr">then</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="kr">else</span> <span class="kt">[]</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- concat . map == concatMap</span>
+</span><span class='line'><span class="nf">allEven_4</span> <span class="ow">=</span> <span class="n">concatMap</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="kr">if</span> <span class="n">even</span> <span class="n">x</span> <span class="kr">then</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="kr">else</span> <span class="kt">[]</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- processing lists left to right is a job for foldr. </span>
+</span><span class='line'><span class="c1">-- Actually this is closer to the original definition</span>
+</span><span class='line'><span class="nf">allEven_5</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="n">xs</span> <span class="ow">-&gt;</span> <span class="kr">if</span> <span class="n">even</span> <span class="n">x</span> <span class="kr">then</span> <span class="n">x</span><span class="kt">:</span><span class="n">xs</span> <span class="kr">else</span> <span class="n">xs</span><span class="p">)</span> <span class="kt">[]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- accumulator and tail recursive version of allEven_5</span>
+</span><span class='line'><span class="nf">allEven_6</span> <span class="n">ls</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="p">(</span><span class="nf">\</span><span class="n">g</span> <span class="n">b</span> <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">g</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span> <span class="n">x</span><span class="p">))</span> <span class="n">id</span> <span class="n">ls</span> <span class="kt">[]</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">f</span> <span class="n">x</span> <span class="n">xs</span> <span class="ow">=</span> <span class="kr">if</span> <span class="n">even</span> <span class="n">x</span> <span class="kr">then</span> <span class="n">x</span><span class="kt">:</span><span class="n">xs</span> <span class="kr">else</span> <span class="n">xs</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- list comprehension</span>
+</span><span class='line'><span class="nf">allEven_7</span> <span class="n">ls</span> <span class="ow">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="ow">&lt;-</span> <span class="n">ls</span><span class="p">,</span> <span class="n">even</span> <span class="n">x</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>reverse</h3>
+
+<p>The natural way would of course to use <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:reverse"><code>reverse</code></a>. <code>reverse_1</code> is the one most beginners would think of. <code>reverse_2</code> uses an accumulator, which is abstracted in the <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:foldl"><code>foldl</code></a> function, as seen in <code>reverse_3</code> or <code>reverse_4</code>. Finally, <code>reverse_5</code> is the same kind of joke as <code>allEven_6</code> above, based on expressing <code>foldl</code> in terms <code>foldr</code>, as I explained <a href="/blog/2011/11/09/haskell-foldl-as-foldr/">here</a>.</p>
+
+<figure class='code'><figcaption><span> (myreverse.hs)</span> <a href='/downloads/code/7l7w/haskell/myreverse.hs'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">module</span> <span class="nn">MyReverse</span> <span class="kr">where</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- the naive way</span>
+</span><span class='line'><span class="nf">reverse_1</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">reverse_1</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">reverse_1</span> <span class="n">xs</span>  <span class="o">++</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- accumulator and tail recursion</span>
+</span><span class='line'><span class="nf">reverse_2</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">go</span> <span class="kt">[]</span> <span class="n">xs</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">go</span> <span class="n">acc</span> <span class="kt">[]</span>     <span class="ow">=</span> <span class="n">acc</span>
+</span><span class='line'>        <span class="n">go</span> <span class="n">acc</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">go</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">acc</span><span class="p">)</span> <span class="n">xs</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- accumulator and tail recursion means foldl</span>
+</span><span class='line'><span class="nf">reverse_3</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="p">(</span><span class="nf">\</span><span class="n">xs</span> <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="kt">[]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- the anonymous function in reverse_3 is actually flip (:)</span>
+</span><span class='line'><span class="nf">reverse_4</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="p">(</span><span class="n">flip</span> <span class="p">(</span><span class="kt">:</span><span class="p">))</span> <span class="kt">[]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- foldl leaning so much to the left it comes back from the right:</span>
+</span><span class='line'><span class="nf">reverse_5</span> <span class="n">ls</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="n">b</span> <span class="n">g</span> <span class="n">xs</span> <span class="ow">-&gt;</span> <span class="n">g</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">xs</span><span class="p">))</span> <span class="n">id</span> <span class="n">ls</span> <span class="kt">[]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Colour pairs</h3>
+
+<p>This is simple with list comprehensions. A way to ensure that only one of (black, blue) and (blue, black) is available is to filter the pairs so that the first element is smaller or equal than the second one.</p>
+
+<figure class='code'><figcaption><span>Colour pairs  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">let</span> <span class="n">colours</span> <span class="ow">=</span><span class="p">[</span><span class="s">&quot;black&quot;</span><span class="p">,</span> <span class="s">&quot;white&quot;</span><span class="p">,</span> <span class="s">&quot;blue&quot;</span><span class="p">,</span> <span class="s">&quot;yellow&quot;</span><span class="p">,</span> <span class="s">&quot;red&quot;</span><span class="p">]</span>
+</span><span class='line'><span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">|</span> <span class="n">x</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span> <span class="n">y</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">y</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces (reindented for readability):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[("black","black"),("black","white"),("black","blue"),
+</span><span class='line'>("black","yellow"),("black","red"),("white","white"),
+</span><span class='line'>("white","yellow"),("blue","white"),("blue","blue"),
+</span><span class='line'>("blue","yellow"),("blue","red"),("yellow","yellow"),
+</span><span class='line'>("red","white"),("red","yellow"),("red","red")]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There are exactly 15 pairs, as expected.</p>
+
+<h3>Multiplication table</h3>
+
+<p>Nothing simpler:</p>
+
+<figure class='code'><figcaption><span>Multiplication table  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="p">)</span> <span class="o">|</span> <span class="n">x</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">11</span><span class="p">],</span> <span class="n">y</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">11</span><span class="p">]]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces (reindented for readability):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[(1,1,1),(1,2,2),(1,3,3),(1,4,4),(1,5,5),(1,6,6),(1,7,7),(1,8,8),(1,9,9),(1,10,10),(1,11,11),
+</span><span class='line'>(2,1,2),(2,2,4),(2,3,6),(2,4,8),(2,5,10),(2,6,12),(2,7,14),(2,8,16),(2,9,18),(2,10,20),(2,11,22),
+</span><span class='line'>(3,1,3),(3,2,6),(3,3,9),(3,4,12),(3,5,15),(3,6,18),(3,7,21),(3,8,24),(3,9,27),(3,10,30),(3,11,33),
+</span><span class='line'>(4,1,4),(4,2,8),(4,3,12),(4,4,16),(4,5,20),(4,6,24),(4,7,28),(4,8,32),(4,9,36),(4,10,40),(4,11,44),
+</span><span class='line'>(5,1,5),(5,2,10),(5,3,15),(5,4,20),(5,5,25),(5,6,30),(5,7,35),(5,8,40),(5,9,45),(5,10,50),(5,11,55),
+</span><span class='line'>(6,1,6),(6,2,12),(6,3,18),(6,4,24),(6,5,30),(6,6,36),(6,7,42),(6,8,48),(6,9,54),(6,10,60),(6,11,66),
+</span><span class='line'>(7,1,7),(7,2,14),(7,3,21),(7,4,28),(7,5,35),(7,6,42),(7,7,49),(7,8,56),(7,9,63),(7,10,70),(7,11,77),
+</span><span class='line'>(8,1,8),(8,2,16),(8,3,24),(8,4,32),(8,5,40),(8,6,48),(8,7,56),(8,8,64),(8,9,72),(8,10,80),(8,11,88),
+</span><span class='line'>(9,1,9),(9,2,18),(9,3,27),(9,4,36),(9,5,45),(9,6,54),(9,7,63),(9,8,72),(9,9,81),(9,10,90),(9,11,99),
+</span><span class='line'>(10,1,10),(10,2,20),(10,3,30),(10,4,40),(10,5,50),(10,6,60),(10,7,70),(10,8,80),(10,9,90),(10,10,100),(10,11,110),
+</span><span class='line'>(11,1,11),(11,2,22),(11,3,33),(11,4,44),(11,5,55),(11,6,66),(11,7,77),(11,8,88),(11,9,99),(11,10,110),(11,11,121)]</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Map-colouring problem</h3>
+
+<p>For this one, the code can be a bit simpler than Prolog&#8217;s. The reason is that Prolog does not really have a different or not-equal operator: it has to use positive facts and cannot infer the relation is commutative. In Haskell, the list comprehension can have guards that are arbitrary boolean expressions, so we need to state only once that two states have different colours.</p>
+
+<figure class='code'><figcaption><span>Map-colouring problem  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">let</span> <span class="n">colours</span> <span class="ow">=</span> <span class="p">[</span><span class="s">&quot;red&quot;</span><span class="p">,</span> <span class="s">&quot;green&quot;</span><span class="p">,</span> <span class="s">&quot;blue&quot;</span><span class="p">]</span>
+</span><span class='line'><span class="p">[(</span><span class="n">alabama</span><span class="p">,</span> <span class="n">mississippi</span><span class="p">,</span> <span class="n">georgia</span><span class="p">,</span> <span class="n">tennessee</span><span class="p">,</span> <span class="n">florida</span><span class="p">)</span> <span class="o">|</span>
+</span><span class='line'>  <span class="n">alabama</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">mississippi</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">georgia</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">tennessee</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">florida</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">mississippi</span> <span class="o">/=</span> <span class="n">tennessee</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">mississippi</span> <span class="o">/=</span> <span class="n">alabama</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">alabama</span> <span class="o">/=</span> <span class="n">tennessee</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">alabama</span> <span class="o">/=</span> <span class="n">georgia</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">alabama</span> <span class="o">/=</span> <span class="n">florida</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">georgia</span> <span class="o">/=</span> <span class="n">florida</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">georgia</span> <span class="o">/=</span> <span class="n">tennessee</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces (reindented for readability):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[("red","green","green","blue","blue"),
+</span><span class='line'>("red","blue","blue","green","green"),
+</span><span class='line'>("green","red","red","blue","blue"),
+</span><span class='line'>("green","blue","blue","red","red"),
+</span><span class='line'>("blue","red","red","green","green"),
+</span><span class='line'>("blue","green","green","red","red")]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that&#8217;s all for Day 1.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-17T07:58:00+09:00" pubdate data-updated="true">Nov 17<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/" title="Previous Post: Seven Languages in Seven Weeks Clojure Day 3">&laquo; Seven Languages in Seven Weeks Clojure Day 3</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/" title="next Post: Seven Languages in Seven Weeks Haskell Day 2">Seven Languages in Seven Weeks Haskell Day 2 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Languages in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/">Ruby Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/">Ruby Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">Ruby Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Io Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Io Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Io Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">About Io</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Prolog Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Prolog Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Prolog Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Scala Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Scala Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Scala Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/">Erlang Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/">Erlang Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/">Erlang Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">Clojure Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Clojure Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Haskell Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Haskell Day 2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/11/haskell-foldr-as-foldl/">Haskell: foldr as foldl</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

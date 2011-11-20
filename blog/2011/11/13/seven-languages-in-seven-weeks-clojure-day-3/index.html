@@ -1,0 +1,633 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Clojure Day 3 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="The final day with Clojure covers its support for concurrent programming. It has a bestiary of concepts that are somewhat similar yet distinct from &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Clojure Day 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-13T20:30:00+09:00" pubdate data-updated="true">Nov 13<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>The final day with Clojure covers its support for concurrent programming. It has a bestiary of concepts that are somewhat similar yet distinct from other modern languages.</p>
+
+<!--more-->
+
+
+<p>First of all Clojure adopts the <a href="http://en.wikipedia.org/wiki/Software_transactional_memory">Software Transactional Memory</a>, an approach mutable state and concurrency that is similar to databases. The idea is not really new, but it became more popular with Hashell&#8217;s implementation.</p>
+
+<p>There are also atoms, which are variables which guarantee atomic updates. The atomicity is a property of the atom, rather than of the functions that are used to update it, which is really nice.</p>
+
+<p>Futures are also present. They represent values whose value is being computed in a dedicated thread. Trying to read from a <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/future"><code>future</code></a> could block if the value has not been computed yet (yes, Java has the same concept).</p>
+
+<p>Finally, agents are &#8230; somewhat perplexing. They look like agents in other languages (Io, Scala, Erlang, &#8230;), except that they do not have any special behaviour attached. Instead, any function sent to them is queued and executed sequentially in a dedicated thread. At least, that&#8217;s how I understand currently, but when I tried to use them for the Barber shop simulation, I ran into some problems, so there is more to this story.</p>
+
+<h2>Exercises</h2>
+
+<h3>Find the implemenation of a blocking queue</h3>
+
+<p>The description of <a href="http://richhickey.github.com/clojure-contrib/seq-utils-api.html#clojure.contrib.seq-utils/fill-queue"><code>fill-queue</code></a> is a bit confusing, but it looks like a blocking lazy queue.</p>
+
+<h3>Accounts simulation</h3>
+
+<p>The code is very straightforward. An account is a <code>ref</code>, whose value is the balance. I add a validator function to each to ensure that the balance is not negative (<code>check-balance</code> is passed to <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/set-validator!"><code>set-validator!</code></a> in <code>make-account</code>).</p>
+
+<p>The <code>credit</code> and <code>debit</code> functions just update the balance with the <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/alter"><code>alter</code></a> function. The transaction is not provided at this level just yet.</p>
+
+<p>The <code>balance</code> function is just there for clarity.</p>
+
+<p>The various <code>bank-</code> functions just operate on a vector of accounts, so they take the <code>bank</code> (a <code>vector</code>), and an <code>acc_num</code> (account number).</p>
+
+<p>The <code>bank-transfer</code> is the only function using a transaction: it moves an amount between two accounts. To test the transaction failure mode, I credit the recipient account before I debit the other.</p>
+
+<p>Finally, <code>bank-balances</code> prints the balance of all accounts.</p>
+
+<figure class='code'><figcaption><span>Accounts simulation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">check-balance</span> <span class="p">[</span><span class="nv">b</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Check that the balance of account is not negative&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nb">&lt;= </span><span class="mi">0</span> <span class="nv">b</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">make-account</span> <span class="p">[]</span>
+</span><span class='line'>  <span class="s">&quot;Create a new account&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">r</span> <span class="p">(</span><span class="nb">ref </span><span class="mi">0</span><span class="p">)]</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">set-validator!</span> <span class="nv">r</span> <span class="nv">check-balance</span><span class="p">)</span>
+</span><span class='line'>      <span class="nv">r</span><span class="p">))</span>  
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">credit</span> <span class="p">[</span><span class="nv">account,</span> <span class="nv">amount</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Add amount to account&#39;s balance&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nb">alter </span><span class="nv">account</span> <span class="nv">+</span> <span class="nv">amount</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">debit</span> <span class="p">[</span><span class="nv">account,</span> <span class="nv">amount</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Debit amount from account&#39;s balance&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nb">alter </span><span class="nv">account</span> <span class="nv">-</span> <span class="nv">amount</span><span class="p">))</span>
+</span><span class='line'>  
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">balance</span> <span class="p">[</span><span class="nv">account</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Return balance of account&quot;</span>
+</span><span class='line'>  <span class="nv">@account</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">make-bank</span> <span class="p">[</span><span class="nv">n</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Create a bank of n accounts&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">vec</span> <span class="p">(</span><span class="nf">repeatedly</span> <span class="nv">n</span> <span class="nv">make-account</span><span class="p">)))</span>
+</span><span class='line'>  
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-credit</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num,</span> <span class="nv">amount</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Add amount to acc_num&#39;s balance&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">credit</span> <span class="p">(</span><span class="nb">nth </span><span class="nv">bank</span> <span class="nv">acc_num</span><span class="p">)</span> <span class="nv">amount</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-debit</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num,</span> <span class="nv">amount</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Debit amount from acc_num&#39;s balance&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">debit</span> <span class="p">(</span><span class="nb">nth </span><span class="nv">bank</span> <span class="nv">acc_num</span><span class="p">)</span> <span class="nv">amount</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-balance</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Return the balance of acc_num&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">balance</span> <span class="p">(</span><span class="nb">nth </span><span class="nv">bank</span> <span class="nv">acc_num</span><span class="p">)))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-transfer</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num1,</span> <span class="nv">acc_num2,</span> <span class="nv">amount</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Transfer amount from acc_num1 to acc_num2 in bank&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nb">dosync </span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">bank-credit</span> <span class="nv">bank</span> <span class="nv">acc_num2</span> <span class="nv">amount</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">bank-debit</span> <span class="nv">bank</span> <span class="nv">acc_num1</span> <span class="nv">amount</span><span class="p">)))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-balances</span> <span class="p">[</span><span class="nv">bank</span><span class="p">]</span>
+</span><span class='line'>  <span class="s">&quot;Show the balance of all accounts&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="p">(</span><span class="nb">count </span><span class="nv">bank</span><span class="p">)]</span>
+</span><span class='line'>      <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Account &quot;</span> <span class="nv">i</span> <span class="s">&quot;: &quot;</span> <span class="p">(</span><span class="nf">bank-balance</span> <span class="nv">bank</span> <span class="nv">i</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The test code:</p>
+
+<figure class='code'><figcaption><span>Test code  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="c1">;; create the bank</span>
+</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">bank</span> <span class="p">(</span><span class="nf">make-bank</span> <span class="mi">3</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">;; put some money in</span>
+</span><span class='line'><span class="p">(</span><span class="nb">dosync </span><span class="p">(</span><span class="nf">bank-credit</span> <span class="nv">bank</span> <span class="mi">0</span> <span class="mi">100</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">;; show the balances</span>
+</span><span class='line'><span class="p">(</span><span class="nf">bank-balances</span> <span class="nv">bank</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">;; a first transfer</span>
+</span><span class='line'><span class="p">(</span><span class="nb">dosync </span><span class="p">(</span><span class="nf">bank-transfer</span> <span class="nv">bank</span> <span class="mi">0</span> <span class="mi">1</span> <span class="mi">75</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">;; show the balances</span>
+</span><span class='line'><span class="p">(</span><span class="nf">bank-balances</span> <span class="nv">bank</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">;; not enough fund, so it will fail</span>
+</span><span class='line'><span class="p">(</span><span class="nb">dosync </span><span class="p">(</span><span class="nf">bank-transfer</span> <span class="nv">bank</span> <span class="mi">0</span> <span class="mi">2</span> <span class="mi">75</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">;; and indeed, the balances have not changed</span>
+</span><span class='line'><span class="p">(</span><span class="nf">bank-balances</span> <span class="nv">bank</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When input into the repl, the test code gives the following output:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (def bank (make-bank 3))
+</span><span class='line'>#'user/bank
+</span><span class='line'>user=&gt; (dosync (bank-credit bank 0 100))
+</span><span class='line'>100
+</span><span class='line'>user=&gt; (bank-balances bank)
+</span><span class='line'>Account 0: 100
+</span><span class='line'>Account 1: 0
+</span><span class='line'>Account 2: 0
+</span><span class='line'>nil
+</span><span class='line'>user=&gt; (dosync (bank-transfer bank 0 1 75))
+</span><span class='line'>25
+</span><span class='line'>user=&gt; (bank-balances bank)
+</span><span class='line'>Account 0: 25
+</span><span class='line'>Account 1: 75
+</span><span class='line'>Account 2: 0
+</span><span class='line'>nil
+</span><span class='line'>user=&gt; (dosync (bank-transfer bank 0 2 75))
+</span><span class='line'>java.lang.IllegalStateException: Invalid reference state (NO_SOURCE_FILE:0)
+</span><span class='line'>user=&gt; (bank-balances bank)
+</span><span class='line'>Account 0: 25
+</span><span class='line'>Account 1: 75
+</span><span class='line'>Account 2: 0
+</span><span class='line'>nil</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the balance is protected from being negative, and the transaction is rolled back. Despite the fact that the amount was supposed to be credited to account number 2 first, the balance of that account has not changed as the transaction failed.</p>
+
+<h3>Barber shop simulation</h3>
+
+<p>This problem was mostly a matter of figuring out the right model. The concept of agent seems to have some hidden complexity (or lock) which prevented my initial solution from working.</p>
+
+<p>The idea is that the <code>barber</code> is an agent; it is updated by a function representing getting an haircut (<code>get-haircut</code>). The value of the agent is the number of client served.</p>
+
+<p>The <code>waiting-room</code> is an atom. It&#8217;s value is the number of free chairs.</p>
+
+<p>The <code>get-haircut</code> function is sent to the <code>barber</code>. When it starts, it frees (increase) the <code>waiting-room</code> count of free chairs. Then it waits for 20 milliseconds, and finally updates the <code>barber</code> count of clients.</p>
+
+<p>Finally, the <code>try-to-sit</code> function checks the number of free chairs: if none, the customer just leaves. Otherwise, the customer sits in a chair (signaling it&#8217;s intent to get a haircut by sending <code>get-haircut</code> to the <code>barber</code>), and the count of free chairs is decreased. I tried to print a statement when a customer leaves because there is no chair, but there were too many such messages so I commented it out.</p>
+
+<figure class='code'><figcaption><span>Barber problem, part 1  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">barber</span> <span class="p">(</span><span class="nb">agent </span><span class="mi">0</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">waiting-room</span> <span class="p">(</span><span class="nf">atom</span> <span class="mi">3</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">get-haircut</span> <span class="p">[</span><span class="nv">count</span><span class="p">]</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">waiting-room</span> <span class="nv">inc</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nb">println </span><span class="s">&quot;Start haircut&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="mi">20</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nb">inc </span><span class="nv">count</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">try-to-sit</span> <span class="p">[</span><span class="nv">count</span><span class="p">]</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">== </span><span class="nv">count</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">do</span>
+</span><span class='line'>          <span class="c1">;;(println &quot;No free chairs. The customer leaves&quot;)</span>
+</span><span class='line'>          <span class="nv">count</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">do</span>
+</span><span class='line'>          <span class="p">(</span><span class="nb">println </span><span class="s">&quot;Sit in waiting room&quot;</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">(</span><span class="nb">send </span><span class="nv">barber</span> <span class="nv">get-haircut</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">(</span><span class="nb">dec </span><span class="nv">count</span><span class="p">))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When a new customer walks in, it will try to sit in a free chair. This is done in the <code>new-customer</code> function.</p>
+
+<p>The <code>shop-loop</code> is a tail recursive loop that initiates a <code>new-customer</code> at random intervals. It runs until after at least <code>max</code> milliseconds.</p>
+
+<figure class='code'><figcaption><span>Barber problem, part 2  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">new-customer</span> <span class="p">[]</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">waiting-room</span> <span class="nv">try-to-sit</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">shop-loop</span> <span class="p">[</span><span class="nv">max</span><span class="p">]</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">orig</span> <span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)]</span>
+</span><span class='line'>      <span class="p">(</span><span class="nb">loop </span><span class="p">[]</span>
+</span><span class='line'>          <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">&lt; </span><span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)</span> <span class="nv">orig</span><span class="p">)</span> <span class="nv">max</span><span class="p">)</span>
+</span><span class='line'>              <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">next</span> <span class="p">(</span><span class="nb">+ </span><span class="mi">10</span> <span class="p">(</span><span class="nb">rand </span><span class="mi">20</span><span class="p">))]</span>
+</span><span class='line'>                  <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="nv">next</span><span class="p">)</span>
+</span><span class='line'>                  <span class="p">(</span><span class="nf">new-customer</span><span class="p">)</span>
+</span><span class='line'>                  <span class="p">(</span><span class="nf">recur</span><span class="p">))</span>
+</span><span class='line'>              <span class="nv">max</span><span class="p">))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we get to the main function. First <code>init</code> is defined to help reset the values of atoms and agents. Then <code>start</code> will indeed reset all values, then run <code>shop-loop</code> in a <code>future</code>, wait the required amount of time, and finally get the current value of <code>barber</code> (which might not have fully finished). My first version tried to run <code>shop-loop</code> on a dedicated agent, but that was for some reason blocking on the <code>barber</code> agent, so I used a <code>future</code> instead.</p>
+
+<figure class='code'><figcaption><span>Barber problem, part 3  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">init</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">v</span><span class="p">]</span> <span class="nv">v</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">start</span> <span class="p">[</span><span class="nv">max</span><span class="p">]</span>
+</span><span class='line'>  <span class="p">(</span><span class="nb">println </span><span class="s">&quot;starting&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nb">send </span><span class="nv">barber</span> <span class="nv">init</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">waiting-room</span> <span class="nv">init</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">future</span> <span class="p">(</span><span class="nf">shop-loop</span> <span class="nv">max</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="nv">max</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">@barber</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this implementation, the barber performed 458 hair cuts (500 was the theoretical maximum).</p>
+
+<h2>Wrapping up Clojure</h2>
+
+<p>There is much more to Clojure that what has been covered so far. The object model is far more flexible than Java&#8217;s. Metadata can be added to various entities, which I understand could be used to improve interactive usage (documentation strings are already a kinf of metadata).</p>
+
+<p>I always found Lisp languages to be very elegant and expressive; Clojure definitively is a Lisp, and I really wanted to like the language. Yet for some reason I found it somewhat disappointing. Perhaps it is the limitations the designers put (for good reason) in the language. Perhaps it is the fact that the language runs on the JVM, an environment that I instinctively link to all things corporate, safe and boring, so I don&#8217;t really believe it could be exciting.</p>
+
+<p>I&#8217;m not really sure, perhaps it is just that I&#8217;m feeling tired and I have a cold, and Clojure really is awesome. So I&#8217;ll have another look at that language, and I hope I can give it the attention it seems to deserve.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-13T20:30:00+09:00" pubdate data-updated="true">Nov 13<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/" title="Previous Post: Seven Languages in Seven Weeks Clojure Day 2">&laquo; Seven Languages in Seven Weeks Clojure Day 2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/" title="next Post: Seven Languages in Seven Weeks Haskell Day 1">Seven Languages in Seven Weeks Haskell Day 1 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/11/haskell-foldr-as-foldl/">Haskell: foldr as foldl</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

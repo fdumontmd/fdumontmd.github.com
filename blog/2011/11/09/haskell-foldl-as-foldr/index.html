@@ -1,0 +1,550 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Haskell: foldl as foldr - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="A beginner with Haskell is bound to be exposed, usually too early, to some fancy code illustrating either a cool feature of the language, or of its &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Haskell: Foldl as Foldr</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-09T19:05:00+09:00" pubdate data-updated="true">Nov 9<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>A beginner with Haskell is bound to be exposed, usually too early, to some fancy code illustrating either a cool feature of the language, or of its underlying theoretical foundations.</p>
+
+<p>Among others, there is the one-liner lazy Fibonacci definition <code>fibs = 1:1:zipWith (+) fibs (tail fibs)</code>. Another one, the topic of this post, is <code>foldl f a bs = foldr (\b g x -&gt; g (f x b)) id bs a</code>.</p>
+
+<!--more-->
+
+
+<p>Unfortunately for the beginner, the explanation he or she could find on, say, the <a href="http://www.haskell.org/haskellwiki/Foldl_as_foldr">Haskell Wiki</a>, shares the problem of many intermediate Haskell tutorials: they explain moderately complex concepts in terms of more arcane ones.</p>
+
+<p>So here I will attempt to provide a justification of the equation above using fairly simple tools (higher order functions being the most difficult ones).</p>
+
+<h2>Building intuition</h2>
+
+<p>Before even getting to a definition of <code>foldl</code> in terms of <code>foldr</code>, there are a few questions we should ask:</p>
+
+<ul>
+<li>is it even possible?</li>
+<li>how are these two functions different</li>
+<li>what should change to make them similar</li>
+</ul>
+
+
+<p>So first, let&#8217;s look at each function. The definitions below are very similar to the ones used in <a href="http://www.haskell.org/ghc/">GHC</a> (as you can see <a href="http://www.haskell.org/ghc/docs/7.2.1/html/libraries/base-4.4.0.0/Data-List.html">here</a> when looking at the source of <code>foldl</code> and <code>foldr</code>).</p>
+
+<p>First <code>foldl</code>:</p>
+
+<figure class='code'><figcaption><span>foldl  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">f</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span> <span class="n">b</span><span class="p">)</span> <span class="n">bs</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>foldl</code> is tail recursive: it uses the <code>a</code> parameter as an accumulator.</p>
+
+<p>Then <code>foldr</code>:</p>
+
+<figure class='code'><figcaption><span>foldr  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="ow">::</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span> <span class="p">(</span><span class="n">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>foldr</code> is body recursive. This is why it is lazy and able to work on infinite list. If the function <code>f</code> is a constructor that is lazy in it&#8217;s second argument, then it is possible to examine some of the output before evaluating the recursive call.</p>
+
+<p>So far, the two functions appear different. Let&#8217;s try and look at how they process their arguments.</p>
+
+<p>I define a pair of data types to play the role of the function <code>f</code>. That way, I can look at the structure of calls. I need two because <code>foldl</code> and <code>foldr</code> have different types for <code>f</code></p>
+
+<figure class='code'><figcaption><span>Helper Data Types  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">data</span> <span class="kt">Fl</span> <span class="n">b</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">Fl</span> <span class="n">b</span><span class="p">)</span> <span class="kt">:&lt;</span> <span class="n">b</span> <span class="o">|</span> <span class="kt">El</span>
+</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">Fr</span> <span class="n">b</span> <span class="ow">=</span> <span class="n">b</span> <span class="kt">:&gt;</span> <span class="p">(</span><span class="kt">Fr</span> <span class="n">b</span><span class="p">)</span> <span class="o">|</span> <span class="kt">Er</span>
+</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Fl</code> is a data type whose constructor <code>:&lt;</code> can be used in <code>foldl</code>. <code>Fr</code> has constructor <code>:&gt;</code> and can be used in <code>foldr</code>.</p>
+
+<p>Using them:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; foldl (:&lt;) El [1..5]
+</span><span class='line'>((((El :&lt; 1) :&lt; 2) :&lt; 3) :&lt; 4) :&lt; 5
+</span><span class='line'>*Main&gt; foldr (:&gt;) Er [1..5]
+</span><span class='line'>1 :&gt; (2 :&gt; (3 :&gt; (4 :&gt; (5 :&gt; Er))))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It seems that, to translate from <code>foldl</code> to <code>foldr</code>, there are two problems:</p>
+
+<ul>
+<li>the function <code>f</code> in <code>foldr</code> uses its parameters in reverse order from the <code>f</code> in <code>foldl</code>. Perhaps something that <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Prelude.html#v:flip"><code>flip</code></a> could help with?</li>
+<li>the list is iterated over in the opposite order. A task for <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Prelude.html#v:reverse"><code>reverse</code></a>?</li>
+</ul>
+
+
+<p>Let&#8217;s see:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; foldr (flip (:&lt;)) El [1..5]
+</span><span class='line'>((((El :&lt; 5) :&lt; 4) :&lt; 3) :&lt; 2) :&lt; 1
+</span><span class='line'>*Main&gt; foldr (flip (:&lt;)) El $ reverse [1..5]
+</span><span class='line'>((((El :&lt; 1) :&lt; 2) :&lt; 3) :&lt; 4) :&lt; 5</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So yes, it is indeed possible to write <code>foldl</code> in terms of <code>foldr</code>: <code>foldl f a bs = foldr (flip f) a $ reverse bs</code>. This answer the first question, and along the way we have collected some hints on how to do it (I mean, beside using <code>flip</code> and <code>reverse</code> as above)</p>
+
+<h2>Planning the solution</h2>
+
+<p>Let&#8217;s look again at <code>foldl</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; foldl (flip (:&gt;)) Er [1..5]
+</span><span class='line'>5 :&gt; (4 :&gt; (3 :&gt; (2 :&gt; (1 :&gt; Er))))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This time I pass <code>flip (:&gt;)</code> as the function argument. This is to make <code>:&gt;</code> compatible with <code>foldl</code>. <code>:&gt;</code> is really just like <code>flip (:&lt;)</code>, but it gives a new perspective: <code>:&gt;</code> has type <code>b -&gt; a -&gt; a</code>, which is the same as saying that <code>(:&gt;) b</code> has type <code>a -&gt; a</code> (I apply partially. <code>b :&gt;</code> is the same as <code>(:&gt;) b</code>).</p>
+
+<p>In point-free notation, the result above is identical to <code>(:&gt;) 5 . (:&gt;) 4 . (:&gt;) 3 . (:&gt;) 2 . (:&gt;) 1 $ Er</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; (:&gt;) 5 . (:&gt;) 4 . (:&gt;) 3 . (:&gt;) 2 . (:&gt;) 1 $ Er
+</span><span class='line'>5 :&gt; (4 :&gt; (3 :&gt; (2 :&gt; (1 :&gt; Er))))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(I&#8217;m always happy when ghci agrees with me).</p>
+
+<p>This is great for two reasons:</p>
+
+<ul>
+<li>while we cannot say anything about the original <code>f</code> function (here represented as <code>:&gt;</code>), the function composition <code>.</code> operator is associative, meaning we can put the parenthesis where we (or <code>foldr</code>) wants. In other words, if we manipulate functions <code>(:&gt;) b</code> instead of values, and combine them with composition, we don&#8217;t have to care about the fact that <code>foldr</code> and <code>foldl</code> nest expressions differently.</li>
+<li>The <code>a</code> parameter, represented here by <code>Er</code>, is removed from the iteration. As <code>foldr</code> and <code>foldl</code> use this parameter differently, if we can abstract it away, this is another difference that disappear.</li>
+</ul>
+
+
+<p>So the solution can be built on two concepts:</p>
+
+<ul>
+<li>use <code>flip f</code> instead of <code>f</code> so that we can operate on functions <code>a -&gt; a</code> instead of values <code>a</code></li>
+<li>use composition over these functions to combine them, then apply the result to the <code>a</code> parameter to get the answer.</li>
+</ul>
+
+
+<h2>Building the solution</h2>
+
+<p>First, I introduce a new function, <code>foldl_alt</code>, that is supposed to implement <code>foldl</code>. The definition of <code>foldl_alt</code> is then rewritten until <code>foldr</code> appears:</p>
+
+<figure class='code'><figcaption><span>foldl_alt basic equation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First, let&#8217;s handle the base case:</p>
+
+<figure class='code'><figcaption><span>foldl_alt on empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">id</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is easily shown true:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>foldl f a [] == a                  -- by definition of foldl
+</span><span class='line'>             == id a               -- by definition of id
+</span><span class='line'>             == (foldl_alt f []) a -- by definition of foldl_alt</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The recursive case is simple as well (by recursion):</p>
+
+<figure class='code'><figcaption><span>foldl_alt on non empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">f&#39;</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">f&#39;</span> <span class="ow">=</span> <span class="n">flip</span> <span class="n">f</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Assuming <code>foldl f a bs == foldl_alt f bs a</code>, let&#8217;s show by induction that <code>foldl f a (b:bs) == foldl_alt f (b:bs) a</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>foldl f a (b:bs) == foldl f (f a b) bs            -- by definition of foldl
+</span><span class='line'>                 == foldl_alt f bs (f a b)        -- induction hypothesis
+</span><span class='line'>                 == foldl_alt f bs (f' b a)       -- simple replacement
+</span><span class='line'>                      where f' = flip f
+</span><span class='line'>                 == (foldl_alt f bs) . (f' b) $ a -- point-free notation
+</span><span class='line'>                      where f' = flip f</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So <code>foldl_alt</code> as currently defined is identical to <code>foldl</code>. The recursive case can be further rewritten as:</p>
+
+<figure class='code'><figcaption><span>foldl_alt on non empty list, second version  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">comp&#39;</span> <span class="p">(</span><span class="n">f&#39;</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">f&#39;</span>    <span class="ow">=</span> <span class="n">flip</span> <span class="n">f</span>
+</span><span class='line'>        <span class="n">comp&#39;</span> <span class="ow">=</span> <span class="n">flip</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here the composition operator is replaced by <code>comp'</code>, which just takes its argument in reversed order. This is done to show the similarity of this current <code>foldl_alt</code> with the recursive case of <code>foldr</code>. Indeed, <code>foldl_alt f</code> is identical to <code>foldr m id</code> for some function <code>m</code> (for Mystery):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>foldl_alt f [] == id == foldr m id []                            
+</span><span class='line'>  -- by definition of both foldl_alt and foldr</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now I can use induction to show that <code>foldl_alt f bs == foldr m id bs</code> implies <code>foldl_alt f (b:bs) == foldr m id (b:bs)</code>, and compute <code>m</code> at the same time:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>foldl_alt f (b:bs) == comp' (f' b) (foldl_alt f bs)              
+</span><span class='line'>                        where f' = flip f
+</span><span class='line'>                              comp' = flip (.)
+</span><span class='line'>  -- by definition of foldl_alt
+</span><span class='line'>                   == comp' (\a -&gt; f a b) (foldl_alt f bs)        
+</span><span class='line'>                        where comp' = flip (.)
+</span><span class='line'>  -- expand f'
+</span><span class='line'>                   == (\g a -&gt; g (f a b)) (foldl_alt f bs)       
+</span><span class='line'>  -- expand comp' - g has type a -&gt; a, and is bound to (foldl_alt f bs) 
+</span><span class='line'>                   == (\b' g a -&gt; g (f a b')) b (foldl_alt f bs) 
+</span><span class='line'>  -- take b out of the function; replace it with b' that is bound to b
+</span><span class='line'>                 == (\b' g a -&gt; g (f a b')) b (foldr (\b' g a -&gt; g (f a b')) id bs)
+</span><span class='line'>  -- induction hypothesis
+</span><span class='line'>                   == foldr (\b' g a -&gt; g (f a b')) (b:bs) id    
+</span><span class='line'>  -- definition of foldr, recursive case</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When using the induction hypothesis, I replaced <code>m</code> with <code>(\b' g a -&gt; g (f a b'))</code>. This is because this function is independent of any specific <code>b</code>: by construction it would be the same at every step of the induction (except the base case, where it is not use, and therefore can be anything we need it to be).</p>
+
+<p><code>b'</code> as a parameter to the function is bound to <code>b</code> as the value in the list. I use different names to make it clear they&#8217;re different, but of course inside the function I could use <code>b</code> as the variable scope is limited to the function.</p>
+
+<p>For the same reason, I replace the <code>a</code> above by <code>x</code>, as I need <code>a</code> to represent the original <code>a</code> parameter (once again I could use <code>a</code> for both). This gives:</p>
+
+<figure class='code'><figcaption><span>foldl as foldr  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="n">b</span> <span class="n">g</span> <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">g</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span> <span class="n">b</span><span class="p">))</span> <span class="n">id</span> <span class="n">bs</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok, that was long. I hope it was clear (or clearer).</p>
+
+<p>Next time I&#8217;ll show how to implement <code>foldr</code> as <code>foldl</code> (minus the laziness).</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-09T19:05:00+09:00" pubdate data-updated="true">Nov 9<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/haskell/'>Haskell</a>, <a class='category' href='/blog/categories/tutorial/'>Tutorial</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" title="Previous Post: Seven Languages in Seven Weeks Erlang Day 3">&laquo; Seven Languages in Seven Weeks Erlang Day 3</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/" title="next Post: Seven Languages in Seven Weeks Clojure Day 1">Seven Languages in Seven Weeks Clojure Day 1 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/11/haskell-foldr-as-foldl/">Haskell: foldr as foldl</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

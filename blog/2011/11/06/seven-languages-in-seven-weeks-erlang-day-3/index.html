@@ -1,0 +1,1406 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Erlang Day 3 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="One last day with Erlang; it was about time we get to perhaps its most significant aspect: its concurrency model, and recipe for error recovery, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Erlang Day 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-06T10:17:00+09:00" pubdate data-updated="true">Nov 6<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>One last day with Erlang; it was about time we get to perhaps its most significant aspect: its concurrency model, and recipe for error recovery, embodied in its motto, &#8220;Let it crash.&#8221;</p>
+
+<!--more-->
+
+
+<p>Erlang makes it very cheap and easy to spawn processes (in this context, internal processes. External processes are called nodes), and have the various processes communicate by sending messages to each others. Extending the communication to the network follows the same pattern, and is just as easy.</p>
+
+<p>Processes can also monitor each others, in various ways, so that a crashed process can be restarted. As it is both easy and natural to do, Erlang discourages complex error recovery methods, and instead proposes that processes be allowed to crash, and be restarted. While it is possible to abuse this principle, it can lead to much simpler code and general logic; the lack of mutable data in this regard is another advantage, as there is less risk to leave anything in an inconsistent state (it is still possible, as there are updatable stores).</p>
+
+<p>The book rightfully does not claim to be exhaustive in its coverage, but the exercises are rich and complex enough to offer a glimpse of what is possible in Erlang.</p>
+
+<p>Other capabilities, such as the ability to update code while running, are not covered, but participate in the set of features that make Erlang so suited for robust applications.</p>
+
+<h2>Exercises</h2>
+
+<h3>An OTP service that will restart a process if it dies</h3>
+
+<p>That sounds like the <a href="http://www.erlang.org/doc/man/supervisor.html"><code>supervisor</code></a> module&#8217;s job description. It is not trivial, however: supervised processes must have a descriptor that explains how to start, stop and restart them.</p>
+
+<p>There is a fairly detailed description of the setup in <a href="http://learnyousomeerlang.com/">Learn you some Erlang for great good</a>, but it requires a good understanding of everything that comes before. A much shorter introduction is found <a href="http://www.hccp.org/supervisors.html">here</a>.</p>
+
+<p>For, using <code>supervisor</code> for keeping the <code>translate_service</code> up and running (assuming it dies on unknown words):</p>
+
+<figure class='code'><figcaption><span>Supervised Translation Service  (translate_service_sup.erl)</span> <a href='/downloads/code/7l7w/erlang/translate_service_sup.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">translate_service_sup</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">behaviour</span><span class="p">(</span><span class="n">supervisor</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">translate</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">init</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start_service</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">loop</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="k">receive</span>
+</span><span class='line'>    <span class="p">{</span><span class="nv">From</span><span class="p">,</span> <span class="s">&quot;casa&quot;</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nv">From</span> <span class="o">!</span> <span class="s">&quot;house&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">loop</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">{</span><span class="nv">From</span><span class="p">,</span> <span class="s">&quot;blanca&quot;</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nv">From</span> <span class="o">!</span> <span class="s">&quot;white&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">loop</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">{</span><span class="nv">From</span><span class="p">,</span><span class="nv">M</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nv">From</span> <span class="o">!</span> <span class="s">&quot;I do not understand&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nb">exit</span><span class="p">({</span><span class="nv">M</span><span class="p">,</span> <span class="n">not_understood</span><span class="p">,</span> <span class="n">received_at</span><span class="p">,</span> <span class="nn">erlang</span><span class="p">:</span><span class="n">time</span><span class="p">()})</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">translate</span><span class="p">(</span><span class="nv">Word</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="n">translator</span> <span class="o">!</span> <span class="p">{</span><span class="n">self</span><span class="p">(),</span> <span class="nv">Word</span><span class="p">},</span>
+</span><span class='line'>  <span class="k">receive</span>
+</span><span class='line'>    <span class="nv">Translation</span> <span class="o">-&gt;</span> <span class="nv">Translation</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">start</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nn">io</span><span class="p">:</span><span class="n">fwrite</span><span class="p">(</span><span class="s">&quot;Starting...</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nb">register</span><span class="p">(</span><span class="n">translator</span><span class="p">,</span> <span class="nb">spawn_link</span><span class="p">(</span><span class="n">translate_service_sup</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="p">[])),</span>
+</span><span class='line'>    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nb">whereis</span><span class="p">(</span><span class="n">translator</span><span class="p">)}.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">init</span><span class="p">(_)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">{{</span><span class="n">one_for_one</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">60</span><span class="p">},</span>
+</span><span class='line'>          <span class="p">[{</span><span class="n">translate_service_sup</span><span class="p">,</span> <span class="p">{</span><span class="n">translate_service_sup</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="p">[]},</span>
+</span><span class='line'>            <span class="n">permanent</span><span class="p">,</span> <span class="n">brutal_kill</span><span class="p">,</span> <span class="n">worker</span><span class="p">,</span> <span class="p">[</span><span class="n">translate_service_sup</span><span class="p">]}]}}.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">start_service</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nn">io</span><span class="p">:</span><span class="n">fwrite</span><span class="p">(</span><span class="s">&quot;start_service</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nn">supervisor</span><span class="p">:</span><span class="n">start_link</span><span class="p">(</span><span class="n">translate_service_sup</span><span class="p">,</span> <span class="p">[]).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I register the spawned process to the atom <code>translator</code>; this is because I could not find a way to retrieve the process id of the translate loop.</p>
+
+<p>Starting the supervised process is now simple:</p>
+
+<figure class='code'><figcaption><span>Using the Supervised Translator  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">translate_service_sup</span><span class="p">).</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">translate_service_sup</span><span class="p">}</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">start_service</span><span class="p">().</span>
+</span><span class='line'><span class="n">start_service</span>
+</span><span class='line'><span class="nv">Starting</span><span class="p">...</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">38</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">}</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;casa&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="s">&quot;house&quot;</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;que&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Starting</span><span class="p">...</span>
+</span><span class='line'><span class="s">&quot;I do not understand&quot;</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;casa&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="s">&quot;house&quot;</span>
+</span><span class='line'><span class="mi">6</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;que&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Starting</span><span class="p">...</span>
+</span><span class='line'><span class="s">&quot;I do not understand&quot;</span>
+</span><span class='line'><span class="mi">7</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;que&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="o">**</span> <span class="n">exception</span> <span class="nb">exit</span><span class="p">:</span> <span class="n">shutdown</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As seen above, the translator chokes on an unknown word, but is restarted immediately. However, if the process dies too often (here, more than once per minute), the supervisor kills it definitively.</p>
+
+<h3>Documentation for building a simple OTP server</h3>
+
+<p>That question a bit open ended. If we are talking about a simple TCP server, then the <a href="http://www.erlang.org/doc/man/gen_tcp.html"><code>gen_tcp</code></a> module is enough to get a server, as shown in <a href="http://www.joeandmotorboat.com/2008/11/12/a-simple-concurrent-erlang-tcp-server/">this post</a>.</p>
+
+<p>To go further, and add supervisors and other OTP goodies, there is a <a href="http://www.trapexit.org/Building_a_Non-blocking_TCP_server_using_OTP_principles">tutorial</a> on
+<a href="http://www.trapexit.org/">trapexit.org</a>, but it uses code generating tools which are not part of the standard Erlang distribution.</p>
+
+<h3>Monitor the <code>translate_service</code></h3>
+
+<p>Just to explore the API introduced today, I went a bit beyond the exercise, and made the <code>doctor</code> able to monitor any kind of process, and attach it to a supplied atom.</p>
+
+<p>First, a utility function <code>start</code> creates a new <code>doctor</code> process, then sends it a message to spawn the monitored process.</p>
+
+<p>The new <code>loop</code> function takes both the function to be spawned and monitored, and the atom to attach it to. Both parameters are kept in the loop as argument.</p>
+
+<figure class='code'><figcaption><span>Improved doctor Module  (doctor.erl)</span> <a href='/downloads/code/7l7w/erlang/doctor.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">doctor</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start</span><span class="o">/</span><span class="mi">2</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">loop</span><span class="o">/</span><span class="mi">2</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">start</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">D</span> <span class="o">=</span> <span class="nb">spawn</span><span class="p">(</span><span class="n">doctor</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="p">[</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">]),</span>
+</span><span class='line'>  <span class="nv">D</span> <span class="o">!</span> <span class="n">new</span><span class="p">,</span>
+</span><span class='line'>  <span class="nv">D</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">loop</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nb">process_flag</span><span class="p">(</span><span class="n">trap_exit</span><span class="p">,</span> <span class="n">true</span><span class="p">),</span>
+</span><span class='line'>  <span class="k">receive</span>
+</span><span class='line'>    <span class="n">new</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Creating and monitoring process, attaching to atom </span><span class="si">~p</span><span class="s">.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">A</span><span class="p">]),</span>
+</span><span class='line'>      <span class="nb">register</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="nb">spawn_link</span><span class="p">(</span><span class="nv">F</span><span class="p">)),</span>
+</span><span class='line'>      <span class="n">loop</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">{</span><span class="n">&#39;EXIT&#39;</span><span class="p">,</span> <span class="nv">From</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;The process </span><span class="si">~p</span><span class="s"> </span><span class="si">~p</span><span class="s"> died with reason </span><span class="si">~p</span><span class="s">.&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">A</span><span class="p">,</span> <span class="nv">From</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">]),</span>
+</span><span class='line'>      <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot; Restarting</span><span class="si">~n</span><span class="s">.&quot;</span><span class="p">),</span>
+</span><span class='line'>      <span class="n">self</span><span class="p">()</span> <span class="o">!</span> <span class="n">new</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">loop</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>translate_service</code> is slightly modified to die of shame on untranslatable words.</p>
+
+<figure class='code'><figcaption><span>Modified translate_service Module  (translate_service.erl)</span> <a href='/downloads/code/7l7w/erlang/translate_service.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">translate_service</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">translate</span><span class="o">/</span><span class="mi">2</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">loop</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="k">receive</span>
+</span><span class='line'>    <span class="p">{</span><span class="nv">From</span><span class="p">,</span> <span class="s">&quot;casa&quot;</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nv">From</span> <span class="o">!</span> <span class="s">&quot;house&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">loop</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">{</span><span class="nv">From</span><span class="p">,</span> <span class="s">&quot;blanca&quot;</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nv">From</span> <span class="o">!</span> <span class="s">&quot;white&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">loop</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">{</span><span class="nv">From</span><span class="p">,</span><span class="nv">M</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nv">From</span> <span class="o">!</span> <span class="s">&quot;I do not understand&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nb">exit</span><span class="p">({</span><span class="nv">M</span><span class="p">,</span> <span class="n">not_understood</span><span class="p">,</span> <span class="n">received_at</span><span class="p">,</span> <span class="nn">erlang</span><span class="p">:</span><span class="n">time</span><span class="p">()})</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">translate</span><span class="p">(</span><span class="nv">To</span><span class="p">,</span> <span class="nv">Word</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">To</span> <span class="o">!</span> <span class="p">{</span><span class="n">self</span><span class="p">(),</span> <span class="nv">Word</span><span class="p">},</span>
+</span><span class='line'>  <span class="k">receive</span>
+</span><span class='line'>    <span class="nv">Translation</span> <span class="o">-&gt;</span> <span class="nv">Translation</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With these defined, it is possible to run two monitored services and attach them to different atoms:</p>
+
+<figure class='code'><figcaption><span>Testing the Doctor  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nv">DocRev</span> <span class="o">=</span> <span class="nn">doctor</span><span class="p">:</span><span class="n">start</span><span class="p">(</span><span class="k">fun</span> <span class="nn">roulette</span><span class="p">:</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">revolver</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">33</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">DocTrans</span> <span class="o">=</span> <span class="nn">doctor</span><span class="p">:</span><span class="n">start</span><span class="p">(</span><span class="k">fun</span> <span class="nn">translate_service</span><span class="p">:</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">translator</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">translator</span><span class="p">.</span>
+</span><span class='line'><span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">36</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="mi">6</span><span class="o">&gt;</span> <span class="nn">translate_service</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="n">translator</span><span class="p">,</span> <span class="s">&quot;casa&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">revolver</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">34</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">10</span><span class="p">,</span><span class="mi">31</span><span class="p">,</span><span class="mi">0</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="s">&quot;house&quot;</span>
+</span><span class='line'><span class="mi">7</span><span class="o">&gt;</span> <span class="nn">translate_service</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="n">translator</span><span class="p">,</span> <span class="s">&quot;que&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">translator</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">37</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="s">&quot;que&quot;</span><span class="p">,</span><span class="n">not_understood</span><span class="p">,</span>
+</span><span class='line'>                                                  <span class="n">received_at</span><span class="p">,</span>
+</span><span class='line'>                                                  <span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="mi">31</span><span class="p">,</span><span class="mi">0</span><span class="p">}}.</span><span class="s">&quot;I do not understand&quot;</span>
+</span><span class='line'> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">translator</span><span class="p">.</span>
+</span><span class='line'><span class="mi">8</span><span class="o">&gt;</span> <span class="nn">translate_service</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="n">translator</span><span class="p">,</span> <span class="s">&quot;casa&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="s">&quot;house&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Both services are restarted properly when dying.</p>
+
+<h3>Self monitoring Doctor</h3>
+
+<p>For the Doctor to successfully monitor itself, it should also be able to restart (or restart monitoring) whatever process it was monitoring when it died.</p>
+
+<p>For this, I create a new <code>d_monitor</code> function that spawns a monitor loop. The atom argument is used (or abused) to indicate whether we are starting an doctor monitoring loop, or the target function monitoring loop. In the former case, <code>d_monitor</code> is called again; in the latter the target function is spawned.</p>
+
+<p>When <code>d_monitor</code> is called from <code>start</code>, the former case is triggered; when called from <code>loop</code>, the latter case is.</p>
+
+<p>This means that for every call to <code>start</code>, there is two &#8220;nested&#8221; <code>loop</code>s running, the outside one monitoring the inside one, and the inside one in charge of the target function.</p>
+
+<p>To test the code, I gave the inside <code>loop</code> a non zero parameter which is decreased every time it has to restart the monitored function. When it reaches zero, the monitoring stops, and has to be restarted as well.</p>
+
+<p>Finally, instead of spawning directly the target function, I use the <code>check_for</code> function to first try to locate a process given the atom; only if this fails would a new process be spawned. The function is not very robust (in particular, if two monitors are trying to restart the process at the same time, one might fail rather than reattaching, because of the order of concurrent evaluation).</p>
+
+<figure class='code'><figcaption><span>Module Doctor_2  (doctor_2.erl)</span> <a href='/downloads/code/7l7w/erlang/doctor_2.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">doctor_2</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start</span><span class="o">/</span><span class="mi">2</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">loop</span><span class="o">/</span><span class="mi">3</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">start</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="n">d_monitor</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="p">{</span><span class="n">out</span><span class="p">,</span> <span class="nv">A</span><span class="p">},</span> <span class="o">-</span><span class="mi">1</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">d_monitor</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">,</span> <span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">D</span> <span class="o">=</span> <span class="nb">spawn</span><span class="p">(</span><span class="n">doctor_2</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="p">[</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">,</span> <span class="nv">N</span><span class="p">]),</span>
+</span><span class='line'>  <span class="nv">D</span> <span class="o">!</span> <span class="n">new</span><span class="p">,</span>
+</span><span class='line'>  <span class="nv">D</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">loop</span><span class="p">(_,</span> <span class="p">_,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">exit</span><span class="p">({</span><span class="n">running</span><span class="p">,</span> <span class="n">out_of</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="nn">erlang</span><span class="p">:</span><span class="n">time</span><span class="p">()});</span>
+</span><span class='line'><span class="nf">loop</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">,</span> <span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nb">process_flag</span><span class="p">(</span><span class="n">trap_exit</span><span class="p">,</span> <span class="n">true</span><span class="p">),</span>
+</span><span class='line'>  <span class="k">receive</span>
+</span><span class='line'>    <span class="n">new</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="nv">A</span> <span class="k">of</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">out</span><span class="p">,</span> <span class="nv">At</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Creating and monitoring process.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+</span><span class='line'>                <span class="nv">P</span> <span class="o">=</span> <span class="n">d_monitor</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">At</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+</span><span class='line'>              <span class="nb">link</span><span class="p">(</span><span class="nv">P</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">_</span> <span class="o">-&gt;</span> <span class="n">check_for</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="nv">F</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">loop</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">,</span> <span class="nv">N</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">{</span><span class="n">&#39;EXIT&#39;</span><span class="p">,</span> <span class="nv">From</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;The process </span><span class="si">~p</span><span class="s"> </span><span class="si">~p</span><span class="s"> died with reason </span><span class="si">~p</span><span class="s">.&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">A</span><span class="p">,</span> <span class="nv">From</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">]),</span>
+</span><span class='line'>      <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot; Restarting</span><span class="si">~n</span><span class="s">.&quot;</span><span class="p">),</span>
+</span><span class='line'>      <span class="n">self</span><span class="p">()</span> <span class="o">!</span> <span class="n">new</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">loop</span><span class="p">(</span><span class="nv">F</span><span class="p">,</span> <span class="nv">A</span><span class="p">,</span> <span class="nv">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">check_for</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="nv">F</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">Found</span> <span class="o">=</span> <span class="nn">lists</span><span class="p">:</span><span class="n">member</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="n">registered</span><span class="p">())</span> <span class="ow">andalso</span> <span class="nn">erlang</span><span class="p">:</span><span class="nb">is_process_alive</span><span class="p">(</span><span class="nb">whereis</span><span class="p">(</span><span class="nv">A</span><span class="p">)),</span>
+</span><span class='line'>  <span class="k">if</span>
+</span><span class='line'>    <span class="nv">Found</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;reattaching to running process </span><span class="si">~p</span><span class="s">.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">A</span><span class="p">]),</span>
+</span><span class='line'>    <span class="nb">link</span><span class="p">(</span><span class="nb">whereis</span><span class="p">(</span><span class="nv">A</span><span class="p">)),</span>
+</span><span class='line'>    <span class="n">true</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">true</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Creating and monitoring process, attaching to atom </span><span class="si">~p</span><span class="s">.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">A</span><span class="p">]),</span>
+</span><span class='line'>      <span class="nb">register</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="nb">spawn_link</span><span class="p">(</span><span class="nv">F</span><span class="p">)),</span>
+</span><span class='line'>      <span class="n">true</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To test the new code, I have written it so that the inner <code>loop</code> will die after 3 restarts of the monitored process:</p>
+
+<figure class='code'><figcaption><span>Self monitoring Doctor  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">doctor_2</span><span class="p">:</span><span class="n">start</span><span class="p">(</span><span class="k">fun</span> <span class="nn">roulette</span><span class="p">:</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">revolver</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">33</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">revolver</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">35</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">11</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">30</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">revolver</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">38</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">11</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">32</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">revolver</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">40</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">11</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">34</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">The</span> <span class="n">process</span> <span class="p">{</span><span class="n">out</span><span class="p">,</span><span class="n">revolver</span><span class="p">}</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">34</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">running</span><span class="p">,</span><span class="n">out_of</span><span class="p">,</span><span class="n">time</span><span class="p">,</span>
+</span><span class='line'>                                                      <span class="p">{</span><span class="mi">11</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">34</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As seen at the third call to <code>revolver ! 3</code>, after restarting the process, the monitor dies, then is restarted and attaches to the already running <code>revolver</code> process.</p>
+
+<h3>Monitoring the monitor. And vice-versa</h3>
+
+<p>For this exercise, I will go back to the simpler, original <code>doctor</code> module (the one that only keeps the shooter alive).</p>
+
+<p>I will use three atoms, <code>doctor</code>, <code>monitor</code> and <code>revolver</code> (for <code>roulette:loop</code>), to register the processes. The <code>doctor:loop</code> will be able to restart both <code>monitor</code> and <code>shooter</code>; <code>monitor:loop</code> will be able to restart <code>doctor</code>; <code>roulette</code> will have no such capacity.</p>
+
+<p>To keep things easy, I will also make sure the processes can easily be killed.</p>
+
+<p>First, I&#8217;ve move the function to look for a process by name to its own module; I also make sure that each module has a <code>start</code> function that registers a spawned process, and triggers the initialization process. This function is now the argument to the <code>look_for</code> function, so it no longer has to do the spawning and registering.</p>
+
+<figure class='code'><figcaption><span>Look for process  (look.erl)</span> <a href='/downloads/code/7l7w/erlang/mon_doc/look.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">look</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">look_for</span><span class="o">/</span><span class="mi">2</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">look_for</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="nv">F</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nv">Found</span> <span class="o">=</span> <span class="nn">lists</span><span class="p">:</span><span class="n">member</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="n">registered</span><span class="p">())</span> <span class="ow">andalso</span> <span class="nn">erlang</span><span class="p">:</span><span class="nb">is_process_alive</span><span class="p">(</span><span class="nb">whereis</span><span class="p">(</span><span class="nv">A</span><span class="p">)),</span>
+</span><span class='line'>    <span class="k">if</span>
+</span><span class='line'>        <span class="nv">Found</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;reattaching to running process </span><span class="si">~p</span><span class="s">.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">A</span><span class="p">]),</span>
+</span><span class='line'>            <span class="nb">link</span><span class="p">(</span><span class="nb">whereis</span><span class="p">(</span><span class="nv">A</span><span class="p">)),</span>
+</span><span class='line'>            <span class="n">false</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">true</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Creating and monitoring process, attaching to atom </span><span class="si">~p</span><span class="s">.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">A</span><span class="p">]),</span>
+</span><span class='line'>            <span class="nv">F</span><span class="p">(),</span>
+</span><span class='line'>            <span class="n">true</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>doctor</code> module is similar to the original. The differences are that it respond to the <code>die</code> message, also it has a <code>start</code> message that checks for the <code>monitor</code> process. It uses the <code>monitor:start</code> function, as explained above, so that if the <code>monitor</code> has to be started, it will also be properly initialized.</p>
+
+<figure class='code'><figcaption><span>Doctor  (doctor.erl)</span> <a href='/downloads/code/7l7w/erlang/mon_doc/doctor.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">doctor</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">start</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">loop</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nb">process_flag</span><span class="p">(</span><span class="n">trap_exit</span><span class="p">,</span> <span class="n">true</span><span class="p">),</span>
+</span><span class='line'>    <span class="k">receive</span>
+</span><span class='line'>        <span class="n">start</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Looking for monitor...</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="nn">look</span><span class="p">:</span><span class="n">look_for</span><span class="p">(</span><span class="nb">monitor</span><span class="p">,</span> <span class="k">fun</span> <span class="nb">monitor</span><span class="p">:</span><span class="n">start</span><span class="o">/</span><span class="mi">0</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">self</span><span class="p">()</span> <span class="o">!</span> <span class="n">new</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">loop</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">new</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Looking for revolver...</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="nn">look</span><span class="p">:</span><span class="n">look_for</span><span class="p">(</span><span class="n">revolver</span><span class="p">,</span> <span class="k">fun</span> <span class="nn">roulette</span><span class="p">:</span><span class="n">start</span><span class="o">/</span><span class="mi">0</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">loop</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">die</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Aaargh...</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="nb">exit</span><span class="p">({</span><span class="n">doctor</span><span class="p">,</span> <span class="n">died</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="nn">erlang</span><span class="p">:</span><span class="n">time</span><span class="p">()});</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">&#39;EXIT&#39;</span><span class="p">,</span> <span class="nv">From</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;The process </span><span class="si">~p</span><span class="s"> died with reason </span><span class="si">~p</span><span class="s">.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">From</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">]),</span>
+</span><span class='line'>            <span class="n">self</span><span class="p">()</span> <span class="o">!</span> <span class="n">start</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">loop</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">start</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nb">register</span><span class="p">(</span><span class="n">doctor</span><span class="p">,</span> <span class="nb">spawn_link</span><span class="p">(</span><span class="k">fun</span> <span class="nn">doctor</span><span class="p">:</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">)),</span>
+</span><span class='line'>    <span class="n">doctor</span> <span class="o">!</span> <span class="n">start</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>monitor</code> module is simpler: it only needs to check for the <code>doctor</code> process, running the <code>doctor:start</code> function if needed.</p>
+
+<figure class='code'><figcaption><span>Monitor  (monitor.erl)</span> <a href='/downloads/code/7l7w/erlang/mon_doc/monitor.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="nb">monitor</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">start</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">loop</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nb">process_flag</span><span class="p">(</span><span class="n">trap_exit</span><span class="p">,</span> <span class="n">true</span><span class="p">),</span>
+</span><span class='line'>    <span class="k">receive</span>
+</span><span class='line'>        <span class="n">start</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Looking for doctor...</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="nn">look</span><span class="p">:</span><span class="n">look_for</span><span class="p">(</span><span class="n">doctor</span><span class="p">,</span> <span class="k">fun</span> <span class="nn">doctor</span><span class="p">:</span><span class="n">start</span><span class="o">/</span><span class="mi">0</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">loop</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">die</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Aaargh...</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="nb">exit</span><span class="p">({</span><span class="nb">monitor</span><span class="p">,</span> <span class="n">died</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="nn">erlang</span><span class="p">:</span><span class="n">time</span><span class="p">()});</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">&#39;EXIT&#39;</span><span class="p">,</span> <span class="nv">From</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;The process </span><span class="si">~p</span><span class="s"> died with reason </span><span class="si">~p</span><span class="s">.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">From</span><span class="p">,</span> <span class="nv">Reason</span><span class="p">]),</span>
+</span><span class='line'>            <span class="n">self</span><span class="p">()</span> <span class="o">!</span> <span class="n">start</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">loop</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">start</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nb">register</span><span class="p">(</span><span class="nb">monitor</span><span class="p">,</span> <span class="nb">spawn_link</span><span class="p">(</span><span class="k">fun</span> <span class="nb">monitor</span><span class="p">:</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">)),</span>
+</span><span class='line'>    <span class="nb">monitor</span> <span class="o">!</span> <span class="n">start</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, the slightly modified <code>roulette</code> module (it now has a <code>roulette:start</code> function):</p>
+
+<figure class='code'><figcaption><span>Roulette  (roulette.erl)</span> <a href='/downloads/code/7l7w/erlang/mon_doc/roulette.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">roulette</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">loop</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="k">receive</span>
+</span><span class='line'>    <span class="mi">3</span> <span class="o">-&gt;</span> <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;bang.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span> <span class="nb">exit</span><span class="p">({</span><span class="n">roulette</span><span class="p">,</span> <span class="n">die</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="nn">erlang</span><span class="p">:</span><span class="n">time</span><span class="p">()});</span>
+</span><span class='line'>    <span class="p">_</span> <span class="o">-&gt;</span> <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;click.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span> <span class="n">loop</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">start</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nb">register</span><span class="p">(</span><span class="n">revolver</span><span class="p">,</span> <span class="nb">spawn_link</span><span class="p">(</span><span class="k">fun</span> <span class="nn">roulette</span><span class="p">:</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">)).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The basic doctoring still works:</p>
+
+<figure class='code'><figcaption><span>Testing the Monitored Doctor  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">doctor</span><span class="p">:</span><span class="n">start</span><span class="p">().</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">start</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">doctor</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="n">doctor</span><span class="p">.</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">36</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">1</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>doctor</code> can be killed; <code>monitor</code> will restart it:</p>
+
+<figure class='code'><figcaption><span>Testing the Monitored Doctor 2  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="n">doctor</span> <span class="o">!</span> <span class="n">die</span><span class="p">.</span>
+</span><span class='line'><span class="n">die</span>
+</span><span class='line'><span class="nv">Aaargh</span><span class="p">...</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">33</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">doctor</span><span class="p">,</span><span class="n">died</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">47</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">doctor</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">doctor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="o">**</span> <span class="n">exception</span> <span class="nn">error</span><span class="p">:</span> <span class="p">{</span><span class="n">doctor</span><span class="p">,</span><span class="n">died</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">47</span><span class="p">}}</span>
+</span><span class='line'><span class="mi">6</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">43</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">56</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">7</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, <code>monitor</code> can also be killed; it is restarted by <code>doctor</code>:</p>
+
+<figure class='code'><figcaption><span>Testing the Monitored Doctor 3  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">8</span><span class="o">&gt;</span> <span class="nb">monitor</span> <span class="o">!</span> <span class="n">die</span><span class="p">.</span>
+</span><span class='line'><span class="n">die</span>
+</span><span class='line'><span class="nv">Aaargh</span><span class="p">...</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">35</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="nb">monitor</span><span class="p">,</span><span class="n">died</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">44</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">doctor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="n">doctor</span><span class="p">.</span>
+</span><span class='line'><span class="mi">9</span><span class="o">&gt;</span> <span class="n">doctor</span> <span class="o">!</span> <span class="n">die</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Aaargh</span><span class="p">...</span>
+</span><span class='line'><span class="n">die</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">doctor</span><span class="p">,</span><span class="n">died</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">47</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">doctor</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">doctor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">10</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">52</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">51</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">11</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Logging messages to a file</h3>
+
+<p>For this I will just derive the code from the one on this <a href="http://www.joeandmotorboat.com/2008/11/12/a-simple-concurrent-erlang-tcp-server/">post</a> (which I mentioned above).</p>
+
+<p>Rather than echoing the received messages, they are written to disk:</p>
+
+<figure class='code'><figcaption><span>Logging messages  (logger.erl)</span> <a href='/downloads/code/7l7w/erlang/logger.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">logger</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start_server</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">connect</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span> <span class="n">recv_loop</span><span class="o">/</span><span class="mi">2</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span><span class="ni">define</span><span class="p">(</span><span class="no">LISTEN_PORT</span><span class="p">,</span> <span class="mi">9000</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">define</span><span class="p">(</span><span class="no">TCP_OPTS</span><span class="p">,</span> <span class="p">[</span><span class="n">binary</span><span class="p">,</span> <span class="p">{</span><span class="n">packet</span><span class="p">,</span> <span class="n">raw</span><span class="p">},</span> <span class="p">{</span><span class="n">nodelay</span><span class="p">,</span> <span class="n">true</span><span class="p">},</span> <span class="p">{</span><span class="n">reuseaddr</span><span class="p">,</span> <span class="n">true</span><span class="p">},</span> <span class="p">{</span><span class="n">active</span><span class="p">,</span> <span class="n">once</span><span class="p">}]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">start_server</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nn">gen_tcp</span><span class="p">:</span><span class="n">listen</span><span class="p">(</span><span class="no">?LISTEN_PORT</span><span class="p">,</span> <span class="no">?TCP_OPTS</span><span class="p">)</span> <span class="k">of</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Listen</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="nb">spawn</span><span class="p">(</span><span class="no">?MODULE</span><span class="p">,</span> <span class="n">connect</span><span class="p">,</span> <span class="p">[</span><span class="nv">Listen</span><span class="p">]),</span>
+</span><span class='line'>                        <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~p</span><span class="s"> Server Started.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nn">erlang</span><span class="p">:</span><span class="n">localtime</span><span class="p">()]);</span>
+</span><span class='line'>        <span class="nv">Error</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Error: </span><span class="si">~p~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">Error</span><span class="p">])</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">connect</span><span class="p">(</span><span class="nv">Listen</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Socket</span><span class="p">}</span> <span class="o">=</span> <span class="nn">gen_tcp</span><span class="p">:</span><span class="n">accept</span><span class="p">(</span><span class="nv">Listen</span><span class="p">),</span>
+</span><span class='line'>    <span class="nn">inet</span><span class="p">:</span><span class="n">setopts</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span> <span class="no">?TCP_OPTS</span><span class="p">),</span>
+</span><span class='line'>    <span class="nb">spawn</span><span class="p">(</span><span class="k">fun</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">connect</span><span class="p">(</span><span class="nv">Listen</span><span class="p">)</span> <span class="k">end</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">File</span><span class="p">}</span> <span class="o">=</span> <span class="nn">file</span><span class="p">:</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;log.txt&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">append</span><span class="p">]),</span>
+</span><span class='line'>    <span class="n">recv_loop</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span><span class="nv">File</span><span class="p">),</span>
+</span><span class='line'>    <span class="nn">file</span><span class="p">:</span><span class="n">close</span><span class="p">(</span><span class="nv">File</span><span class="p">),</span>
+</span><span class='line'>    <span class="nn">gen_tcp</span><span class="p">:</span><span class="n">close</span><span class="p">(</span><span class="nv">Socket</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">recv_loop</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span><span class="nv">File</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nn">inet</span><span class="p">:</span><span class="n">setopts</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span> <span class="p">[{</span><span class="n">active</span><span class="p">,</span> <span class="n">once</span><span class="p">}]),</span>
+</span><span class='line'>    <span class="k">receive</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">tcp</span><span class="p">,</span> <span class="nv">Socket</span><span class="p">,</span> <span class="nv">Data</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~p</span><span class="s"> </span><span class="si">~p</span><span class="s"> </span><span class="si">~p~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nn">inet</span><span class="p">:</span><span class="n">peername</span><span class="p">(</span><span class="nv">Socket</span><span class="p">),</span> <span class="nn">erlang</span><span class="p">:</span><span class="n">localtime</span><span class="p">(),</span> <span class="nv">Data</span><span class="p">]),</span>
+</span><span class='line'>            <span class="nn">file</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="nv">File</span><span class="p">,</span> <span class="nv">Data</span><span class="p">),</span>
+</span><span class='line'>            <span class="nn">gen_tcp</span><span class="p">:</span><span class="nb">send</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span> <span class="s">&quot;I wrote down &quot;</span> <span class="o">++</span> <span class="nv">Data</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">recv_loop</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span><span class="nv">File</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">tcp_closed</span><span class="p">,</span> <span class="nv">Socket</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~p</span><span class="s"> Client Disconnected.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nn">erlang</span><span class="p">:</span><span class="n">localtime</span><span class="p">()])</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This works nicely because the <a href="http://www.erlang.org/doc/man/file.html"><code>file:write</code></a> function expects bytes rather than a string.</p>
+
+<h3>Network aware <code>translate_service</code></h3>
+
+<p>Once again I use the simple TCP server code. For this exercise, I have extended the translation service so that it can learn new words in a given session: using the <code>put word:meaning</code> command, the server will learn a new word. This is done by keeping a dictionary (a list of tuples) as argument for the <code>recv_loop</code> function.</p>
+
+<p>I convert from binary to list because they are slightly easier to work with.</p>
+
+<figure class='code'><figcaption><span>Network aware translate_service  (translate_service.erl)</span> <a href='/downloads/code/7l7w/erlang/trans/translate_service.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">translate_service</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start_server</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">connect</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">cleanup</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span><span class="ni">define</span><span class="p">(</span><span class="no">LISTEN_PORT</span><span class="p">,</span> <span class="mi">9000</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">define</span><span class="p">(</span><span class="no">TCP_OPTS</span><span class="p">,</span> <span class="p">[</span><span class="n">binary</span><span class="p">,</span> <span class="p">{</span><span class="n">packet</span><span class="p">,</span> <span class="n">raw</span><span class="p">},</span> <span class="p">{</span><span class="n">nodelay</span><span class="p">,</span> <span class="n">true</span><span class="p">},</span> <span class="p">{</span><span class="n">reuseaddr</span><span class="p">,</span> <span class="n">true</span><span class="p">},</span> <span class="p">{</span><span class="n">active</span><span class="p">,</span> <span class="n">once</span><span class="p">}]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">start_server</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nn">gen_tcp</span><span class="p">:</span><span class="n">listen</span><span class="p">(</span><span class="no">?LISTEN_PORT</span><span class="p">,</span> <span class="no">?TCP_OPTS</span><span class="p">)</span> <span class="k">of</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Listen</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="nb">spawn</span><span class="p">(</span><span class="no">?MODULE</span><span class="p">,</span> <span class="n">connect</span><span class="p">,</span> <span class="p">[</span><span class="nv">Listen</span><span class="p">]),</span>
+</span><span class='line'>                        <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~p</span><span class="s"> Server Started.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nn">erlang</span><span class="p">:</span><span class="n">localtime</span><span class="p">()]);</span>
+</span><span class='line'>        <span class="nv">Error</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Error: </span><span class="si">~p~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">Error</span><span class="p">])</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">connect</span><span class="p">(</span><span class="nv">Listen</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Socket</span><span class="p">}</span> <span class="o">=</span> <span class="nn">gen_tcp</span><span class="p">:</span><span class="n">accept</span><span class="p">(</span><span class="nv">Listen</span><span class="p">),</span>
+</span><span class='line'>    <span class="nn">inet</span><span class="p">:</span><span class="n">setopts</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span> <span class="no">?TCP_OPTS</span><span class="p">),</span>
+</span><span class='line'>    <span class="nb">spawn</span><span class="p">(</span><span class="k">fun</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">connect</span><span class="p">(</span><span class="nv">Listen</span><span class="p">)</span> <span class="k">end</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">recv_loop</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,[{</span><span class="s">&quot;casa&quot;</span><span class="p">,</span> <span class="s">&quot;house&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s">&quot;blanca&quot;</span><span class="p">,</span> <span class="s">&quot;white&quot;</span><span class="p">}]),</span>
+</span><span class='line'>    <span class="nn">gen_tcp</span><span class="p">:</span><span class="n">close</span><span class="p">(</span><span class="nv">Socket</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">recv_loop</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span><span class="nv">Dict</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nn">inet</span><span class="p">:</span><span class="n">setopts</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span> <span class="p">[{</span><span class="n">active</span><span class="p">,</span> <span class="n">once</span><span class="p">}]),</span>
+</span><span class='line'>    <span class="k">receive</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">tcp</span><span class="p">,</span> <span class="nv">Socket</span><span class="p">,</span> <span class="nv">Data</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~p</span><span class="s"> </span><span class="si">~p</span><span class="s"> </span><span class="si">~p~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nn">inet</span><span class="p">:</span><span class="n">peername</span><span class="p">(</span><span class="nv">Socket</span><span class="p">),</span> <span class="nn">erlang</span><span class="p">:</span><span class="n">localtime</span><span class="p">(),</span> <span class="nv">Data</span><span class="p">]),</span>
+</span><span class='line'>            <span class="p">{</span><span class="nv">Msg</span><span class="p">,</span> <span class="nv">Dict2</span><span class="p">}</span> <span class="o">=</span> <span class="n">process_message</span><span class="p">(</span><span class="nv">Dict</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">(</span><span class="nv">Data</span><span class="p">)),</span>
+</span><span class='line'>            <span class="nn">gen_tcp</span><span class="p">:</span><span class="nb">send</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span> <span class="nn">binary</span><span class="p">:</span><span class="n">list_to_bin</span><span class="p">(</span><span class="nv">Msg</span><span class="p">)),</span>
+</span><span class='line'>            <span class="n">recv_loop</span><span class="p">(</span><span class="nv">Socket</span><span class="p">,</span> <span class="nv">Dict2</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">tcp_closed</span><span class="p">,</span> <span class="nv">Socket</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~p</span><span class="s"> Client Disconnected.</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nn">erlang</span><span class="p">:</span><span class="n">localtime</span><span class="p">()])</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">cleanup</span><span class="p">(</span><span class="nv">Data</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nn">binary</span><span class="p">:</span><span class="n">bin_to_list</span><span class="p">(</span><span class="nv">Data</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="nb">byte_size</span><span class="p">(</span><span class="nv">Data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">}).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">process_message</span><span class="p">(</span><span class="nv">Dict</span><span class="p">,</span> <span class="nv">Data</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nv">Data</span> <span class="k">of</span>
+</span><span class='line'>        <span class="p">[</span><span class="sc">$p</span><span class="p">,</span><span class="sc">$u</span><span class="p">,</span><span class="sc">$t</span><span class="p">,</span><span class="sc">$ </span><span class="p">|</span><span class="nv">Def</span><span class="p">]</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="p">[</span><span class="nv">Word</span><span class="p">,</span> <span class="nv">Meaning</span><span class="p">]</span> <span class="o">=</span> <span class="nn">string</span><span class="p">:</span><span class="n">tokens</span><span class="p">(</span><span class="nv">Def</span><span class="p">,</span> <span class="s">&quot;:&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="p">{</span><span class="s">&quot;Noted</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[{</span><span class="nv">Word</span><span class="p">,</span> <span class="nv">Meaning</span><span class="p">}|</span><span class="nv">Dict</span><span class="p">]};</span>
+</span><span class='line'>        <span class="p">_</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">translate</span><span class="p">(</span><span class="nv">Data</span><span class="p">,</span> <span class="nv">Dict</span><span class="p">)</span> <span class="o">++</span> <span class="s">&quot;</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="nv">Dict</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">translate</span><span class="p">(</span><span class="nv">Word</span><span class="p">,</span> <span class="nv">Dict</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nv">M</span> <span class="o">=</span> <span class="nn">lists</span><span class="p">:</span><span class="n">keyfind</span><span class="p">(</span><span class="nv">Word</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">Dict</span><span class="p">),</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nv">M</span> <span class="k">of</span>
+</span><span class='line'>        <span class="n">false</span> <span class="o">-&gt;</span>
+</span><span class='line'>            <span class="s">&quot;I do not understand &quot;</span> <span class="o">++</span> <span class="nv">Word</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">{_,</span> <span class="nv">Meaning</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="nv">Meaning</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As seen in the interaction below, the translator knows its basic words, and can learn new ones:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ telnet localhost 9000
+</span><span class='line'>Trying 127.0.0.1...
+</span><span class='line'>Connected to localhost.
+</span><span class='line'>Escape character is '^]'.
+</span><span class='line'>casa
+</span><span class='line'>house
+</span><span class='line'>blanca
+</span><span class='line'>white
+</span><span class='line'>que
+</span><span class='line'>I do not understand que
+</span><span class='line'>put que:what
+</span><span class='line'>Noted
+</span><span class='line'>que
+</span><span class='line'>what
+</span><span class='line'>^]
+</span><span class='line'>telnet&gt; Connection closed.</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping up Day 3 and Erlang</h2>
+
+<p>Erlang was a fun and interesting language to play with. Looking at the documentation and existing tutorials (especially the intermediate to advanced ones), I had a feeling that, if Java can be said to be Enterprise, Erlang is Industrial. It does look like a control panel in a power plant: rich, complex and yet as simple as possible for what it is meant to achieve, and likely to kill you if you approach it with buzzwords in mind.</p>
+
+<p>This is another language I will be eager to get back to.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-06T10:17:00+09:00" pubdate data-updated="true">Nov 6<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/" title="Previous Post: Seven Languages in Seven Weeks Erlang Day 2">&laquo; Seven Languages in Seven Weeks Erlang Day 2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/11/09/haskell-foldl-as-foldr/" title="next Post: Haskell: foldl as foldr">Haskell: foldl as foldr &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Languages in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/">Ruby Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/">Ruby Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">Ruby Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Io Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Io Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Io Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">About Io</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Prolog Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Prolog Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Prolog Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Scala Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Scala Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Scala Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/">Erlang Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/">Erlang Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/">Erlang Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">Clojure Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Clojure Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Haskell Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Haskell Day 2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/11/haskell-foldr-as-foldl/">Haskell: foldr as foldl</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

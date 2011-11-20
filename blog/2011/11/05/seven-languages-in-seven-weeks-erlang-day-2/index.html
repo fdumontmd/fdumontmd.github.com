@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Erlang Day 2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Second day with Erlang, this time to cover basic controls, and more functional goodies such as anonymous and higher-order functions, list functions &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Erlang Day 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-05T18:22:00+09:00" pubdate data-updated="true">Nov 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Second day with Erlang, this time to cover basic controls, and more functional goodies such as anonymous and higher-order functions, list functions and list comprehensions.</p>
+
+<!--more-->
+
+
+<p>Erlang&#8217;s support for list processing is quite extensive (as it should be for a language with limited mutable state). Using is properly requires the kind of mental twist that is needed for effective (set oriented) SQL usage. But once acquired, it is hard to get back to generic imperative programming.</p>
+
+<p>This chapter introduces various functions from the <code>lists</code> module: <code>lists:map</code>, and <code>lists:foreach</code>. I probably should not have used the former in <a href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/">yesterday</a>&#8217;s &#8220;Counting to 10&#8221; exercise. The latter was more appropriate:</p>
+
+<figure class='code'><figcaption><span>New version of Count module  (count_2.erl)</span> <a href='/downloads/code/7l7w/erlang/count_2.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">count_2</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">count_to_10</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">count_to</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">count_up_to</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">count_to_10</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">count_to</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">count_to</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">L</span> <span class="o">=</span> <span class="n">count_up_to</span><span class="p">(</span><span class="nv">N</span><span class="p">),</span>
+</span><span class='line'>  <span class="nn">lists</span><span class="p">:</span><span class="n">foreach</span><span class="p">(</span><span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">io</span><span class="p">:</span><span class="n">fwrite</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~w~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">X</span><span class="p">])</span> <span class="k">end</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">count_up_to</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">lists</span><span class="p">:</span><span class="n">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nv">N</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(also changed: I&#8217;m using the tilde format escape character, rather than backslash. Erlang is a child of Lisp, not C).</p>
+
+<h2>Exercises</h2>
+
+<h3>Dictionary lookup</h3>
+
+<p>Just using pattern matching, the solution is very short an clean.</p>
+
+<p>I named the module <code>dictionary</code> as the name <code>dict</code> was already used in the standard library. Erlang has a flat module naming system, so conflicts are bound to happen.</p>
+
+<p>As it happens, Erlang <a href="http://www.erlang.org/doc/man/lists.html#keyfind-3"><code>lists:keyfind</code></a> already implements this feature, as shown in <code>lookup_alt</code>.</p>
+
+<figure class='code'><figcaption><span>Dictionary module  (dictionary.erl)</span> <a href='/downloads/code/7l7w/erlang/dictionary.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">dictionary</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">lookup</span><span class="o">/</span><span class="mi">2</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">lookup_alt</span><span class="o">/</span><span class="mi">2</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">lookup</span><span class="p">(_,</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="n">false</span><span class="p">;</span>
+</span><span class='line'><span class="nf">lookup</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span> <span class="p">[{</span><span class="nv">K</span><span class="p">,</span> <span class="nv">V</span><span class="p">}|_])</span> <span class="o">-&gt;</span> <span class="nv">V</span><span class="p">;</span>
+</span><span class='line'><span class="nf">lookup</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span> <span class="p">[_|</span><span class="nv">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">lookup</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span> <span class="nv">T</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">lookup_alt</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span> <span class="nv">L</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">lists</span><span class="p">:</span><span class="n">keyfind</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing the code:</p>
+
+<figure class='code'><figcaption><span>Testing Module dictionary  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">dictionary</span><span class="p">).</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">dictionary</span><span class="p">}</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">D</span> <span class="o">=</span> <span class="p">[{</span><span class="n">erlang</span><span class="p">,</span> <span class="s">&quot;a functional language&quot;</span><span class="p">},</span> <span class="p">{</span><span class="n">ruby</span><span class="p">,</span> <span class="s">&quot;an OO language&quot;</span><span class="p">},</span> <span class="p">{</span><span class="n">java</span><span class="p">,</span> <span class="s">&quot;a soso language&quot;</span><span class="p">}].</span>
+</span><span class='line'><span class="p">[{</span><span class="n">erlang</span><span class="p">,</span><span class="s">&quot;a functional language&quot;</span><span class="p">},</span>
+</span><span class='line'> <span class="p">{</span><span class="n">ruby</span><span class="p">,</span><span class="s">&quot;an OO language&quot;</span><span class="p">},</span>
+</span><span class='line'> <span class="p">{</span><span class="n">java</span><span class="p">,</span><span class="s">&quot;a soso language&quot;</span><span class="p">}]</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">dictionary</span><span class="p">:</span><span class="n">lookup</span><span class="p">(</span><span class="n">erlang</span><span class="p">,</span> <span class="nv">D</span><span class="p">).</span>
+</span><span class='line'><span class="s">&quot;a functional language&quot;</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nn">dictionary</span><span class="p">:</span><span class="n">lookup</span><span class="p">(</span><span class="n">java</span><span class="p">,</span> <span class="nv">D</span><span class="p">).</span>
+</span><span class='line'><span class="s">&quot;a soso language&quot;</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="nn">dictionary</span><span class="p">:</span><span class="n">lookup</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nv">D</span><span class="p">).</span>
+</span><span class='line'><span class="n">false</span>
+</span><span class='line'><span class="mi">6</span><span class="o">&gt;</span> <span class="nn">dictionary</span><span class="p">:</span><span class="n">lookup_alt</span><span class="p">(</span><span class="n">erlang</span><span class="p">,</span> <span class="nv">D</span><span class="p">).</span>
+</span><span class='line'><span class="p">{</span><span class="n">erlang</span><span class="p">,</span><span class="s">&quot;a functional language&quot;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Computing prices</h3>
+
+<p>Once again, pattern matching makes it really easy to write such function. For extra credit (ok, no credit. Just for fun), I also wrote a function that depends on <a href="http://www.erlang.org/doc/man/lists.html#map-2"><code>lists:map</code></a>.</p>
+
+<p>It just shows how easy it is to process lists of things in Erlang or any other decent functional language (one with pattern matching and list comprehension, that is).</p>
+
+<figure class='code'><figcaption><span>Price module  (price.erl)</span> <a href='/downloads/code/7l7w/erlang/price.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">price</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">compute_map</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span> <span class="n">compute_lc</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">compute_map</span><span class="p">(</span><span class="nv">L</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">lists</span><span class="p">:</span><span class="n">map</span><span class="p">(</span><span class="k">fun</span><span class="p">({</span><span class="nv">Item</span><span class="p">,</span> <span class="nv">Quantity</span><span class="p">,</span> <span class="nv">Price</span><span class="p">})</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">Item</span><span class="p">,</span> <span class="nv">Quantity</span> <span class="o">*</span> <span class="nv">Price</span><span class="p">}</span> <span class="k">end</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">compute_lc</span><span class="p">(</span><span class="nv">L</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[{</span><span class="nv">Item</span><span class="p">,</span> <span class="nv">Quantity</span> <span class="o">*</span> <span class="nv">Price</span><span class="p">}</span> <span class="p">||</span> <span class="p">{</span><span class="nv">Item</span><span class="p">,</span> <span class="nv">Quantity</span><span class="p">,</span> <span class="nv">Price</span><span class="p">}</span> <span class="o">&lt;-</span> <span class="nv">L</span><span class="p">].</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing both functions, they return the same answer (always a good thing for functions meant to have identical meaning):</p>
+
+<figure class='code'><figcaption><span>Testing Module price  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">price</span><span class="p">).</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">price</span><span class="p">}</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">Items</span> <span class="o">=</span> <span class="p">[{</span><span class="n">processor</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">200</span><span class="p">},</span> <span class="p">{</span><span class="nb">memory</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">100</span><span class="p">},</span> <span class="p">{</span><span class="n">screen</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">},</span> <span class="p">{</span><span class="n">drive</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">150</span><span class="p">}].</span>
+</span><span class='line'><span class="p">[{</span><span class="n">processor</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">200</span><span class="p">},</span>
+</span><span class='line'> <span class="p">{</span><span class="nb">memory</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">100</span><span class="p">},</span>
+</span><span class='line'> <span class="p">{</span><span class="n">screen</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">},</span>
+</span><span class='line'> <span class="p">{</span><span class="n">drive</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">150</span><span class="p">}]</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">price</span><span class="p">:</span><span class="n">compute_map</span><span class="p">(</span><span class="nv">Items</span><span class="p">).</span>
+</span><span class='line'><span class="p">[{</span><span class="n">processor</span><span class="p">,</span><span class="mi">1000</span><span class="p">},{</span><span class="nb">memory</span><span class="p">,</span><span class="mi">400</span><span class="p">},{</span><span class="n">screen</span><span class="p">,</span><span class="mi">1000</span><span class="p">},{</span><span class="n">drive</span><span class="p">,</span><span class="mi">450</span><span class="p">}]</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nn">price</span><span class="p">:</span><span class="n">compute_lc</span><span class="p">(</span><span class="nv">Items</span><span class="p">).</span>
+</span><span class='line'><span class="p">[{</span><span class="n">processor</span><span class="p">,</span><span class="mi">1000</span><span class="p">},{</span><span class="nb">memory</span><span class="p">,</span><span class="mi">400</span><span class="p">},{</span><span class="n">screen</span><span class="p">,</span><span class="mi">1000</span><span class="p">},{</span><span class="n">drive</span><span class="p">,</span><span class="mi">450</span><span class="p">}]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Playing Tic-Tac-Toe</h3>
+
+<p>I have to admit I cannot stand hard coding anything. Whenever I have a choice between hard coding and generating coding, I&#8217;ll pick the latter every single time.</p>
+
+<p>So for the Tic-Tac-Toe exercise, I wrote code that computes the list of potential victory lines, even though the list for a board of 3 by 3 is much shorter. When Tic-Tac-Toe is finally played on 19 by 19 boards (as <a href="http://en.wikipedia.org/wiki/Go_(game)">games for grown ups</a> tend to be), my code will be ready&#8230;</p>
+
+<p>I used a small utility module to transpose a matrix; the code is very similar, and indeed, lifted, from a previous Prolog <a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">exercise</a> (the Sudoku one).</p>
+
+<figure class='code'><figcaption><span>Matrix module  (matrix.erl)</span> <a href='/downloads/code/7l7w/erlang/matrix.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">matrix</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">transpose</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">head</span><span class="p">([</span><span class="nv">H</span><span class="p">|_])</span> <span class="o">-&gt;</span> <span class="nv">H</span><span class="p">.</span>
+</span><span class='line'><span class="nf">tail</span><span class="p">([_|</span><span class="nv">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nv">T</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">transpose</span><span class="p">([])</span> <span class="o">-&gt;</span> <span class="p">[];</span>
+</span><span class='line'><span class="nf">transpose</span><span class="p">([[]|_])</span> <span class="o">-&gt;</span> <span class="p">[];</span>
+</span><span class='line'><span class="nf">transpose</span><span class="p">(</span><span class="nv">M</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">Heads</span> <span class="o">=</span> <span class="nn">lists</span><span class="p">:</span><span class="n">map</span><span class="p">(</span><span class="k">fun</span> <span class="n">head</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span> <span class="nv">M</span><span class="p">),</span>
+</span><span class='line'>  <span class="nv">Tails</span> <span class="o">=</span> <span class="nn">lists</span><span class="p">:</span><span class="n">map</span><span class="p">(</span><span class="k">fun</span> <span class="n">tail</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span> <span class="nv">M</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">[</span><span class="nv">Heads</span><span class="p">|</span><span class="n">transpose</span><span class="p">(</span><span class="nv">Tails</span><span class="p">)].</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once thing to note: as in the <code>export</code> statement, a function name must include its arity when passed to higher order functions. See above for <code>fun head/1</code> for instance.</p>
+
+<p>Once this is defined, the code for Tic-Tac-Toe is fairly simple:</p>
+
+<ul>
+<li>generate a list of lines on a board (<code>tictactoe:make_winners</code>) *</li>
+<li>for each of these lines, determine if it belongs to a single player (<code>tictactoe:check_align</code>, called from <code>tictactoe:check</code>)</li>
+<li>if any player owns a line, declare her the winner (<code>tictactoe:check</code>, using <code>tictactoe:player</code>)</li>
+<li>otherwise, depending on whether there is any non player own square, declare the game over or undecided (<code>tictactoe:check</code>, using <code>tictactoe:free</code>).</li>
+</ul>
+
+
+<figure class='code'><figcaption><span>Checking Tic-Tac-Toe  (tictactoe.erl)</span> <a href='/downloads/code/7l7w/erlang/tictactoe.erl'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">tictactoe</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">check</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">make_winners</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">make_rows</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[[{</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">}</span> <span class="p">||</span> <span class="nv">X</span> <span class="o">&lt;-</span> <span class="nn">lists</span><span class="p">:</span><span class="n">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nv">N</span><span class="p">)]</span> <span class="p">||</span> <span class="nv">Y</span> <span class="o">&lt;-</span> <span class="nn">lists</span><span class="p">:</span><span class="n">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nv">N</span><span class="p">)].</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">make_lines</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">Rows</span> <span class="o">=</span> <span class="n">make_rows</span><span class="p">(</span><span class="nv">N</span><span class="p">),</span>
+</span><span class='line'>  <span class="nv">Rows</span> <span class="o">++</span> <span class="nn">matrix</span><span class="p">:</span><span class="n">transpose</span><span class="p">(</span><span class="nv">Rows</span><span class="p">).</span>
+</span><span class='line'>  
+</span><span class='line'><span class="nf">make_diag</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[{</span><span class="nv">X</span><span class="p">,</span> <span class="nv">N</span><span class="o">-</span><span class="nv">X</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="p">||</span> <span class="nv">X</span> <span class="o">&lt;-</span> <span class="nn">lists</span><span class="p">:</span><span class="n">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nv">N</span><span class="p">)].</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nf">make_winners</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">Lines</span> <span class="o">=</span> <span class="n">make_lines</span><span class="p">(</span><span class="nv">N</span><span class="p">),</span>
+</span><span class='line'>  <span class="nv">Diag1</span> <span class="o">=</span> <span class="n">make_diag</span><span class="p">(</span><span class="nv">N</span><span class="p">),</span>
+</span><span class='line'>  <span class="nv">Diag2</span> <span class="o">=</span> <span class="nn">lists</span><span class="p">:</span><span class="n">map</span><span class="p">(</span><span class="k">fun</span><span class="p">({</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">})</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="mi">4</span><span class="o">-</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">}</span> <span class="k">end</span><span class="p">,</span> <span class="nv">Diag1</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">[</span><span class="nv">Diag1</span><span class="p">,</span> <span class="nv">Diag2</span><span class="p">]</span> <span class="o">++</span> <span class="nv">Lines</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">get_pos</span><span class="p">({</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">},</span> <span class="nv">B</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">lists</span><span class="p">:</span><span class="n">nth</span><span class="p">(</span><span class="nv">X</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="nv">Y</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="nv">B</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">check_align</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="nv">B</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">Line</span> <span class="o">=</span> <span class="nn">lists</span><span class="p">:</span><span class="n">map</span><span class="p">(</span><span class="k">fun</span><span class="p">(</span><span class="nv">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">get_pos</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">B</span><span class="p">)</span> <span class="k">end</span><span class="p">,</span> <span class="nv">L</span><span class="p">),</span>
+</span><span class='line'>  <span class="k">case</span> <span class="nv">Line</span> <span class="k">of</span>
+</span><span class='line'>      <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">o</span><span class="p">,</span><span class="n">o</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="n">o</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">_</span> <span class="o">-&gt;</span> <span class="n">no_winners</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">player</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
+</span><span class='line'><span class="nf">player</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
+</span><span class='line'><span class="nf">player</span><span class="p">(_)</span> <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">free</span><span class="p">(</span><span class="nv">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="ow">not</span> <span class="n">player</span><span class="p">(</span><span class="nv">P</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">check</span><span class="p">(</span><span class="nv">B</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nv">Checks</span> <span class="o">=</span> <span class="nn">lists</span><span class="p">:</span><span class="n">map</span><span class="p">(</span><span class="k">fun</span><span class="p">(</span><span class="nv">L</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">check_align</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="nv">B</span><span class="p">)</span> <span class="k">end</span><span class="p">,</span> <span class="n">make_winners</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span>
+</span><span class='line'>  <span class="nv">Win</span> <span class="o">=</span> <span class="nn">lists</span><span class="p">:</span><span class="n">filter</span><span class="p">(</span><span class="k">fun</span> <span class="n">player</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span> <span class="nv">Checks</span><span class="p">),</span>
+</span><span class='line'>  <span class="k">case</span> <span class="nv">Win</span> <span class="k">of</span>
+</span><span class='line'>      <span class="p">[</span><span class="nv">R</span><span class="p">|_]</span> <span class="o">-&gt;</span> <span class="nv">R</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">_</span> <span class="o">-&gt;</span> <span class="k">case</span> <span class="nn">lists</span><span class="p">:</span><span class="n">filter</span><span class="p">(</span><span class="k">fun</span> <span class="n">free</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span> <span class="nv">B</span><span class="p">)</span> <span class="k">of</span>
+</span><span class='line'>          <span class="p">[_|_]</span> <span class="o">-&gt;</span> <span class="n">no_winner</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">_</span> <span class="o">-&gt;</span> <span class="n">cat</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing is a bit tedious, because of the way the board is defined. First a winner on either diagonal is checked, then a draw, then an unfinished game:</p>
+
+<figure class='code'><figcaption><span>Testing Module tictactoe  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">tictactoe</span><span class="p">).</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">tictactoe</span><span class="p">}</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">tictactoe</span><span class="p">:</span><span class="n">check</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">]).</span>
+</span><span class='line'><span class="n">x</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">tictactoe</span><span class="p">:</span><span class="n">check</span><span class="p">([</span><span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">n</span><span class="p">]).</span>
+</span><span class='line'><span class="n">x</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nn">tictactoe</span><span class="p">:</span><span class="n">check</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">]).</span>
+</span><span class='line'><span class="n">cat</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="nn">tictactoe</span><span class="p">:</span><span class="n">check</span><span class="p">([</span><span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">n</span><span class="p">]).</span>
+</span><span class='line'><span class="n">no_winner</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping Up Day 2</h2>
+
+<p>Erlang functional features make it very concise (adding currying would be sweet, though); the resulting code is short, readable, and flexible.</p>
+
+<p>Despite a non mainstream pedigree, clearly this is a language whose design has been guided by actual usage and experience.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-05T18:22:00+09:00" pubdate data-updated="true">Nov 5<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/" title="Previous Post: Seven Languages in Seven Weeks Erlang Day 1">&laquo; Seven Languages in Seven Weeks Erlang Day 1</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" title="next Post: Seven Languages in Seven Weeks Erlang Day 3">Seven Languages in Seven Weeks Erlang Day 3 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Languages in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/">Ruby Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/">Ruby Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">Ruby Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Io Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Io Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Io Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">About Io</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Prolog Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Prolog Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Prolog Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Scala Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Scala Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Scala Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/">Erlang Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/">Erlang Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/">Erlang Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">Clojure Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Clojure Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Haskell Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Haskell Day 2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/11/haskell-foldr-as-foldl/">Haskell: foldr as foldl</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

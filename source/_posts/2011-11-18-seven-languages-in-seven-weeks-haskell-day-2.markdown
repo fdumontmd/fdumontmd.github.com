@@ -28,7 +28,7 @@ It takes but an instant to compute the 100000th number in the sequence:
 42026927029951543863190051012939151317739157026322345033047..... -- number truncated to save space
 ```
 
-Which brings me to a remark on the book: why on earth is `fibNth` defined the way it is? That function exists, and is called [`!!`](TODO). The code in the book is convoluted, does not need that many parenthesis, and even if you have a problem with `!!`, there is no need to use both `take` and `drop` if you're going to take the `head` of the result (`take` will make a copy of the list for no good reason).
+Which brings me to a remark on the book: why on earth is `fibNth` defined the way it is? That function exists, and is called [`!!`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:-33--33-). The code in the book is convoluted, does not need that many parenthesis, and even if you have a problem with `!!`, there is no need to use both `take` and `drop` if you're going to take the `head` of the result (`take` will make a copy of the list for no good reason).
 
 Exercises
 ---------
@@ -37,7 +37,7 @@ In general I tried to avoid standard functions that implement a significant port
 
 ### Simple sort
 
-A good sort algorithm is always tricky, but insertion sort is simple enough and easy to express with pattern matching. My implementation has the same signature as the standard [`sort`](TODO) function. It expects is arguments to have the class [`Ord`](TODO)s, which guarantees they can be compared.
+A good sort algorithm is always tricky, but insertion sort is simple enough and easy to express with pattern matching. My implementation has the same signature as the standard [`sort`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Data-List.html#v:sort) function. It expects is arguments to have the class [`Ord`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Data-Ord.html#t:Ord)s, which guarantees they can be compared.
 
 {% include_code lang:haskell 7l7w/haskell/mysort.hs %}
 
@@ -50,11 +50,11 @@ Testing it:
 
 ### Sort using comparison function
 
-Sort using a specific comparison function is not harder. The standard implementation uses [`Data.Ord.Ordering`](TODO) to replace `>` by the comparison result `GT`. My implementation has the same signature as the standard [`sortBy`](TODO), but still uses the insertion sort as in `my_sort`.
+Sort using a specific comparison function is not harder. The standard implementation uses [`Data.Ord.Ordering`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Data-Ord.html#t:Ordering) to replace `>` by the comparison result `GT`. My implementation has the same signature as the standard [`sortBy`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Data-List.html#v:sortBy), but still uses the insertion sort as in `my_sort`.
 
 {% include_code lang:haskell 7l7w/haskell/mysortby.hs %}
 
-Testing it (using [`compare`](TODO) on the absolute value):
+Testing it (using [`compare`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Data-Ord.html#v:compare) on the absolute value):
 ```
 *MySort> my_sort_by (\a b -> compare (abs a) (abs b)) ([10, 9..1] ++ [-10..(-1)])
 [1,-1,2,-2,3,-3,4,-4,5,-5,6,-6,7,-7,8,-8,9,-9,10,-10]
@@ -68,7 +68,7 @@ The integral part is parsed left to right (with `foldl`), each time multiplying 
 
 The fractional part is parsed right to left (with `foldr`), dividing the already parsed number by 10 before adding the current number.
 
-Note the use of [`fromIntegral`](TODO) function. This is used to convert and integral number (`Int`, `Integer`, ...) into any type of number. This is necessary to be allowed to divide the results and add the fractional part.
+Note the use of [`fromIntegral`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:fromIntegral) function. This is used to convert and integral number (`Int`, `Integer`, ...) into any type of number. This is necessary to be allowed to divide the results and add the fractional part.
 
 The use of fractional arithmetic makes this function less effective than `read`.
 
@@ -122,7 +122,7 @@ Challenges
 
 ### Greatest Common Denominator
 
-I must have missed something, because that was hardly a challenge. I just implemented the [Euclidean algorithm](TODO):
+I must have missed something, because that was hardly a challenge. I just implemented the [Euclidean algorithm](http://en.wikipedia.org/wiki/Euclidean_algorithm):
 
 {% include_code lang:haskell 7l7w/haskell/gcd.hs %}
 
@@ -136,11 +136,11 @@ Testing:
 53
 ```
 
-`my_gcd` agrees with the standard [`gcd`](TODO) function.
+`my_gcd` agrees with the standard [`gcd`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:gcd) function.
 
 ### Lazy prime number sequences
 
-This one was a bit trickier, yet an implementation that closely follows the [Erastothene Sieve](TODO) algorithm is fairly short.
+This one was a bit trickier, yet an implementation that closely follows the [Sieve of Eratosthenes](http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes) algorithm is fairly short.
 
 I first need a difference function that works on infinite lists: I manage this by taking into account the fact that the lists are always sorted. The `minus` just compares the first item of its arguments, so it can work linearly on both of them. Note that this function is not able to work on finite lists, but in this context there is no need to.
 
@@ -155,13 +155,13 @@ The implementation is very slow, but can compute the first 1000 prime numbers.
 7927
 ```
 
-This turns out to be the first implementation on the Prime Number generator [page](TODO) on the Haskell wiki. Other implementations are much smarter and faster.
+This turns out to be the first implementation on the Prime Number generator [page](http://www.haskell.org/haskellwiki/Prime_numbers) on the Haskell wiki. Other implementations are much smarter and faster.
 
 ### Breaking string into lines
 
 The exercise description seems to be missing something: a line length. So I have added that to the functions.
 
-Breaking into words is best done with [`words`](TODO), but I implemented my version. I actually started with a first abstraction, not really necessary here, that splits a sequence based on a predicate (items that return true for the predicate are all removed). Then `my_words` is just calling that function with [`isSpace`](TODO) as the predicate.
+Breaking into words is best done with [`words`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:words), but I implemented my version. I actually started with a first abstraction, not really necessary here, that splits a sequence based on a predicate (items that return true for the predicate are all removed). Then `my_words` is just calling that function with [`isSpace`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Data-Char.html#v:isSpace) as the predicate.
 
 To combine words back into lines, I used two small functions: one (`accumUntil`) builds a line one word at a time, and stops when the line is too long. It starts with a word as the first tentative line, to make sure that a line is not empty even if a word is too long to fit.
 
@@ -169,20 +169,120 @@ The other function (`loop`) uses the previous one to build a list of lines until
 
 {% include_code lang:haskell 7l7w/haskell/split.hs %}
 
-Testing:
+Testing (splitting a long paragraph into lines of at most 72 characters):
 
 ```
-
+*Split> putStrLn $ unlines $ split 72 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel diam nunc. Proin in justo quis nisl aliquam mollis. Sed vitae dolor odio. Pellentesque cursus augue quis libero malesuada ornare. Phasellus interdum ultrices tincidunt. Etiam ullamcorper, massa a ullamcorper posuere, dolor quam consequat est, ut ullamcorper elit eros suscipit ante. Etiam non quam sit amet risus posuere mollis non in est. Nulla facilisi. Sed ut commodo risus. Suspendisse ut nisi ac erat hendrerit interdum at a purus."
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel diam
+nunc. Proin in justo quis nisl aliquam mollis. Sed vitae dolor odio.
+Pellentesque cursus augue quis libero malesuada ornare. Phasellus
+interdum ultrices tincidunt. Etiam ullamcorper, massa a ullamcorper
+posuere, dolor quam consequat est, ut ullamcorper elit eros suscipit
+ante. Etiam non quam sit amet risus posuere mollis non in est. Nulla
+facilisi. Sed ut commodo risus. Suspendisse ut nisi ac erat hendrerit
+interdum at a purus.
 ```
+
+I used [`unlines`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:unlines) to group the split lines back into a single string separated by newlines and [`putStrLn`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:putStrLn) to print the result.
 
 ### Justify text
 
+The general structure of the `justify` functions is the same:
 
+ * compute the maximum length of all the lines
+ * for each line, compute the difference between the line length and the maximum line length
+ * insert spaces in the right location (depending on the kind of justification)
+
+Each justification is a specific function. First `pad` is a small utility that creates a string of spaces of the required length.
+
+`right` and `left` uses the above strategy to add spaces left and right, respectively. `center` adds half left, and half right. Of course `left` does not do anything visible, it just adds spaces to make each line the same length.
+
+`both` is more complex, as it inserts spaces between words. The strategy is naive (actual algorithms include dynamic programming to balance the amount of space), but effective.
+
+The general idea is to spread the missing space between words. For this I follow these steps:
+ 
+ * split the line into words using the code from the `Split` module;
+ * compute the number of interval (the count of the words minus 1). As I'm going to put the spaces between words, this interval also count as missing spaces (see next step). I refer to this amount as `iter`;
+ * divide the number of missing spaces (difference between maximum line length and effective line length plus the interval): this is the amount of space I should add between each word to add up to the right amount, if I could add fractional space
+ * multiply each item in `[1..inter]` by the fractional space amount as computed above.
+ * iterate over the list from previous step:
+   * compute the nearest integer of the current item (note that by construction, the nearest integer of the last item is exactly the amount of missing space);
+   * the difference between this integer and the amount of space allocated so far (this amount is zero at the start, of course)
+   * add a padding (using the `pad` function) to a list of spaces, and update the amount of space allocated before the next iteration
+ * then [`zipWith`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:zipWith) the list of spaces with the list of words, and recreate the line with [`concat`](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:concat).
+
+The algorithm above is for a single line, but when justifying a whole paragraph, the last line should be left justified. So the `justify_both` applies the `both` justification to all but the last line, and `left` to the last line.
 
 {% include_code lang:haskell 7l7w/haskell/justify.hs %}
 
+Testing (the full test text is not reproduce here to save space):
+
+```
+*Justify> putStrLn $ unlines $ justify_left 72 $ split 72 "Lorem ipsum ... a purus."
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel diam    
+nunc. Proin in justo quis nisl aliquam mollis. Sed vitae dolor odio.    
+Pellentesque cursus augue quis libero malesuada ornare. Phasellus       
+interdum ultrices tincidunt. Etiam ullamcorper, massa a ullamcorper     
+posuere, dolor quam consequat est, ut ullamcorper elit eros suscipit    
+ante. Etiam non quam sit amet risus posuere mollis non in est. Nulla    
+facilisi. Sed ut commodo risus. Suspendisse ut nisi ac erat hendrerit   
+interdum at a purus.
+*Justify> putStrLn $ unlines $ justify_right 72 $ split 72 "Lorem ipsum ... a purus."
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel diam
+ nunc. Proin in justo quis nisl aliquam mollis. Sed vitae dolor odio.
+    Pellentesque cursus augue quis libero malesuada ornare. Phasellus
+  interdum ultrices tincidunt. Etiam ullamcorper, massa a ullamcorper
+ posuere, dolor quam consequat est, ut ullamcorper elit eros suscipit
+ ante. Etiam non quam sit amet risus posuere mollis non in est. Nulla
+facilisi. Sed ut commodo risus. Suspendisse ut nisi ac erat hendrerit
+                                                 interdum at a purus.
+*Justify> putStrLn $ unlines $ justify_center 72 $ split 72 "Lorem ipsum ... a purus."
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel diam                                                                      
+  nunc. Proin in justo quis nisl aliquam mollis. Sed vitae dolor odio.                                                                              
+   Pellentesque cursus augue quis libero malesuada ornare. Phasellus                                                                     
+  interdum ultrices tincidunt. Etiam ullamcorper, massa a ullamcorper                                                                      
+  posuere, dolor quam consequat est, ut ullamcorper elit eros suscipit                                                                      
+  ante. Etiam non quam sit amet risus posuere mollis non in est. Nulla                                                                      
+ facilisi. Sed ut commodo risus. Suspendisse ut nisi ac erat hendrerit                                                                       
+                          interdum at a purus.
+*Justify> putStrLn $ unlines $ justify_both 72 $ split 72 "Lorem ipsum ... a purus."
+Lorem ipsum  dolor sit  amet, consectetur adipiscing  elit. In  vel diamnunc. Proin  in justo quis  nisl aliquam  mollis. Sed vitae  dolor odio.Pellentesque  cursus  augue  quis  libero  malesuada  ornare.  Phasellus
+interdum  ultrices tincidunt.  Etiam  ullamcorper,  massa a  ullamcorper
+posuere, dolor  quam consequat  est, ut  ullamcorper elit  eros suscipit
+ante. Etiam  non quam sit  amet risus posuere  mollis non in  est. Nulla
+facilisi. Sed  ut commodo risus. Suspendisse  ut nisi ac  erat hendrerit
+interdum at a purus.
+```
 ### Number lines
 
 I finished with this one, as I reused some functions defined in the module `Justify` above.
 
+This is much simpler than justifying. I need to know the number of digits I would need (which depends on the number of lines). Then I can right justify the line number and add it left of each line.
+
 {% include_code lang:haskell 7l7w/haskell/number.hs %}
+
+Testing:
+```
+Prelude> :l number.hs 
+[1 of 3] Compiling Split            ( Split.hs, interpreted )
+[2 of 3] Compiling Justify          ( Justify.hs, interpreted )
+[3 of 3] Compiling Number           ( number.hs, interpreted )
+Ok, modules loaded: Number, Justify, Split.
+*Number> :m +Split Justify
+*Number Split Justify> putStrLn $ unlines $ addLineNum $ justify_both  72 $ split 72 "Lorem ipsum ... a purus."
+1 Lorem ipsum  dolor sit  amet, consectetur adipiscing  elit. In  vel diam
+2 nunc. Proin  in justo quis  nisl aliquam  mollis. Sed vitae  dolor odio.
+3 Pellentesque  cursus  augue  quis  libero  malesuada  ornare.  Phasellus
+4 interdum  ultrices tincidunt.  Etiam  ullamcorper,  massa a  ullamcorper
+5 posuere, dolor  quam consequat  est, ut  ullamcorper elit  eros suscipit
+6 ante. Etiam  non quam sit  amet risus posuere  mollis non in  est. Nulla
+7 facilisi. Sed  ut commodo risus. Suspendisse  ut nisi ac  erat hendrerit
+8 interdum at a purus.                                                    
+```
+
+Wrapping up Day 2
+-----------------
+
+As I knew Haskell already, this was not too taxing. I had fun with the justify challenge, trying to come up with a reasonable way to insert the right amount of space at the right place.
+
+Dealing with types was also mostly painless. I had a couple of errors when trying to compile, but every time the location was well reported and the fix easy to figure out.

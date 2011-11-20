@@ -52,7 +52,7 @@ both m line =
                     (_,spaces) -> spaces
   in concat (w:zipWith (++) addSpaces words)
   where adjust (curr, spaces) newFrac = let diff = round (newFrac - fromIntegral curr)
-                                        in (curr + diff, spaces ++ [pad diff])
+                                        in (curr + diff, (pad diff):spaces)
         makeInter inter i = fromIntegral i 
              * (fromIntegral (m - length line + inter)) 
              / fromIntegral inter                                           

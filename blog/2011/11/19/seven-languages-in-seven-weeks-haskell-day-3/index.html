@@ -1,0 +1,694 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Languages in Seven Weeks Haskell Day 3 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Last day with Haskell, and this time we grapple with classes and monads. That&#8217;s pretty much where most beginners give up in disgust&#8230; And &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Languages in Seven Weeks Haskell Day 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-19T14:16:00+09:00" pubdate data-updated="true">Nov 19<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Last day with Haskell, and this time we grapple with classes and monads. That&#8217;s pretty much where most beginners give up in disgust&#8230;</p>
+
+<!--more-->
+
+
+<p>And that&#8217;s too bad, because both (and the rest of advanced Haskell features) are very expressive (see below the Maze problem) and powerful. But classes are unusual (and the name tends to confuse Object Oriented people), while monads appear to solve a problem that is trivial in other languages (which is not true, or mostly not true).</p>
+
+<h2>Classes</h2>
+
+<p>Classes are more properly understood as interfaces, but the comparison can be misleading. Class elements are types that are guaranteed to provide implementation for specific functions. Combined with polymorphism, it allows writing functions that are more intimate with their arguments, while keeping purity and referential transparency (in some sense, it plays a role similar to functors in ML languages).</p>
+
+<p>Classes nicely support monads (and other composition mechanisms) by providing interfaces these abstractions can build upon.</p>
+
+<h2>Monads</h2>
+
+<p>Monads are mechanisms to compose calculations. They also happen to solve the IO problem in Haskell, which is a nice (and significant) bonus. But the calculation composition is core. With it, one can have backtracking, continuation, probabilistic computing, anything you could think off. Thinking of anything actually is quite hard, as most programmers are not used to such freedom. For IO, it just happens to guarantee linear evaluation.</p>
+
+<p>There are a number of resources to learn about Monads (indeed, it seems the path to Haskell mastery must include at least one Monad tutorial). I found  <a href="http://monads.haskell.cz/html/">All About Monads</a> very useful. The introduction is really good, but links to this tutorial tend to disappear, unfortunately. There is also the <a href="http://book.realworldhaskell.org/read/monads.html">Monads</a> chapter of <a href="http://book.realworldhaskell.org/">Real World Haskell</a> (which you should read, but wait for the second edition to buy). This introduction is more complex, as it builds a State Monad rather than the Maybe Monad.</p>
+
+<p>Finally, <a href="http://learnyouahaskell.com/a-fistful-of-monads">A Fistful of Monads</a> from <a href="http://learnyouahaskell.com/">Learn You a Haskell for Great Good</a> also covers the Maybe Monad as an introduction. I have the book but did not read it yet, so I cannot comment on it, but I have seen great reviews.</p>
+
+<h2>Exercises</h2>
+
+<h3>Lookup function returning Maybe</h3>
+
+<p>The function <code>my_lookup</code> is easy; it iterates over a list of pairs key, value, and returns <code>Just value</code> when the key matches. On empty list, it returns <code>Nothing</code>. There is no need to think about monads at this point. A key,value map is really some data structure that <code>Maybe</code> contains a specific key.</p>
+
+<p>Slightly more difficult was the <code>testData</code>. The nesting was somewhat tricky to get right.</p>
+
+<figure class='code'><figcaption><span> (lookup.hs)</span> <a href='/downloads/code/7l7w/haskell/lookup.hs'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">module</span> <span class="nn">Lookup</span> <span class="kr">where</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">my_lookup</span> <span class="n">key</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">Nothing</span>
+</span><span class='line'><span class="nf">my_lookup</span> <span class="n">key</span> <span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="kt">:</span><span class="n">rest</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">|</span> <span class="n">key</span> <span class="o">==</span> <span class="n">k</span>  <span class="ow">=</span> <span class="kt">Just</span> <span class="n">value</span>
+</span><span class='line'>  <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="n">lookup</span> <span class="n">key</span> <span class="n">rest</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">testData</span> <span class="ow">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="kt">[]</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;i&quot;</span><span class="p">,</span> <span class="s">&quot;tada!&quot;</span><span class="p">)]),</span> <span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;j&quot;</span><span class="p">,</span> <span class="s">&quot;nope&quot;</span><span class="p">)])]),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;c&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="s">&quot;tada!&quot;</span><span class="p">)])])]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once this is defined, using it with the <code>&gt;&gt;=</code> operator is really simple:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Lookup&gt; my_lookup 2 testData &gt;&gt;= my_lookup "a" &gt;&gt;= my_lookup "i"
+</span><span class='line'>Just "tada!"
+</span><span class='line'>*Lookup&gt; my_lookup 2 testData &gt;&gt;= my_lookup "b" &gt;&gt;= my_lookup "i"
+</span><span class='line'>Nothing</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Solving Maze</h3>
+
+<p>Using the List Monad to solve problems is very similar to using Prolog: elements in a list are alternative paths; failure (which must be explicit by calling <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:fail"><code>fail</code></a> or <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Control-Monad.html#v:guard"><code>guard</code></a>) backtracks to the next alternative; [<code>return</code>] adds a solution to the list of solutions (even if there&#8217;s only one possible solution, the List Monad produces a list).</p>
+
+<p>To solve the maze, the algorithm do the following:</p>
+
+<ul>
+<li>the <code>loop</code> subfunction is used to explore a given solution; the List Monad hides the iteration and backtracking over alternatives</li>
+<li>the <code>loop</code> function is always called with the reverse path so far: the first element is actually the current position</li>
+<li>if the current position is the exit position, the path is reversed then returned as solution</li>
+<li>otherwise, the current node is checked, and its exits retrieved</li>
+<li>the positions in the path are first removed from the exits, to avoid looping (so we never go over the same position twice)</li>
+<li>the List Monad main logic starts there:
+
+<ul>
+<li>first <code>guard</code> that the list of possible exits is not empty</li>
+<li>then select and alternative new position</li>
+<li>call <code>loop</code> on the new path to explore it</li>
+</ul>
+</li>
+</ul>
+
+
+<p>The code is fairly short, and perhaps could be shorter. The backtracking is provided for free by the List Monad, but very effective to implement a search (I used it to solve Sudoku problems).</p>
+
+<p>To be fair, I took some time to track a bug: instead of adding the whole current path to the recursive <code>loop</code> call, I only passed the tail. That caused <code>loop</code> to actually ignore the current path, and run in circle forever. Once fixed, the search was instantaneous.</p>
+
+<figure class='code'><figcaption><span> (maze.hs)</span> <a href='/downloads/code/7l7w/haskell/maze.hs'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">module</span> <span class="nn">Maze</span> <span class="kr">where</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Data.List</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Control.Monad</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- a Maze is an array of Node</span>
+</span><span class='line'><span class="kr">type</span> <span class="kt">Maze</span> <span class="ow">=</span> <span class="p">[[</span><span class="kt">Node</span><span class="p">]]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- each node can have a number of exits (indicated by locations in the Maze)</span>
+</span><span class='line'><span class="kr">data</span> <span class="kt">Node</span> <span class="ow">=</span> <span class="kt">Exits</span> <span class="p">[(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)]</span>
+</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- solve a maze using List monad:</span>
+</span><span class='line'><span class="c1">-- </span>
+</span><span class='line'><span class="nf">solveMaze</span> <span class="ow">::</span> <span class="kt">Maze</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span><span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="p">[(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)]</span>
+</span><span class='line'><span class="nf">solveMaze</span> <span class="n">m</span> <span class="n">pos</span> <span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">case</span> <span class="n">loop</span> <span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="kr">of</span>
+</span><span class='line'>    <span class="kt">[]</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">p</span><span class="kt">:</span><span class="kr">_</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Just</span> <span class="o">$</span> <span class="n">p</span>
+</span><span class='line'>  <span class="kr">where</span>
+</span><span class='line'>    <span class="n">loop</span> <span class="n">path</span><span class="o">@</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span><span class="kt">:</span><span class="kr">_</span><span class="p">)</span> <span class="ow">=</span>
+</span><span class='line'>      <span class="kr">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">e1</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">==</span> <span class="n">e2</span>
+</span><span class='line'>      <span class="kr">then</span> <span class="n">return</span> <span class="o">$</span> <span class="n">reverse</span> <span class="n">path</span>
+</span><span class='line'>      <span class="kr">else</span>
+</span><span class='line'>        <span class="kr">let</span> <span class="p">(</span><span class="kt">Exits</span> <span class="n">exits</span><span class="p">)</span> <span class="ow">=</span> <span class="p">((</span><span class="n">m</span> <span class="o">!!</span> <span class="n">i</span><span class="p">)</span> <span class="o">!!</span> <span class="n">j</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">poss</span> <span class="ow">=</span> <span class="n">exits</span> <span class="o">\\</span> <span class="n">path</span>
+</span><span class='line'>        <span class="kr">in</span> <span class="kr">do</span> <span class="n">guard</span> <span class="p">(</span><span class="n">not</span> <span class="o">$</span> <span class="n">null</span> <span class="n">poss</span><span class="p">)</span>
+</span><span class='line'>              <span class="n">pos</span> <span class="ow">&lt;-</span> <span class="n">poss</span>
+</span><span class='line'>              <span class="n">loop</span> <span class="p">(</span><span class="n">pos</span><span class="kt">:</span><span class="n">path</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- the problem is parsed by looking at characters around</span>
+</span><span class='line'><span class="c1">-- every even position (position with even x and y)</span>
+</span><span class='line'><span class="c1">-- if the character in a direction is a space, there&#39;s an exit</span>
+</span><span class='line'><span class="nf">parseMaze</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">Maze</span>
+</span><span class='line'><span class="nf">parseMaze</span> <span class="n">raw</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">rows</span> <span class="ow">=</span> <span class="n">floor</span> <span class="o">$</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">length</span> <span class="n">raw</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+</span><span class='line'>      <span class="n">cols</span> <span class="ow">=</span> <span class="n">floor</span> <span class="o">$</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">length</span> <span class="o">$</span> <span class="n">head</span> <span class="n">raw</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="p">[[</span><span class="n">makeNode</span> <span class="n">i</span> <span class="n">j</span> <span class="o">|</span> <span class="n">j</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">cols</span><span class="p">]]</span> <span class="o">|</span> <span class="n">i</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">rows</span><span class="p">]]</span>
+</span><span class='line'> <span class="kr">where</span>
+</span><span class='line'>  <span class="n">makeNode</span> <span class="n">i</span> <span class="n">j</span> <span class="ow">=</span> <span class="kt">Exits</span> <span class="o">$</span> <span class="n">concatMap</span> <span class="p">(</span><span class="n">makeExit</span> <span class="n">i</span> <span class="n">j</span><span class="p">)</span>
+</span><span class='line'>                           <span class="p">[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">]</span>
+</span><span class='line'>  <span class="n">makeExit</span> <span class="n">i</span> <span class="n">j</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">if</span> <span class="p">(</span><span class="n">raw</span> <span class="o">!!</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!!</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span> <span class="o">+</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span>
+</span><span class='line'>                        <span class="kr">then</span> <span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+</span><span class='line'>                        <span class="kr">else</span> <span class="kt">[]</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">Problem</span> <span class="ow">=</span> <span class="kt">Prob</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span>
+</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- updateAt runs an update function on the nth element in a list</span>
+</span><span class='line'><span class="c1">-- keeps the rest</span>
+</span><span class='line'><span class="nf">updateAt</span> <span class="n">n</span> <span class="n">f</span> <span class="n">ls</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">case</span> <span class="n">splitAt</span> <span class="n">n</span> <span class="n">ls</span> <span class="kr">of</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">pre</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="kt">:</span><span class="n">rest</span><span class="p">))</span> <span class="ow">-&gt;</span> <span class="n">pre</span> <span class="o">++</span> <span class="p">((</span><span class="n">f</span> <span class="n">u</span><span class="p">)</span><span class="kt">:</span><span class="n">rest</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- update the prob description with path iteratively</span>
+</span><span class='line'><span class="nf">displaySol</span> <span class="n">prob</span> <span class="n">sol</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="n">foldl&#39;</span> <span class="n">update</span> <span class="n">prob</span> <span class="n">sol</span>
+</span><span class='line'> <span class="kr">where</span>
+</span><span class='line'>  <span class="n">update</span> <span class="n">prob</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="ow">=</span> <span class="n">updateAt</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">updateAt</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">const</span> <span class="sc">&#39;*&#39;</span><span class="p">))</span> <span class="n">prob</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">solveProblem</span> <span class="ow">::</span> <span class="kt">FilePath</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="nb">()</span>
+</span><span class='line'><span class="nf">solveProblem</span> <span class="n">f</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">do</span> <span class="p">(</span><span class="kt">Prob</span> <span class="n">start</span> <span class="n">end</span> <span class="n">prob</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">readProblem</span> <span class="n">f</span>
+</span><span class='line'>     <span class="kr">let</span> <span class="n">maze</span>   <span class="ow">=</span> <span class="n">parseMaze</span> <span class="n">prob</span>
+</span><span class='line'>     <span class="kr">case</span> <span class="n">solveMaze</span> <span class="n">maze</span> <span class="n">start</span> <span class="n">end</span> <span class="kr">of</span>
+</span><span class='line'>       <span class="kt">Just</span> <span class="n">sol</span> <span class="ow">-&gt;</span> <span class="n">putStrLn</span> <span class="o">$</span> <span class="n">unlines</span> <span class="o">$</span> <span class="n">displaySol</span> <span class="n">prob</span> <span class="n">sol</span>
+</span><span class='line'>       <span class="kt">Nothing</span>  <span class="ow">-&gt;</span> <span class="n">putStrLn</span> <span class="s">&quot;no solution found&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- special code for sample mazes from</span>
+</span><span class='line'><span class="c1">-- http://benjamin-meyer.blogspot.com/2005/01/ascii-maze-ment-puzzle.html</span>
+</span><span class='line'><span class="nf">readProblem</span> <span class="ow">::</span> <span class="kt">FilePath</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="kt">Problem</span>
+</span><span class='line'><span class="nf">readProblem</span> <span class="n">f</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">do</span> <span class="n">raw</span> <span class="ow">&lt;-</span> <span class="n">readFile</span> <span class="n">f</span>
+</span><span class='line'>     <span class="kr">let</span> <span class="n">filtered</span> <span class="ow">=</span> <span class="kr">case</span> <span class="n">filterMaze</span> <span class="n">raw</span> <span class="kr">of</span>
+</span><span class='line'>                      <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">((</span><span class="n">init</span> <span class="o">$</span> <span class="n">init</span> <span class="n">l</span><span class="p">)</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">length</span> <span class="n">filtered</span><span class="p">,</span> <span class="n">length</span> <span class="p">(</span><span class="n">head</span> <span class="n">filtered</span><span class="p">))</span>
+</span><span class='line'>     <span class="n">return</span> <span class="o">$</span> <span class="kt">Prob</span> <span class="p">((</span><span class="n">i</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">j</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="n">filtered</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">splitAtEvery</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+</span><span class='line'><span class="nf">splitAtEvery</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">splitAtEvery</span> <span class="n">n</span> <span class="n">ls</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">case</span> <span class="n">splitAt</span> <span class="n">n</span> <span class="n">ls</span> <span class="kr">of</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">pre</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">pre</span><span class="kt">:</span><span class="n">splitAtEvery</span> <span class="n">n</span> <span class="n">rest</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">removeExtraSpaces</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="n">l</span><span class="kt">:</span><span class="p">(</span><span class="n">concatMap</span> <span class="n">tail</span> <span class="o">$</span> <span class="n">splitAtEvery</span> <span class="mi">3</span> <span class="n">ls</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">filterMaze</span> <span class="ow">=</span> <span class="n">map</span> <span class="n">removeExtraSpaces</span> <span class="o">.</span> <span class="n">map</span> <span class="p">(</span><span class="n">drop</span> <span class="mi">5</span><span class="p">)</span> <span class="o">.</span> <span class="n">lines</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The rest of the code includes a parser for a specific maze description (I found sample mazes <a href="http://benjamin-meyer.blogspot.com/2005/01/ascii-maze-ment-puzzle.html">here</a>), and code to process a problem into a <code>Maze</code> instance, and code to display a solution.</p>
+
+<p>Testing:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Maze&gt; solveProblem "input1.txt"
+</span><span class='line'> ___________________
+</span><span class='line'>|   | |   |        *|
+</span><span class='line'>| __| | __|___  __  |
+</span><span class='line'>|   | |       |   |*|
+</span><span class='line'>| __| |_____  |_  | |
+</span><span class='line'>|   | | | |       |*|
+</span><span class='line'>| __| | | |_______| |
+</span><span class='line'>|            * * * *|
+</span><span class='line'>| __________  __    |
+</span><span class='line'>| |   |    * *| | | |
+</span><span class='line'>|_|   |___  __| | |_|
+</span><span class='line'>|   |     |*| | | | |
+</span><span class='line'>|_  |_    | | | |_| |
+</span><span class='line'>|   |   |  *|       |
+</span><span class='line'>| __|_  |_  | __    |
+</span><span class='line'>| |     |  * *| | | |
+</span><span class='line'>|_| __  | __  | |_|_|
+</span><span class='line'>| |   | | |  *  |   |
+</span><span class='line'>| |   | |_|_  __|_  |
+</span><span class='line'>|   | | |   |* *  | |
+</span><span class='line'>| __|_| | __|_    | |
+</span><span class='line'>| | |   |  * * *|   |
+</span><span class='line'>|_| | __|_  __  |___|
+</span><span class='line'>| | |     |*| | |   |
+</span><span class='line'>| | | ____| | |_|_  |
+</span><span class='line'>|   | |* * *        |
+</span><span class='line'>|_  |_|   __  ______|
+</span><span class='line'>|    * *| |     |   |
+</span><span class='line'>|     __| |_  __| __|
+</span><span class='line'>| | |*  |   |   |   |
+</span><span class='line'>| |_| __|___|___|_  |
+</span><span class='line'>|   |* *|     |     |
+</span><span class='line'>|___|   |   __| ____|
+</span><span class='line'>|   | |* *|     |   |
+</span><span class='line'>| __|_|_  |     | __|
+</span><span class='line'>|       |*| | |     |
+</span><span class='line'>|_____  | |_| |_  __|
+</span><span class='line'>|* * *|  *|     |   |
+</span><span class='line'>|     |_  | __  |   |
+</span><span class='line'>|*| |* * *|   | | | |
+</span><span class='line'>|_|_|_____|___|_|_|_|</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping up Day 3 and Haskell</h2>
+
+<p>The exercises (ok, just the maze one) were challenging and show or at least hint at Haskell strength: the ability to compose calculations from basic elements and add advanced control mechanisms almost transparently.</p>
+
+<p>I enjoy Haskell; it allows to think at a higher level, to see computations from different angles, in a way that expands the mind (sometimes painfully). And while it is certainly not mainstream, there are high quality niches (banking and financial companies) that justify investing (stupid pun intended) in Haskell.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-19T14:16:00+09:00" pubdate data-updated="true">Nov 19<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/" title="Previous Post: Seven Languages in Seven Weeks Haskell Day 2">&laquo; Seven Languages in Seven Weeks Haskell Day 2</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Languages in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/">Ruby Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/">Ruby Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">Ruby Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/">Io Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">Io Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/">Io Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/">About Io</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Prolog Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Prolog Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Prolog Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">Scala Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">Scala Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">Scala Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/">Erlang Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/">Erlang Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/">Erlang Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">Clojure Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Clojure Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Haskell Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Haskell Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/">Haskell Day 3</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/">Seven Languages in Seven Weeks Haskell Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

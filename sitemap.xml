@@ -152,7 +152,13 @@
         <loc>
             http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/
         </loc>
-        <lastmod>2011-11-21T00:55:28+09:00</lastmod>
+        <lastmod>2011-11-21T11:53:29+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/
+        </loc>
+        <lastmod>2011-11-21T13:57:32+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/about/</loc>
@@ -160,7 +166,7 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2011-11-21T00:55:28+09:00</lastmod>
+        <lastmod>2011-11-21T13:57:32+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
@@ -172,6 +178,6 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2011-11-21T00:55:28+09:00</lastmod>
+        <lastmod>2011-11-21T13:57:32+09:00</lastmod>
     </url>
 </urlset>

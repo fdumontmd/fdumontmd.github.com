@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-11-21T00:55:29+09:00</updated>
+  <updated>2011-11-21T13:58:11+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,306 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Languages in Seven Weeks Haskell Day 3.5]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/"/>
+    <updated>2011-11-21T13:21:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5</id>
+    <content type="html"><![CDATA[<p>Haskell Day 3 had one exercise I forgot about: to implement monads in a different language. In this post I correct this oversight.</p>
+
+<!--more-->
+
+
+<p>There are various implementations of monads for other languages. Some are well suited for the exercise (because they have a flexible syntax like Clojure, for instance). With others the whole thing sticks out like a sore thumb. I think the latter is useful to highlight Haskell's features.</p>
+
+<p>I choose Java, which shows how helpful Haskell's syntax and type system really is, compared to a mainstream language. Regarding types, maybe generics would have helped, but I'm not familiar enough with them to figure it out (for professional reasons, I got stuck with Java 1.4 for quite a long time).</p>
+
+<p>I implements a List Monad, and creates a list of pairs where the first element is smaller than the second. In Haskell, this is what it would look like:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>List Monad example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">do</span> <span class="n">x</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span>
+</span><span class='line'>   <span class="n">y</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span>
+</span><span class='line'>   <span class="kr">if</span> <span class="n">x</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">y</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'> <span class="kr">else</span> <span class="n">fail</span> <span class="s">&quot;Not a valid pair&quot;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Haskell's notation for functions is especially useful here. Note how the Java codes forces me to tie <code>MakePair1</code> and <code>MakePair2</code>, while the Haskell equivalent seems to have no special construct whatsoever (the do notation hides the underlying anonymous functions).</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (ListMonad.java)</span> <a href='/downloads/code/7l7w/haskell/ListMonad.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">test</span><span class="o">.</span><span class="na">monad</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Java type system is not rich enough to be used here.</span>
+</span><span class='line'><span class="cm"> * Even with generics, some expression do not typecheck,</span>
+</span><span class='line'><span class="cm"> * so I use Object everywhere</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="nd">@SuppressWarnings</span><span class="o">({</span> <span class="s">&quot;rawtypes&quot;</span><span class="o">,</span> <span class="s">&quot;unchecked&quot;</span> <span class="o">})</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListMonad</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">private</span> <span class="n">List</span> <span class="n">content</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">private</span> <span class="nf">ListMonad</span><span class="o">(</span><span class="kd">final</span> <span class="n">List</span> <span class="n">content</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">this</span><span class="o">.</span><span class="na">content</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">(</span><span class="n">content</span><span class="o">);</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="n">ListMonad</span> <span class="nf">bind</span><span class="o">(</span><span class="n">Func</span> <span class="n">func</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">ArrayList</span> <span class="n">res</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="k">for</span> <span class="o">(</span><span class="n">Object</span> <span class="nl">obj:</span> <span class="n">content</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>			<span class="n">res</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">func</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">obj</span><span class="o">).</span><span class="na">getContent</span><span class="o">());</span>
+</span><span class='line'>		<span class="o">}</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="k">return</span> <span class="k">new</span> <span class="nf">ListMonad</span><span class="o">(</span><span class="n">res</span><span class="o">);</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">static</span> <span class="n">ListMonad</span> <span class="nf">wrap</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">ArrayList</span> <span class="n">res</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
+</span><span class='line'>		<span class="n">res</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="k">return</span> <span class="k">new</span> <span class="nf">ListMonad</span><span class="o">(</span><span class="n">res</span><span class="o">);</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="c1">// error param is not used in ListMonad</span>
+</span><span class='line'>	<span class="kd">static</span> <span class="n">ListMonad</span> <span class="nf">fail</span><span class="o">(</span><span class="n">String</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="k">new</span> <span class="nf">ListMonad</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayList</span><span class="o">());</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="n">List</span> <span class="nf">getContent</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="n">content</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="kd">interface</span> <span class="nc">Func</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">ListMonad</span> <span class="nf">run</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">);</span>
+</span><span class='line'>	<span class="o">}</span>	
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">static</span> <span class="n">ListMonad</span> <span class="nf">monadDo</span><span class="o">(</span><span class="n">List</span> <span class="n">lst</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="k">new</span> <span class="nf">ListMonad</span><span class="o">(</span><span class="n">lst</span><span class="o">);</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">List</span> <span class="n">output</span> <span class="o">=</span> <span class="n">monadDo</span><span class="o">(</span><span class="n">Sequence</span><span class="o">.</span><span class="na">makeRange</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">5</span><span class="o">)).</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="n">MakePair1</span><span class="o">()).</span><span class="na">getContent</span><span class="o">();</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="k">for</span> <span class="o">(</span><span class="n">Object</span> <span class="nl">obj:</span> <span class="n">output</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+</span><span class='line'>		<span class="o">}</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">MakePair1</span> <span class="kd">implements</span> <span class="n">ListMonad</span><span class="o">.</span><span class="na">Func</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="n">ListMonad</span> <span class="nf">run</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">ListMonad</span><span class="o">.</span><span class="na">Func</span> <span class="n">func</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MakePair2</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+</span><span class='line'>		<span class="k">return</span> <span class="n">ListMonad</span><span class="o">.</span><span class="na">monadDo</span><span class="o">(</span><span class="n">Sequence</span><span class="o">.</span><span class="na">makeRange</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">5</span><span class="o">)).</span><span class="na">bind</span><span class="o">(</span><span class="n">func</span><span class="o">);</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">MakePair2</span> <span class="kd">implements</span> <span class="n">ListMonad</span><span class="o">.</span><span class="na">Func</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">private</span> <span class="n">Object</span> <span class="n">content</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="nf">MakePair2</span><span class="o">(</span><span class="kd">final</span> <span class="n">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">this</span><span class="o">.</span><span class="na">content</span> <span class="o">=</span> <span class="n">obj</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="n">ListMonad</span> <span class="nf">run</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">Integer</span> <span class="n">cont</span> <span class="o">=</span> <span class="o">(</span><span class="n">Integer</span><span class="o">)</span> <span class="n">content</span><span class="o">;</span>
+</span><span class='line'>		<span class="n">Integer</span> <span class="n">val</span> <span class="o">=</span> <span class="o">(</span><span class="n">Integer</span><span class="o">)</span> <span class="n">obj</span><span class="o">;</span>
+</span><span class='line'>		<span class="k">if</span> <span class="o">(</span><span class="n">cont</span><span class="o">.</span><span class="na">intValue</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">val</span><span class="o">.</span><span class="na">intValue</span><span class="o">())</span>
+</span><span class='line'>			<span class="k">return</span> <span class="n">ListMonad</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="k">new</span> <span class="n">Pair</span><span class="o">(</span><span class="n">content</span><span class="o">,</span> <span class="n">obj</span><span class="o">));</span>
+</span><span class='line'>		<span class="k">else</span>
+</span><span class='line'>			<span class="k">return</span> <span class="n">ListMonad</span><span class="o">.</span><span class="na">fail</span><span class="o">(</span><span class="s">&quot;Not a valid pair&quot;</span><span class="o">);</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@SuppressWarnings</span><span class="o">({</span> <span class="s">&quot;rawtypes&quot;</span><span class="o">,</span> <span class="s">&quot;unchecked&quot;</span> <span class="o">})</span>
+</span><span class='line'><span class="kd">class</span> <span class="nc">Sequence</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">static</span> <span class="n">List</span> <span class="nf">makeRange</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">ArrayList</span> <span class="n">lst</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">from</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="n">lst</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="k">return</span> <span class="n">lst</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">Pair</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">private</span> <span class="n">Object</span> <span class="n">fst</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">private</span> <span class="n">Object</span> <span class="n">snd</span><span class="o">;</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="nf">Pair</span><span class="o">(</span><span class="kd">final</span> <span class="n">Object</span> <span class="n">fst</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">snd</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">this</span><span class="o">.</span><span class="na">fst</span> <span class="o">=</span> <span class="n">fst</span><span class="o">;</span>
+</span><span class='line'>		<span class="k">this</span><span class="o">.</span><span class="na">snd</span> <span class="o">=</span> <span class="n">snd</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="n">getFst</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span> <span class="o">+</span> <span class="n">getSnd</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="kd">public</span> <span class="n">Object</span> <span class="nf">getFst</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="n">fst</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="kd">public</span> <span class="n">Object</span> <span class="nf">getSnd</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">return</span> <span class="n">snd</span><span class="o">;</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The implementation is otherwise fairly straightforward given the definition of monads:</p>
+
+<ul>
+<li><code>monadDo</code> and <code>wrap</code> (Haskell's <code>return</code>) both create a new <code>ListMonad</code>;</li>
+<li><code>fail</code> is also a way to create a <code>ListMonad</code> which represents failure. I pass a <code>String</code> argument to have the same signature as Haskell's <code>fail</code>, but in List Monads such argument is ignored, so I ignore it here as well;</li>
+<li><code>bind</code> is the <code>&gt;&gt;=</code> version, which collects the results of the <code>func</code> argument run over each element of the current List content; a new <code>ListMonad</code> with the results as content is returned</li>
+<li>finally, <code>getContent</code> gives back the current content of the <code>ListMonad</code>.</li>
+</ul>
+
+
+<p>The test code is nothing fancy (I certainly wouldn't want to try and write my maze solving algorithm in Java using the ListMonad), but it tests all the features.</p>
+
+<p>Running it produces the expected output:
+<code>
+(1, 2)
+(1, 3)
+(1, 4)
+(1, 5)
+(2, 3)
+(2, 4)
+(2, 5)
+(3, 4)
+(3, 5)
+(4, 5)
+</code></p>
+
+<p>Aren't you glad you can write this in Haskell instead?</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Languages in Seven Weeks Haskell Day 3]]></title>
@@ -33,7 +333,7 @@
 
 <h2>Monads</h2>
 
-<p>Monads are mechanisms to compose calculations. They also happen to solve the IO problem in Haskell, which is a nice (and significant) bonus. But the calculation composition is core. With it, one can have backtracking, continuation, probabilistic computing, anything you could think off. Thinking of anything actually is quite hard, as most programmers are not used to such freedom. For IO, it just happens to guarantee linear evaluation.</p>
+<p>Monads are mechanisms to compose calculations. They also happen to solve the IO problem in Haskell, which is a nice (and significant) bonus. But the calculation composition is core. With it, one can have backtracking, continuation, probabilistic computing, anything you could think off. Thinking of anything actually is quite hard, as most programmers are not used to such freedom. For IO, it just happens to guarantee sequential evaluation.</p>
 
 <p>There are a number of resources to learn about Monads (indeed, it seems the path to Haskell mastery must include at least one Monad tutorial). I found  <a href="http://monads.haskell.cz/html/">All About Monads</a> very useful. The introduction is really good, but links to this tutorial tend to disappear, unfortunately. There is also the <a href="http://book.realworldhaskell.org/read/monads.html">Monads</a> chapter of <a href="http://book.realworldhaskell.org/">Real World Haskell</a> (which you should read, but wait for the second edition to buy). This introduction is more complex, as it builds a State Monad rather than the Maybe Monad.</p>
 
@@ -281,7 +581,7 @@ Nothing
 
 <p>The rest of the code includes a parser for a specific maze description (I found sample mazes <a href="http://benjamin-meyer.blogspot.com/2005/01/ascii-maze-ment-puzzle.html">here</a>), and code to process a problem into a <code>Maze</code> instance, and code to display a solution.</p>
 
-<p>Testing:
+<p>Testing (test data <a href="https://github.com/icefox/asciimaze/blob/master/sample-mazes/input1.txt">here</a>):
 ```
 *Maze> solveProblem "input1.txt"</p>
 
@@ -1683,263 +1983,6 @@ nil
 <p>I always found Lisp languages to be very elegant and expressive; Clojure definitively is a Lisp, and I really wanted to like the language. Yet for some reason I found it somewhat disappointing. Perhaps it is the limitations the designers put (for good reason) in the language. Perhaps it is the fact that the language runs on the JVM, an environment that I instinctively link to all things corporate, safe and boring, so I don't really believe it could be exciting.</p>
 
 <p>I'm not really sure, perhaps it is just that I'm feeling tired and I have a cold, and Clojure really is awesome. So I'll have another look at that language, and I hope I can give it the attention it seems to deserve.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Languages in Seven Weeks Clojure Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/"/>
-    <updated>2011-11-12T19:25:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2</id>
-    <content type="html"><![CDATA[<p>Today Clojure's coverage is getting beefier with tail recursion (soso), lazy sequences and ... macros!</p>
-
-<!--more-->
-
-
-<p>The support for tail recursion is disappointing. But given that the JVM implementers never actually understood the value of tail recursion (or perhaps they overestimated its cost), it would have been surprising if a language running on top of the JVM had a solution. Scala is similarly limited.</p>
-
-<p>Lazy sequences are cool, but not spectacularly so. It is a more restricted concept than laziness in Haskell. Still, lazy lists form a large part of my use of Haskell's laziness (perhaps the only part I can use), so I do not expect to feel limited in any way with Clojure.</p>
-
-<p>Finally, macros. Writing macros separates men from boys. Writing macros that write macros separates gods from men. Macros are good. Abuse of macros can cause headaches, but the good kind (it's just your brain swelling).</p>
-
-<h2>Exercises</h2>
-
-<h3>Implementation of common macros in Clojure</h3>
-
-<p>That one is very easy. The web site has a dedicated <a href="http://clojure.org/macros">page</a> with the common macros. The source code is available for each. <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/defmacro"><code>defmacro</code></a> is actually a macro, and its source code is, well, let's just say I'm happy someone else wrote it. And yes, it is a macro that writes macros.</p>
-
-<p>To expand the code of macros, I wrote this small function to recursively expand macro definitions:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>rec-expand function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">rec-expand</span> <span class="p">[</span><span class="nv">lst</span><span class="p">]</span><span class="nv">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span>      <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">seq? </span><span class="nv">lst</span><span class="p">)</span> <span class="p">(</span><span class="nb">map </span><span class="nv">rec-expand</span> <span class="p">(</span><span class="nb">macroexpand </span><span class="nv">lst</span><span class="p">))</span> <span class="nv">lst</span><span class="p">))</span>
-</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Without it, it is difficult to see deeply into the code:
-```
-user=> (macroexpand '(defn collection-type</p>
-
-<pre><code>         "Return either :list, :vector or :map, depending of the type of col."                      
-         [col]                                                                                      
-         (cond (list? col) :list
-               (map? col) :map
-               (vector? col) :vector)))
-</code></pre>
-
-<p>(def collection-type (.withMeta (clojure.core/fn collection-type ([col] (cond (list? col) :list (map? col) :map (vector? col) :vector))) (.meta (var collection-type))))
-```</p>
-
-<p><a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/macroexpand"><code>macroexpand</code></a> did not expand the <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/cond"><code>cond</code></a> macros.</p>
-
-<p>With <code>rec-expand</code>:
-```
-user=> (rec-expand '(defn collection-type</p>
-
-<pre><code>         "Return either :list, :vector or :map, depending of the type of col."                      
-         [col]                                                                                      
-         (cond (list? col) :list
-               (map? col) :map
-               (vector? col) :vector))) 
-</code></pre>
-
-<p>(def collection-type (. (fn* collection-type ([col] (if (list? col) :list (if (map? col) :map (if (vector? col) :vector ()))))) withMeta (. (var collection-type) meta)))
-```</p>
-
-<h3>Implementation of a lazy sequence</h3>
-
-<p>For this exercise, I use <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/lazy-seq"><code>lazy-seq</code></a>, which evaluates its body on demand (and remembers the value).</p>
-
-<p>One first example is a simple reimplementation of <code>(iterate inc n)</code>:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>upfrom  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">upfrom</span> <span class="p">[</span><span class="nv">n</span><span class="p">]</span><span class="nv">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span><span class="s">&quot;[n, n+1, n+2, ....&quot;</span>
-</span><span class='line'><span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nb">cons </span><span class="nv">n</span> <span class="p">(</span><span class="nf">upfrom</span> <span class="p">(</span><span class="nb">inc </span><span class="nv">n</span><span class="p">)))))</span>
-</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Testing it:
-<code>
-user=&gt; (take 10 (upfrom 0))
-(0 1 2 3 4 5 6 7 8 9)
-</code></p>
-
-<p>A bit more interesting, perhaps, is a Fibonacci sequence not using <code>map</code>:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Fibonacci sequence  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">fibs</span> <span class="p">[</span><span class="nv">a</span> <span class="nv">b</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Fibonacci sequence starting with a, b, ...&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nb">cons </span><span class="nv">a</span> <span class="p">(</span><span class="nf">fibs</span> <span class="nv">b</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">a</span> <span class="nv">b</span><span class="p">)))))</span>
-</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">fib</span> <span class="p">(</span><span class="nf">fibs</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Computing the 20 first Fibonacci numbers:
-<code>
-user=&gt; (take 20 fib)
-(1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765)
-</code></p>
-
-<h3>Unless with else condition</h3>
-
-<p>For this exercise, I use two features that were not covered in the book</p>
-
-<ul>
-<li>variable lists of arguments support</li>
-<li>backquote notation</li>
-</ul>
-
-
-<p>Clojure support for variable lists of arguments is nice: there can be a different body for each list, and the last one can a placeholder variable for "all the remaining arguments". The concept of arguments (and variable lists) applies to everything that takes arguments: functions, macros, ... Here I use it to differentiate between basic <code>(unless test body)</code> and <code>(unless test body else)</code>.</p>
-
-<p>Backquote notation is what makes macro useable. Rather than using <code>list</code> to build the form, I use the backquote. Then expressions prefixed with tilde are replaced by their value. Lisps had an identical concept (but comma was used instead of tilde).</p>
-
-<p>This makes macros shorter and easier to read.</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>extended unless  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defmacro </span><span class="nv">unless</span>
-</span><span class='line'>  <span class="p">([</span><span class="nv">test</span> <span class="nv">body</span><span class="p">]</span> <span class="nv">&lt;code&gt;</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="nv">~test</span><span class="p">)</span> <span class="nv">~body</span><span class="p">))</span>
-</span><span class='line'>  <span class="p">([</span><span class="nv">test</span> <span class="nv">body</span> <span class="nv">alt</span><span class="p">]</span><span class="nv">&lt;/code&gt;</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="nv">~test</span><span class="p">)</span> <span class="nv">~body</span> <span class="nv">~alt</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Testing it:
-<code>
-user=&gt; (unless false (println "Danger!"))
-Danger!
-nil
-user=&gt; (unless true (println "Danger!") (println "No danger..."))
-No danger...
-nil
-</code></p>
-
-<h3>Using defrecord and defprotocol</h3>
-
-<p>Ok, I'm not very inspired by this exercise. I was thinking of doing the classic shape class hierarchy, but finally settled for an employee protocol:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Employee protocol  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defprotocol</span> <span class="nv">Employee</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">e</span> <span class="nv">h</span><span class="p">])</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">e</span> <span class="nv">a</span><span class="p">]))</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The first implementation is a manager, which is modeled according to things I've heard about other companies, not mine, where managers are hard-working and have to be pulled from their desk to be fed:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Manager implementation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defrecord</span> <span class="nv">Manager</span> <span class="p">[</span><span class="nv">hobby</span><span class="p">]</span>       <span class="nv">&lt;br/&gt;</span>
-</span><span class='line'>  <span class="nv">Employee</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">h</span><span class="p">]</span><span class="nv">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span><span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Working &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours then &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours of &quot;</span> <span class="nv">hobby</span><span class="p">)))</span>
-</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;p&gt;</span>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">a</span><span class="p">]</span><span class="nv">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span><span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;You are too modest. You deserve &quot;</span> <span class="p">(</span><span class="nb">* </span><span class="mf">1.1</span> <span class="nv">a</span><span class="p">)))))</span>
-</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Testing the manager:
-```
-user=> (def m (Manager. "golf"))</p>
-
-<h1>'user/m</h1>
-
-<p>user=> (work m 8)
-Working 4 hours then 4 hours of golf
-nil
-user=> (get-raise m 1000)
-You are too modest. You deserve 1100.0
-nil
-```</p>
-
-<p>Of course we need people to actually do something:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Worker implemenation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defrecord</span> <span class="nv">Worker</span> <span class="p">[]</span>       <span class="nv">&lt;br/&gt;</span>
-</span><span class='line'>  <span class="nv">Employee</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">h</span><span class="p">]</span><span class="nv">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span><span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Working &quot;</span> <span class="nv">h</span> <span class="s">&quot; hours then &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours overtime&quot;</span><span class="p">)))</span>
-</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;p&gt;</span>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">a</span><span class="p">]</span><span class="nv">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span><span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;There is an economic crisis. Be happy with &quot;</span> <span class="p">(</span><span class="nb">* </span><span class="mf">0.1</span> <span class="nv">a</span><span class="p">)))))</span>
-</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Testing the worker:
-```
-user=> (def w (Worker.))</p>
-
-<h1>'user/w</h1>
-
-<p>user=> (work w 8)
-Working 8 hours then 4 hours overtime
-nil
-user=> (get-raise w 100)
-There is an economic crisis. Be happy with 10.0
-nil
-```</p>
-
-<p>Ok, nothing fancy. But looking at the doc I see it is possible to extend basic Java classes, so I think there's far more depth to this construct. Otherwise, there's always <code>defmacro</code> to play with.</p>
-
-<p>And this completes Day 2.</p>
 ]]></content>
   </entry>
   

@@ -115,7 +115,7 @@
 
 <h2>Monads</h2>
 
-<p>Monads are mechanisms to compose calculations. They also happen to solve the IO problem in Haskell, which is a nice (and significant) bonus. But the calculation composition is core. With it, one can have backtracking, continuation, probabilistic computing, anything you could think off. Thinking of anything actually is quite hard, as most programmers are not used to such freedom. For IO, it just happens to guarantee linear evaluation.</p>
+<p>Monads are mechanisms to compose calculations. They also happen to solve the IO problem in Haskell, which is a nice (and significant) bonus. But the calculation composition is core. With it, one can have backtracking, continuation, probabilistic computing, anything you could think off. Thinking of anything actually is quite hard, as most programmers are not used to such freedom. For IO, it just happens to guarantee sequential evaluation.</p>
 
 <p>There are a number of resources to learn about Monads (indeed, it seems the path to Haskell mastery must include at least one Monad tutorial). I found  <a href="http://monads.haskell.cz/html/">All About Monads</a> very useful. The introduction is really good, but links to this tutorial tend to disappear, unfortunately. There is also the <a href="http://book.realworldhaskell.org/read/monads.html">Monads</a> chapter of <a href="http://book.realworldhaskell.org/">Real World Haskell</a> (which you should read, but wait for the second edition to buy). This introduction is more complex, as it builds a State Monad rather than the Maybe Monad.</p>
 
@@ -368,7 +368,7 @@
 
 <p>The rest of the code includes a parser for a specific maze description (I found sample mazes <a href="http://benjamin-meyer.blogspot.com/2005/01/ascii-maze-ment-puzzle.html">here</a>), and code to process a problem into a <code>Maze</code> instance, and code to display a solution.</p>
 
-<p>Testing:</p>
+<p>Testing (test data <a href="https://github.com/icefox/asciimaze/blob/master/sample-mazes/input1.txt">here</a>):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -509,6 +509,8 @@
         <a class="basic-alignment left" href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/" title="Previous Post: Seven Languages in Seven Weeks Haskell Day 2">&laquo; Seven Languages in Seven Weeks Haskell Day 2</a>
       
       
+        <a class="basic-alignment right" href="/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/" title="next Post: Seven Languages in Seven Weeks Haskell Day 3.5">Seven Languages in Seven Weeks Haskell Day 3.5 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -579,11 +581,17 @@
 		
 			<li class="post"><a href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/">Haskell Day 3</a></li>
 		
+			<li class="post"><a href="/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/">Haskell Day 3.5</a></li>
+		
 		</ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/">Seven Languages in Seven Weeks Haskell Day 3.5</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/">Seven Languages in Seven Weeks Haskell Day 3</a>
@@ -599,10 +607,6 @@
     
       <li class="post">
         <a href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">Seven Languages in Seven Weeks Clojure Day 3</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">Seven Languages in Seven Weeks Clojure Day 2</a>
       </li>
     
   </ul>

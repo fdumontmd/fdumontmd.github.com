@@ -22,7 +22,7 @@ Classes nicely support monads (and other composition mechanisms) by providing in
 Monads
 ------
 
-Monads are mechanisms to compose calculations. They also happen to solve the IO problem in Haskell, which is a nice (and significant) bonus. But the calculation composition is core. With it, one can have backtracking, continuation, probabilistic computing, anything you could think off. Thinking of anything actually is quite hard, as most programmers are not used to such freedom. For IO, it just happens to guarantee linear evaluation.
+Monads are mechanisms to compose calculations. They also happen to solve the IO problem in Haskell, which is a nice (and significant) bonus. But the calculation composition is core. With it, one can have backtracking, continuation, probabilistic computing, anything you could think off. Thinking of anything actually is quite hard, as most programmers are not used to such freedom. For IO, it just happens to guarantee sequential evaluation.
 
 There are a number of resources to learn about Monads (indeed, it seems the path to Haskell mastery must include at least one Monad tutorial). I found  [All About Monads](http://monads.haskell.cz/html/) very useful. The introduction is really good, but links to this tutorial tend to disappear, unfortunately. There is also the [Monads](http://book.realworldhaskell.org/read/monads.html) chapter of [Real World Haskell](http://book.realworldhaskell.org/) (which you should read, but wait for the second edition to buy). This introduction is more complex, as it builds a State Monad rather than the Maybe Monad.
 

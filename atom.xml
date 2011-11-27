@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-11-21T13:58:11+09:00</updated>
+  <updated>2011-11-27T16:05:28+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,61 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Nice tool: Quick Sequence Diagram Editor]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/"/>
+    <updated>2011-11-26T12:23:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor</id>
+    <content type="html"><![CDATA[<p>There are tools that provide a simple, elegant solution to some of my recurrent problems. Today I&#8217;d like to introduce you to the <a href="http://sdedit.sourceforge.net/index.html">Quick Sequence Diagram Editor</a> (sdedit for short).</p>
+
+<!--more-->
+
+
+<p>First, to get that out of the way: if a mouse makes you generally more productive than a keyboard, if you need to look to find the next letter to press on, then you probably won&#8217;t want to use sdedit. But then again you probably don&#8217;t have any business producing UML Sequence diagrams anyway.</p>
+
+<p>This is because sdedit&#8217;s main interface is not a mouse, but the keyboard: instead of dragging visual elements into place, like most diagram editors, sdedit let you type a description of the diagram, and automatically generates the diagram as you type.</p>
+
+<h2>Purpose</h2>
+
+<p>As the name says, sdedit allows you to generate Sequence Diagrams. It is not meant as full UML designer toolkit. And perhaps even in this focused area, it probably lacks features, but for my needs I found it perfectly adequate.</p>
+
+<p>In general, when I need such a diagram, it is to represent the flow of information between systems in an integration scenario (and usually these systems will be various web applications). The intended audience is the technical staff of my clients, which are not programmers (they are IT managers, system or database administrators, operations, &#8230;).</p>
+
+<p>I need to communicate the sequence of calls, the parameters and return values, as well as the occasional asynchronous messages. If I ever had to add some subtle qualifications to such a diagram, I would rather do it in English, rather than use a graphical notation that few people know and most will misunderstand anyway.</p>
+
+<h2>Usage</h2>
+
+<p>sdedit is written in Java, and packages are available for all main platforms (and a generic binary is available for the other platforms). It is very small (2 MB) which, in these days of multi-dvds IDEs, is so refreshing (and to think that some people used to joke that Emacs was so resource hungry it needed 8 MB of memory&#8230;).</p>
+
+<p>When it is first launched, it greets the user with an uncluttered screen:
+<img src="https://lh3.googleusercontent.com/-wm3qYBXjKZ0/TtHZDVgYi3I/AAAAAAAAB4o/ji2R6edXCj0/s800/Screen%252520Shot%2525202011-11-27%252520at%25252015.30.04.png" title="'sdedit initial screen'" ></p>
+
+<p>To start creating the diagram, you first need to declare a few participants, using a <a href="http://sdedit.sourceforge.net/enter_text/index.html">simple language</a>. sdedit uses recognizes specific keywords that can be used to customize the appearance of the diagram:</p>
+
+<p><img src="https://lh5.googleusercontent.com/-7gCWxCHdNl0/TtHaqn_FzMI/AAAAAAAAB5A/GUS3tPAwPIo/s800/Screen%252520Shot%2525202011-11-27%252520at%25252015.35.36.png" title="'sedit participants'" ></p>
+
+<p>Messages are created by stating who initiates them, and who receives them, with a familiar object oriented syntax:</p>
+
+<p><img src="https://lh4.googleusercontent.com/-Xfn_SgHyQXw/TtHctQyR_DI/AAAAAAAAB5M/jt3dKtzMeoc/s800/Screen%252520Shot%2525202011-11-27%252520at%25252015.45.58.png" title="'sdedit message calls'" ></p>
+
+<p>Asynchronous messages are also possible; grouping calls into a named sequence (and nesting such sequences) is also supported.</p>
+
+<h2>Getting help</h2>
+
+<p>The <a href="http://sdedit.sourceforge.net/index.html">website</a> has a complete documentation, but I found that the integrated help page, especially its set of examples is far more useful:</p>
+
+<p><img src="https://lh5.googleusercontent.com/-ms8UYivtoOM/TtHdweYCUlI/AAAAAAAAB5Y/IJpHfomujU8/s800/Screen%252520Shot%2525202011-11-27%252520at%25252015.50.28.png" title="'sdedit examples'" ></p>
+
+<p>That, and the fact that diagrams are redrawn as you type, makes it easy to experiment and figure out what works.</p>
+
+<h2>Try it&#8230;</h2>
+
+<p>I found that sdedit is useful to clarify my ideas. All too often, a UML designer is just a designer for a diagram that is already fully formed in your mind. But with sdedit simple input syntax and instant feedback, I can experiment and see immediately which design works (or appears to work).</p>
+
+<p>I&#8217;m not sure other parts of UML are suitable for such an exploratory design tool, but thanks to sdedit, at least a Sequence Diagram becomes a bicycle for the mind.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Languages in Seven Weeks Haskell Day 3.5]]></title>
@@ -9038,35 +9093,6 @@
 
 
 <p>And this wraps up Day 1.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Languages in Seven Weeks - About Io]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/"/>
-    <updated>2011-10-21T09:14:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/10/21/seven-languages-in-seven-weeks-about-io</id>
-    <content type="html"><![CDATA[<p><a href="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-3">Yesterday</a> in wrapping up I dismissed the language in a very terse manner; I thought I should expand on this.</p>
-
-<!--more-->
-
-
-<p>Io intends to be a number of things:</p>
-
-<ul>
-<li>an embedded language</li>
-<li>a concurrent language with actor model</li>
-<li>a prototype based language</li>
-</ul>
-
-
-<p>The problem is that each of these is well covered by more popular alternatives. <a href="http://www.lua.org/">Lua</a> is designed as an embedded language and widely used as such. <a href="http://www.erlang.org/">Erlang</a> is the typical actor based concurrent language, and once again, widely used as such (interestingly, on the <a href="http://iolanguage.com/about/faq/">Io FAQ page</a>, there is a reference to a benchmark highlighting the performance of coroutine based servers. But the coroutine based server is actually about an Erlang server, <a href="http://yaws.hyber.org/">Yaws</a>). And new languages, such as <a href="http://www.scala-lang.org/">Scala</a>, also implements the actor model.</p>
-
-<p>As for prototype based language, I am not sure there is an intrinsic value in such a design choice (which is why I hesitate to call it a feature). But JavaScript is also a prototype based language, and once again, it is very widely used.</p>
-
-<p>Does that mean there is no place for Io? I wouldn&#8217;t say so; but the main problem I have with the language is that I just can&#8217;t figure where such a language would shine.</p>
-
-<p>A <a href="http://lambda-the-ultimate.org/node/2596">thread</a> on <a href="http://lambda-the-ultimate.org/">Lambda the Ultimate</a> introduces interesting arguments both for and against the language. The pro links in particular are intriguing. Various new behaviours can be implemented on the language. But then the question becomes: would such behaviours be in any way useful for solving real problems, rather than as an intellectual exercise?</p>
 ]]></content>
   </entry>
   

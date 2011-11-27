@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>It has been a bad year for geniuses... - Wakatta!</title>
+  <title>Nice tool: Quick Sequence Diagram Editor - Wakatta!</title>
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="It has been a bad year, a bad month even, for computer geniuses: Steve Jobs, Dennis Ritchie, and now John McCarthy. Lisp has jokingly been called &# &hellip;">
+  <meta name="description" content="There are tools that provide a simple, elegant solution to some of my recurrent problems. Today I&#8217;d like to introduce you to the Quick Sequence &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   
   <header>
     
-      <h1 class="entry-title">It Has Been a Bad Year for Geniuses...</h1>
+      <h1 class="entry-title">Nice Tool: Quick Sequence Diagram Editor</h1>
     
     
       <p class="meta">
@@ -93,34 +93,60 @@
   
 
 
-<time datetime="2011-10-25T11:45:00+09:00" pubdate data-updated="true">Oct 25<span>th</span>, 2011</time>
+<time datetime="2011-11-26T12:23:00+09:00" pubdate data-updated="true">Nov 26<span>th</span>, 2011</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>It has been a bad year, a bad month even, for computer geniuses: <a href="http://en.wikipedia.org/wiki/Steve_jobs">Steve Jobs</a>, <a href="http://en.wikipedia.org/wiki/Dennis_Ritchie">Dennis Ritchie</a>, and now <a href="http://en.wikipedia.org/wiki/John_McCarthy_%28computer_scientist%29">John McCarthy</a>.</p>
+<div class="entry-content"><p>There are tools that provide a simple, elegant solution to some of my recurrent problems. Today I&#8217;d like to introduce you to the <a href="http://sdedit.sourceforge.net/index.html">Quick Sequence Diagram Editor</a> (sdedit for short).</p>
 
 <!--more-->
 
 
+<p>First, to get that out of the way: if a mouse makes you generally more productive than a keyboard, if you need to look to find the next letter to press on, then you probably won&#8217;t want to use sdedit. But then again you probably don&#8217;t have any business producing UML Sequence diagrams anyway.</p>
 
+<p>This is because sdedit&#8217;s main interface is not a mouse, but the keyboard: instead of dragging visual elements into place, like most diagram editors, sdedit let you type a description of the diagram, and automatically generates the diagram as you type.</p>
 
-<blockquote><p>Lisp has jokingly been called &#8220;the most intelligent way to misuse a computer&#8221;. I think that description is a great compliment because it transmits the full flavor of liberation: it has assisted a number of our most gifted fellow humans in thinking previously impossible thoughts.</p><footer><strong>Edsger Dijkstra</strong><cite>CACM 15:10</cite></footer></blockquote>
+<h2>Purpose</h2>
 
+<p>As the name says, sdedit allows you to generate Sequence Diagrams. It is not meant as full UML designer toolkit. And perhaps even in this focused area, it probably lacks features, but for my needs I found it perfectly adequate.</p>
 
-<p>It is hard to speculate what the world would have looked like without them.</p>
+<p>In general, when I need such a diagram, it is to represent the flow of information between systems in an integration scenario (and usually these systems will be various web applications). The intended audience is the technical staff of my clients, which are not programmers (they are IT managers, system or database administrators, operations, &#8230;).</p>
 
-<p>Certainly, people were doing exciting work at <a href="http://en.wikipedia.org/wiki/PARC_%28company%29">Xerox PARC</a> in Paolo Alto but it was Steve Jobs who turned these ideas into a commercial success. And then he went on and did it again with other interesting but not quite polished ideas, such as selling music on the Internet, or tablet computers.</p>
+<p>I need to communicate the sequence of calls, the parameters and return values, as well as the occasional asynchronous messages. If I ever had to add some subtle qualifications to such a diagram, I would rather do it in English, rather than use a graphical notation that few people know and most will misunderstand anyway.</p>
 
-<p>Dennis Ritchie invented not just another language (<a href="http://en.wikipedia.org/wiki/C_language">C</a>), but a new way to teach languages in his book &#8221;<a href="http://en.wikipedia.org/wiki/The_C_Programming_Language">The C Programming Language</a>&#8221;, as well as a different breed of operating systems (the <a href="http://en.wikipedia.org/wiki/Unix">UNIX</a> family).</p>
+<h2>Usage</h2>
 
-<p>And John McCarthy, through <a href="http://en.wikipedia.org/wiki/Lisp_%28programming_language%29">Lisp</a>, not only introduced automatic memory management, but allowed other smart people to think differently about programing and expressivity. Today&#8217;s many languages own much of their syntax to C (unfortunately), but most of them derive their power from ideas first dreamed in Lisp.</p>
+<p>sdedit is written in Java, and packages are available for all main platforms (and a generic binary is available for the other platforms). It is very small (2 MB) which, in these days of multi-dvds IDEs, is so refreshing (and to think that some people used to joke that Emacs was so resource hungry it needed 8 MB of memory&#8230;).</p>
 
-<p>&#8220;Think different&#8221;, for them, was clearly more than just a slogan.</p>
+<p>When it is first launched, it greets the user with an uncluttered screen:
+<img src="https://lh3.googleusercontent.com/-wm3qYBXjKZ0/TtHZDVgYi3I/AAAAAAAAB4o/ji2R6edXCj0/s800/Screen%252520Shot%2525202011-11-27%252520at%25252015.30.04.png" title="'sdedit initial screen'" ></p>
 
-<p>Unfortunately, it is the nature computer history that most of the giants are now reaching an age when obituaries are getting more likely, and another birthday party slightly less so.</p>
+<p>To start creating the diagram, you first need to declare a few participants, using a <a href="http://sdedit.sourceforge.net/enter_text/index.html">simple language</a>. sdedit uses recognizes specific keywords that can be used to customize the appearance of the diagram:</p>
+
+<p><img src="https://lh5.googleusercontent.com/-7gCWxCHdNl0/TtHaqn_FzMI/AAAAAAAAB5A/GUS3tPAwPIo/s800/Screen%252520Shot%2525202011-11-27%252520at%25252015.35.36.png" title="'sedit participants'" ></p>
+
+<p>Messages are created by stating who initiates them, and who receives them, with a familiar object oriented syntax:</p>
+
+<p><img src="https://lh4.googleusercontent.com/-Xfn_SgHyQXw/TtHctQyR_DI/AAAAAAAAB5M/jt3dKtzMeoc/s800/Screen%252520Shot%2525202011-11-27%252520at%25252015.45.58.png" title="'sdedit message calls'" ></p>
+
+<p>Asynchronous messages are also possible; grouping calls into a named sequence (and nesting such sequences) is also supported.</p>
+
+<h2>Getting help</h2>
+
+<p>The <a href="http://sdedit.sourceforge.net/index.html">website</a> has a complete documentation, but I found that the integrated help page, especially its set of examples is far more useful:</p>
+
+<p><img src="https://lh5.googleusercontent.com/-ms8UYivtoOM/TtHdweYCUlI/AAAAAAAAB5Y/IJpHfomujU8/s800/Screen%252520Shot%2525202011-11-27%252520at%25252015.50.28.png" title="'sdedit examples'" ></p>
+
+<p>That, and the fact that diagrams are redrawn as you type, makes it easy to experiment and figure out what works.</p>
+
+<h2>Try it&#8230;</h2>
+
+<p>I found that sdedit is useful to clarify my ideas. All too often, a UML designer is just a designer for a diagram that is already fully formed in your mind. But with sdedit simple input syntax and instant feedback, I can experiment and see immediately which design works (or appears to work).</p>
+
+<p>I&#8217;m not sure other parts of UML are suitable for such an exploratory design tool, but thanks to sdedit, at least a Sequence Diagram becomes a bicycle for the mind.</p>
 </div>
 
 
@@ -143,12 +169,12 @@
   
 
 
-<time datetime="2011-10-25T11:45:00+09:00" pubdate data-updated="true">Oct 25<span>th</span>, 2011</time>
+<time datetime="2011-11-26T12:23:00+09:00" pubdate data-updated="true">Nov 26<span>th</span>, 2011</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/life/'>Life</a>
+    <a class='category' href='/blog/categories/software/'>Software</a>
   
 </span>
 
@@ -157,7 +183,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/" >Tweet</a>
   
   
   
@@ -166,10 +192,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/" title="Previous Post: Seven Languages in Seven Weeks Prolog Day 3">&laquo; Seven Languages in Seven Weeks Prolog Day 3</a>
+        <a class="basic-alignment left" href="/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/" title="Previous Post: Seven Languages in Seven Weeks Haskell Day 3.5">&laquo; Seven Languages in Seven Weeks Haskell Day 3.5</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/" title="next Post: Seven Languages in Seven Weeks Scala Day 1">Seven Languages in Seven Weeks Scala Day 1 &raquo;</a>
       
     </p>
   </footer>
@@ -269,8 +293,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/';
-        var disqus_url = 'http://blog.wakatta.jp/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/';
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/';
         var disqus_script = 'embed.js';
       
     (function () {

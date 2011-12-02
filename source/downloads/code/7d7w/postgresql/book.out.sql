@@ -178,6 +178,7 @@ CREATE TABLE venues (
     type character(7) DEFAULT 'public'::bpchar,
     postal_code character varying(9),
     country_code character(2),
+    active boolean DEFAULT true,
     CONSTRAINT venues_type_check CHECK ((type = ANY (ARRAY['public'::bpchar, 'private'::bpchar])))
 );
 
@@ -263,9 +264,9 @@ COPY events (event_id, title, starts, ends, venue_id) FROM stdin;
 -- Data for Name: venues; Type: TABLE DATA; Schema: public; Owner: fdumontmd
 --
 
-COPY venues (venue_id, name, street_address, type, postal_code, country_code) FROM stdin;
-1	Crystal Ballroom	\N	public 	97205	us
-2	Powel's Books	\N	public 	97205	us
+COPY venues (venue_id, name, street_address, type, postal_code, country_code, active) FROM stdin;
+1	Crystal Ballroom	\N	public 	97205	us	t
+2	Powel's Books	\N	public 	97205	us	t
 \.
 
 
@@ -315,6 +316,13 @@ ALTER TABLE ONLY events
 
 ALTER TABLE ONLY venues
     ADD CONSTRAINT venues_pkey PRIMARY KEY (venue_id);
+
+
+--
+-- Name: events_starts; Type: INDEX; Schema: public; Owner: fdumontmd; Tablespace: 
+--
+
+CREATE INDEX events_starts ON events USING btree (starts);
 
 
 --

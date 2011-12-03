@@ -9,7 +9,7 @@
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="One last day with Erlang; it was about time we get to perhaps its most significant aspect: its concurrency model, and recipe for error recovery, &hellip;">
+  <meta name="description" content="In a previous post, I tried to show how to derive the formula expression foldl in terms of foldr. Unsurprisingly, there is a way to express foldr in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,131 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/11/haskell-foldr-as-foldl/">Haskell: Foldr as Foldl</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-11T08:03:00+09:00" pubdate data-updated="true">Nov 11<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In a previous <a href="/blog/2011/11/09/haskell-foldl-as-foldr/">post</a>, I tried to show how to derive the formula expression <code>foldl</code> in terms of <code>foldr</code>. Unsurprisingly, there is a way to express <code>foldr</code> in terms <code>foldl</code>: <code>foldr f a bs = foldl (\g b x -&gt; g (f b x)) id bs a</code>. Today I&#8217;ll try to derive this definition.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/11/haskell-foldr-as-foldl/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">Seven Languages in Seven Weeks Clojure Day 1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-11T08:02:00+09:00" pubdate data-updated="true">Nov 11<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sixth week, sixth language, this time <a href="http://clojure.org/">Clojure</a>, the latest attempt to make <a href="http://en.wikipedia.org/wiki/Lisp_(programming_language)">Lisp</a> popular.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/09/haskell-foldl-as-foldr/">Haskell: Foldl as Foldr</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-09T19:05:00+09:00" pubdate data-updated="true">Nov 9<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A beginner with Haskell is bound to be exposed, usually too early, to some fancy code illustrating either a cool feature of the language, or of its underlying theoretical foundations.</p>
+
+<p>Among others, there is the one-liner lazy Fibonacci definition <code>fibs = 1:1:zipWith (+) fibs (tail fibs)</code>. Another one, the topic of this post, is <code>foldl f a bs = foldr (\b g x -&gt; g (f x b)) id bs a</code>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/11/09/haskell-foldl-as-foldr/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -362,129 +487,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Seven Languages in Seven Weeks Prolog Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-10-24T13:33:00+09:00" pubdate data-updated="true">Oct 24<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The final day with Prolog is called &#8220;Blowing Up Vegas&#8221; in the book, and was certainly intended as a Shock and Awe moment. Unfortunately, it feels more like Razzle Dazzle.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Seven Languages in Seven Weeks Prolog Day 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-10-23T23:10:00+09:00" pubdate data-updated="true">Oct 23<span>rd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The second day with Prolog is about the main data structure (the list) and the writing of rules.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Seven Languages in Seven Weeks Prolog Day 1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-10-23T16:45:00+09:00" pubdate data-updated="true">Oct 23<span>rd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The third language in the series is <a href="http://en.wikipedia.org/wiki/Prolog">Prolog</a>. I first encountered it at university many years ago, and found it a really exciting and different language.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -508,23 +510,23 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">Seven Databases in Seven Weeks PostgreSQL Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">New Book: Seven Databases in Seven Weeks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/26/seven-languages-in-seven-weeks-wrap-up/">Seven Languages in Seven Weeks Wrap Up</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/">Nice tool: Quick Sequence Diagram Editor</a>
       </li>
     
       <li class="post">
         <a href="/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/">Seven Languages in Seven Weeks Haskell Day 3.5</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/">Seven Languages in Seven Weeks Haskell Day 3</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">Seven Languages in Seven Weeks Haskell Day 1</a>
       </li>
     
   </ul>

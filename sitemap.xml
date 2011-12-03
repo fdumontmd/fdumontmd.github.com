@@ -152,7 +152,7 @@
         <loc>
             http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/
         </loc>
-        <lastmod>2011-11-21T11:53:29+09:00</lastmod>
+        <lastmod>2011-12-02T12:36:41+09:00</lastmod>
     </url>
     <url>
         <loc>
@@ -165,12 +165,26 @@
         <lastmod>2011-11-27T16:04:11+09:00</lastmod>
     </url>
     <url>
+        <loc>http://blog.wakatta.jp/blog/2011/11/26/seven-languages-in-seven-weeks-wrap-up/</loc>
+        <lastmod>2011-12-02T12:36:41+09:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.wakatta.jp/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/</loc>
+        <lastmod>2011-12-03T13:18:38+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/
+        </loc>
+        <lastmod>2011-12-03T14:50:35+09:00</lastmod>
+    </url>
+    <url>
         <loc>http://blog.wakatta.jp/about/</loc>
         <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2011-11-27T16:04:11+09:00</lastmod>
+        <lastmod>2011-12-03T14:50:35+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
@@ -182,6 +196,6 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2011-11-27T16:04:11+09:00</lastmod>
+        <lastmod>2011-12-03T14:50:35+09:00</lastmod>
     </url>
 </urlset>

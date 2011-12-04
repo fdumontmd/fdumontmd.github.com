@@ -1,0 +1,645 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks PostgreSQL Day 2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Second day with PostgreSQL, this time to discuss advanced queries, stored procedures, and rewriting rules. The relational model was designed to make &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks PostgreSQL Day 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-03T14:54:00+09:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Second day with PostgreSQL, this time to discuss advanced queries, stored procedures, and rewriting rules.</p>
+
+<p>The relational model was designed to make it easy to extract meaningful information from the database (although here the operative word is meaningful rather than easy). Aggregations pretty much require a schema to return anything worth the effort (and if you don&#8217;t believe it, what exactly is the average value of 1, blue and 3?).</p>
+
+<p>Stored procedures can help to move some business intelligence from the main application to the database. Whether it is a good idea is an open question (and I think the knee-jerk negative answer is too often guided by ignorance rather than experience), but the idea of having enough rules in the database that multiple applications can connect to it safely (or safely enough) is worth considering: it enables other applications, some of which might be incompatible with the main business application, to use the business data (many reporting and ETL solutions might fall into this category). The choice is between control and openness (and which one is correct depends on the situation).</p>
+
+<p>Finally, rewriting rules is a less common feature of SQL databases, but essentially it allows the database designer to create updatable views, implement versioning on specific tables, and so on.</p>
+
+<!--more-->
+
+
+<p>I have a small peeve with the book so far: all too often the authors rely on implicit column ordering when manipulating data. I happen to have a different order for the columns of <code>events</code> (which was created as an exercise <a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">yesterday</a>), so many <code>INSERT</code> examples no longer work.</p>
+
+<p>But in general, it is good to specify the columns in an <code>INSERT</code>, as in:</p>
+
+<figure class='code'><figcaption><span>INSERT with explicit columns  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Your Favorite Band&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 21:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 23:00&#39;</span><span class="p">,</span> <span class="p">(</span>
+</span><span class='line'>      <span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Crystal Ballroom&#39;</span> <span class="p">)</span>
+</span><span class='line'>  <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And to create &#8216;My Place&#8217;:</p>
+
+<figure class='code'><figcaption><span>INSERT My Place  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">countries</span> <span class="p">(</span><span class="n">country_code</span><span class="p">,</span> <span class="n">country_name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;jp&#39;</span><span class="p">,</span> <span class="s1">&#39;Japan&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">cities</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Shinjuku&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">venues</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;My Place&#39;</span><span class="p">,</span> <span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, to add the new events:</p>
+
+<figure class='code'><figcaption><span>INSERT new events  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span> <span class="k">VALUES</span>
+</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Steven King&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 21:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 23:00:00&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Powell&#39;&#39;s Books&#39;</span><span class="p">)),</span>
+</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Dinner with Mom&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 18:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 20:30:00&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;My Place&#39;</span><span class="p">)),</span>
+</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Valentine&#39;&#39;s Day&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This way, there is never any ambiguity as to what is inserted.</p>
+
+<h3>Window functions</h3>
+
+<p>The book covers window functions, but in this first beta version of the book at least, the explanation is not very illuminating.</p>
+
+<p>Basically, <a href="http://www.postgresql.org/docs/current/static/functions-window.html">window functions</a> are a generalization of aggregate functions. Aggregate functions operates on a range of rows selected by a <code>GROUP BY</code> clause. For each group, there will be only one row, where columns are either grouped by columns, or aggregates.</p>
+
+<p>Window functions also operate on a range of rows, but there is one range for each row in the filtered table. The range can be created in a way similar to <code>GROUP BY</code> (using the <code>PARTITION OVER</code> clause), but can also be created by taking all the rows up to the current one, or 2 rows before, 2 rows after, and the current one, &#8230; Such a range is called a window. There are <a href="http://www.postgresql.org/docs/current/static/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS">many ways</a> to define them.</p>
+
+<p>For instance, say we want to know, for each events, how many events have happened (including the current one), we can try:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>book=# SELECT title, starts, COUNT(*) OVER (ORDER BY starts) FROM events;
+</span><span class='line'>       title        |       starts        | count 
+</span><span class='line'>--------------------+---------------------+-------
+</span><span class='line'> Your Favorite Band | 2012-02-06 21:00:00 |     1
+</span><span class='line'> Valentine's Day    | 2012-02-14 00:00:00 |     2
+</span><span class='line'> My Book Signing    | 2012-02-15 17:30:00 |     3
+</span><span class='line'> Dinner with Mom    | 2012-02-26 18:00:00 |     4
+</span><span class='line'> Steven King        | 2012-02-26 21:00:00 |     5
+</span><span class='line'> April Fools Day    | 2012-04-01 00:00:00 |     6
+</span><span class='line'> House Party        | 2012-05-03 23:00:00 |     7
+</span><span class='line'> Christmas Day      | 2012-12-25 00:00:00 |     8
+</span><span class='line'> Valentine's Day    | 2013-02-14 00:00:00 |     9
+</span><span class='line'>(9 rows)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>OVER</code> does not specify a <code>PARTITION</code>, but an <code>ORDER</code>, which means that the <code>COUNT(*)</code> function operates on all the rows from first one to current one (ordered by the <code>starts</code> column). Actually, the <code>COUNT(*)</code> function is the same as the (proper) window function <code>RANK</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>book=# SELECT title, starts, RANK() OVER (ORDER BY starts) FROM events;
+</span><span class='line'>       title        |       starts        | rank 
+</span><span class='line'>--------------------+---------------------+------
+</span><span class='line'> Your Favorite Band | 2012-02-06 21:00:00 |    1
+</span><span class='line'> Valentine's Day    | 2012-02-14 00:00:00 |    2
+</span><span class='line'> My Book Signing    | 2012-02-15 17:30:00 |    3
+</span><span class='line'> Dinner with Mom    | 2012-02-26 18:00:00 |    4
+</span><span class='line'> Steven King        | 2012-02-26 21:00:00 |    5
+</span><span class='line'> April Fools Day    | 2012-04-01 00:00:00 |    6
+</span><span class='line'> House Party        | 2012-05-03 23:00:00 |    7
+</span><span class='line'> Christmas Day      | 2012-12-25 00:00:00 |    8
+</span><span class='line'> Valentine's Day    | 2013-02-14 00:00:00 |    9
+</span><span class='line'>(9 rows)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What about computing the order of each events, but by year? Nothing easier:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>book=# SELECT title, starts, RANK() OVER (PARTITION BY extract(year from starts) ORDER BY starts) FROM events;
+</span><span class='line'>       title        |       starts        | rank 
+</span><span class='line'>--------------------+---------------------+------
+</span><span class='line'> Your Favorite Band | 2012-02-06 21:00:00 |    1
+</span><span class='line'> Valentine's Day    | 2012-02-14 00:00:00 |    2
+</span><span class='line'> My Book Signing    | 2012-02-15 17:30:00 |    3
+</span><span class='line'> Dinner with Mom    | 2012-02-26 18:00:00 |    4
+</span><span class='line'> Steven King        | 2012-02-26 21:00:00 |    5
+</span><span class='line'> April Fools Day    | 2012-04-01 00:00:00 |    6
+</span><span class='line'> House Party        | 2012-05-03 23:00:00 |    7
+</span><span class='line'> Christmas Day      | 2012-12-25 00:00:00 |    8
+</span><span class='line'> Valentine's Day    | 2013-02-14 00:00:00 |    1
+</span><span class='line'>(9 rows)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok, this is not very fancy. But with numeric data, window functions are more powerful. Lets say we collect daily measures into a new table:</p>
+
+<figure class='code'><figcaption><span>Window function example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">observation</span> <span class="p">(</span>
+</span><span class='line'>   <span class="k">day</span> <span class="k">timestamp</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+</span><span class='line'>   <span class="n">measure</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">observation</span> <span class="p">(</span><span class="k">day</span><span class="p">,</span> <span class="n">measure</span><span class="p">)</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="nb">date</span> <span class="s1">&#39;2011-12-01&#39;</span> <span class="k">AS</span> <span class="k">day</span><span class="p">,</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)::</span><span class="nb">int</span> <span class="k">as</span> <span class="n">measure</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We could use the usual aggregate functions, for instance <code>AVG</code> and <code>SUM</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>book=# SELECT AVG(measure), SUM(measure) FROM observation;
+</span><span class='line'>         avg         | sum  
+</span><span class='line'>---------------------+------
+</span><span class='line'> 54.9600000000000000 | 5496
+</span><span class='line'>(1 row)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We have pretty much all the details. If there&#8217;s any trend, we would not see it. But with window functions, it is possible to compute running averages (and actually, two different ones):</p>
+
+<figure class='code'><figcaption><span>Window function example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="k">day</span><span class="p">,</span> <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">2</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">2</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">short_avg</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">5</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">5</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">long_avg</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">SUM</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="k">day</span><span class="p">)</span> <span class="k">as</span> <span class="n">running_sum</span> <span class="k">FROM</span> <span class="n">observation</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(results omitted because they are too long). Here, the <code>AVG(measure)</code> is applied to a window of either 5 rows for <code>short_avg</code> or 11 rows for <code>long_avg</code>, and there&#8217;s a running sum in <code>running_sum</code>.</p>
+
+<p>Pretty cool, I&#8217;d say.</p>
+
+<h3>Rules</h3>
+
+<p><a href="http://www.postgresql.org/docs/current/static/sql-createrule.html">Rules</a> are very useful as well. Here&#8217;s how I&#8217;d implement the <code>INSERT</code> on <code>holidays</code>:</p>
+
+<figure class='code'><figcaption><span>INSERT on holidays  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">insert_holidays</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">INSERT</span> <span class="k">TO</span> <span class="n">holidays</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
+</span><span class='line'>  <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">values</span> <span class="p">(</span><span class="k">NEW</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="o">+</span><span class="nb">interval</span> <span class="s1">&#39;23 hour 59 minutes&#39;</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="n">colors</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note the syntax to manipulate dates and timestamp. It is fairly readable and compact enough.</p>
+
+<h2>Exercises</h2>
+
+<h3>Aggregate Functions</h3>
+
+<p>The aggregate functions are documented <a href="http://www.postgresql.org/docs/current/static/functions-aggregate.html">here</a>, while the window functions are <a href="http://www.postgresql.org/docs/current/static/functions-window.html">here</a>.</p>
+
+<h3>GUI</h3>
+
+<p>Honestly, I don&#8217;t really use any. <code>psql</code> is really powerful. For those of the GUI persuasion, there are a few <a href="http://wiki.postgresql.org/wiki/Community_Guide_to_PostgreSQL_GUI_Tools">options</a>.</p>
+
+<h3>DELETE Rule</h3>
+
+<figure class='code'><figcaption><span>DELETE rule on venues  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">delete_venue</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">TO</span> <span class="n">venues</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
+</span><span class='line'>  <span class="k">UPDATE</span> <span class="n">venues</span> <span class="k">SET</span> <span class="n">active</span> <span class="o">=</span> <span class="k">false</span> <span class="k">WHERE</span> <span class="n">venue_id</span> <span class="o">=</span> <span class="k">OLD</span><span class="p">.</span><span class="n">venue_id</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this rule in place, deleting from <code>venues</code> now set the <code>active</code> flag to false:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>book=# DELETE FROM venues WHERE name = 'My Place';
+</span><span class='line'>DELETE 0
+</span><span class='line'>book=# SELECT * FROM venues;
+</span><span class='line'> venue_id |       name       | street_address |  type   | postal_code | country_code | active 
+</span><span class='line'>----------+------------------+----------------+---------+-------------+--------------+--------
+</span><span class='line'>        1 | Crystal Ballroom |                | public  | 97205       | us           | t
+</span><span class='line'>        2 | Powell's Books   |                | public  | 97205       | us           | t
+</span><span class='line'>        5 | Run's House      |                | public  | 97205       | us           | t
+</span><span class='line'>        4 | My Place         |                | private | 160-0022    | jp           | f
+</span><span class='line'>(4 rows)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>generate_series in crosstab</h3>
+
+<p>The documentation for <a href="http://www.postgresql.org/docs/current/static/tablefunc.html"><code>crosstab</code></a> has already an example for using <a href="http://www.postgresql.org/docs/current/static/functions-srf.html"><code>generate_series</code></a>:</p>
+
+<figure class='code'><figcaption><span>generate_series in crosstab  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
+</span><span class='line'><span class="s1">&#39;SELECT extract(year from starts) as year,</span>
+</span><span class='line'><span class="s1">extract(month from starts) as month, count(*) FROM events</span>
+</span><span class='line'><span class="s1">GROUP BY year, month&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 12) m&#39;</span>
+</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
+</span><span class='line'><span class="k">year</span> <span class="nb">int</span><span class="p">,</span>
+</span><span class='line'><span class="n">jan</span> <span class="nb">int</span><span class="p">,</span> <span class="n">feb</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mar</span> <span class="nb">int</span><span class="p">,</span> <span class="n">apr</span> <span class="nb">int</span><span class="p">,</span> <span class="n">may</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jun</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jul</span> <span class="nb">int</span><span class="p">,</span> <span class="n">aug</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sep</span> <span class="nb">int</span><span class="p">,</span> <span class="n">oct</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nov</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dec</span> <span class="nb">int</span>
+</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">YEAR</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output remains the same:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> year | jan | feb | mar | apr | may | jun | jul | aug | sep | oct | nov | dec 
+</span><span class='line'>------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----
+</span><span class='line'> 2012 |     |   5 |     |   1 |   1 |     |     |     |     |     |     |   1
+</span><span class='line'> 2013 |     |   1 |     |     |     |     |     |     |     |     |     |    
+</span><span class='line'>(2 rows)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Weekly pivot</h3>
+
+<p>The hardest, perhaps, is to find how to convince PostgreSQL to apply <a href="http://www.postgresql.org/docs/current/static/functions-math.html#FUNCTIONS-MATH-FUNC-TABLE"><code>div</code></a> to the passed arguments, but a bit of type declaration using <code>::</code> does the trick. Also, <code>crosstab</code> is not overly smart, so the <code>month</code> and <code>week</code> columns must be in order, otherwise the counts for the two February (one in 2012 and one in 2013) are different:</p>
+
+<figure class='code'><figcaption><span>Weekly pivot  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
+</span><span class='line'><span class="s1">&#39;SELECT extract(month from starts) as month, </span>
+</span><span class='line'><span class="s1"> div(extract (day from starts)::int, 7) + 1 as week, count(*) FROM events</span>
+</span><span class='line'><span class="s1">GROUP BY month, week ORDER BY month, week&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 5) m&#39;</span>
+</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
+</span><span class='line'><span class="k">month</span> <span class="nb">int</span><span class="p">,</span>
+</span><span class='line'><span class="n">week_1</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_2</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_3</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_4</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_5</span> <span class="nb">int</span>
+</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">MONTH</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The query produces:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> month | week_1 | week_2 | week_3 | week_4 | week_5 
+</span><span class='line'>-------+--------+--------+--------+--------+--------
+</span><span class='line'>     2 |      1 |        |      3 |      2 |       
+</span><span class='line'>     4 |      1 |        |        |        |       
+</span><span class='line'>     5 |      1 |        |        |        |       
+</span><span class='line'>    12 |        |        |        |      1 |       
+</span><span class='line'>(4 rows)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And this completes Day 2.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-03T14:54:00+09:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/" title="Previous Post: Seven Databases in Seven Weeks PostgreSQL Day 1">&laquo; Seven Databases in Seven Weeks PostgreSQL Day 1</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">Seven Databases in Seven Weeks PostgreSQL Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">Seven Databases in Seven Weeks PostgreSQL Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">New Book: Seven Databases in Seven Weeks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/26/seven-languages-in-seven-weeks-wrap-up/">Seven Languages in Seven Weeks Wrap Up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/">Nice tool: Quick Sequence Diagram Editor</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

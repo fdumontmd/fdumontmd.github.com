@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-12-03T14:52:03+09:00</updated>
+  <updated>2011-12-04T20:19:16+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,328 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks PostgreSQL Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/"/>
+    <updated>2011-12-03T14:54:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2</id>
+    <content type="html"><![CDATA[<p>Second day with PostgreSQL, this time to discuss advanced queries, stored procedures, and rewriting rules.</p>
+
+<p>The relational model was designed to make it easy to extract meaningful information from the database (although here the operative word is meaningful rather than easy). Aggregations pretty much require a schema to return anything worth the effort (and if you don't believe it, what exactly is the average value of 1, blue and 3?).</p>
+
+<p>Stored procedures can help to move some business intelligence from the main application to the database. Whether it is a good idea is an open question (and I think the knee-jerk negative answer is too often guided by ignorance rather than experience), but the idea of having enough rules in the database that multiple applications can connect to it safely (or safely enough) is worth considering: it enables other applications, some of which might be incompatible with the main business application, to use the business data (many reporting and ETL solutions might fall into this category). The choice is between control and openness (and which one is correct depends on the situation).</p>
+
+<p>Finally, rewriting rules is a less common feature of SQL databases, but essentially it allows the database designer to create updatable views, implement versioning on specific tables, and so on.</p>
+
+<!--more-->
+
+
+<p>I have a small peeve with the book so far: all too often the authors rely on implicit column ordering when manipulating data. I happen to have a different order for the columns of <code>events</code> (which was created as an exercise <a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">yesterday</a>), so many <code>INSERT</code> examples no longer work.</p>
+
+<p>But in general, it is good to specify the columns in an <code>INSERT</code>, as in:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>INSERT with explicit columns  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Your Favorite Band&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 21:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 23:00&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Crystal Ballroom&#39;</span> <span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>And to create 'My Place':</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>INSERT My Place  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">countries</span> <span class="p">(</span><span class="n">country_code</span><span class="p">,</span> <span class="n">country_name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;jp&#39;</span><span class="p">,</span> <span class="s1">&#39;Japan&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">cities</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Shinjuku&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">venues</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;My Place&#39;</span><span class="p">,</span> <span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Finally, to add the new events:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>INSERT new events  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span> <span class="k">VALUES</span>
+</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Steven King&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 21:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 23:00:00&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Powell&#39;&#39;s Books&#39;</span><span class="p">)),</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">(</span><span class="s1">&#39;Dinner with Mom&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 18:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 20:30:00&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;My Place&#39;</span><span class="p">)),</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">(</span><span class="s1">&#39;Valentine&#39;&#39;s Day&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>This way, there is never any ambiguity as to what is inserted.</p>
+
+<h3>Window functions</h3>
+
+<p>The book covers window functions, but in this first beta version of the book at least, the explanation is not very illuminating.</p>
+
+<p>Basically, <a href="http://www.postgresql.org/docs/current/static/functions-window.html">window functions</a> are a generalization of aggregate functions. Aggregate functions operates on a range of rows selected by a <code>GROUP BY</code> clause. For each group, there will be only one row, where columns are either grouped by columns, or aggregates.</p>
+
+<p>Window functions also operate on a range of rows, but there is one range for each row in the filtered table. The range can be created in a way similar to <code>GROUP BY</code> (using the <code>PARTITION OVER</code> clause), but can also be created by taking all the rows up to the current one, or 2 rows before, 2 rows after, and the current one, ... Such a range is called a window. There are <a href="http://www.postgresql.org/docs/current/static/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS">many ways</a> to define them.</p>
+
+<p>For instance, say we want to know, for each events, how many events have happened (including the current one), we can try:
+```
+book=# SELECT title, starts, COUNT(*) OVER (ORDER BY starts) FROM events;</p>
+
+<pre><code>   title        |       starts        | count 
+</code></pre>
+
+<p>--------------------+---------------------+-------
+ Your Favorite Band | 2012-02-06 21:00:00 |     1
+ Valentine's Day    | 2012-02-14 00:00:00 |     2
+ My Book Signing    | 2012-02-15 17:30:00 |     3
+ Dinner with Mom    | 2012-02-26 18:00:00 |     4
+ Steven King        | 2012-02-26 21:00:00 |     5
+ April Fools Day    | 2012-04-01 00:00:00 |     6
+ House Party        | 2012-05-03 23:00:00 |     7
+ Christmas Day      | 2012-12-25 00:00:00 |     8
+ Valentine's Day    | 2013-02-14 00:00:00 |     9
+(9 rows)
+```</p>
+
+<p>The <code>OVER</code> does not specify a <code>PARTITION</code>, but an <code>ORDER</code>, which means that the <code>COUNT(*)</code> function operates on all the rows from first one to current one (ordered by the <code>starts</code> column). Actually, the <code>COUNT(*)</code> function is the same as the (proper) window function <code>RANK</code>:
+```
+book=# SELECT title, starts, RANK() OVER (ORDER BY starts) FROM events;</p>
+
+<pre><code>   title        |       starts        | rank 
+</code></pre>
+
+<p>--------------------+---------------------+------
+ Your Favorite Band | 2012-02-06 21:00:00 |    1
+ Valentine's Day    | 2012-02-14 00:00:00 |    2
+ My Book Signing    | 2012-02-15 17:30:00 |    3
+ Dinner with Mom    | 2012-02-26 18:00:00 |    4
+ Steven King        | 2012-02-26 21:00:00 |    5
+ April Fools Day    | 2012-04-01 00:00:00 |    6
+ House Party        | 2012-05-03 23:00:00 |    7
+ Christmas Day      | 2012-12-25 00:00:00 |    8
+ Valentine's Day    | 2013-02-14 00:00:00 |    9
+(9 rows)
+```</p>
+
+<p>What about computing the order of each events, but by year? Nothing easier:
+```
+book=# SELECT title, starts, RANK() OVER (PARTITION BY extract(year from starts) ORDER BY starts) FROM events;</p>
+
+<pre><code>   title        |       starts        | rank 
+</code></pre>
+
+<p>--------------------+---------------------+------
+ Your Favorite Band | 2012-02-06 21:00:00 |    1
+ Valentine's Day    | 2012-02-14 00:00:00 |    2
+ My Book Signing    | 2012-02-15 17:30:00 |    3
+ Dinner with Mom    | 2012-02-26 18:00:00 |    4
+ Steven King        | 2012-02-26 21:00:00 |    5
+ April Fools Day    | 2012-04-01 00:00:00 |    6
+ House Party        | 2012-05-03 23:00:00 |    7
+ Christmas Day      | 2012-12-25 00:00:00 |    8
+ Valentine's Day    | 2013-02-14 00:00:00 |    1
+(9 rows)
+```</p>
+
+<p>Ok, this is not very fancy. But with numeric data, window functions are more powerful. Lets say we collect daily measures into a new table:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Window function example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">observation</span> <span class="p">(</span>
+</span><span class='line'>   <span class="k">day</span> <span class="k">timestamp</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+</span><span class='line'>   <span class="n">measure</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span>
+</span><span class='line'><span class="p">);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">observation</span> <span class="p">(</span><span class="k">day</span><span class="p">,</span> <span class="n">measure</span><span class="p">)</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="nb">date</span> <span class="s1">&#39;2011-12-01&#39;</span> <span class="k">AS</span> <span class="k">day</span><span class="p">,</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)::</span><span class="nb">int</span> <span class="k">as</span> <span class="n">measure</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>We could use the usual aggregate functions, for instance <code>AVG</code> and <code>SUM</code>:</p>
+
+<p>```
+book=# SELECT AVG(measure), SUM(measure) FROM observation;</p>
+
+<pre><code>     avg         | sum  
+</code></pre>
+
+<p>---------------------+------
+ 54.9600000000000000 | 5496
+(1 row)
+```</p>
+
+<p>We have pretty much all the details. If there's any trend, we would not see it. But with window functions, it is possible to compute running averages (and actually, two different ones):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Window function example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="k">day</span><span class="p">,</span> <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">2</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">2</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">short_avg</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">5</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">5</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">long_avg</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">SUM</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="k">day</span><span class="p">)</span> <span class="k">as</span> <span class="n">running_sum</span> <span class="k">FROM</span> <span class="n">observation</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>(results omitted because they are too long). Here, the <code>AVG(measure)</code> is applied to a window of either 5 rows for <code>short_avg</code> or 11 rows for <code>long_avg</code>, and there's a running sum in <code>running_sum</code>.</p>
+
+<p>Pretty cool, I'd say.</p>
+
+<h3>Rules</h3>
+
+<p><a href="http://www.postgresql.org/docs/current/static/sql-createrule.html">Rules</a> are very useful as well. Here's how I'd implement the <code>INSERT</code> on <code>holidays</code>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>INSERT on holidays  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">insert_holidays</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">INSERT</span> <span class="k">TO</span> <span class="n">holidays</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
+</span><span class='line'>  <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">values</span> <span class="p">(</span><span class="k">NEW</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="o">+</span><span class="nb">interval</span> <span class="s1">&#39;23 hour 59 minutes&#39;</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="n">colors</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Note the syntax to manipulate dates and timestamp. It is fairly readable and compact enough.</p>
+
+<h2>Exercises</h2>
+
+<h3>Aggregate Functions</h3>
+
+<p>The aggregate functions are documented <a href="http://www.postgresql.org/docs/current/static/functions-aggregate.html">here</a>, while the window functions are <a href="http://www.postgresql.org/docs/current/static/functions-window.html">here</a>.</p>
+
+<h3>GUI</h3>
+
+<p>Honestly, I don't really use any. <code>psql</code> is really powerful. For those of the GUI persuasion, there are a few <a href="http://wiki.postgresql.org/wiki/Community_Guide_to_PostgreSQL_GUI_Tools">options</a>.</p>
+
+<h3>DELETE Rule</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>DELETE rule on venues  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">delete_venue</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">TO</span> <span class="n">venues</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
+</span><span class='line'>  <span class="k">UPDATE</span> <span class="n">venues</span> <span class="k">SET</span> <span class="n">active</span> <span class="o">=</span> <span class="k">false</span> <span class="k">WHERE</span> <span class="n">venue_id</span> <span class="o">=</span> <span class="k">OLD</span><span class="p">.</span><span class="n">venue_id</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>With this rule in place, deleting from <code>venues</code> now set the <code>active</code> flag to false:</p>
+
+<p>```
+book=# DELETE FROM venues WHERE name = 'My Place';
+DELETE 0
+book=# SELECT * FROM venues;
+ venue_id |       name       | street_address |  type   | postal_code | country_code | active
+----------+------------------+----------------+---------+-------------+--------------+--------</p>
+
+<pre><code>    1 | Crystal Ballroom |                | public  | 97205       | us           | t
+    2 | Powell's Books   |                | public  | 97205       | us           | t
+    5 | Run's House      |                | public  | 97205       | us           | t
+    4 | My Place         |                | private | 160-0022    | jp           | f
+</code></pre>
+
+<p>(4 rows)
+```</p>
+
+<h3>generate_series in crosstab</h3>
+
+<p>The documentation for <a href="http://www.postgresql.org/docs/current/static/tablefunc.html"><code>crosstab</code></a> has already an example for using <a href="http://www.postgresql.org/docs/current/static/functions-srf.html"><code>generate_series</code></a>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>generate_series in crosstab  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
+</span><span class='line'><span class="s1">&#39;SELECT extract(year from starts) as year,</span>
+</span><span class='line'><span class="s1">extract(month from starts) as month, count(*) FROM events</span>
+</span><span class='line'><span class="s1">GROUP BY year, month&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 12) m&#39;</span>
+</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
+</span><span class='line'><span class="k">year</span> <span class="nb">int</span><span class="p">,</span>
+</span><span class='line'><span class="n">jan</span> <span class="nb">int</span><span class="p">,</span> <span class="n">feb</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mar</span> <span class="nb">int</span><span class="p">,</span> <span class="n">apr</span> <span class="nb">int</span><span class="p">,</span> <span class="n">may</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jun</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jul</span> <span class="nb">int</span><span class="p">,</span> <span class="n">aug</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sep</span> <span class="nb">int</span><span class="p">,</span> <span class="n">oct</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nov</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dec</span> <span class="nb">int</span>
+</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">YEAR</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The output remains the same:</p>
+
+<p><code>
+ year | jan | feb | mar | apr | may | jun | jul | aug | sep | oct | nov | dec
+------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----
+ 2012 |     |   5 |     |   1 |   1 |     |     |     |     |     |     |   1
+ 2013 |     |   1 |     |     |     |     |     |     |     |     |     |    
+(2 rows)
+</code></p>
+
+<h3>Weekly pivot</h3>
+
+<p>The hardest, perhaps, is to find how to convince PostgreSQL to apply <a href="http://www.postgresql.org/docs/current/static/functions-math.html#FUNCTIONS-MATH-FUNC-TABLE"><code>div</code></a> to the passed arguments, but a bit of type declaration using <code>::</code> does the trick. Also, <code>crosstab</code> is not overly smart, so the <code>month</code> and <code>week</code> columns must be in order, otherwise the counts for the two February (one in 2012 and one in 2013) are different:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Weekly pivot  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
+</span><span class='line'><span class="s1">&#39;SELECT extract(month from starts) as month,</span>
+</span><span class='line'><span class="s1"> div(extract (day from starts)::int, 7) + 1 as week, count(*) FROM events</span>
+</span><span class='line'><span class="s1">GROUP BY month, week ORDER BY month, week&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 5) m&#39;</span>
+</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
+</span><span class='line'><span class="k">month</span> <span class="nb">int</span><span class="p">,</span>
+</span><span class='line'><span class="n">week_1</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_2</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_3</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_4</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_5</span> <span class="nb">int</span>
+</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">MONTH</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The query produces:</p>
+
+<p>```
+ month | week_1 | week_2 | week_3 | week_4 | week_5
+-------+--------+--------+--------+--------+--------</p>
+
+<pre><code> 2 |      1 |        |      3 |      2 |       
+ 4 |      1 |        |        |        |       
+ 5 |      1 |        |        |        |       
+12 |        |        |        |      1 |       
+</code></pre>
+
+<p>(4 rows)
+```</p>
+
+<p>And this completes Day 2.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks PostgreSQL Day 1]]></title>
@@ -27,9 +349,9 @@
 
 <p>The idea to start with a relational database is a good one. I feel that many who embrace NoSQL do so because they do not understand either SQL or the relational model. I was surprised to discover that some of my college educated colleagues did not know SQL at all. They were taught mostly about Java and object oriented design (I would ask for a refund). SQL databases have been developed, refined, and used in production for about 40 years. That's more than half the history of computers, they're likely to be part of the landscape for a few more decades, so ignoring them may be trendy but it is not wise.</p>
 
-<p>About the PostgreSQL version: the book appears to have been long in the making, as it still refers the reader to the version 9.0, while <a href="http://www.postgresql.org/docs/9.1/static/index.html">9.1</a> has been out for a few months.</p>
+<p>About the PostgreSQL version: the book appears to have been long in the making, as it still refers the reader to the version 9.0, while <a href="http://www.postgresql.org/docs/9.1/static/release-9-1-1.html">9.1</a> has been out for a few months.</p>
 
-<p>Installing then extensions that are needed for this book is easier with 9.1. Just using <a href="http://www.postgresql.org/docs/9.1/static/sql-createextension.html"><code>CREATE EXTENSION</code></a>:</p>
+<p>Installing then extensions that are needed for this book is easier with 9.1. Just using <a href="http://www.postgresql.org/docs/current/static/sql-createextension.html"><code>CREATE EXTENSION</code></a>:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Installing Extensions  </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -44,7 +366,7 @@
 </span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="k">cube</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Removing them is done with the command <a href="http://www.postgresql.org/docs/9.1/static/sql-dropextension.html"><code>DROP EXTENSION</code></a>.</p>
+<p>Removing them is done with the command <a href="http://www.postgresql.org/docs/current/static/sql-dropextension.html"><code>DROP EXTENSION</code></a>.</p>
 
 <h3>The events table</h3>
 
@@ -74,7 +396,7 @@
 <span class='line-number'>21</span>
 </pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">events</span> <span class="p">(</span>
 </span><span class='line'>  <span class="n">event_id</span> <span class="nb">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">title</span> <span class="nb">text</span> <span class="k">UNIQUE</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">title</span> <span class="nb">text</span><span class="p">,</span>
 </span><span class='line'>  <span class="n">starts</span> <span class="k">timestamp</span><span class="p">,</span>
 </span><span class='line'>  <span class="n">ends</span> <span class="k">timestamp</span><span class="p">,</span>
 </span><span class='line'>  <span class="n">venue_id</span> <span class="nb">integer</span><span class="p">,</span>
@@ -117,7 +439,6 @@ book=# \d events</p>
 Indexes:</p>
 
 <pre><code>"events_pkey" PRIMARY KEY, btree (event_id)
-"events_title_key" UNIQUE CONSTRAINT, btree (title)
 "events_starts" btree (starts)
 </code></pre>
 
@@ -140,13 +461,13 @@ Indexes:</p>
 
 <h3>About <code>MATCH FULL</code></h3>
 
-<p>This one was already explained in the book, and confirmed by the <a href="http://www.postgresql.org/docs/9.1/static/sql-createtable.html">documentation</a>: when a foreign key is composed of more than one column, they must all match a row in the referenced table, or be all null.</p>
+<p>This one was already explained in the book, and confirmed by the <a href="http://www.postgresql.org/docs/current/static/sql-createtable.html">documentation</a>: when a foreign key is composed of more than one column, they must all match a row in the referenced table, or be all null.</p>
 
 <h3>Selecting user table from <code>pg_class</code></h3>
 
-<p>Interestingly, the first time I tried to solve this exercise, I used <a href="http://www.postgresql.org/docs/9.1/static/view-pg-tables.html"><code>pg_tables</code></a> by mistake (<code>pg_tables</code> has a <code>tableowner</code> column which makes it easy to identify user tables).</p>
+<p>Interestingly, the first time I tried to solve this exercise, I used <a href="http://www.postgresql.org/docs/current/static/view-pg-tables.html"><code>pg_tables</code></a> by mistake (<code>pg_tables</code> has a <code>tableowner</code> column which makes it easy to identify user tables).</p>
 
-<p><a href="http://www.postgresql.org/docs/9.1/static/catalog-pg-class.html"><code>pg_class</code></a> stores the type of object in <code>relkind</code>: 'r' for tables. Restricting for just tables, and working on the table name:</p>
+<p><a href="http://www.postgresql.org/docs/current/static/catalog-pg-class.html"><code>pg_class</code></a> stores the type of object in <code>relkind</code>: 'r' for tables. Restricting for just tables, and working on the table name:</p>
 
 <p>```
 book=#  select relname from pg_class where relkind = 'r';</p>
@@ -203,7 +524,7 @@ book=# select relname from pg_class where relkind = 'r' and relname not like 'pg
 
 <p>Interestingly, only the tables that are visible in the current database are listed (I have other databases, with more user created tables).</p>
 
-<p>Still I need to remove the <code>sql_</code> named tables. Using PostgreSQL <a href="http://www.postgresql.org/docs/9.1/static/functions-matching.html#FUNCTIONS-POSIX-REGEXP">regular expression operators</a>:
+<p>Still I need to remove the <code>sql_</code> named tables. Using PostgreSQL <a href="http://www.postgresql.org/docs/current/static/functions-matching.html#FUNCTIONS-POSIX-REGEXP">regular expression operators</a>:
 ```
 book=# select relname from pg_class where relkind = 'r' and relname !~ '<sup>(pg<em>|sql</em>)';</sup></p>
 
@@ -216,7 +537,7 @@ book=# select relname from pg_class where relkind = 'r' and relname !~ '<sup>(pg
 (4 rows)
 ```</p>
 
-<p>This is one approach. Another would be to try to mimic the behaviour of the <code>\d</code> console command. The <a href="http://www.postgresql.org/docs/9.1/static/app-psql.html"><code>psql</code></a> option <code>-E</code> can be used to check what queries are used to implement specific console commands:</p>
+<p>This is one approach. Another would be to try to mimic the behaviour of the <code>\d</code> console command. The <a href="http://www.postgresql.org/docs/current/static/app-psql.html"><code>psql</code></a> option <code>-E</code> can be used to check what queries are used to implement specific console commands:</p>
 
 <p>```
 $ psql -E book
@@ -289,7 +610,7 @@ book=# select c.country_name from events e inner join venues v on e.venue_id = v
 (1 row)
 ```</p>
 
-<p>But this is a bit verbose. The structure of the tables makes it possible to use <a href="http://www.postgresql.org/docs/9.1/static/queries-table-expressions.html"><code>NATURAL JOIN</code></a>:</p>
+<p>But this is a bit verbose. The structure of the tables makes it possible to use <a href="http://www.postgresql.org/docs/current/static/queries-table-expressions.html"><code>NATURAL JOIN</code></a>:</p>
 
 <p>```
 book=# select country_name from events natural join venues natural join countries where title = 'My Book Signing';</p>
@@ -860,330 +1181,6 @@ book=# select * from venues;
 </code></p>
 
 <p>Aren't you glad you can write this in Haskell instead?</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Languages in Seven Weeks Haskell Day 3]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/"/>
-    <updated>2011-11-19T14:16:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3</id>
-    <content type="html"><![CDATA[<p>Last day with Haskell, and this time we grapple with classes and monads. That's pretty much where most beginners give up in disgust...</p>
-
-<!--more-->
-
-
-<p>And that's too bad, because both (and the rest of advanced Haskell features) are very expressive (see below the Maze problem) and powerful. But classes are unusual (and the name tends to confuse Object Oriented people), while monads appear to solve a problem that is trivial in other languages (which is not true, or mostly not true).</p>
-
-<h2>Classes</h2>
-
-<p>Classes are more properly understood as interfaces, but the comparison can be misleading. Class elements are types that are guaranteed to provide implementation for specific functions. Combined with polymorphism, it allows writing functions that are more intimate with their arguments, while keeping purity and referential transparency (in some sense, it plays a role similar to functors in ML languages).</p>
-
-<p>Classes nicely support monads (and other composition mechanisms) by providing interfaces these abstractions can build upon.</p>
-
-<h2>Monads</h2>
-
-<p>Monads are mechanisms to compose calculations. They also happen to solve the IO problem in Haskell, which is a nice (and significant) bonus. But the calculation composition is core. With it, one can have backtracking, continuation, probabilistic computing, anything you could think off. Thinking of anything actually is quite hard, as most programmers are not used to such freedom. For IO, it just happens to guarantee sequential evaluation.</p>
-
-<p>There are a number of resources to learn about Monads (indeed, it seems the path to Haskell mastery must include writing at least one Monad tutorial). I found  <a href="http://monads.haskell.cz/html/">All About Monads</a> very useful. The introduction is really good, but links to this tutorial tend to disappear, unfortunately. There is also the <a href="http://book.realworldhaskell.org/read/monads.html">Monads</a> chapter of <a href="http://book.realworldhaskell.org/">Real World Haskell</a> (which you should read, but wait for the second edition to buy). This introduction is more complex, as it builds a State Monad rather than the Maybe Monad.</p>
-
-<p>Finally, <a href="http://learnyouahaskell.com/a-fistful-of-monads">A Fistful of Monads</a> from <a href="http://learnyouahaskell.com/">Learn You a Haskell for Great Good</a> also covers the Maybe Monad as an introduction. I have the book but did not read it yet, so I cannot comment on it, but I have seen great reviews.</p>
-
-<h2>Exercises</h2>
-
-<h3>Lookup function returning Maybe</h3>
-
-<p>The function <code>my_lookup</code> is easy; it iterates over a list of pairs key, value, and returns <code>Just value</code> when the key matches. On empty list, it returns <code>Nothing</code>. There is no need to think about monads at this point. A key,value map is really some data structure that <code>Maybe</code> contains a specific key.</p>
-
-<p>Slightly more difficult was the <code>testData</code>. The nesting was somewhat tricky to get right.</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (lookup.hs)</span> <a href='/downloads/code/7l7w/haskell/lookup.hs'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">module</span> <span class="nn">Lookup</span> <span class="kr">where</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">my_lookup</span> <span class="n">key</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">Nothing</span>
-</span><span class='line'><span class="nf">my_lookup</span> <span class="n">key</span> <span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="kt">:</span><span class="n">rest</span><span class="p">)</span>
-</span><span class='line'>  <span class="o">|</span> <span class="n">key</span> <span class="o">==</span> <span class="n">k</span>  <span class="ow">=</span> <span class="kt">Just</span> <span class="n">value</span>
-</span><span class='line'>  <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="n">lookup</span> <span class="n">key</span> <span class="n">rest</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">testData</span> <span class="ow">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="kt">[]</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;i&quot;</span><span class="p">,</span> <span class="s">&quot;tada!&quot;</span><span class="p">)]),</span> <span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;j&quot;</span><span class="p">,</span> <span class="s">&quot;nope&quot;</span><span class="p">)])]),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;c&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="s">&quot;tada!&quot;</span><span class="p">)])])]</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Once this is defined, using it with the <code>&gt;&gt;=</code> operator is really simple:</p>
-
-<p><code>
-*Lookup&gt; my_lookup 2 testData &gt;&gt;= my_lookup "a" &gt;&gt;= my_lookup "i"
-Just "tada!"
-*Lookup&gt; my_lookup 2 testData &gt;&gt;= my_lookup "b" &gt;&gt;= my_lookup "i"
-Nothing
-</code></p>
-
-<h3>Solving Maze</h3>
-
-<p>Using the List Monad to solve problems is very similar to using Prolog: elements in a list are alternative paths; failure (which must be explicit by calling <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Prelude.html#v:fail"><code>fail</code></a> or <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.1.0/Control-Monad.html#v:guard"><code>guard</code></a>) backtracks to the next alternative; [<code>return</code>] adds a solution to the list of solutions (even if there's only one possible solution, the List Monad produces a list).</p>
-
-<p>To solve the maze, the algorithm do the following:</p>
-
-<ul>
-<li>the <code>loop</code> subfunction is used to explore a given solution; the List Monad hides the iteration and backtracking over alternatives</li>
-<li>the <code>loop</code> function is always called with the reverse path so far: the first element is actually the current position</li>
-<li>if the current position is the exit position, the path is reversed then returned as solution</li>
-<li>otherwise, the current node is checked, and its exits retrieved</li>
-<li>the positions in the path are first removed from the exits, to avoid looping (so we never go over the same position twice)</li>
-<li>the List Monad main logic starts there:
-
-<ul>
-<li>first <code>guard</code> that the list of possible exits is not empty</li>
-<li>then select and alternative new position</li>
-<li>call <code>loop</code> on the new path to explore it</li>
-</ul>
-</li>
-</ul>
-
-
-<p>The code is fairly short, and perhaps could be shorter. The backtracking is provided for free by the List Monad, but very effective to implement a search (I used it to solve Sudoku problems).</p>
-
-<p>To be fair, I took some time to track a bug: instead of adding the whole current path to the recursive <code>loop</code> call, I only passed the tail. That caused <code>loop</code> to actually ignore the current path, and run in circle forever. Once fixed, the search was instantaneous.</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (maze.hs)</span> <a href='/downloads/code/7l7w/haskell/maze.hs'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">module</span> <span class="nn">Maze</span> <span class="kr">where</span>
-</span><span class='line'>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Data.List</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Control.Monad</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- a Maze is an array of Node</span>
-</span><span class='line'><span class="kr">type</span> <span class="kt">Maze</span> <span class="ow">=</span> <span class="p">[[</span><span class="kt">Node</span><span class="p">]]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- each node can have a number of exits (indicated by locations in the Maze)</span>
-</span><span class='line'><span class="kr">data</span> <span class="kt">Node</span> <span class="ow">=</span> <span class="kt">Exits</span> <span class="p">[(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)]</span>
-</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- solve a maze using List monad:</span>
-</span><span class='line'><span class="c1">-- </span>
-</span><span class='line'><span class="nf">solveMaze</span> <span class="ow">::</span> <span class="kt">Maze</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span><span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="p">[(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)]</span>
-</span><span class='line'><span class="nf">solveMaze</span> <span class="n">m</span> <span class="n">pos</span> <span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">case</span> <span class="n">loop</span> <span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="kr">of</span>
-</span><span class='line'>    <span class="kt">[]</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
-</span><span class='line'>    <span class="p">(</span><span class="n">p</span><span class="kt">:</span><span class="kr">_</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Just</span> <span class="o">$</span> <span class="n">p</span>
-</span><span class='line'>  <span class="kr">where</span>
-</span><span class='line'>    <span class="n">loop</span> <span class="n">path</span><span class="o">@</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span><span class="kt">:</span><span class="kr">_</span><span class="p">)</span> <span class="ow">=</span>
-</span><span class='line'>      <span class="kr">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">e1</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">==</span> <span class="n">e2</span>
-</span><span class='line'>      <span class="kr">then</span> <span class="n">return</span> <span class="o">$</span> <span class="n">reverse</span> <span class="n">path</span>
-</span><span class='line'>      <span class="kr">else</span>
-</span><span class='line'>        <span class="kr">let</span> <span class="p">(</span><span class="kt">Exits</span> <span class="n">exits</span><span class="p">)</span> <span class="ow">=</span> <span class="p">((</span><span class="n">m</span> <span class="o">!!</span> <span class="n">i</span><span class="p">)</span> <span class="o">!!</span> <span class="n">j</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">poss</span> <span class="ow">=</span> <span class="n">exits</span> <span class="o">\\</span> <span class="n">path</span>
-</span><span class='line'>        <span class="kr">in</span> <span class="kr">do</span> <span class="n">guard</span> <span class="p">(</span><span class="n">not</span> <span class="o">$</span> <span class="n">null</span> <span class="n">poss</span><span class="p">)</span>
-</span><span class='line'>              <span class="n">pos</span> <span class="ow">&lt;-</span> <span class="n">poss</span>
-</span><span class='line'>              <span class="n">loop</span> <span class="p">(</span><span class="n">pos</span><span class="kt">:</span><span class="n">path</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- the problem is parsed by looking at characters around</span>
-</span><span class='line'><span class="c1">-- every even position (position with even x and y)</span>
-</span><span class='line'><span class="c1">-- if the character in a direction is a space, there&#39;s an exit</span>
-</span><span class='line'><span class="nf">parseMaze</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">Maze</span>
-</span><span class='line'><span class="nf">parseMaze</span> <span class="n">raw</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">rows</span> <span class="ow">=</span> <span class="n">floor</span> <span class="o">$</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">length</span> <span class="n">raw</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-</span><span class='line'>      <span class="n">cols</span> <span class="ow">=</span> <span class="n">floor</span> <span class="o">$</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">length</span> <span class="o">$</span> <span class="n">head</span> <span class="n">raw</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-</span><span class='line'>  <span class="kr">in</span> <span class="p">[[</span><span class="n">makeNode</span> <span class="n">i</span> <span class="n">j</span> <span class="o">|</span> <span class="n">j</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">cols</span><span class="p">]]</span> <span class="o">|</span> <span class="n">i</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">rows</span><span class="p">]]</span>
-</span><span class='line'> <span class="kr">where</span>
-</span><span class='line'>  <span class="n">makeNode</span> <span class="n">i</span> <span class="n">j</span> <span class="ow">=</span> <span class="kt">Exits</span> <span class="o">$</span> <span class="n">concatMap</span> <span class="p">(</span><span class="n">makeExit</span> <span class="n">i</span> <span class="n">j</span><span class="p">)</span>
-</span><span class='line'>                           <span class="p">[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">]</span>
-</span><span class='line'>  <span class="n">makeExit</span> <span class="n">i</span> <span class="n">j</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">if</span> <span class="p">(</span><span class="n">raw</span> <span class="o">!!</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!!</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span> <span class="o">+</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span>
-</span><span class='line'>                        <span class="kr">then</span> <span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
-</span><span class='line'>                        <span class="kr">else</span> <span class="kt">[]</span>
-</span><span class='line'>
-</span><span class='line'><span class="kr">data</span> <span class="kt">Problem</span> <span class="ow">=</span> <span class="kt">Prob</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span>
-</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- updateAt runs an update function on the nth element in a list</span>
-</span><span class='line'><span class="c1">-- keeps the rest</span>
-</span><span class='line'><span class="nf">updateAt</span> <span class="n">n</span> <span class="n">f</span> <span class="n">ls</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">case</span> <span class="n">splitAt</span> <span class="n">n</span> <span class="n">ls</span> <span class="kr">of</span>
-</span><span class='line'>    <span class="p">(</span><span class="n">pre</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="kt">:</span><span class="n">rest</span><span class="p">))</span> <span class="ow">-&gt;</span> <span class="n">pre</span> <span class="o">++</span> <span class="p">((</span><span class="n">f</span> <span class="n">u</span><span class="p">)</span><span class="kt">:</span><span class="n">rest</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- update the prob description with path iteratively</span>
-</span><span class='line'><span class="nf">displaySol</span> <span class="n">prob</span> <span class="n">sol</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="n">foldl&#39;</span> <span class="n">update</span> <span class="n">prob</span> <span class="n">sol</span>
-</span><span class='line'> <span class="kr">where</span>
-</span><span class='line'>  <span class="n">update</span> <span class="n">prob</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="ow">=</span> <span class="n">updateAt</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">updateAt</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">const</span> <span class="sc">&#39;*&#39;</span><span class="p">))</span> <span class="n">prob</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">solveProblem</span> <span class="ow">::</span> <span class="kt">FilePath</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="nb">()</span>
-</span><span class='line'><span class="nf">solveProblem</span> <span class="n">f</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">do</span> <span class="p">(</span><span class="kt">Prob</span> <span class="n">start</span> <span class="n">end</span> <span class="n">prob</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">readProblem</span> <span class="n">f</span>
-</span><span class='line'>     <span class="kr">let</span> <span class="n">maze</span>   <span class="ow">=</span> <span class="n">parseMaze</span> <span class="n">prob</span>
-</span><span class='line'>     <span class="kr">case</span> <span class="n">solveMaze</span> <span class="n">maze</span> <span class="n">start</span> <span class="n">end</span> <span class="kr">of</span>
-</span><span class='line'>       <span class="kt">Just</span> <span class="n">sol</span> <span class="ow">-&gt;</span> <span class="n">putStrLn</span> <span class="o">$</span> <span class="n">unlines</span> <span class="o">$</span> <span class="n">displaySol</span> <span class="n">prob</span> <span class="n">sol</span>
-</span><span class='line'>       <span class="kt">Nothing</span>  <span class="ow">-&gt;</span> <span class="n">putStrLn</span> <span class="s">&quot;no solution found&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- special code for sample mazes from</span>
-</span><span class='line'><span class="c1">-- http://benjamin-meyer.blogspot.com/2005/01/ascii-maze-ment-puzzle.html</span>
-</span><span class='line'><span class="nf">readProblem</span> <span class="ow">::</span> <span class="kt">FilePath</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="kt">Problem</span>
-</span><span class='line'><span class="nf">readProblem</span> <span class="n">f</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">do</span> <span class="n">raw</span> <span class="ow">&lt;-</span> <span class="n">readFile</span> <span class="n">f</span>
-</span><span class='line'>     <span class="kr">let</span> <span class="n">filtered</span> <span class="ow">=</span> <span class="kr">case</span> <span class="n">filterMaze</span> <span class="n">raw</span> <span class="kr">of</span>
-</span><span class='line'>                      <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">((</span><span class="n">init</span> <span class="o">$</span> <span class="n">init</span> <span class="n">l</span><span class="p">)</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span>
-</span><span class='line'>         <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">length</span> <span class="n">filtered</span><span class="p">,</span> <span class="n">length</span> <span class="p">(</span><span class="n">head</span> <span class="n">filtered</span><span class="p">))</span>
-</span><span class='line'>     <span class="n">return</span> <span class="o">$</span> <span class="kt">Prob</span> <span class="p">((</span><span class="n">i</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">j</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="n">filtered</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">splitAtEvery</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
-</span><span class='line'><span class="nf">splitAtEvery</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
-</span><span class='line'><span class="nf">splitAtEvery</span> <span class="n">n</span> <span class="n">ls</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">case</span> <span class="n">splitAt</span> <span class="n">n</span> <span class="n">ls</span> <span class="kr">of</span>
-</span><span class='line'>    <span class="p">(</span><span class="n">pre</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">pre</span><span class="kt">:</span><span class="n">splitAtEvery</span> <span class="n">n</span> <span class="n">rest</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">removeExtraSpaces</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="n">l</span><span class="kt">:</span><span class="p">(</span><span class="n">concatMap</span> <span class="n">tail</span> <span class="o">$</span> <span class="n">splitAtEvery</span> <span class="mi">3</span> <span class="n">ls</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">filterMaze</span> <span class="ow">=</span> <span class="n">map</span> <span class="n">removeExtraSpaces</span> <span class="o">.</span> <span class="n">map</span> <span class="p">(</span><span class="n">drop</span> <span class="mi">5</span><span class="p">)</span> <span class="o">.</span> <span class="n">lines</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The rest of the code includes a parser for a specific maze description (I found sample mazes <a href="http://benjamin-meyer.blogspot.com/2005/01/ascii-maze-ment-puzzle.html">here</a>), and code to process a problem into a <code>Maze</code> instance, and code to display a solution.</p>
-
-<p>Testing (test data <a href="https://github.com/icefox/asciimaze/blob/master/sample-mazes/input1.txt">here</a>):
-```
-*Maze> solveProblem "input1.txt"</p>
-
-<hr />
-
-<p>|   | |   |        <em>|
-| <strong>| | </strong>|<strong>_  </strong>  |
-|   | |       |   |</em>|
-| <strong>| |</strong><strong><em>  |</em>  | |
-|   | | | |       |*|
-| </strong>| | | |<strong><strong><strong><em>| |
-|            * * * *|
-| </em></strong></strong></strong><em><strong>  </strong>    |
-| |   |    * *| | | |
-|</em>|   |<em><strong>  </strong>| | |</em>|
-|   |     |<em>| | | | |
-|<em>  |</em>    | | | |_| |
-|   |   |  </em>|       |
-| <strong>|<em>  |</em>  | </strong>    |
-| |     |  * <em>| | | |
-|<em>| <strong>  | </strong>  | |</em>|<em>|
-| |   | | |  *  |   |
-| |   | |</em>|<em>  __|</em>  |
-|   | | |   |</em> *  | |
-| <strong>|_| | </strong>|<em>    | |
-| | |   |  * * *|   |
-|</em>| | <strong>|_  </strong>  |<em><strong>|
-| | |     |*| | |   |
-| | | </strong>__| | |</em>|<em>  |
-|   | |* * *        |
-|</em>  |<em>|   <strong>  </strong></em><em><strong>|
-|    * *| |     |   |
-|     </strong>| |</em>  <strong>| </strong>|
-| | |<em>  |   |   |   |
-| |<em>| <strong>|</strong></em>|<em>__|</em>  |
-|   |</em> <em>|     |     |
-|<em><strong>|   |   </strong>| </em>___|
-|   | |</em> <em>|     |   |
-| <strong>|<em>|</em>  |     | </strong>|
-|       |</em>| | |     |
-|<em><strong><em><em>  | |</em>| |</em>  </strong>|
-|<em> * </em>|  *|     |   |
-|     |</em>  | <strong>  |   |
-|<em>| |</em> * *|   | | | |
-|<em>|</em>|</strong><strong><em>|</em></strong>|<em>|</em>|_|
-```</p>
-
-<h2>Wrapping up Day 3 and Haskell</h2>
-
-<p>The exercises (ok, just the maze one) were challenging and show or at least hint at Haskell strength: the ability to compose calculations from basic elements and add advanced control mechanisms almost transparently.</p>
-
-<p>I enjoy Haskell; it allows to think at a higher level, to see computations from different angles, in a way that expands the mind (sometimes painfully). And while it is certainly not mainstream, there are high quality niches (banking and financial companies) that justify investing (stupid pun intended) in Haskell.</p>
 ]]></content>
   </entry>
   

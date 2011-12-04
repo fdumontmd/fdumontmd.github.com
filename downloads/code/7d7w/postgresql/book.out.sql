@@ -94,6 +94,63 @@ COMMENT ON EXTENSION tablefunc IS 'functions that manipulate whole tables, inclu
 
 SET search_path = public, pg_catalog;
 
+--
+-- Name: add_event(text, timestamp without time zone, timestamp without time zone, text, character varying, character); Type: FUNCTION; Schema: public; Owner: fdumontmd
+--
+
+CREATE FUNCTION add_event(title text, starts timestamp without time zone, ends timestamp without time zone, venue text, postal character varying, country character) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  did_insert boolean := false;
+  found_count integer;
+  the_venue_id integer;
+BEGIN
+  SELECT venue_id INTO the_venue_id
+  FROM venues v
+  WHERE v.postal_code = postal AND v.country_code = country AND v.name ILIKE venue
+  LIMIT 1;
+
+  IF the_venue_id IS NULL THEN
+    INSERT INTO venues (name, postal_code, country_code)
+    VALUES (venue, postal, country)
+    RETURNING venue_id INTO the_venue_id;
+
+    did_insert := true;
+  END IF;
+
+  RAISE NOTICE 'Venue found %', the_venue_id;
+
+  INSERT INTO events (title, starts, ends, venue_id) VALUES (title, starts, ends, the_venue_id);
+
+  RETURN did_insert;
+END;
+$$;
+
+
+ALTER FUNCTION public.add_event(title text, starts timestamp without time zone, ends timestamp without time zone, venue text, postal character varying, country character) OWNER TO fdumontmd;
+
+--
+-- Name: log_event(); Type: FUNCTION; Schema: public; Owner: fdumontmd
+--
+
+CREATE FUNCTION log_event() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+BEGIN
+  INSERT INTO logs (event_id, old_title, old_starts, old_ends)
+  VALUES (OLD.event_id, OLD.title, OLD.starts, OLD.ends);
+
+  RAISE NOTICE 'Someone just changed event #%', OLD.event_id;
+
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.log_event() OWNER TO fdumontmd;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -133,7 +190,8 @@ CREATE TABLE events (
     title text,
     starts timestamp without time zone,
     ends timestamp without time zone,
-    venue_id integer
+    venue_id integer,
+    colors text[]
 );
 
 
@@ -164,8 +222,45 @@ ALTER SEQUENCE events_event_id_seq OWNED BY events.event_id;
 -- Name: events_event_id_seq; Type: SEQUENCE SET; Schema: public; Owner: fdumontmd
 --
 
-SELECT pg_catalog.setval('events_event_id_seq', 3, true);
+SELECT pg_catalog.setval('events_event_id_seq', 18, true);
 
+
+--
+-- Name: holidays; Type: VIEW; Schema: public; Owner: fdumontmd
+--
+
+CREATE VIEW holidays AS
+    SELECT events.event_id AS holiday_id, events.title AS name, events.starts AS date, events.colors FROM events WHERE ((events.title ~~ '%Day%'::text) AND (events.venue_id IS NULL));
+
+
+ALTER TABLE public.holidays OWNER TO fdumontmd;
+
+--
+-- Name: logs; Type: TABLE; Schema: public; Owner: fdumontmd; Tablespace: 
+--
+
+CREATE TABLE logs (
+    event_id integer,
+    old_title character varying(255),
+    old_starts timestamp without time zone,
+    old_ends timestamp without time zone,
+    logged_at timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.logs OWNER TO fdumontmd;
+
+--
+-- Name: observation; Type: TABLE; Schema: public; Owner: fdumontmd; Tablespace: 
+--
+
+CREATE TABLE observation (
+    day timestamp without time zone NOT NULL,
+    measure integer NOT NULL
+);
+
+
+ALTER TABLE public.observation OWNER TO fdumontmd;
 
 --
 -- Name: venues; Type: TABLE; Schema: public; Owner: fdumontmd; Tablespace: 
@@ -210,7 +305,7 @@ ALTER SEQUENCE venues_venue_id_seq OWNED BY venues.venue_id;
 -- Name: venues_venue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: fdumontmd
 --
 
-SELECT pg_catalog.setval('venues_venue_id_seq', 2, true);
+SELECT pg_catalog.setval('venues_venue_id_seq', 6, true);
 
 
 --
@@ -233,6 +328,7 @@ ALTER TABLE venues ALTER COLUMN venue_id SET DEFAULT nextval('venues_venue_id_se
 
 COPY cities (name, postal_code, country_code) FROM stdin;
 Portland	97205	us
+Shinjuku	160-0022	jp
 \.
 
 
@@ -246,6 +342,7 @@ mx	Mexico
 au	Australia
 gb	United Kingdom
 de	Germany
+jp	Japan
 \.
 
 
@@ -253,10 +350,134 @@ de	Germany
 -- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: fdumontmd
 --
 
-COPY events (event_id, title, starts, ends, venue_id) FROM stdin;
-1	My Book Signing	2012-02-15 17:30:00	2012-02-15 19:30:00	2
-2	April Fools Day	2012-04-01 00:00:00	2012-04-01 23:59:00	\N
-3	Christmas Day	2012-12-25 00:00:00	2012-12-25 23:59:00	\N
+COPY events (event_id, title, starts, ends, venue_id, colors) FROM stdin;
+1	My Book Signing	2012-02-15 17:30:00	2012-02-15 19:30:00	2	\N
+2	April Fools Day	2012-04-01 00:00:00	2012-04-01 23:59:00	\N	\N
+4	Your Favorite Band	2012-02-06 21:00:00	2012-02-06 23:00:00	1	\N
+12	Steven King	2012-02-26 21:00:00	2012-02-26 23:00:00	2	\N
+13	Dinner with Mom	2012-02-26 18:00:00	2012-02-26 20:30:00	4	\N
+14	Valentine's Day	2012-02-14 00:00:00	2012-02-14 23:59:00	\N	\N
+15	House Party	2012-05-03 23:00:00	2012-05-04 01:00:00	5	\N
+3	Christmas Day	2012-12-25 00:00:00	2012-12-25 23:59:00	\N	{red,green}
+18	Valentine's Day	2013-02-14 00:00:00	2013-02-14 23:59:00	\N	\N
+\.
+
+
+--
+-- Data for Name: logs; Type: TABLE DATA; Schema: public; Owner: fdumontmd
+--
+
+COPY logs (event_id, old_title, old_starts, old_ends, logged_at) FROM stdin;
+15	House Party	2012-05-03 23:00:00	2012-05-04 02:00:00	2011-12-04 12:35:45.915903
+3	Christmas Day	2012-12-25 00:00:00	2012-12-25 23:59:00	2011-12-04 12:48:16.1513
+\.
+
+
+--
+-- Data for Name: observation; Type: TABLE DATA; Schema: public; Owner: fdumontmd
+--
+
+COPY observation (day, measure) FROM stdin;
+2011-12-02 00:00:00	55
+2011-12-03 00:00:00	10
+2011-12-04 00:00:00	47
+2011-12-05 00:00:00	97
+2011-12-06 00:00:00	58
+2011-12-07 00:00:00	61
+2011-12-08 00:00:00	76
+2011-12-09 00:00:00	31
+2011-12-10 00:00:00	89
+2011-12-11 00:00:00	1
+2011-12-12 00:00:00	43
+2011-12-13 00:00:00	88
+2011-12-14 00:00:00	14
+2011-12-15 00:00:00	3
+2011-12-16 00:00:00	34
+2011-12-17 00:00:00	75
+2011-12-18 00:00:00	9
+2011-12-19 00:00:00	89
+2011-12-20 00:00:00	50
+2011-12-21 00:00:00	63
+2011-12-22 00:00:00	76
+2011-12-23 00:00:00	65
+2011-12-24 00:00:00	95
+2011-12-25 00:00:00	27
+2011-12-26 00:00:00	26
+2011-12-27 00:00:00	48
+2011-12-28 00:00:00	4
+2011-12-29 00:00:00	41
+2011-12-30 00:00:00	98
+2011-12-31 00:00:00	39
+2012-01-01 00:00:00	76
+2012-01-02 00:00:00	53
+2012-01-03 00:00:00	48
+2012-01-04 00:00:00	23
+2012-01-05 00:00:00	49
+2012-01-06 00:00:00	7
+2012-01-07 00:00:00	84
+2012-01-08 00:00:00	26
+2012-01-09 00:00:00	38
+2012-01-10 00:00:00	73
+2012-01-11 00:00:00	27
+2012-01-12 00:00:00	81
+2012-01-13 00:00:00	61
+2012-01-14 00:00:00	41
+2012-01-15 00:00:00	84
+2012-01-16 00:00:00	95
+2012-01-17 00:00:00	17
+2012-01-18 00:00:00	94
+2012-01-19 00:00:00	84
+2012-01-20 00:00:00	66
+2012-01-21 00:00:00	57
+2012-01-22 00:00:00	61
+2012-01-23 00:00:00	31
+2012-01-24 00:00:00	52
+2012-01-25 00:00:00	87
+2012-01-26 00:00:00	57
+2012-01-27 00:00:00	99
+2012-01-28 00:00:00	91
+2012-01-29 00:00:00	98
+2012-01-30 00:00:00	97
+2012-01-31 00:00:00	30
+2012-02-01 00:00:00	73
+2012-02-02 00:00:00	50
+2012-02-03 00:00:00	78
+2012-02-04 00:00:00	96
+2012-02-05 00:00:00	100
+2012-02-06 00:00:00	85
+2012-02-07 00:00:00	80
+2012-02-08 00:00:00	25
+2012-02-09 00:00:00	23
+2012-02-10 00:00:00	53
+2012-02-11 00:00:00	53
+2012-02-12 00:00:00	4
+2012-02-13 00:00:00	14
+2012-02-14 00:00:00	94
+2012-02-15 00:00:00	88
+2012-02-16 00:00:00	9
+2012-02-17 00:00:00	10
+2012-02-18 00:00:00	82
+2012-02-19 00:00:00	93
+2012-02-20 00:00:00	76
+2012-02-21 00:00:00	39
+2012-02-22 00:00:00	54
+2012-02-23 00:00:00	7
+2012-02-24 00:00:00	90
+2012-02-25 00:00:00	41
+2012-02-26 00:00:00	64
+2012-02-27 00:00:00	90
+2012-02-28 00:00:00	33
+2012-02-29 00:00:00	62
+2012-03-01 00:00:00	87
+2012-03-02 00:00:00	63
+2012-03-03 00:00:00	35
+2012-03-04 00:00:00	37
+2012-03-05 00:00:00	41
+2012-03-06 00:00:00	31
+2012-03-07 00:00:00	37
+2012-03-08 00:00:00	26
+2012-03-09 00:00:00	11
+2012-03-10 00:00:00	63
 \.
 
 
@@ -266,7 +487,9 @@ COPY events (event_id, title, starts, ends, venue_id) FROM stdin;
 
 COPY venues (venue_id, name, street_address, type, postal_code, country_code, active) FROM stdin;
 1	Crystal Ballroom	\N	public 	97205	us	t
-2	Powel's Books	\N	public 	97205	us	t
+2	Powell's Books	\N	public 	97205	us	t
+5	Run's House	\N	public 	97205	us	t
+4	My Place	\N	private	160-0022	jp	f
 \.
 
 
@@ -303,11 +526,11 @@ ALTER TABLE ONLY events
 
 
 --
--- Name: events_title_key; Type: CONSTRAINT; Schema: public; Owner: fdumontmd; Tablespace: 
+-- Name: observation_pkey; Type: CONSTRAINT; Schema: public; Owner: fdumontmd; Tablespace: 
 --
 
-ALTER TABLE ONLY events
-    ADD CONSTRAINT events_title_key UNIQUE (title);
+ALTER TABLE ONLY observation
+    ADD CONSTRAINT observation_pkey PRIMARY KEY (day);
 
 
 --
@@ -323,6 +546,34 @@ ALTER TABLE ONLY venues
 --
 
 CREATE INDEX events_starts ON events USING btree (starts);
+
+
+--
+-- Name: delete_venue; Type: RULE; Schema: public; Owner: fdumontmd
+--
+
+CREATE RULE delete_venue AS ON DELETE TO venues DO INSTEAD UPDATE venues SET active = false WHERE (venues.venue_id = old.venue_id);
+
+
+--
+-- Name: insert_holidays; Type: RULE; Schema: public; Owner: fdumontmd
+--
+
+CREATE RULE insert_holidays AS ON INSERT TO holidays DO INSTEAD INSERT INTO events (title, starts, ends, colors) VALUES (new.name, new.date, (new.date + '23:59:00'::interval), new.colors);
+
+
+--
+-- Name: update_holidays; Type: RULE; Schema: public; Owner: fdumontmd
+--
+
+CREATE RULE update_holidays AS ON UPDATE TO holidays DO INSTEAD UPDATE events SET title = new.name, starts = new.date, colors = new.colors WHERE (events.title = old.name);
+
+
+--
+-- Name: log_events; Type: TRIGGER; Schema: public; Owner: fdumontmd
+--
+
+CREATE TRIGGER log_events AFTER UPDATE ON events FOR EACH ROW EXECUTE PROCEDURE log_event();
 
 
 --

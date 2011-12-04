@@ -109,9 +109,9 @@
 
 <p>The idea to start with a relational database is a good one. I feel that many who embrace NoSQL do so because they do not understand either SQL or the relational model. I was surprised to discover that some of my college educated colleagues did not know SQL at all. They were taught mostly about Java and object oriented design (I would ask for a refund). SQL databases have been developed, refined, and used in production for about 40 years. That&#8217;s more than half the history of computers, they&#8217;re likely to be part of the landscape for a few more decades, so ignoring them may be trendy but it is not wise.</p>
 
-<p>About the PostgreSQL version: the book appears to have been long in the making, as it still refers the reader to the version 9.0, while <a href="http://www.postgresql.org/docs/9.1/static/index.html">9.1</a> has been out for a few months.</p>
+<p>About the PostgreSQL version: the book appears to have been long in the making, as it still refers the reader to the version 9.0, while <a href="http://www.postgresql.org/docs/9.1/static/release-9-1-1.html">9.1</a> has been out for a few months.</p>
 
-<p>Installing then extensions that are needed for this book is easier with 9.1. Just using <a href="http://www.postgresql.org/docs/9.1/static/sql-createextension.html"><code>CREATE EXTENSION</code></a>:</p>
+<p>Installing then extensions that are needed for this book is easier with 9.1. Just using <a href="http://www.postgresql.org/docs/current/static/sql-createextension.html"><code>CREATE EXTENSION</code></a>:</p>
 
 <figure class='code'><figcaption><span>Installing Extensions  </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -127,7 +127,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Removing them is done with the command <a href="http://www.postgresql.org/docs/9.1/static/sql-dropextension.html"><code>DROP EXTENSION</code></a>.</p>
+<p>Removing them is done with the command <a href="http://www.postgresql.org/docs/current/static/sql-dropextension.html"><code>DROP EXTENSION</code></a>.</p>
 
 <h3>The events table</h3>
 
@@ -150,7 +150,7 @@
 <span class='line-number'>14</span>
 </pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">events</span> <span class="p">(</span>
 </span><span class='line'>  <span class="n">event_id</span> <span class="nb">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">title</span> <span class="nb">text</span> <span class="k">UNIQUE</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">title</span> <span class="nb">text</span><span class="p">,</span>
 </span><span class='line'>  <span class="n">starts</span> <span class="k">timestamp</span><span class="p">,</span>
 </span><span class='line'>  <span class="n">ends</span> <span class="k">timestamp</span><span class="p">,</span>
 </span><span class='line'>  <span class="n">venue_id</span> <span class="nb">integer</span><span class="p">,</span>
@@ -185,7 +185,6 @@
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-<span class='line-number'>15</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>book=# \d events
 </span><span class='line'>                                       Table "public.events"
 </span><span class='line'>  Column  |            Type             |                         Modifiers                         
@@ -197,7 +196,6 @@
 </span><span class='line'> venue_id | integer                     | 
 </span><span class='line'>Indexes:
 </span><span class='line'>    "events_pkey" PRIMARY KEY, btree (event_id)
-</span><span class='line'>    "events_title_key" UNIQUE CONSTRAINT, btree (title)
 </span><span class='line'>    "events_starts" btree (starts)
 </span><span class='line'>Foreign-key constraints:
 </span><span class='line'>    "events_venue_id_fkey" FOREIGN KEY (venue_id) REFERENCES venues(venue_id)</span></code></pre></td></tr></table></div></figure>
@@ -215,13 +213,13 @@
 
 <h3>About <code>MATCH FULL</code></h3>
 
-<p>This one was already explained in the book, and confirmed by the <a href="http://www.postgresql.org/docs/9.1/static/sql-createtable.html">documentation</a>: when a foreign key is composed of more than one column, they must all match a row in the referenced table, or be all null.</p>
+<p>This one was already explained in the book, and confirmed by the <a href="http://www.postgresql.org/docs/current/static/sql-createtable.html">documentation</a>: when a foreign key is composed of more than one column, they must all match a row in the referenced table, or be all null.</p>
 
 <h3>Selecting user table from <code>pg_class</code></h3>
 
-<p>Interestingly, the first time I tried to solve this exercise, I used <a href="http://www.postgresql.org/docs/9.1/static/view-pg-tables.html"><code>pg_tables</code></a> by mistake (<code>pg_tables</code> has a <code>tableowner</code> column which makes it easy to identify user tables).</p>
+<p>Interestingly, the first time I tried to solve this exercise, I used <a href="http://www.postgresql.org/docs/current/static/view-pg-tables.html"><code>pg_tables</code></a> by mistake (<code>pg_tables</code> has a <code>tableowner</code> column which makes it easy to identify user tables).</p>
 
-<p><a href="http://www.postgresql.org/docs/9.1/static/catalog-pg-class.html"><code>pg_class</code></a> stores the type of object in <code>relkind</code>: &#8216;r&#8217; for tables. Restricting for just tables, and working on the table name:</p>
+<p><a href="http://www.postgresql.org/docs/current/static/catalog-pg-class.html"><code>pg_class</code></a> stores the type of object in <code>relkind</code>: &#8216;r&#8217; for tables. Restricting for just tables, and working on the table name:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -305,7 +303,7 @@
 
 <p>Interestingly, only the tables that are visible in the current database are listed (I have other databases, with more user created tables).</p>
 
-<p>Still I need to remove the <code>sql_</code> named tables. Using PostgreSQL <a href="http://www.postgresql.org/docs/9.1/static/functions-matching.html#FUNCTIONS-POSIX-REGEXP">regular expression operators</a>:</p>
+<p>Still I need to remove the <code>sql_</code> named tables. Using PostgreSQL <a href="http://www.postgresql.org/docs/current/static/functions-matching.html#FUNCTIONS-POSIX-REGEXP">regular expression operators</a>:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -325,7 +323,7 @@
 </span><span class='line'>(4 rows)</span></code></pre></td></tr></table></div></figure>
 
 
-<p>This is one approach. Another would be to try to mimic the behaviour of the <code>\d</code> console command. The <a href="http://www.postgresql.org/docs/9.1/static/app-psql.html"><code>psql</code></a> option <code>-E</code> can be used to check what queries are used to implement specific console commands:</p>
+<p>This is one approach. Another would be to try to mimic the behaviour of the <code>\d</code> console command. The <a href="http://www.postgresql.org/docs/current/static/app-psql.html"><code>psql</code></a> option <code>-E</code> can be used to check what queries are used to implement specific console commands:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -427,7 +425,7 @@
 </span><span class='line'>(1 row)</span></code></pre></td></tr></table></div></figure>
 
 
-<p>But this is a bit verbose. The structure of the tables makes it possible to use <a href="http://www.postgresql.org/docs/9.1/static/queries-table-expressions.html"><code>NATURAL JOIN</code></a>:</p>
+<p>But this is a bit verbose. The structure of the tables makes it possible to use <a href="http://www.postgresql.org/docs/current/static/queries-table-expressions.html"><code>NATURAL JOIN</code></a>:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -586,6 +584,8 @@
         <a class="basic-alignment left" href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/" title="Previous Post: New Book: Seven Databases in Seven Weeks">&laquo; New Book: Seven Databases in Seven Weeks</a>
       
       
+        <a class="basic-alignment right" href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/" title="next Post: Seven Databases in Seven Weeks PostgreSQL Day 2">Seven Databases in Seven Weeks PostgreSQL Day 2 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -616,11 +616,17 @@
 		
 			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
 		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
 		</ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">Seven Databases in Seven Weeks PostgreSQL Day 2</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">Seven Databases in Seven Weeks PostgreSQL Day 1</a>
@@ -636,10 +642,6 @@
     
       <li class="post">
         <a href="/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/">Nice tool: Quick Sequence Diagram Editor</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/">Seven Languages in Seven Weeks Haskell Day 3.5</a>
       </li>
     
   </ul>

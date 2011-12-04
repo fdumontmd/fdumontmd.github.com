@@ -13,9 +13,9 @@ Of course, [MySQL](http://www.mysql.com/) is more popular, but if we are going t
 
 The idea to start with a relational database is a good one. I feel that many who embrace NoSQL do so because they do not understand either SQL or the relational model. I was surprised to discover that some of my college educated colleagues did not know SQL at all. They were taught mostly about Java and object oriented design (I would ask for a refund). SQL databases have been developed, refined, and used in production for about 40 years. That's more than half the history of computers, they're likely to be part of the landscape for a few more decades, so ignoring them may be trendy but it is not wise.
 
-About the PostgreSQL version: the book appears to have been long in the making, as it still refers the reader to the version 9.0, while [9.1](http://www.postgresql.org/docs/9.1/static/index.html) has been out for a few months.
+About the PostgreSQL version: the book appears to have been long in the making, as it still refers the reader to the version 9.0, while [9.1](http://www.postgresql.org/docs/9.1/static/release-9-1-1.html) has been out for a few months.
 
-Installing then extensions that are needed for this book is easier with 9.1. Just using [`CREATE EXTENSION`](http://www.postgresql.org/docs/9.1/static/sql-createextension.html):
+Installing then extensions that are needed for this book is easier with 9.1. Just using [`CREATE EXTENSION`](http://www.postgresql.org/docs/current/static/sql-createextension.html):
 
 {% codeblock Installing Extensions lang:sql %}
 CREATE EXTENSION tablefunc;
@@ -25,7 +25,7 @@ CREATE EXTENSION pg_trgm;
 CREATE EXTENSION cube;
 {% endcodeblock %}
 
-Removing them is done with the command [`DROP EXTENSION`](http://www.postgresql.org/docs/9.1/static/sql-dropextension.html).
+Removing them is done with the command [`DROP EXTENSION`](http://www.postgresql.org/docs/current/static/sql-dropextension.html).
 
 ### The events table
 
@@ -34,7 +34,7 @@ The code to create and fills the `events` table:
 {% codeblock Creating and filling the events table lang:sql %}
 CREATE TABLE events (
   event_id SERIAL PRIMARY KEY,
-  title text UNIQUE,
+  title text,
   starts timestamp,
   ends timestamp,
   venue_id integer,
@@ -66,7 +66,6 @@ book=# \d events
  venue_id | integer                     | 
 Indexes:
     "events_pkey" PRIMARY KEY, btree (event_id)
-    "events_title_key" UNIQUE CONSTRAINT, btree (title)
     "events_starts" btree (starts)
 Foreign-key constraints:
     "events_venue_id_fkey" FOREIGN KEY (venue_id) REFERENCES venues(venue_id)
@@ -85,13 +84,13 @@ The documentation for version 9.1 is [here](http://www.postgresql.org/docs/9.1/s
 
 ### About `MATCH FULL`
 
-This one was already explained in the book, and confirmed by the [documentation](http://www.postgresql.org/docs/9.1/static/sql-createtable.html): when a foreign key is composed of more than one column, they must all match a row in the referenced table, or be all null.
+This one was already explained in the book, and confirmed by the [documentation](http://www.postgresql.org/docs/current/static/sql-createtable.html): when a foreign key is composed of more than one column, they must all match a row in the referenced table, or be all null.
 
 ### Selecting user table from `pg_class`
 
-Interestingly, the first time I tried to solve this exercise, I used [`pg_tables`](http://www.postgresql.org/docs/9.1/static/view-pg-tables.html) by mistake (`pg_tables` has a `tableowner` column which makes it easy to identify user tables).
+Interestingly, the first time I tried to solve this exercise, I used [`pg_tables`](http://www.postgresql.org/docs/current/static/view-pg-tables.html) by mistake (`pg_tables` has a `tableowner` column which makes it easy to identify user tables).
 
-[`pg_class`](http://www.postgresql.org/docs/9.1/static/catalog-pg-class.html) stores the type of object in `relkind`: 'r' for tables. Restricting for just tables, and working on the table name:
+[`pg_class`](http://www.postgresql.org/docs/current/static/catalog-pg-class.html) stores the type of object in `relkind`: 'r' for tables. Restricting for just tables, and working on the table name:
 
 ```
 book=#  select relname from pg_class where relkind = 'r';
@@ -140,7 +139,7 @@ book=# select relname from pg_class where relkind = 'r' and relname not like 'pg
 
 Interestingly, only the tables that are visible in the current database are listed (I have other databases, with more user created tables).
 
-Still I need to remove the `sql_` named tables. Using PostgreSQL [regular expression operators](http://www.postgresql.org/docs/9.1/static/functions-matching.html#FUNCTIONS-POSIX-REGEXP):
+Still I need to remove the `sql_` named tables. Using PostgreSQL [regular expression operators](http://www.postgresql.org/docs/current/static/functions-matching.html#FUNCTIONS-POSIX-REGEXP):
 ```
 book=# select relname from pg_class where relkind = 'r' and relname !~ '^(pg_|sql_)';
   relname  
@@ -152,7 +151,7 @@ book=# select relname from pg_class where relkind = 'r' and relname !~ '^(pg_|sq
 (4 rows)
 ```
 
-This is one approach. Another would be to try to mimic the behaviour of the `\d` console command. The [`psql`](http://www.postgresql.org/docs/9.1/static/app-psql.html) option `-E` can be used to check what queries are used to implement specific console commands:
+This is one approach. Another would be to try to mimic the behaviour of the `\d` console command. The [`psql`](http://www.postgresql.org/docs/current/static/app-psql.html) option `-E` can be used to check what queries are used to implement specific console commands:
 
 ```
 $ psql -E book
@@ -214,7 +213,7 @@ book=# select c.country_name from events e inner join venues v on e.venue_id = v
 (1 row)
 ```
 
-But this is a bit verbose. The structure of the tables makes it possible to use [`NATURAL JOIN`](http://www.postgresql.org/docs/9.1/static/queries-table-expressions.html):
+But this is a bit verbose. The structure of the tables makes it possible to use [`NATURAL JOIN`](http://www.postgresql.org/docs/current/static/queries-table-expressions.html):
 
 ```
 book=# select country_name from events natural join venues natural join countries where title = 'My Book Signing';

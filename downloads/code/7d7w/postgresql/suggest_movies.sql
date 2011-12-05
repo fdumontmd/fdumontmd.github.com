@@ -17,7 +17,7 @@ BEGIN
   	  FROM actors a WHERE metaphone(a.name, 6) = metaphone(search, 6)
 	UNION
 	SELECT m.title AS name, 'M' AS type, levenshtein(lower(search), lower(m.title)) AS dist
-      FROM movies m WHERE to_tsvector(m.title) @@ movie_query
+      FROM movies m WHERE to_tsvector('english', m.title) @@ movie_query
        ) t
   ORDER BY dist LIMIT 1;
 

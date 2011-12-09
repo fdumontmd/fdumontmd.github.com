@@ -79,6 +79,7 @@ If you run all the examples and the exercises, you will notice something interes
 
 I've changed my script after I went through everything, rebuild the data, and ran everything again.
 
+{% include_code Updated seeding script lang:ruby 7d7w/riak/hotel.rb %}
 
 ### Partial updates are not supported, unless they are
 

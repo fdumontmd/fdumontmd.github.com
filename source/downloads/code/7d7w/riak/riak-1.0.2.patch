@@ -1,0 +1,25 @@
+diff -rupN riak-1.0.2-orig/deps/riak_kv/src/riak_kv_wm_object.erl riak-1.0.2/deps/riak_kv/src/riak_kv_wm_object.erl
+--- riak-1.0.2-orig/deps/riak_kv/src/riak_kv_wm_object.erl	2011-11-18 04:50:52.000000000 +0900
++++ riak-1.0.2/deps/riak_kv/src/riak_kv_wm_object.erl	2011-12-11 13:27:52.000000000 +0900
+@@ -966,8 +966,8 @@ handle_common_error(Reason, RD, Ctx) ->
+     case {error, Reason} of
+         {error, precommit_fail} ->
+             {{halt, 403}, send_precommit_error(RD, undefined), Ctx};
+-        {error, {precommit_fail, Reason}} ->
+-            {{halt, 403}, send_precommit_error(RD, Reason), Ctx};
++        {error, {precommit_fail, Message}} ->
++            {{halt, 403}, send_precommit_error(RD, Message), Ctx};
+         {error, too_many_fails} ->
+             {{halt, 503}, wrq:append_to_response_body("Too Many write failures"
+                     " to satisfy W/DW\n", RD), Ctx};
+diff -rupN riak-1.0.2-orig/rebar.config riak-1.0.2/rebar.config
+--- riak-1.0.2-orig/rebar.config	2011-11-18 05:17:47.000000000 +0900
++++ riak-1.0.2/rebar.config	2011-12-11 13:28:21.000000000 +0900
+@@ -1,6 +1,6 @@
+ {sub_dirs, ["rel"]}.
+ 
+-{require_otp_vsn, "R14B0[23]"}.
++{require_otp_vsn, "R14B0[234]"}.
+ 
+ {cover_enabled, true}.
+ 

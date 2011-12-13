@@ -40,6 +40,10 @@ It can also be applied on a repository pulled from [github](https://github.com/b
 latest version has already the patch for Erlang R14B04, so you can
 ignore that patch.
 
+*Update (2012/12/13):* my fix has been merged into the main Riak github repository,
+so you no longer need to apply the patch if you get the latest source
+by Git.
+
 ### Vector Clocks
 
 [Vector clocks](http://en.wikipedia.org/wiki/Vector_clock) are a

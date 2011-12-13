@@ -1,0 +1,13 @@
+diff --git a/build.xml b/build.xml
+index c3c60bd..c1aa4db 100644
+--- a/build.xml
++++ b/build.xml
+@@ -247,7 +247,7 @@
+     <exec dir="${build.native}" executable="sh" failonerror="true">
+        <env key="OS_NAME" value="${os.name}"/>
+        <env key="OS_ARCH" value="${os.arch}"/>
+-       <env key="LDFLAGS" value="-Wl,--no-as-needed"/>
++       <env key="LDFLAGS" value=""/>
+        <env key="JVM_DATA_MODEL" value="${sun.arch.data.model}"/>
+        <env key="NATIVE_SRCDIR" value="${native.src.dir}"/>
+        <arg line="${native.src.dir}/configure"/>

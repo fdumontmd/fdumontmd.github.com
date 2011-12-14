@@ -123,7 +123,7 @@ book=# EXPLAIN SELECT COUNT(*) FROM movies WHERE lower(title) ~ '^the.*';
 
 Interestingly, the trigram based index can help `ILIKE` queries as explained [here](http://www.postgresonline.com/journal/archives/212-PostgreSQL-9.1-Trigrams-teaching-LIKE-and-ILIKE-new-tricks.html) (in general, the [Postgres OnLine Journal](http://www.postgresonline.com/) is a very good resource on PostgreSQL more advanced features).
 
-But the general conclusion and take-home lesson is that adding indexes without checking their impact on queries is more than useless: it adds cost on data creation and update, with not compensation at query time.
+But the general conclusion and take-home lesson is that adding indexes without checking their impact on queries is more than useless: it adds cost on data creation and update, with no compensation at query time.
 
 Exercises
 ---------

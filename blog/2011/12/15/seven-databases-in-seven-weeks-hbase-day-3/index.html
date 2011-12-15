@@ -181,10 +181,136 @@ permanent data center.</p>
 <p>There is only one exercise today: to open a Thrift connection to an
 AWS deployed HBase.</p>
 
-<p>The method described in the book is to open the port 9090 to the
-world, and to hope to be the only one to know about this port: a
-likely possibility, but who would want to take such a chance in
-production?</p>
+<p>First is to get Thrift to run on the deployed machines. The book
+suggest to connect by SSH and start the instance there, but there is a
+better way if you know you will need Thrift: ask Whirr to deploy it
+automatically.</p>
+
+<p>In the file below, I&#8217;ve added the server <code>hbase-thriftserver</code> to the
+master server:</p>
+
+<figure class='code'><figcaption><span>hbase.properties (hbase.properties)</span> <a href='/downloads/code/7d7w/hbase/hbase.properties'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='properties'><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Licensed to the Apache Software Foundation (ASF) under one or more</span>
+</span><span class='line'><span class="c"># contributor license agreements.  See the NOTICE file distributed with</span>
+</span><span class='line'><span class="c"># this work for additional information regarding copyright ownership.</span>
+</span><span class='line'><span class="c"># The ASF licenses this file to You under the Apache License, Version 2.0</span>
+</span><span class='line'><span class="c"># (the &quot;License&quot;); you may not use this file except in compliance with</span>
+</span><span class='line'><span class="c"># the License.  You may obtain a copy of the License at</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Unless required by applicable law or agreed to in writing, software</span>
+</span><span class='line'><span class="c"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+</span><span class='line'><span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+</span><span class='line'><span class="c"># See the License for the specific language governing permissions and</span>
+</span><span class='line'><span class="c"># limitations under the License.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># HBase 0.90.x on Cloudera Hadoop Cluster on AWS EC2</span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Read the Configuration Guide for more info:</span>
+</span><span class='line'><span class="c"># http://incubator.apache.org/whirr/configuration-guide.html</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Change the cluster name here</span>
+</span><span class='line'><span class="na">whirr.cluster-name</span><span class="o">=</span><span class="s">hbase-0.90</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Change the number of machines in the cluster here</span>
+</span><span class='line'><span class="na">whirr.instance-templates</span><span class="o">=</span><span class="s">1 zookeeper+hadoop-namenode+hadoop-jobtracker+hbase-master+hbase-thriftserver,1 hadoop-datanode+hadoop-tasktracker+hbase-regionserver</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># replication level should not be higher than number of data nodes</span>
+</span><span class='line'><span class="na">hbase-site.dfs.replication</span><span class="o">=</span><span class="s">2</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># For EC2 set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.</span>
+</span><span class='line'><span class="na">whirr.provider</span><span class="o">=</span><span class="s">aws-ec2</span>
+</span><span class='line'><span class="na">whirr.identity</span><span class="o">=</span><span class="s">${env:AWS_ACCESS_KEY_ID}</span>
+</span><span class='line'><span class="na">whirr.credential</span><span class="o">=</span><span class="s">${env:AWS_SECRET_ACCESS_KEY}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># The size of the instance to use. See http://aws.amazon.com/ec2/instance-types/</span>
+</span><span class='line'><span class="na">whirr.hardware-id</span><span class="o">=</span><span class="s">c1.xlarge</span>
+</span><span class='line'><span class="c"># Ubuntu 10.04 LTS Lucid. See http://alestic.com/</span>
+</span><span class='line'><span class="na">whirr.image-id</span><span class="o">=</span><span class="s">us-east-1/ami-da0cf8b3</span>
+</span><span class='line'><span class="c"># If you choose a different location, make sure whirr.image-id is updated too</span>
+</span><span class='line'><span class="na">whirr.location-id</span><span class="o">=</span><span class="s">us-east-1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># By default use the user system SSH keys. Override them here.</span>
+</span><span class='line'><span class="na">whirr.private-key-file</span><span class="o">=</span><span class="s">keys/id_rsa</span>
+</span><span class='line'><span class="na">whirr.public-key-file</span><span class="o">=</span><span class="s">keys/id_rsa.pub</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># The HBase version to use.</span>
+</span><span class='line'><span class="na">whirr.hbase.tarball.url</span><span class="o">=</span><span class="s">http://apache.cu.be/hbase/hbase-0.90.4/hbase-0.90.4.tar.gz</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># The Hadoop version to use. See http://hbase.apache.org/book/hadoop.html</span>
+</span><span class='line'><span class="c"># The default Hadoop version used by Whirr does not fulfill the HBase 0.90.x requirements.</span>
+</span><span class='line'><span class="c"># Whirr will replace the hadoop-core jar in HBase with the one from the actually installed Hadoop.</span>
+</span><span class='line'><span class="c"># This example uses Cloudera&#39;s CDH3.</span>
+</span><span class='line'><span class="na">whirr.hadoop.tarball.url</span><span class="o">=</span><span class="s">http://archive.cloudera.com/cdh/3/hadoop-0.20.2-cdh3u2.tar.gz</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As for the connection to the Thrift server, the method described in
+the book is to open the port 9090 to the world, and to hope to be the
+only one to know about this port: a likely possibility, but who would
+want to take such a chance in production?</p>
 
 <p>Fortunately, there is a better solution: SSH Tunneling. It is very
 easy to set up and requires nothing but what we already have.</p>
@@ -212,13 +338,7 @@ way I don&#8217;t even have to change my <code>thrift_example.rb</code> code. Bu
 course, if I had to connect to different machines, I would use
 different ports.</p>
 
-<p>The Thrift server must be started as in the book (binding to
-<code>0.0.0.0</code>) because the binding will be from the network IP, not the
-loop IP:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo /usr/local/hbase-0.90.3/bin/hbase-daemon.sh start thrift -b 0.0.0.0</span></code></pre></td></tr></table></div></figure>
-
+<p>The Thrift server was automatically started by the recipe.</p>
 
 <p>With this in place, and after creating some tables in the remote
 HBase:</p>
@@ -269,7 +389,8 @@ LZO support and will fail when you try to enable a table with LZO compression).<
 
 <p>To take a tunnel down, you&#8217;ll have to find and kill it (as far as I
 can tell). If you have no other ssh connections, <code>killall ssh</code> is a
-simple solution.</p>
+simple solution. In any case, the connection will be cut when the
+remote servers are destroyed.</p>
 
 <h2>Wrapping up HBase</h2>
 

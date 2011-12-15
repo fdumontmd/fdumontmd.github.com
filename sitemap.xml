@@ -108,7 +108,7 @@
         <loc>
             http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/
         </loc>
-        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+        <lastmod>2011-12-15T18:09:57+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/</loc>
@@ -224,7 +224,7 @@
         <loc>
             http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/
         </loc>
-        <lastmod>2011-12-15T18:03:52+09:00</lastmod>
+        <lastmod>2011-12-15T18:58:19+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/about/</loc>
@@ -232,7 +232,7 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2011-12-15T18:03:52+09:00</lastmod>
+        <lastmod>2011-12-15T18:58:19+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
@@ -244,6 +244,6 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2011-12-15T18:03:52+09:00</lastmod>
+        <lastmod>2011-12-15T18:58:19+09:00</lastmod>
     </url>
 </urlset>

@@ -87,10 +87,20 @@ Exercises
 There is only one exercise today: to open a Thrift connection to an
 AWS deployed HBase.
 
-The method described in the book is to open the port 9090 to the
-world, and to hope to be the only one to know about this port: a
-likely possibility, but who would want to take such a chance in
-production?
+First is to get Thrift to run on the deployed machines. The book
+suggest to connect by SSH and start the instance there, but there is a
+better way if you know you will need Thrift: ask Whirr to deploy it
+automatically.
+
+In the file below, I've added the server `hbase-thriftserver` to the
+master server:
+
+{% include_code hbase.properties 7d7w/hbase/hbase.properties %}
+
+As for the connection to the Thrift server, the method described in
+the book is to open the port 9090 to the world, and to hope to be the
+only one to know about this port: a likely possibility, but who would
+want to take such a chance in production?
 
 Fortunately, there is a better solution: SSH Tunneling. It is very
 easy to set up and requires nothing but what we already have.
@@ -118,13 +128,7 @@ way I don't even have to change my `thrift_example.rb` code. But of
 course, if I had to connect to different machines, I would use
 different ports.
 
-The Thrift server must be started as in the book (binding to
-`0.0.0.0`) because the binding will be from the network IP, not the
-loop IP:
-
-```
-sudo /usr/local/hbase-0.90.3/bin/hbase-daemon.sh start thrift -b 0.0.0.0
-```
+The Thrift server was automatically started by the recipe.
 
 With this in place, and after creating some tables in the remote
 HBase:
@@ -157,7 +161,8 @@ LZO support and will fail when you try to enable a table with LZO compression).
 
 To take a tunnel down, you'll have to find and kill it (as far as I
 can tell). If you have no other ssh connections, `killall ssh` is a
-simple solution.
+simple solution. In any case, the connection will be cut when the
+remote servers are destroyed.
 
 Wrapping up HBase
 -----------------

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-12-05T20:07:09+09:00</updated>
+  <updated>2011-12-15T18:04:22+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -14,194 +14,631 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks PostgreSQL Day 3]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/"/>
-    <updated>2011-12-04T20:19:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3</id>
-    <content type="html"><![CDATA[<p>Third and final day with PostgreSQL. Today all kind of text and other fancy searches are looked at. Here the SQL standard is resolutely left behind, as pretty much everything is PostgreSQL specific.</p>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks HBase Day 3]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/"/>
+    <updated>2011-12-15T16:27:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3</id>
+    <content type="html"><![CDATA[<p>The third day with HBase is a bit short, but opens to a world of
+possibilities: the Cloud.</p>
 
-<p>PostgreSQL manages advanced index data structures that allow it to efficiently query data using something better than basic comparisons. It especially shines in its handling of geospatial data (searching by distance is a non-trivial problem), but has many options for text searches as well.</p>
+<p>This is where HBase belongs. No personal (or even that many corporate)
+networks are large enough to let it perform correctly.</p>
+
+<p>HBase depends on a large number of servers running in parallel for
+its performance, and there are few other places to find that many
+machines.</p>
 
 <!--more-->
 
 
-<p>Now, it can be easy to get carried away and try to use PostgreSQL for everything, even when a superior alternative option exists. If I had any need for a full text search, I would also look at <a href="http://lucene.apache.org/java/docs/index.html">Lucene</a> and related options. But PostgreSQL can still provide an easy, integrated solution for many situations.</p>
+<h3>Thrift</h3>
 
-<h3>On indexes</h3>
+<p>The first topic for today is <a href="http://thrift.apache.org/">Thrift</a>, a
+generic remote interface to program servers (and a gift from the new
+Evil Empire, Facebook).</p>
 
-<p>Indexes are not like pixie dust: you cannot just add some and hope all your performance problems will go away (as I learned the hard way). Benchmarks and the <a href="http://www.postgresql.org/docs/current/static/sql-explain.html"><code>EXPLAIN</code></a> command must be used to confirm the improvements brought by any index.</p>
+<p>It is a tool to document a binary API, and generate client stubs to
+use this API. HBase supports such an API, making it possible to write
+clients in a variety of languages.</p>
 
-<p>This section is based on the first beta version of the book. I hope they fill clarify this part in the final version.</p>
+<p>Using Thrift on your own project (on the server side, if you have any)
+would make it possible to use different languages on the client side,
+depending on whichever better fits the needs (scripting languages for
+glue scripts, ...)</p>
 
-<p>First, let's look a bit more at the fist index introduced today:</p>
+<p>When I tried the example from the book, I had to change the connection
+address of the <code>thrift_example.rb</code> code from <code>localhost</code> to
+<code>127.0.0.1</code>, otherwise Thrift would refuse the connection.</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Text Pattern index  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span> <span class="k">ON</span> <span class="n">movies</span> <span class="p">(</span><span class="n">title</span> <span class="n">text_pattern_ops</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<h3>Whirr</h3>
 
-<p>The book states that is creates an index for pattern matching. Think about it for a few seconds, try to imagine what it would look like... Yes, the solution is not trivial, so being able to index for pattern matching sounds like magic. Or pixie dust. But does it work?</p>
+<p><a href="http://whirr.apache.org/">Whirr</a> is far more exciting. It is a tool
+to deploy and configure some specific servers on (among others)
+<a href="http://aws.amazon.com/ec2/">Amazon EC2</a>.</p>
 
-<p>```
-book=# EXPLAIN SELECT title FROM movies WHERE title ILIKE 'stardust_%';</p>
+<p>The first, and perhaps the most complex step is to open an account on
+<a href="http://aws.amazon.com/">AWS</a>. It will require a phone, a credit card,
+a computer, and some time. And perhaps a couple of emails if the
+account opening remains stuck in "Pending verification" status.</p>
 
-<pre><code>                   QUERY PLAN                        
-</code></pre>
+<p>Once this is done, Whirr can be used to create instances (be careful
+with that: Amazon will charge at least one hour for each server even
+if you take it down after a couple of minutes), download and install
+specific servers (mostly from the <a href="http://hadoop.apache.org/">Hadoop</a>
+family), configure them, all of this from the comfort of the command
+line (which is my case is cosily close to a cup of warm coco, so it is
+very comfortable indeed).</p>
 
-<hr />
+<p>All you have to do is retrieve you security token from your AWS
+account page, create a public/private key pair, then write a recipe
+file (which describes what kind of machines and how many you need,
+what to install on each, ...), and Whirr takes care of the rest. The
+first two steps only have to be done once; you can deploy as many
+recipes as you need.</p>
 
-<p> Seq Scan on movies  (cost=0.00..160.76 rows=1 width=15)
-   Filter: (title ~~* 'stardust_%'::text)
-(2 rows)
-```</p>
+<p>The setup process takes a few minutes, then you can connect with SSH
+to one of your remote servers.</p>
 
-<p>It seems that no, it does not work. The optimizer proposes to use a sequential scan, not an index.</p>
+<p>Whirr also creates a security configuration for each recipe, opening
+only the ports that are required by the servers in the recipe,
+limiting source of the connections to specific servers. You can also
+edit the security rules directly in the recipe if you want.</p>
 
-<p>The problem here is that <code>ILIKE</code> is not really supported by the optimizer. It is a PostgreSQL extension which, while useful, is not that well integrated. The standard (and SQL compliant) way to do a case insensitive search is:</p>
+<p>The ease with which this can be done is really surprising. It reminds
+me of how easy it was to deploy a Rails application on
+<a href="http://www.heroku.com/">Heroku</a>.</p>
 
-<p>```
-book=# EXPLAIN SELECT title FROM movies WHERE lower(title) LIKE 'stardust_%';</p>
-
-<pre><code>                    QUERY PLAN                        
-</code></pre>
-
-<hr />
-
-<p> Seq Scan on movies  (cost=0.00..167.91 rows=14 width=15)
-   Filter: (lower(title) ~~ 'stardust_%'::text)
-(2 rows)
-```</p>
-
-<p>Ok, not quite there yet. But that's normal. We are not using the column directly, so an index on the original values is not going to work. However PostgreSQL has a very nice feature called functional index: it is possible to create an index on the result of a function. Let's drop the original index and create one with <code>lower(title)</code> as the indexed value:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Case insensitive Pattern index  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">DROP</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span> <span class="k">ON</span> <span class="n">movies</span> <span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> <span class="n">text_pattern_ops</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Does it look better now?</p>
-
-<p>```
-book=# EXPLAIN SELECT title FROM movies WHERE lower(title) LIKE 'stardust_%';</p>
-
-<pre><code>                                         QUERY PLAN                                             
-</code></pre>
-
-<hr />
-
-<p> Bitmap Heap Scan on movies  (cost=4.40..46.55 rows=14 width=15)
-   Filter: (lower(title) ~~ 'stardust_%'::text)
-   ->  Bitmap Index Scan on movies_title_pattern  (cost=0.00..4.40 rows=14 width=0)</p>
-
-<pre><code>     Index Cond: ((lower(title) ~&gt;=~ 'stardust'::text) AND (lower(title) ~&lt;~ 'stardusu'::text))
-</code></pre>
-
-<p>(4 rows)
-```</p>
-
-<p>Yes, that's better. What about <code>ILIKE</code>?</p>
-
-<p>```
-book=# EXPLAIN SELECT title FROM movies WHERE title ILIKE 'stardust_%';</p>
-
-<pre><code>                   QUERY PLAN                        
-</code></pre>
-
-<hr />
-
-<p> Seq Scan on movies  (cost=0.00..160.76 rows=1 width=15)
-   Filter: (title ~~* 'stardust_%'::text)
-(2 rows)
-```</p>
-
-<p>No, it still cannot use the index.</p>
-
-<p>What about the regular expression query?</p>
-
-<p>```
-book=# EXPLAIN SELECT COUNT(<em>) FROM movies WHERE title !~</em> '<sup>the.*';</sup></p>
-
-<pre><code>                       QUERY PLAN                            
-</code></pre>
-
-<hr />
-
-<p> Aggregate  (cost=166.32..166.33 rows=1 width=0)
-   ->  Seq Scan on movies  (cost=0.00..160.76 rows=2225 width=0)</p>
-
-<pre><code>     Filter: (title !~* '^the.*'::text)
-</code></pre>
-
-<p>(3 rows)
-```</p>
-
-<p>No, it does not like the case insensitive operator. Would a <code>lower(title)</code> conversion work?</p>
-
-<p>```
-book=# EXPLAIN SELECT COUNT(*) FROM movies WHERE lower(title) !~ '<sup>the.*';</sup></p>
-
-<pre><code>                       QUERY PLAN                            
-</code></pre>
-
-<hr />
-
-<p> Aggregate  (cost=175.03..175.04 rows=1 width=0)
-   ->  Seq Scan on movies  (cost=0.00..167.91 rows=2847 width=0)</p>
-
-<pre><code>     Filter: (lower(title) !~ '^the.*'::text)
-</code></pre>
-
-<p>(3 rows)
-```</p>
-
-<p>Still not. Well, we're not looking for a particular pattern, but for everything else. A negation is not easy to propagate through the optimizer logic, so it should not be surprising that it still cannot use the index. But this (almost) similar query does:</p>
-
-<p>```
-book=# EXPLAIN SELECT COUNT(*) FROM movies WHERE lower(title) ~ '<sup>the.*';</sup></p>
-
-<pre><code>                                       QUERY PLAN                                           
-</code></pre>
-
-<hr />
-
-<p> Aggregate  (cost=46.59..46.60 rows=1 width=0)
-   ->  Bitmap Heap Scan on movies  (cost=4.40..46.55 rows=14 width=0)</p>
-
-<pre><code>     Filter: (lower(title) ~ '^the.*'::text)
-     -&gt;  Bitmap Index Scan on movies_title_pattern  (cost=0.00..4.40 rows=14 width=0)
-           Index Cond: ((lower(title) ~&gt;=~ 'the'::text) AND (lower(title) ~&lt;~ 'thf'::text))
-</code></pre>
-
-<p>(5 rows)
-```</p>
-
-<p>Interestingly, the trigram based index can help <code>ILIKE</code> queries as explained <a href="http://www.postgresonline.com/journal/archives/212-PostgreSQL-9.1-Trigrams-teaching-LIKE-and-ILIKE-new-tricks.html">here</a> (in general, the <a href="http://www.postgresonline.com/">Postgres OnLine Journal</a> is a very good resource on PostgreSQL more advanced features).</p>
-
-<p>But the general conclusion and take-home lesson is that adding indexes without checking their impact on queries is more than useless: it adds cost on data creation and update, with not compensation at query time.</p>
+<p>Now, I do not have any foreseen uses for such computing capacity, but
+I can see how it could be helpful for any organisation to be able to
+run occasional large data processing jobs without having to maintain a
+permanent data center.</p>
 
 <h2>Exercises</h2>
 
-<h3>Contributed Packages</h3>
+<p>There is only one exercise today: to open a Thrift connection to an
+AWS deployed HBase.</p>
 
-<p>The contributed packages shipped with PostgreSQL are documented <a href="http://www.postgresql.org/docs/current/static/contrib.html">here</a>.</p>
+<p>The method described in the book is to open the port 9090 to the
+world, and to hope to be the only one to know about this port: a
+likely possibility, but who would want to take such a chance in
+production?</p>
 
-<h3>POSIX Regex</h3>
+<p>Fortunately, there is a better solution: SSH Tunneling. It is very
+easy to set up and requires nothing but what we already have.</p>
 
-<p>The Wikipedia <a href="http://en.wikipedia.org/wiki/Regular_expression#Syntax">page</a> on the topic is already very good.</p>
+<p>The general idea is to open a ssh tunnel between a local port and a
+remote port: whatever you puts in the local port is taken by ssh,
+transported over the SSH connection; once it reaches the remote
+machine, the remote ssh instance will forward the data to the remote
+port, as if it was a client running on the remote machine.</p>
 
-<h3>Stored Procedure based movie recommendation</h3>
+<p>The transport between the two machines only requires the remote one to
+have the SSH port open (which is both the case, and secure). You have
+to use authentication and encryption for the transport.</p>
 
-<p>I'm assuming the name of an actor or movie can have errors (after all, end users are known to make and cause errors). The first step will be to identify whether the name is closer to an actor's name or a movie's name. The second step will use existing queries to either propose 5 movies from the same actor if the name was closer to an actor's name or 5 similar movies (using the cube bounding technique) if the name was closer to a movie's.</p>
+<p>And what is required to implement this SSH tunneling:</p>
 
-<p>The use of <code>UNION</code> over several strategies to identify either movies or actors gives a lot of freedom. I use the <code>levenshtein</code> function to select the best match identified by each strategy.</p>
+<p><code>
+ssh -i keys/id_rsa -f ${USER}@&lt;SERVER_NAME&gt; -L 9090:&lt;SERVER_NAME&gt;:9090 -N
+</code></p>
 
-<p>Also, because the full text search query must have a specific format (for instance, each search term must be separated by <code>&amp;</code>), I use a few text replacement functions to clean up the input search.</p>
+<p>(from the directory where you created the <code>keys</code> directory)</p>
 
-<p>Finally, the return value is a <code>setof</code> <code>movies</code>. The meaning is that I will return rows that have the same type as rows from the <code>movies</code> table. If the query was simple, I could just use the <code>SELECT</code> statement as the body for the function, but as I have to chose between queries, I use the <a href=""><code>RETURN NEXT</code></a> command instead. Explanations can be found in the fine PostgreSQL <a href="http://www.postgresql.org/docs/current/static/plpgsql-control-structures.html">manual</a>.</p>
+<p>Here I map the local port 9090 to the remote machine's port 9090. That
+way I don't even have to change my <code>thrift_example.rb</code> code. But of
+course, if I had to connect to different machines, I would use
+different ports.</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>suggestMovies function  (suggest_movies.sql)</span> <a href='/downloads/code/7d7w/postgresql/suggest_movies.sql'>download</a></figcaption>
+<p>The Thrift server must be started as in the book (binding to
+<code>0.0.0.0</code>) because the binding will be from the network IP, not the
+loop IP:</p>
+
+<p><code>
+sudo /usr/local/hbase-0.90.3/bin/hbase-daemon.sh start thrift -b 0.0.0.0
+</code></p>
+
+<p>With this in place, and after creating some tables in the remote
+HBase:</p>
+
+<p>```
+$ ruby thrift_example.rb
+links
+  from:</p>
+
+<pre><code>maxVersions: 1
+compression: NONE
+bloomFilterType: ROWCOL
+</code></pre>
+
+<p>  to:</p>
+
+<pre><code>maxVersions: 1
+compression: NONE
+bloomFilterType: ROWCOL
+</code></pre>
+
+<p>wiki
+  revision:</p>
+
+<pre><code>maxVersions: 2147483647
+compression: NONE
+bloomFilterType: NONE
+</code></pre>
+
+<p>  text:</p>
+
+<pre><code>maxVersions: 2147483647
+compression: GZ
+bloomFilterType: ROW
+</code></pre>
+
+<p>```</p>
+
+<p>(be careful not to use LZO as a compression algorithm in the remote
+HBase, as I did when I tried the first time: the default HBase has no
+LZO support and will fail when you try to enable a table with LZO compression).</p>
+
+<p>To take a tunnel down, you'll have to find and kill it (as far as I
+can tell). If you have no other ssh connections, <code>killall ssh</code> is a
+simple solution.</p>
+
+<h2>Wrapping up HBase</h2>
+
+<p>I like what I see with HBase: the project has strong backers among its
+users (Yahoo, Facebook, ...); it belongs to a large family of tools
+that help to design Big Data solutions, and integrates well with some
+Cloud networks</p>
+
+<p>The model is easy to understand (the book mentions the possibility of
+eventual consistency due to regional replication, but this remains a
+simpler model than Riak's), and close to the original MapReduce
+concept.</p>
+
+<p>This is really one tool I will have a closer look to in the near
+future.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks HBase Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/"/>
+    <updated>2011-12-12T23:46:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2</id>
+    <content type="html"><![CDATA[<p>And on the second day with HBase, we load it with <a href="http://www.wikipedia.org/">Wikipedia</a>. Actually I had to do it twice to get it to work: on my first attempt the process kind of froze at about 200,000 articles.</p>
+
+<!--more-->
+
+
+<p>After some digging (and finding this very helpful <a href="http://ofps.oreilly.com/titles/9781449396107/installation.html">page</a> from <a href="http://ofps.oreilly.com/titles/9781449396107/">HBase: The Definitive Guide</a>), I tried again with a different setting for the limit on open files:</p>
+
+<p><code>
+ulimit -n 10240
+</code></p>
+
+<p>With that, HBase was able to keep churning along (the limit is per session, so HBase had to be restarted). I started the import process in the morning, and when I finally stopped it it had passed 10,000,000 pages (not all of them actual articles). Parsing links was equally successful.</p>
+
+<h3>Consistency</h3>
+
+<p>Unlike Riak, which offers <a href="http://en.wikipedia.org/wiki/Eventual_consistency">eventual consistency</a>, HBase ensures row level consistency. This means that each row has only one value, and a write to the row is either entirely successful, or not performed at all (so an update will never be applied partially).</p>
+
+<p>This idea that each row is atomic is a simple yet effective mental model; I feel I should be able to use this model to design reliable solutions on HBase. To make them fast as well is a different matter entirely: I'd first need more experience with the concept of column families and their various options.</p>
+
+<h3>Logging</h3>
+
+<p>HBase uses <a href="http://en.wikipedia.org/wiki/Write-ahead_logging">Write-Ahead Logging</a>, exactly like PostgreSQL and many other databases (Riak too) and file systems. This is a low level mechanism designed to help with consistency: first a description of the updates is written into a log file (and flushed); then the update is performed. If there's a problem during the update, it is always possible to compare the write-ahead log and execute again whatever updates are missing or partial.</p>
+
+<h3>Regions and servers</h3>
+
+<p>I must say I am still a bit unclear on this topic: I have a standalone instance of HBase, so naturally there is no distribution involved.</p>
+
+<p>HBase first keep the data sorted by key, and distributes contiguous chunks of data to each region (growing the number of regions if needed).</p>
+
+<h3>HBase and names</h3>
+
+<p>In a typical relational database, just as in a normal programming language, the name you give to things (tables, columns or variables) is a programmer oriented feature that has no impact on performance.</p>
+
+<p>The idea that you should use short variable names for 'performance reason' is either a joke or a beginner's mistake.</p>
+
+<p>Except in HBase, where the length of names can impact storage performance. See the <a href="http://hbase.apache.org/book.html#rowkey.design">HBase book, Try to minimize row and column sizes</a>.</p>
+
+<h2>Exercises</h2>
+
+<h3>Compression in HBase</h3>
+
+<p>I could not really find any article on the pros and cons of compression in either HBase or Hadoop. I guess the pros and cons here are the same as any other use of compression: trading IO for CPU. Smaller (because compressed) data can be saved to and read from the disk faster, but at the cost of higher CPU usage.</p>
+
+<h3>Bloom filters</h3>
+
+<p>Bloom filters are describe on the always helpful <a href="http://en.wikipedia.org/wiki/Bloom_filter">Wikipedia</a>. Such a filter is a tool to determine quickly if a piece of information in not in a specific storage, with a configurable probability for false positive.</p>
+
+<p>Say you have a key value distributed data store. For each store, you maintain a Bloom filter of the keys.</p>
+
+<p>Assuming you are looking for a key, you can use the Bloom filters to quickly determine where to look further.</p>
+
+<p>If a Bloom filter for a store states the key is not present, you know you can ignore the store. If it says the key is present, it could be wrong, so you have to look. How often it returns yes when it should say no is a trade-off between the size of the filter and the probability of error.</p>
+
+<p>With HBase being distributed by default, knowing where to look for a key or a key, column pair can increase performance.</p>
+
+<h3>Column family options for compression</h3>
+
+<p>There use to be <code>RECORD</code> and <code>BLOCK</code> options, but they appear deprecated. What is left is to specify the compression algorithm for either regular compression, or compacting compression (which happens when HBase reorganize the store). The compacting compression setting can use the same values (i.e. algorithm names) as the compression setting. In the shell, the option is <code>COMPRESSION_COMPACT</code>.</p>
+
+<p>The available algorithms are <code>NONE</code> (no encryption), <code>GZ</code>, <code>LZO</code> and <code>SNAPPY</code> (which is probably better still than LZO).</p>
+
+<h3>Column family compression design consideration</h3>
+
+<p>I could not find any definitive answer to this, but I would guess that:</p>
+
+<ul>
+<li>already compressed data (such as JPEG) should be in an uncompressed column family</li>
+<li>rarely used by very large data could use a slower but more efficient algorithm such as GZ</li>
+<li>small but very often used families should not be compressed</li>
+</ul>
+
+
+<h3>Installing LZO</h3>
+
+<p>To install LZO compression is not exactly trivial, especially on Mac OS X.</p>
+
+<p>The first step is to install the library; I did it with <a href="http://mxcl.github.com/homebrew/">Homebrew</a>. It installs 64 bits versions by default; the only thing to remember is that by default on Mac OS X 10.7, the default compiler is <a href="http://llvm.org">LLVM</a>, but often <a href="http://gcc.gnu.org/">GCC</a> is better.</p>
+
+<p><code>
+sudo brew install lzo --use-gcc
+</code></p>
+
+<p>and LZO will end up under <code>/usr/local/Cellar/lzo/2.06/</code></p>
+
+<p>Next step is to build the hadoop LZO plugin. The basic information is available on the Hadoop <a href="http://wiki.apache.org/hadoop/UsingLzoCompression">wiki</a>, but the main repository it refers to is obsolete. There is another, maintained <a href="https://github.com/toddlipcon/hadoop-lzo">repository</a> on Github.</p>
+
+<p><code>
+git clone https://github.com/toddlipcon/hadoop-lzo
+</code></p>
+
+<h4>Mac OS X</h4>
+
+<p>Building on Linux should work right away, but Mac OS X (especially 10.7) is slightly different in frustrating way. The <code>ld</code> command is not GNU, but BSD, so it does not understand the same options.</p>
+
+<p>To get the library to compile, you need to edit the <code>build.xml</code> file and clear the <code>LDFLAGS</code> (by default the value is <code>-Wl,--no-as-needed</code>, it needs to be empty).</p>
+
+<p>Liquid error: ClassNotFound: no lexer for alias 'txt' found</p>
+
+<p>From inside the repository, it can be applied with</p>
+
+<p><code>
+patch -p1 &lt; hadoop-lzo.patch
+</code></p>
+
+<p>Once this is done, the <code>ant</code> invocation documented in the Wiki should almost work. Two things need to be changed: first is the use of <code>GCC</code> instead of <code>LLVM</code> (by setting the <code>CC</code> variable); second is the strange name of the <code>include</code> directory for Java. The build script expects it under <code>$JAVA_HOME/include</code>, but of course in Mac OS X it had to be somewhere else (<code>/System/Library/Frameworks/JavaVM.framework/Headers</code>, if you need to know), so I added it directly to the include path <code>C_INCLUDE_PATH</code>:</p>
+
+<p><code>
+env JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/ \
+C_INCLUDE_PATH=/System/Library/Frameworks/JavaVM.framework/Headers:/usr/local/Cellar/lzo/2.06/include/ \
+LIBRARY_PATH=/usr/local/Cellar/lzo/2.06/lib/ CFAGS='-arch x86_64' \
+CC=/usr/bin/gcc-4.2  ant clean compile-native test tar
+</code></p>
+
+<p>Normally, you should now have a <code>build</code> directory with the jar and native libraries.</p>
+
+<p>The final step is to deploy this in HBase. HBase expect everything to be under the <code>$HBASE_HOME/lib</code>. The instructions from the wiki give the right commands (I just added the creation of the <code>$HBASE_HOME/lib/native</code> directory, which does not exist by default):</p>
+
+<p><code>
+cp build/hadoop-lzo-0.4.15/hadoop-lzo-0.4.15.jar $HBASE_HOME/lib/
+mkdir -p $HBASE_HOME/lib/native
+tar -cBf - -C build/hadoop-lzo-0.4.15/lib/native/ . | tar -xBvf - -C $HBASE_HOME/lib/native
+</code></p>
+
+<p>Now you can test whether the new library is enabled: run the command:</p>
+
+<p><code>
+$ ./bin/hbase org.apache.hadoop.hbase.util.CompressionTest /tmp/data.lzo lzo
+</code></p>
+
+<p>and it should output:</p>
+
+<p><code>
+11/12/14 09:13:21 INFO lzo.GPLNativeCodeLoader: Loaded native gpl library
+11/12/14 09:13:21 INFO lzo.LzoCodec: Successfully loaded &amp; initialized native-lzo library [hadoop-lzo rev c7d54fffe5a853c437ee23413ba71fc6af23c91d]
+11/12/14 09:13:21 INFO compress.CodecPool: Got brand-new compressor
+SUCCESS
+</code></p>
+
+<p>And that's it. The most frustrating part is that HBase will appear to hang when you try to enable a table that uses LZO compression if anything went wrong (and forgot to test as above). The logs will reveal that <code>hadoop-native</code> cannot be found. This means that the native libraries cannot be loaded. So make sure that you have all the files below:</p>
+
+<p><code>
+$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.0.dylib
+$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.a
+$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.dylib
+$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.la
+</code></p>
+
+<p>After that, restart the server, and you can use LZO compression instead of GZ.</p>
+
+<p>And this completes Day 2. Next and final day is about deploying HBase to the cloud. This might take more than just a day as I need some time to figure out how to use <a href="http://aws.amazon.com/ec2/">AWS EC2</a> and which options to choose, but hopefully I'll be able to deploy Riak there as well.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks HBase Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/"/>
+    <updated>2011-12-11T12:57:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1</id>
+    <content type="html"><![CDATA[<p>New week, new database. This week is about <a href="">HBase</a>, a product that
+has a significant enterprisy feel about it. First it is written in
+Java, the de facto enterprise language. Then it is already in
+production in very large big data consumers (Facebook among others).</p>
+
+<p>Perhaps more surprising is the fact that it even runs at all on a
+single, personal computer (as the book states, 5 dedicated servers is
+the recommended minimal configuration).</p>
+
+<!--more-->
+
+
+<p>Today is a fairly short day. Getting HBase to run, creating a single
+table and a couple of rows, and that's it.</p>
+
+<p>As for Riak, I recommend downloading the
+<a href="http://www.apache.org/dyn/closer.cgi?path=hbase/hbase-0.90.3/hbase-0.90.3.tar.gz">HBase package</a>
+rather than trying your luck with the Homebrew version. HBase runs
+directly from the extraction directory, and already includes all the
+dependencies.</p>
+
+<p>Just edit the hbase-site.xml configuratio file as the book recommends,
+and you're good to go.</p>
+
+<h2>Exercises</h2>
+
+<h3>put_many function</h3>
+
+<p>This function is more an exercise in Ruby than in HBase. The code is
+just a variant of what is already in the book.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>put_many.rb  (put_many.rb)</span> <a href='/downloads/code/7d7w/hbase/put_many.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># recap some definition to make this definition self-contained</span>
+</span><span class='line'><span class="n">import</span> <span class="s1">&#39;org.apache.hadoop.hbase.client.HTable&#39;</span>
+</span><span class='line'><span class="n">import</span> <span class="s1">&#39;org.apache.hadoop.hbase.client.Put&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">jbytes</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span> <span class="p">)</span>
+</span><span class='line'>  <span class="n">args</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">arg</span><span class="o">|</span> <span class="n">arg</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">to_java_bytes</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># actual exercise</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">put_many</span><span class="p">(</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">column_values</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">table</span> <span class="o">=</span> <span class="no">HTable</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="vi">@hbase</span><span class="o">.</span><span class="n">configuration</span><span class="p">,</span> <span class="n">table_name</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nb">p</span> <span class="o">=</span> <span class="no">Put</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="o">*</span><span class="n">jbytes</span><span class="p">(</span> <span class="n">row</span> <span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">column_values</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">kf</span><span class="p">,</span> <span class="n">kn</span><span class="p">)</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">kn</span> <span class="o">||=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    <span class="nb">p</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="o">*</span><span class="n">jbytes</span><span class="p">(</span> <span class="n">kf</span><span class="p">,</span> <span class="n">kn</span><span class="p">,</span> <span class="n">v</span> <span class="p">))</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">table</span><span class="o">.</span><span class="n">put</span><span class="p">(</span> <span class="nb">p</span> <span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Use the put_many function</h3>
+
+<p>Invoking the <code>put_many</code> function then checking the insert:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Testing put_many  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">put_many</span> <span class="s1">&#39;wiki&#39;</span><span class="p">,</span> <span class="s1">&#39;Some title&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s2">&quot;text:&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;Some article text&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;revision:author&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jschmoe&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;revision:comment&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;no comment&quot;</span> <span class="p">}</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;get &#39;wiki&#39;, &#39;Some title&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>generates</p>
+
+<p><code>
+COLUMN                CELL                                                      
+ revision:author      timestamp=1323575657943, value=jschmoe                    
+ revision:comment     timestamp=1323575657943, value=no comment                 
+ text:                timestamp=1323575657943, value=Some article text          
+3 row(s) in 0.5340 seconds
+</code></p>
+
+<p>And that's all for today. Tomorrow will be a bit more fun: first a
+significant take on of Wikipedia files, then using HBase to play with
+the loaded data.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks Riak Day 3]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/"/>
+    <updated>2011-12-09T22:32:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3</id>
+    <content type="html"><![CDATA[<p>Today we complete the tour of Riak features. First conflict resolution
+with vector clocks; then pre and post-commit hooks, and finally
+searching Riak data with a <a href="http://lucene.apache.org/">Solr</a>
+compatible interface.</p>
+
+<!--more-->
+
+
+<h3>Setting up Riak</h3>
+
+<p>Over the last few days, I have been trying different ways to get Riak up and running.</p>
+
+<p>Following the book advice, I recommend installing Riak from the
+sources. Actually, you can just build it, build the <code>devrel</code> target,
+and run from the <code>dev</code> directory.</p>
+
+<p>On Mac OS X, <a href="http://mxcl.github.com/homebrew/">Homebrew</a> usually
+works for me, but I like my servers to run with their own user, so I
+<code>sudo brew install</code> the packages. In the case of Riak, this does not
+work at all (the files have incorrect ownership and useless permissions).</p>
+
+<p>There is a small bug in Riak 1.0.2 that causes it to return a 500 HTTP
+error when the precommit hook fails, instead of the expected 403. The
+problem is a spurious variable binding in Erlang. The patch below
+fixes this error; it also make it possible to build Riak with Erlang R14B04.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>riak 1.0.2 patch  (riak-1.0.2.patch)</span> <a href='/downloads/code/7d7w/riak/riak-1.0.2.patch'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>diff -rupN riak-1.0.2-orig/deps/riak_kv/src/riak_kv_wm_object.erl riak-1.0.2/deps/riak_kv/src/riak_kv_wm_object.erl
+</span><span class='line'>--- riak-1.0.2-orig/deps/riak_kv/src/riak_kv_wm_object.erl	2011-11-18 04:50:52.000000000 +0900
+</span><span class='line'>+++ riak-1.0.2/deps/riak_kv/src/riak_kv_wm_object.erl	2011-12-11 13:27:52.000000000 +0900
+</span><span class='line'>@@ -966,8 +966,8 @@ handle_common_error(Reason, RD, Ctx) -&gt;
+</span><span class='line'>     case {error, Reason} of
+</span><span class='line'>         {error, precommit_fail} -&gt;
+</span><span class='line'>             {{halt, 403}, send_precommit_error(RD, undefined), Ctx};
+</span><span class='line'>-        {error, {precommit_fail, Reason}} -&gt;
+</span><span class='line'>-            {{halt, 403}, send_precommit_error(RD, Reason), Ctx};
+</span><span class='line'>+        {error, {precommit_fail, Message}} -&gt;
+</span><span class='line'>+            {{halt, 403}, send_precommit_error(RD, Message), Ctx};
+</span><span class='line'>         {error, too_many_fails} -&gt;
+</span><span class='line'>             {{halt, 503}, wrq:append_to_response_body(&quot;Too Many write failures&quot;
+</span><span class='line'>                     &quot; to satisfy W/DW\n&quot;, RD), Ctx};
+</span><span class='line'>diff -rupN riak-1.0.2-orig/rebar.config riak-1.0.2/rebar.config
+</span><span class='line'>--- riak-1.0.2-orig/rebar.config	2011-11-18 05:17:47.000000000 +0900
+</span><span class='line'>+++ riak-1.0.2/rebar.config	2011-12-11 13:28:21.000000000 +0900
+</span><span class='line'>@@ -1,6 +1,6 @@
+</span><span class='line'> {sub_dirs, [&quot;rel&quot;]}.
+</span><span class='line'>
+</span><span class='line'>-{require_otp_vsn, &quot;R14B0[23]&quot;}.
+</span><span class='line'>+{require_otp_vsn, &quot;R14B0[234]&quot;}.
+</span><span class='line'>
+</span><span class='line'> {cover_enabled, true}.
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Apply it in the Riak 1.0.2 directory: <code>patch -p1 &lt; ../riak-1.0.2.patch</code>.</p>
+
+<p>It can also be applied on a repository pulled from <a href="https://github.com/basho/riak">github</a>, but the
+latest version has already the patch for Erlang R14B04, so you can
+ignore that patch.</p>
+
+<p><em>Update (2012/12/13):</em> my fix has been merged into the main Riak github repository,
+so you no longer need to apply the patch if you get the latest source
+by Git.</p>
+
+<h3>Vector Clocks</h3>
+
+<p><a href="http://en.wikipedia.org/wiki/Vector_clock">Vector clocks</a> are a
+common mechanism to attach a precise time to events occurring
+concurrently. By having each event producer keep tracks of the vector
+clock of events it is responding to, it becomes possible to identify
+sequences and branches in the timing of events (when running
+concurrently, time is no longer linear, but can be a graph, or even
+worse, a tree, where various participants ignore each other's
+responses).</p>
+
+<p>In particular, vector clocks allow a participant to detect conflicts
+in the data, and take remedial actions.</p>
+
+<p>Unfortunately, the notion of conflict resolution is not trivial; and
+with Riak all or nothing updates, there is almost no information left
+to do a merge (with concurrent file modifications, on the other hand,
+if the updated areas are different, it might be possible to apply both
+changes to the original version, which is what version control systems
+typically do).</p>
+
+<p>It does not help that, once again, the example chosen by the authors
+to illustrate the concept is poor: the idea that a score given by a
+number of judges can simply be averaged when a conflict occurs gives a
+rather weird meaning to the score. It would make more sense for each
+score to be stored in a different property, and averaged when they are
+all present...</p>
+
+<p>It could have been useful to show how more elaborate data (with
+multiple properties) can be merge based on the identity of the client
+(the book passes a client id but does not use it afterwards, so it
+might not be possible to retrieve it).</p>
+
+<h3>Pre and post-commit hooks</h3>
+
+<p>Riak allows code to be executed before and after changes on the
+database. This is similar to checks and triggers in PostgreSQL, but
+the post-commit hooks are more powerful as they can perform pretty
+much anything (although I have not explored triggers in other
+languages, such as Perl, Python, ... that PostgreSQL supports).</p>
+
+<p>Note: when I tried the example, I had a 500 Internal Server Error
+instead of the expected 403 Forbidden return code. I eventually
+tracked it down to a bug in the Erlang base code; see my explanations
+above to install and patch Riak.</p>
+
+<h3>Indexing and Searching</h3>
+
+<p>Unlike what is stated in the first beta of the book, search is a
+standard feature in Riak (at least 1.0.2). Just edit the <code>app.config</code>
+file, look for search, and change the <code>enable</code> property to <code>true</code>.</p>
+
+<p>Once search is enabled, it is recommended to change the index schema
+to declare how to index and search various fields. Otherwise, the
+search will not work as the book describes it. In particular, search
+for a specific breed will not be case insensitive.</p>
+
+<p>So, after enabling search in each server, I use the command
+<code>dev1/bin/search-cmd install animals</code> to enable auto-indexing on data
+updates (indexes can also be built from files, to the extent that you
+have them).</p>
+
+<p>Then I exported the default index with <code>dev1/bin/search-cmd get-schema
+animals</code> (the output must be piped into a file).</p>
+
+<p>I modified the file to add a declaration for the <code>breed</code> field,
+following examples from the original
+<a href="http://wiki.basho.com/Riak-Search---Schema.html">documentation</a>.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>animals schema  (animals.json)</span> <a href='/downloads/code/7d7w/riak/animals.json'>download</a></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -240,459 +677,177 @@ book=# EXPLAIN SELECT COUNT(*) FROM movies WHERE lower(title) ~ '<sup>the.*';</s
 <span class='line-number'>36</span>
 <span class='line-number'>37</span>
 <span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">FUNCTION</span> <span class="n">suggest_movies</span><span class="p">(</span><span class="k">search</span> <span class="nb">text</span><span class="p">)</span>
-</span><span class='line'><span class="k">RETURNS</span> <span class="k">SETOF</span> <span class="n">movies</span> <span class="k">AS</span> <span class="err">$$</span>
-</span><span class='line'><span class="k">DECLARE</span>
-</span><span class='line'>  <span class="n">found_name</span> <span class="nb">text</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">found_type</span> <span class="nb">char</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">tempmovie</span> <span class="n">movies</span><span class="o">%</span><span class="n">rowtype</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">movie_query</span> <span class="n">tsquery</span><span class="p">;</span>
-</span><span class='line'><span class="k">BEGIN</span>
-</span><span class='line'>  <span class="n">movie_query</span> <span class="p">:</span><span class="o">=</span> <span class="n">to_tsquery</span><span class="p">(</span><span class="k">replace</span><span class="p">(</span><span class="n">regexp_replace</span><span class="p">(</span><span class="k">trim</span><span class="p">(</span><span class="k">search</span><span class="p">),</span> <span class="s1">&#39; +&#39;</span> <span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">),</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&amp;&#39;</span><span class="p">));</span>
-</span><span class='line'>  <span class="k">SELECT</span> <span class="k">INTO</span> <span class="n">found_name</span><span class="p">,</span> <span class="n">found_type</span>
-</span><span class='line'>              <span class="n">name</span><span class="p">,</span> <span class="k">type</span>
-</span><span class='line'>  <span class="k">FROM</span> <span class="p">(</span>
-</span><span class='line'>    <span class="k">SELECT</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span> <span class="k">AS</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span> <span class="k">AS</span> <span class="k">type</span><span class="p">,</span> <span class="n">levenshtein</span><span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="k">search</span><span class="p">),</span> <span class="k">lower</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">))</span> <span class="k">AS</span> <span class="n">dist</span>
-</span><span class='line'>      <span class="k">FROM</span> <span class="n">actors</span> <span class="n">a</span> <span class="k">WHERE</span> <span class="k">search</span> <span class="o">%</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span>
-</span><span class='line'>    <span class="k">UNION</span>
-</span><span class='line'>	<span class="k">SELECT</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span> <span class="k">AS</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span> <span class="k">AS</span> <span class="k">type</span><span class="p">,</span> <span class="n">levenshtein</span><span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="k">search</span><span class="p">),</span> <span class="k">lower</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">))</span> <span class="k">AS</span> <span class="n">dist</span>
-</span><span class='line'>  	  <span class="k">FROM</span> <span class="n">actors</span> <span class="n">a</span> <span class="k">WHERE</span> <span class="n">metaphone</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">=</span> <span class="n">metaphone</span><span class="p">(</span><span class="k">search</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-</span><span class='line'>	<span class="k">UNION</span>
-</span><span class='line'>	<span class="k">SELECT</span> <span class="n">m</span><span class="p">.</span><span class="n">title</span> <span class="k">AS</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span> <span class="k">AS</span> <span class="k">type</span><span class="p">,</span> <span class="n">levenshtein</span><span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="k">search</span><span class="p">),</span> <span class="k">lower</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">title</span><span class="p">))</span> <span class="k">AS</span> <span class="n">dist</span>
-</span><span class='line'>      <span class="k">FROM</span> <span class="n">movies</span> <span class="n">m</span> <span class="k">WHERE</span> <span class="n">to_tsvector</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">title</span><span class="p">)</span> <span class="o">@@</span> <span class="n">movie_query</span>
-</span><span class='line'>       <span class="p">)</span> <span class="n">t</span>
-</span><span class='line'>  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">dist</span> <span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">%%</span> <span class="nx">Schema</span> <span class="k">for</span> <span class="s1">&#39;animals&#39;</span>
 </span><span class='line'>
-</span><span class='line'>  <span class="n">IF</span> <span class="n">found_type</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span> <span class="k">THEN</span>
-</span><span class='line'>    <span class="k">FOR</span> <span class="n">tempmovie</span> <span class="k">IN</span> <span class="k">SELECT</span> <span class="n">m</span><span class="p">.</span><span class="o">*</span> <span class="k">FROM</span> <span class="n">movies</span> <span class="n">m</span> <span class="k">NATURAL</span> <span class="k">JOIN</span> <span class="n">movies_actors</span> <span class="k">NATURAL</span> <span class="k">JOIN</span> <span class="n">actors</span>
-</span><span class='line'>                     <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="n">found_name</span> <span class="k">LIMIT</span> <span class="mi">5</span> <span class="n">LOOP</span>
-</span><span class='line'>      <span class="k">RETURN</span> <span class="k">NEXT</span> <span class="n">tempmovie</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">END</span> <span class="n">LOOP</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">ELSE</span>
-</span><span class='line'>    <span class="k">FOR</span> <span class="n">tempmovie</span> <span class="k">IN</span> <span class="k">SELECT</span> <span class="n">m</span><span class="p">.</span><span class="o">*</span> <span class="k">FROM</span> <span class="n">movies</span> <span class="n">m</span><span class="p">,</span>
-</span><span class='line'>                       <span class="p">(</span><span class="k">SELECT</span> <span class="n">genre</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">movies</span> <span class="k">WHERE</span> <span class="n">title</span> <span class="o">=</span> <span class="n">found_name</span><span class="p">)</span> <span class="n">s</span>
-</span><span class='line'>                       <span class="k">WHERE</span> <span class="n">cube_enlarge</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">genre</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span> <span class="o">@&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">genre</span> <span class="k">AND</span> <span class="n">s</span><span class="p">.</span><span class="n">title</span> <span class="o">&lt;&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">title</span>
-</span><span class='line'>                       <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">cube_distance</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">genre</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">genre</span><span class="p">)</span> <span class="k">LIMIT</span> <span class="mi">5</span> <span class="n">LOOP</span>
-</span><span class='line'>      <span class="k">RETURN</span> <span class="k">NEXT</span> <span class="n">tempmovie</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">END</span> <span class="n">LOOP</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">END</span> <span class="n">IF</span><span class="p">;</span>
-</span><span class='line'><span class="k">END</span><span class="p">;</span>
-</span><span class='line'><span class="err">$$</span> <span class="k">LANGUAGE</span> <span class="n">plpgsql</span><span class="p">;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nx">schema</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">[</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">version</span><span class="p">,</span> <span class="s2">&quot;1.1&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">n_val</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">default_field</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">whitespace_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>    <span class="p">],</span>
+</span><span class='line'>    <span class="p">[</span>
+</span><span class='line'>	<span class="p">{</span><span class="nx">field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>		<span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;breed&quot;</span><span class="p">},</span>
+</span><span class='line'>		<span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">standard_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>	<span class="p">]},</span>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_num&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">integers</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_num&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">integer</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">integer_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_int&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">integers</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_int&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">integer</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">integer_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_dt&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">dates</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_dt&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">date</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">noop_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_date&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">dates</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_date&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">date</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">noop_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_txt&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">full</span> <span class="nx">text</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="s2">        {dynamic_field, [</span>
+</span><span class='line'><span class="s2">            {name, &quot;</span><span class="o">*</span><span class="nx">_txt</span><span class="s2">&quot;},</span>
+</span><span class='line'><span class="s2">            {type, string},</span>
+</span><span class='line'><span class="s2">            {analyzer_factory, {erlang, text_analyzers, standard_analyzer_factory}}</span>
+</span><span class='line'><span class="s2">        ]},</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">        %% Field names ending in &quot;</span><span class="nx">_text</span><span class="s2">&quot; are indexed as full text&quot;</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_text&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">string</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">standard_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Everything</span> <span class="k">else</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">string</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">string</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">whitespace_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]}</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'><span class="p">}.</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Some testing:</p>
+<p>Finally, I loaded the schema back into Riak with <code>dev1/bin/search-cmd set-schema animals animals.json</code></p>
+
+<p>Now I can load the data as the book proposes (note that as I'm using
+the standard <code>dev1</code> Riak server instead of a dedicated one, the port
+is 8091 and not 8098).</p>
+
+<p><code>
+$ curl -X PUT http://127.0.0.1:8091/riak/animals/dragon \
+-H "Content-Type: application/json" \
+-d '{"nickname" : "Dragon", "breed" : "Briard", "score" : 1 }'
+$ curl -X PUT http://127.0.0.1:8091/riak/animals/ace \
+-H "Content-Type: application/json" \
+-d '{"nickname" : "The Wonder Dog", "breed" : "German Shepherd", "score" : 3 }'
+$ curl -X PUT http://127.0.0.1:8091/riak/animals/rtt \
+-H "Content-Type: application/json" \
+-d '{"nickname" : "Rin Tin Tin", "breed" : "German Shepherd", "score" : 4 }'
+</code></p>
+
+<p>And now the output of a search is as expected:</p>
 
 <p>```
-book=# select * from suggest_movies('Ben Aflk');
- movie_id |       title       |                          genre                        <br/>
-----------+-------------------+---------------------------------------------------------</p>
+$ curl http://localhost:8091/solr/animals/select?q=breed:shepherd
+&lt;?xml version="1.0" encoding="UTF-8"?>
+<response>
+  <lst name="responseHeader"></p>
 
-<pre><code>   22 | Armageddon        | (5, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  146 | Good Will Hunting | (0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  476 | Forces of Nature  | (0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  514 | Dogma             | (0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0)
-  609 | Chasing Amy       | (0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+<pre><code>&lt;int name="status"&gt;0&lt;/int&gt;
+&lt;int name="QTime"&gt;1&lt;/int&gt;
+&lt;lst name="params"&gt;
+  &lt;str name="indent"&gt;on&lt;/str&gt;
+  &lt;str name="start"&gt;0&lt;/str&gt;
+  &lt;str name="q"&gt;breed:shepherd&lt;/str&gt;
+  &lt;str name="q.op"&gt;or&lt;/str&gt;
+  &lt;str name="filter"&gt;&lt;/str&gt;
+  &lt;str name="df"&gt;value&lt;/str&gt;
+  &lt;str name="wt"&gt;standard&lt;/str&gt;
+  &lt;str name="version"&gt;1.1&lt;/str&gt;
+  &lt;str name="rows"&gt;2&lt;/str&gt;
+&lt;/lst&gt;
 </code></pre>
 
-<p>(5 rows)</p>
+<p>  </lst>
+  <result name="response" numFound="2" start="0" maxScore="0.353553"></p>
 
-<p>book=# select * from suggest_movies('Broos Weells');
- movie_id |       title       |                          genre                         <br/>
-----------+-------------------+----------------------------------------------------------</p>
-
-<pre><code>    6 | The Fifth Element | (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0)
-    9 | Twelve Monkeys    | (0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0)
-   22 | Armageddon        | (5, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  171 | Die Hard          | (7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  230 | Pulp Fiction      | (0, 0, 0, 12, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0)
+<pre><code>&lt;doc&gt;
+  &lt;str name="id"&gt;ace
+  &lt;/str&gt;
+  &lt;str name="breed"&gt;German Shepherd
+  &lt;/str&gt;
+  &lt;str name="nickname"&gt;The Wonder Dog
+  &lt;/str&gt;
+  &lt;str name="score"&gt;3
+  &lt;/str&gt;
+&lt;/doc&gt;
+&lt;doc&gt;
+  &lt;str name="id"&gt;rtt
+  &lt;/str&gt;
+  &lt;str name="breed"&gt;German Shepherd
+  &lt;/str&gt;
+  &lt;str name="nickname"&gt;Rin Tin Tin
+  &lt;/str&gt;
+  &lt;str name="score"&gt;4
+  &lt;/str&gt;
+&lt;/doc&gt;
 </code></pre>
 
-<p>(5 rows)</p>
-
-<p>book=# select * from suggest_movies('war star');
- movie_id |                     title                      |                          genre                        <br/>
-----------+------------------------------------------------+---------------------------------------------------------</p>
-
-<pre><code>  532 | Star Wars: Episode V - The Empire Strikes Back | (0, 7, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 2, 10, 0, 0, 0)
- 2862 | Avatar                                         | (0, 7, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 5, 10, 0, 0, 0)
- 1357 | Explorers                                      | (0, 5, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0)
-  325 | Krull                                          | (0, 5, 0, 0, 0, 0, 0, 5, 0, 5, 0, 0, 0, 0, 7, 0, 0, 0)
-  193 | E.T. The Extra-Terrestrial                     | (0, 5, 0, 0, 0, 0, 0, 5, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0)
-</code></pre>
-
-<p>(5 rows)
+<p>  </result>
+</response>
 ```</p>
-
-<p>Groovy.</p>
-
-<h2>Wrapping Up PostgreSQL</h2>
-
-<p>Well, not really wrapping it up. I'll keep using it, if only for fun. This database is powerful, mature, well documented, and extremely flexible over the domain of relational modeling. It is possible to define user defined types with arbitrary content, and fancy indexing. If you find an obscure academic paper describing a exotic indexing for a new datatype, chances are that PostgreSQL will support it, given enough C programming.</p>
-
-<p>The comments from the book on this database are very fair, and I would strongly recommend anyone to give it a good and honest evaluation.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks PostgreSQL Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/"/>
-    <updated>2011-12-03T14:54:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2</id>
-    <content type="html"><![CDATA[<p>Second day with PostgreSQL, this time to discuss advanced queries, stored procedures, and rewriting rules.</p>
-
-<p>The relational model was designed to make it easy to extract meaningful information from the database (although here the operative word is meaningful rather than easy). Aggregations pretty much require a schema to return anything worth the effort (and if you don't believe it, what exactly is the average value of 1, blue and 3?).</p>
-
-<p>Stored procedures can help to move some business intelligence from the main application to the database. Whether it is a good idea is an open question (and I think the knee-jerk negative answer is too often guided by ignorance rather than experience), but the idea of having enough rules in the database that multiple applications can connect to it safely (or safely enough) is worth considering: it enables other applications, some of which might be incompatible with the main business application, to use the business data (many reporting and ETL solutions might fall into this category). The choice is between control and openness (and which one is correct depends on the situation).</p>
-
-<p>Finally, rewriting rules is a less common feature of SQL databases, but essentially it allows the database designer to create updatable views, implement versioning on specific tables, and so on.</p>
-
-<!--more-->
-
-
-<p>I have a small peeve with the book so far: all too often the authors rely on implicit column ordering when manipulating data. I happen to have a different order for the columns of <code>events</code> (which was created as an exercise <a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">yesterday</a>), so many <code>INSERT</code> examples no longer work.</p>
-
-<p>But in general, it is good to specify the columns in an <code>INSERT</code>, as in:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>INSERT with explicit columns  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Your Favorite Band&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 21:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 23:00&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Crystal Ballroom&#39;</span> <span class="p">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>And to create 'My Place':</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>INSERT My Place  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">countries</span> <span class="p">(</span><span class="n">country_code</span><span class="p">,</span> <span class="n">country_name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;jp&#39;</span><span class="p">,</span> <span class="s1">&#39;Japan&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">cities</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Shinjuku&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">venues</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;My Place&#39;</span><span class="p">,</span> <span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Finally, to add the new events:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>INSERT new events  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span> <span class="k">VALUES</span>
-</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Steven King&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 21:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 23:00:00&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Powell&#39;&#39;s Books&#39;</span><span class="p">)),</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">(</span><span class="s1">&#39;Dinner with Mom&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 18:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 20:30:00&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;My Place&#39;</span><span class="p">)),</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">(</span><span class="s1">&#39;Valentine&#39;&#39;s Day&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>This way, there is never any ambiguity as to what is inserted.</p>
-
-<h3>Window functions</h3>
-
-<p>The book covers window functions, but in this first beta version of the book at least, the explanation is not very illuminating.</p>
-
-<p>Basically, <a href="http://www.postgresql.org/docs/current/static/functions-window.html">window functions</a> are a generalization of aggregate functions. Aggregate functions operates on a range of rows selected by a <code>GROUP BY</code> clause. For each group, there will be only one row, where columns are either grouped by columns, or aggregates.</p>
-
-<p>Window functions also operate on a range of rows, but there is one range for each row in the filtered table. The range can be created in a way similar to <code>GROUP BY</code> (using the <code>PARTITION OVER</code> clause), but can also be created by taking all the rows up to the current one, or 2 rows before, 2 rows after, and the current one, ... Such a range is called a window. There are <a href="http://www.postgresql.org/docs/current/static/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS">many ways</a> to define them.</p>
-
-<p>For instance, say we want to know, for each events, how many events have happened (including the current one), we can try:
-```
-book=# SELECT title, starts, COUNT(*) OVER (ORDER BY starts) FROM events;</p>
-
-<pre><code>   title        |       starts        | count 
-</code></pre>
-
-<p>--------------------+---------------------+-------
- Your Favorite Band | 2012-02-06 21:00:00 |     1
- Valentine's Day    | 2012-02-14 00:00:00 |     2
- My Book Signing    | 2012-02-15 17:30:00 |     3
- Dinner with Mom    | 2012-02-26 18:00:00 |     4
- Steven King        | 2012-02-26 21:00:00 |     5
- April Fools Day    | 2012-04-01 00:00:00 |     6
- House Party        | 2012-05-03 23:00:00 |     7
- Christmas Day      | 2012-12-25 00:00:00 |     8
- Valentine's Day    | 2013-02-14 00:00:00 |     9
-(9 rows)
-```</p>
-
-<p>The <code>OVER</code> does not specify a <code>PARTITION</code>, but an <code>ORDER</code>, which means that the <code>COUNT(*)</code> function operates on all the rows from first one to current one (ordered by the <code>starts</code> column). Actually, the <code>COUNT(*)</code> function is the same as the (proper) window function <code>RANK</code>:
-```
-book=# SELECT title, starts, RANK() OVER (ORDER BY starts) FROM events;</p>
-
-<pre><code>   title        |       starts        | rank 
-</code></pre>
-
-<p>--------------------+---------------------+------
- Your Favorite Band | 2012-02-06 21:00:00 |    1
- Valentine's Day    | 2012-02-14 00:00:00 |    2
- My Book Signing    | 2012-02-15 17:30:00 |    3
- Dinner with Mom    | 2012-02-26 18:00:00 |    4
- Steven King        | 2012-02-26 21:00:00 |    5
- April Fools Day    | 2012-04-01 00:00:00 |    6
- House Party        | 2012-05-03 23:00:00 |    7
- Christmas Day      | 2012-12-25 00:00:00 |    8
- Valentine's Day    | 2013-02-14 00:00:00 |    9
-(9 rows)
-```</p>
-
-<p>What about computing the order of each events, but by year? Nothing easier:
-```
-book=# SELECT title, starts, RANK() OVER (PARTITION BY extract(year from starts) ORDER BY starts) FROM events;</p>
-
-<pre><code>   title        |       starts        | rank 
-</code></pre>
-
-<p>--------------------+---------------------+------
- Your Favorite Band | 2012-02-06 21:00:00 |    1
- Valentine's Day    | 2012-02-14 00:00:00 |    2
- My Book Signing    | 2012-02-15 17:30:00 |    3
- Dinner with Mom    | 2012-02-26 18:00:00 |    4
- Steven King        | 2012-02-26 21:00:00 |    5
- April Fools Day    | 2012-04-01 00:00:00 |    6
- House Party        | 2012-05-03 23:00:00 |    7
- Christmas Day      | 2012-12-25 00:00:00 |    8
- Valentine's Day    | 2013-02-14 00:00:00 |    1
-(9 rows)
-```</p>
-
-<p>Ok, this is not very fancy. But with numeric data, window functions are more powerful. Lets say we collect daily measures into a new table:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Window function example  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">observation</span> <span class="p">(</span>
-</span><span class='line'>   <span class="k">day</span> <span class="k">timestamp</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-</span><span class='line'>   <span class="n">measure</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span>
-</span><span class='line'><span class="p">);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">observation</span> <span class="p">(</span><span class="k">day</span><span class="p">,</span> <span class="n">measure</span><span class="p">)</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="nb">date</span> <span class="s1">&#39;2011-12-01&#39;</span> <span class="k">AS</span> <span class="k">day</span><span class="p">,</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)::</span><span class="nb">int</span> <span class="k">as</span> <span class="n">measure</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>We could use the usual aggregate functions, for instance <code>AVG</code> and <code>SUM</code>:</p>
-
-<p>```
-book=# SELECT AVG(measure), SUM(measure) FROM observation;</p>
-
-<pre><code>     avg         | sum  
-</code></pre>
-
-<p>---------------------+------
- 54.9600000000000000 | 5496
-(1 row)
-```</p>
-
-<p>We have pretty much all the details. If there's any trend, we would not see it. But with window functions, it is possible to compute running averages (and actually, two different ones):</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Window function example  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="k">day</span><span class="p">,</span> <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">2</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">2</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">short_avg</span><span class="p">,</span>
-</span><span class='line'>  <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">5</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">5</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">long_avg</span><span class="p">,</span>
-</span><span class='line'>  <span class="k">SUM</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="k">day</span><span class="p">)</span> <span class="k">as</span> <span class="n">running_sum</span> <span class="k">FROM</span> <span class="n">observation</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>(results omitted because they are too long). Here, the <code>AVG(measure)</code> is applied to a window of either 5 rows for <code>short_avg</code> or 11 rows for <code>long_avg</code>, and there's a running sum in <code>running_sum</code>.</p>
-
-<p>Pretty cool, I'd say.</p>
-
-<h3>Rules</h3>
-
-<p><a href="http://www.postgresql.org/docs/current/static/sql-createrule.html">Rules</a> are very useful as well. Here's how I'd implement the <code>INSERT</code> on <code>holidays</code>:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>INSERT on holidays  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">insert_holidays</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">INSERT</span> <span class="k">TO</span> <span class="n">holidays</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
-</span><span class='line'>  <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">values</span> <span class="p">(</span><span class="k">NEW</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="o">+</span><span class="nb">interval</span> <span class="s1">&#39;23 hour 59 minutes&#39;</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="n">colors</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Note the syntax to manipulate dates and timestamp. It is fairly readable and compact enough.</p>
 
 <h2>Exercises</h2>
 
-<h3>Aggregate Functions</h3>
+<h3>Indexing on score</h3>
 
-<p>The aggregate functions are documented <a href="http://www.postgresql.org/docs/current/static/functions-aggregate.html">here</a>, while the window functions are <a href="http://www.postgresql.org/docs/current/static/functions-window.html">here</a>.</p>
+<p>For this I first modified the index schema again:</p>
 
-<h3>GUI</h3>
-
-<p>Honestly, I don't really use any. <code>psql</code> is really powerful. For those of the GUI persuasion, there are a few <a href="http://wiki.postgresql.org/wiki/Community_Guide_to_PostgreSQL_GUI_Tools">options</a>.</p>
-
-<h3>DELETE Rule</h3>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>DELETE rule on venues  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">delete_venue</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">TO</span> <span class="n">venues</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
-</span><span class='line'>  <span class="k">UPDATE</span> <span class="n">venues</span> <span class="k">SET</span> <span class="n">active</span> <span class="o">=</span> <span class="k">false</span> <span class="k">WHERE</span> <span class="n">venue_id</span> <span class="o">=</span> <span class="k">OLD</span><span class="p">.</span><span class="n">venue_id</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>With this rule in place, deleting from <code>venues</code> now set the <code>active</code> flag to false:</p>
-
-<p>```
-book=# DELETE FROM venues WHERE name = 'My Place';
-DELETE 0
-book=# SELECT * FROM venues;
- venue_id |       name       | street_address |  type   | postal_code | country_code | active
-----------+------------------+----------------+---------+-------------+--------------+--------</p>
-
-<pre><code>    1 | Crystal Ballroom |                | public  | 97205       | us           | t
-    2 | Powell's Books   |                | public  | 97205       | us           | t
-    5 | Run's House      |                | public  | 97205       | us           | t
-    4 | My Place         |                | private | 160-0022    | jp           | f
-</code></pre>
-
-<p>(4 rows)
-```</p>
-
-<h3>generate_series in crosstab</h3>
-
-<p>The documentation for <a href="http://www.postgresql.org/docs/current/static/tablefunc.html"><code>crosstab</code></a> has already an example for using <a href="http://www.postgresql.org/docs/current/static/functions-srf.html"><code>generate_series</code></a>:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>generate_series in crosstab  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
-</span><span class='line'><span class="s1">&#39;SELECT extract(year from starts) as year,</span>
-</span><span class='line'><span class="s1">extract(month from starts) as month, count(*) FROM events</span>
-</span><span class='line'><span class="s1">GROUP BY year, month&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 12) m&#39;</span>
-</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
-</span><span class='line'><span class="k">year</span> <span class="nb">int</span><span class="p">,</span>
-</span><span class='line'><span class="n">jan</span> <span class="nb">int</span><span class="p">,</span> <span class="n">feb</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mar</span> <span class="nb">int</span><span class="p">,</span> <span class="n">apr</span> <span class="nb">int</span><span class="p">,</span> <span class="n">may</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jun</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jul</span> <span class="nb">int</span><span class="p">,</span> <span class="n">aug</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sep</span> <span class="nb">int</span><span class="p">,</span> <span class="n">oct</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nov</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dec</span> <span class="nb">int</span>
-</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">YEAR</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The output remains the same:</p>
-
-<p><code>
- year | jan | feb | mar | apr | may | jun | jul | aug | sep | oct | nov | dec
-------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----
- 2012 |     |   5 |     |   1 |   1 |     |     |     |     |     |     |   1
- 2013 |     |   1 |     |     |     |     |     |     |     |     |     |    
-(2 rows)
-</code></p>
-
-<h3>Weekly pivot</h3>
-
-<p>The hardest, perhaps, is to find how to convince PostgreSQL to apply <a href="http://www.postgresql.org/docs/current/static/functions-math.html#FUNCTIONS-MATH-FUNC-TABLE"><code>div</code></a> to the passed arguments, but a bit of type declaration using <code>::</code> does the trick. Also, <code>crosstab</code> is not overly smart, so the <code>month</code> and <code>week</code> columns must be in order, otherwise the counts for the two February (one in 2012 and one in 2013) are different:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Weekly pivot  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
-</span><span class='line'><span class="s1">&#39;SELECT extract(month from starts) as month,</span>
-</span><span class='line'><span class="s1"> div(extract (day from starts)::int, 7) + 1 as week, count(*) FROM events</span>
-</span><span class='line'><span class="s1">GROUP BY month, week ORDER BY month, week&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 5) m&#39;</span>
-</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
-</span><span class='line'><span class="k">month</span> <span class="nb">int</span><span class="p">,</span>
-</span><span class='line'><span class="n">week_1</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_2</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_3</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_4</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_5</span> <span class="nb">int</span>
-</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">MONTH</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The query produces:</p>
-
-<p>```
- month | week_1 | week_2 | week_3 | week_4 | week_5
--------+--------+--------+--------+--------+--------</p>
-
-<pre><code> 2 |      1 |        |      3 |      2 |       
- 4 |      1 |        |        |        |       
- 5 |      1 |        |        |        |       
-12 |        |        |        |      1 |       
-</code></pre>
-
-<p>(4 rows)
-```</p>
-
-<p>And this completes Day 2.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks PostgreSQL Day 1]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/"/>
-    <updated>2011-12-03T12:22:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1</id>
-    <content type="html"><![CDATA[<p>The first database in the series is a relational database, and what better choice than <a href="http://www.postgresql.org">PostgreSQL</a>?</p>
-
-<!--more-->
-
-
-<p>Of course, <a href="http://www.mysql.com/">MySQL</a> is more popular, but if we are going to talk about SQL and the relational model, it is better to pick a database that actually takes these concepts seriously.</p>
-
-<p>The idea to start with a relational database is a good one. I feel that many who embrace NoSQL do so because they do not understand either SQL or the relational model. I was surprised to discover that some of my college educated colleagues did not know SQL at all. They were taught mostly about Java and object oriented design (I would ask for a refund). SQL databases have been developed, refined, and used in production for about 40 years. That's more than half the history of computers, they're likely to be part of the landscape for a few more decades, so ignoring them may be trendy but it is not wise.</p>
-
-<p>About the PostgreSQL version: the book appears to have been long in the making, as it still refers the reader to the version 9.0, while <a href="http://www.postgresql.org/docs/9.1/static/release-9-1-1.html">9.1</a> has been out for a few months.</p>
-
-<p>Installing then extensions that are needed for this book is easier with 9.1. Just using <a href="http://www.postgresql.org/docs/current/static/sql-createextension.html"><code>CREATE EXTENSION</code></a>:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Installing Extensions  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">tablefunc</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">dict_xsyn</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">fuzzystrmatch</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">pg_trgm</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="k">cube</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Removing them is done with the command <a href="http://www.postgresql.org/docs/current/static/sql-dropextension.html"><code>DROP EXTENSION</code></a>.</p>
-
-<h3>The events table</h3>
-
-<p>The code to create and fills the <code>events</code> table:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Creating and filling the events table  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>animals schema improved  (animals-score.json)</span> <a href='/downloads/code/7d7w/riak/animals-score.json'>download</a></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -714,493 +869,763 @@ book=# SELECT * FROM venues;
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">events</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">event_id</span> <span class="nb">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">title</span> <span class="nb">text</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">starts</span> <span class="k">timestamp</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">ends</span> <span class="k">timestamp</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">venue_id</span> <span class="nb">integer</span><span class="p">,</span>
-</span><span class='line'>  <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">venue_id</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">%%</span> <span class="nx">Schema</span> <span class="k">for</span> <span class="s1">&#39;animals&#39;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">REFERENCES</span> <span class="n">venues</span> <span class="p">(</span><span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nx">schema</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">[</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">version</span><span class="p">,</span> <span class="s2">&quot;1.1&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">n_val</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">default_field</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">whitespace_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>    <span class="p">],</span>
+</span><span class='line'>    <span class="p">[</span>
+</span><span class='line'>	<span class="p">{</span><span class="nx">field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>		<span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;breed&quot;</span><span class="p">},</span>
+</span><span class='line'>		<span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">standard_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>	<span class="p">]},</span>
+</span><span class='line'>	<span class="p">{</span><span class="nx">field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>		<span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">},</span>
+</span><span class='line'>		<span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">integer</span><span class="p">}</span>
+</span><span class='line'>	<span class="p">]},</span>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_num&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">integers</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_num&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">integer</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">integer_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_int&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">integers</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_int&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">integer</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">integer_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'><span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;My Book Signing&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-15 17:30:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-15 19:30:00&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_dt&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">dates</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_dt&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">date</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">noop_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="p">(</span><span class="s1">&#39;April Fools Day&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-04-01 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-04-01 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">),</span>
-</span><span class='line'>   <span class="p">(</span><span class="s1">&#39;Christmas Day&#39;</span><span class="p">,</span>   <span class="s1">&#39;2012-12-25 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-12-25 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_date&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">dates</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_date&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">date</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">noop_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Field</span> <span class="nx">names</span> <span class="nx">ending</span> <span class="k">in</span> <span class="s2">&quot;_txt&quot;</span> <span class="nx">are</span> <span class="nx">indexed</span> <span class="nx">as</span> <span class="nx">full</span> <span class="nx">text</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="s2">        {dynamic_field, [</span>
+</span><span class='line'><span class="s2">            {name, &quot;</span><span class="o">*</span><span class="nx">_txt</span><span class="s2">&quot;},</span>
+</span><span class='line'><span class="s2">            {type, string},</span>
+</span><span class='line'><span class="s2">            {analyzer_factory, {erlang, text_analyzers, standard_analyzer_factory}}</span>
+</span><span class='line'><span class="s2">        ]},</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">        %% Field names ending in &quot;</span><span class="nx">_text</span><span class="s2">&quot; are indexed as full text&quot;</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*_text&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">string</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">standard_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]},</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">%%</span> <span class="nx">Everything</span> <span class="k">else</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">string</span>
+</span><span class='line'>        <span class="p">{</span><span class="nx">dynamic_field</span><span class="p">,</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">name</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">string</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">analyzer_factory</span><span class="p">,</span> <span class="p">{</span><span class="nx">erlang</span><span class="p">,</span> <span class="nx">text_analyzers</span><span class="p">,</span> <span class="nx">whitespace_analyzer_factory</span><span class="p">}}</span>
+</span><span class='line'>        <span class="p">]}</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'><span class="p">}.</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<h3>On indexes</h3>
+<p>Then I reentered the data (see above) to get it indexed.</p>
 
-<p>I don't have a PostgreSQL 9.0 instance to check, but with 9.1 at least, <code>UNIQUE</code> constraints are implemented through a <code>btree</code> index, not a <code>hash</code> one. The difference is that a <code>btree</code> index is sorted and so supports range searches.</p>
-
-<p>This can be checked by querying the console about the table:</p>
+<p>Finally, I input a query in Firefox, to let it figure out the HTTP
+escape characters. The result is used below with curl (both outputs
+were identical):</p>
 
 <p>```
-book=# \d events</p>
+curl http://localhost:8091/solr/animals/select?q=score:%5B2%20TO%204%5D
+&lt;?xml version="1.0" encoding="UTF-8"?>
+<response>
+  <lst name="responseHeader"></p>
 
-<pre><code>                                   Table "public.events"
+<pre><code>&lt;int name="status"&gt;0&lt;/int&gt;
+&lt;int name="QTime"&gt;3&lt;/int&gt;
+&lt;lst name="params"&gt;
+  &lt;str name="indent"&gt;on&lt;/str&gt;
+  &lt;str name="start"&gt;0&lt;/str&gt;
+  &lt;str name="q"&gt;score:[2 TO 4]&lt;/str&gt;
+  &lt;str name="q.op"&gt;or&lt;/str&gt;
+  &lt;str name="filter"&gt;&lt;/str&gt;
+  &lt;str name="df"&gt;value&lt;/str&gt;
+  &lt;str name="wt"&gt;standard&lt;/str&gt;
+  &lt;str name="version"&gt;1.1&lt;/str&gt;
+  &lt;str name="rows"&gt;2&lt;/str&gt;
+&lt;/lst&gt;
 </code></pre>
 
-<p>  Column  |            Type             |                         Modifiers                       <br/>
-----------+-----------------------------+-----------------------------------------------------------
- event_id | integer                     | not null default nextval('events_event_id_seq'::regclass)
- title    | text                        |
- starts   | timestamp without time zone |
- ends     | timestamp without time zone |
- venue_id | integer                     |
-Indexes:</p>
+<p>  </lst>
+  <result name="response" numFound="2" start="0" maxScore="0.00000e+0"></p>
 
-<pre><code>"events_pkey" PRIMARY KEY, btree (event_id)
-"events_starts" btree (starts)
+<pre><code>&lt;doc&gt;
+  &lt;str name="id"&gt;ace
+  &lt;/str&gt;
+  &lt;str name="breed"&gt;German Shepherd
+  &lt;/str&gt;
+  &lt;str name="nickname"&gt;The Wonder Dog
+  &lt;/str&gt;
+  &lt;int name="score"&gt;3
+  &lt;/int&gt;
+&lt;/doc&gt;
+&lt;doc&gt;
+  &lt;str name="id"&gt;rtt
+  &lt;/str&gt;
+  &lt;str name="breed"&gt;German Shepherd
+  &lt;/str&gt;
+  &lt;str name="nickname"&gt;Rin Tin Tin
+  &lt;/str&gt;
+  &lt;int name="score"&gt;4
+  &lt;/int&gt;
+&lt;/doc&gt;
 </code></pre>
 
-<p>Foreign-key constraints:</p>
+<p>  </result>
+</response>
+```</p>
 
-<pre><code>"events_venue_id_fkey" FOREIGN KEY (venue_id) REFERENCES venues(venue_id)
-</code></pre>
+<h3>Distributed Riak</h3>
 
-<p>```</p>
+<p>I don't see much of a problem with this, I'll give it a try when I get
+home. There are already 4 different development servers easily
+available in a standard Riak package, so using one on each machine
+would do the trick. Of course, when adding the various servers to the
+ring, the hostname must be changed, but this should really be a piece
+of cake.</p>
+
+<h2>Wrapping up Riak</h2>
+
+<p>It seems Riak is a low level data store that trades easy of use and
+packaged features for high availability and flexible for
+performance cost.</p>
+
+<p>I can see how this could be in theory appealing in some circumstances,
+but I don't really see how to put such a framework to use.</p>
+
+<p>SQL databases don't just come with a nice engine optimised for
+relational queries; they also come with decades of experience, general
+guidelines for schema design and domain specific schema organisations.</p>
+
+<p>All these contribute to make the meaning of the data clear and
+useful. With Riak the quorum option can be used as a decision
+mechanism, but beside it is not obvious what meaning to give to a
+piece of information that has two or more concurrent variations. And
+of course consistency can no longer be implemented on more than one key
+no matter what.</p>
+
+<p>This means that a solution based on Riak will be significantly
+different from one using an SQL database. Perhaps it would feel more
+natural to an object oriented programmer who thinks in terms of
+objects and object references. But even in this context, the vector
+clock based resolution should still be difficult to design properly.</p>
+
+<p>The book in this regard fails even to acknowledge the problem; it
+concentrates on tools but does not give any framework to guide in the
+design of a solution built on Riak.</p>
+
+<p>I still has to check the
+<a href="http://www.allthingsdistributed.com/2007/10/amazons_dynamo.html">Amazon Dynamo Paper</a>
+and the other relevant literature, so I have hope yet I will come up with a
+reasonable understanding of all this.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks Riak Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/"/>
+    <updated>2011-12-08T22:59:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2</id>
+    <content type="html"><![CDATA[<p>Day 2 with Riak, to cover Mapreduce, distribution, rings and consistency.</p>
+
+<p>Mapreduce will be familiar to anyone who has been paying attention to Google. The basic idea comes from functional programming, but Google showed how it could be used to distribute the load over many machines (this in turn spawned two distinct recent developments in software: one is the range of databases explicitly built around the concept of Mapreduce; the other is the idea that functional languages are better suited to do concurrent and parallel programming).</p>
+
+<!--more-->
+
+
+<h3>A followup to yesterday simple trick</h3>
+
+<p>There is an alternative, maybe even simpler than yesterday's use of <code>python -mjson.tool</code>. It is shown (maybe a bit late) in the book: using an <code>Accept: text/plain</code> header in the HTTP request, as in:</p>
+
+<p><code>
+curl -H "Accept: text/plain" http://localhost:8091/stats
+</code></p>
+
+<p>This asks Riak to return plain text instead of json data; Riak helpfully interprets that as meaning the same data, but formatted for people. The advantage of this approach is that is still works even when <code>curl</code> generates extra output:</p>
+
+<p><code>
+curl -v -H "Accept: text/plain" http//localhost:8091/stats
+</code></p>
+
+<p>will both generate verbose debugging output, and get the data in human format.</p>
+
+<h3>Nothing wrong with Mapreduce per se, but...</h3>
+
+<p>I understand that the examples have to remain simple enough to be implementable on a (possible shared) single personal computer, but I still think that the authors are being dishonest when they contrast Mapreduce to an "SQL" based solution.</p>
+
+<p>The problem with this solution is that it is just what a self-taught coder with no understanding of SQL might produced (ok, I'm being unfair. Some college educated programmer I have known actually write code like that as well). But this idea of pushing the code to the data instead of pulling the data to the code is exactly what a database like PostgreSQL does.</p>
+
+<p>An actual SQL solution would be much simpler, would run fully in the database (no need for a script to create the initial data), and would deliver the data long before you'd be done coding and debugging the Javascript Mapreduce code.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>A real SQL solution  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="c1">-- SQL supports composite primary key, which this problem maps well to</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">hotel</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">floor</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">room</span>  <span class="nb">int</span>  <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">capacity</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">style</span> <span class="nb">char</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="k">CHECK</span> <span class="p">(</span><span class="n">style</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;queen&#39;</span><span class="p">,</span> <span class="s1">&#39;king&#39;</span><span class="p">,</span> <span class="s1">&#39;suite&#39;</span><span class="p">)</span> <span class="p">),</span>
+</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">floor</span><span class="p">,</span> <span class="n">room</span><span class="p">)</span>
+</span><span class='line'><span class="p">);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">-- a simple function to provide a easy to use random range</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">FUNCTION</span> <span class="n">random</span><span class="p">(</span><span class="nb">numeric</span><span class="p">,</span> <span class="nb">numeric</span><span class="p">)</span>
+</span><span class='line'><span class="k">RETURNS</span> <span class="nb">numeric</span> <span class="k">AS</span>
+</span><span class='line'><span class="err">$$</span>
+</span><span class='line'>   <span class="k">SELECT</span> <span class="p">(</span><span class="err">$</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="err">$</span><span class="mi">2</span> <span class="o">-</span> <span class="err">$</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">random</span><span class="p">())::</span><span class="nb">numeric</span><span class="p">;</span>
+</span><span class='line'><span class="err">$$</span> <span class="k">LANGUAGE</span> <span class="s1">&#39;sql&#39;</span> <span class="k">VOLATILE</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">-- using generate_series and the random function above</span>
+</span><span class='line'><span class="c1">-- to fill all the rooms, in pure PostgreSQL</span>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">hotel</span> <span class="p">(</span><span class="n">floor</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">capacity</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">SELECT</span> <span class="n">f</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="p">(</span><span class="nb">ARRAY</span><span class="p">[</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;queen&#39;</span><span class="p">,</span> <span class="s1">&#39;king&#39;</span><span class="p">,</span> <span class="s1">&#39;suite&#39;</span><span class="p">])[</span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)],</span> <span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span> <span class="k">FROM</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span> <span class="k">AS</span> <span class="n">f</span><span class="p">,</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span> <span class="k">AS</span> <span class="n">r</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">-- the basic query</span>
+</span><span class='line'><span class="k">SELECT</span> <span class="n">style</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">capacity</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">hotel</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">style</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">-- same query with filter</span>
+</span><span class='line'><span class="k">SELECT</span> <span class="n">style</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">capacity</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">hotel</span> <span class="k">WHERE</span> <span class="n">floor</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">=</span> <span class="mi">10</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">style</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>It does not help that actually testing the code on Riak, I had to wait about 10 seconds while PostgreSQL answer was immediate. Of course, I have 3 instances of Riak on a single machine, which is certainly not a typical setup.</p>
+
+<p>Riak is on a specific point among the trade off line to which data stores are constrained by the <a href="http://en.wikipedia.org/wiki/CAP_theorem">CAP theorem</a>. It would have been better to work on an example (maybe using more complex data, loaded from a file, like the movie database in PostgreSQL Day 3) that plays into Riak strengths rather showing how badly it performs compared to a much easier and more natural solution in SQL.</p>
+
+<p>It might have been enough to ask the reader to imagine the dataset to be so large that it could not fit in a single server (for instance, a simulation of the <a href="http://en.wikipedia.org/wiki/Hilbert's_paradox_of_the_Grand_Hotel">Hilbert's Hotel</a>), or to simulate a rocky network by shutting down some nodes at awkward moments, and show how Riak still delivers the goods. In such conditions most SQL databases would start to show their limits, and these would be legitimate.</p>
+
+<h3>Another comment on the example</h3>
+
+<p>If you run all the examples and the exercises, you will notice something interesting: there is a floor 101. That's actually a bug in the initial seeding script: the room number should range over 0 to 99, not 1 to 100. Mapping composite keys to a single value is not always safe. Oh well...</p>
+
+<p>I've changed my script after I went through everything, rebuild the data, and ran everything again.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Updated seeding script  (hotel.rb)</span> <a href='/downloads/code/7d7w/riak/hotel.rb'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># generate loads and loads of rooms with random styles and capacities</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;ripple&#39;</span>
+</span><span class='line'><span class="no">STYLES</span> <span class="o">=</span> <span class="sx">%w{single double queen king suite}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">Riak</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:http_port</span> <span class="o">=&gt;</span> <span class="mi">8091</span><span class="p">)</span>
+</span><span class='line'><span class="n">bucket</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">bucket</span><span class="p">(</span><span class="s1">&#39;rooms&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="c1"># Create 100 floors to the building</span>
+</span><span class='line'><span class="k">for</span> <span class="n">floor</span> <span class="k">in</span> <span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">100</span>
+</span><span class='line'>  <span class="n">current_rooms_block</span> <span class="o">=</span> <span class="n">floor</span> <span class="o">*</span> <span class="mi">100</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Making rooms </span><span class="si">#{</span><span class="n">current_rooms_block</span><span class="si">}</span><span class="s2"> - </span><span class="si">#{</span><span class="n">current_rooms_block</span> <span class="o">+</span> <span class="mi">99</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="c1"># Put 100 rooms on each floor (huge hotel!)</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">room</span> <span class="k">in</span> <span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">99</span>
+</span><span class='line'>    <span class="c1"># Create a unique room number as the key</span>
+</span><span class='line'>    <span class="n">ro</span> <span class="o">=</span> <span class="no">Riak</span><span class="o">::</span><span class="no">RObject</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="p">(</span><span class="n">current_rooms_block</span> <span class="o">+</span> <span class="n">room</span><span class="p">))</span>
+</span><span class='line'>    <span class="c1"># Randomly grab a room style, and make up a capacity</span>
+</span><span class='line'>    <span class="n">style</span> <span class="o">=</span> <span class="no">STYLES</span><span class="o">[</span><span class="nb">rand</span><span class="p">(</span><span class="no">STYLES</span><span class="o">.</span><span class="n">length</span><span class="p">)</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">capacity</span> <span class="o">=</span> <span class="nb">rand</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="c1"># Store the room information as a JSON value </span>
+</span><span class='line'>    <span class="n">ro</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
+</span><span class='line'>    <span class="n">ro</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;style&#39;</span> <span class="o">=&gt;</span> <span class="n">style</span><span class="p">,</span> <span class="s1">&#39;capacity&#39;</span> <span class="o">=&gt;</span> <span class="n">capacity</span><span class="p">}</span>
+</span><span class='line'>    <span class="n">ro</span><span class="o">.</span><span class="n">store</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Partial updates are not supported, unless they are</h3>
+
+<p>So I said yesterday that partial updates are not supported. And if they are, I really have not found a way to get them to work.</p>
+
+<p>Except for buckets. You can update properties of a bucket without having to specify every one of them. Which is good. But still, it might have been good for the rest of the data to have this feature.</p>
+
+<p>The fact that the properties of buckets are probably fixed, meaning you can't remove any, makes a partial update non ambiguous. Supporting partial updates on generic data would require a way to specify whether the update was complete or partial, and a way to remove properties. I can see why Riak designers chose not to go that way, but it still feels a bit ad hoc overall.</p>
+
+<h3>CAP choices</h3>
+
+<p>The section called "On Consistency and Durability" is more interesting, and better shows which features Riak attempts to provide.</p>
+
+<p>The ability to choose from various strategies to implement consistency and durability certainly introduces additional ways to make a mistake, but it also offers flexibility where the relational databases typically offer little.</p>
 
 <h2>Exercises</h2>
 
-<h3>The PostgreSQL FAQ</h3>
+<h3>Online Riak Mapreduce documentation</h3>
 
-<p>The FAQ is <a href="http://wiki.postgresql.org/wiki/FAQ">here</a>.</p>
+<p>The documentation is <a href="http://wiki.basho.com/MapReduce.html">http://wiki.basho.com/MapReduce.html</a>.</p>
 
-<h3>The PostgreSQL Documentation</h3>
+<h3>Riak contrib functions</h3>
 
-<p>The documentation for version 9.1 is <a href="http://www.postgresql.org/docs/9.1/static/index.html">here</a> (and <a href="http://www.postgresql.org/docs/manuals/">there</a> for all the versions).</p>
+<p>Google is a good friend. The central <a href="http://contrib.basho.com/">site</a> and the <a href="https://github.com/basho/riak_function_contrib">repository</a>.</p>
 
-<h3>About <code>MATCH FULL</code></h3>
+<h3>Keys filter documentation</h3>
 
-<p>This one was already explained in the book, and confirmed by the <a href="http://www.postgresql.org/docs/current/static/sql-createtable.html">documentation</a>: when a foreign key is composed of more than one column, they must all match a row in the referenced table, or be all null.</p>
+<p><a href="http://wiki.basho.com/Key-Filters.html">http://wiki.basho.com/Key-Filters.html</a></p>
 
-<h3>Selecting user table from <code>pg_class</code></h3>
+<h3>Total capacity by floor</h3>
 
-<p>Interestingly, the first time I tried to solve this exercise, I used <a href="http://www.postgresql.org/docs/current/static/view-pg-tables.html"><code>pg_tables</code></a> by mistake (<code>pg_tables</code> has a <code>tableowner</code> column which makes it easy to identify user tables).</p>
+<p>The first step is to map the original data to an array of capacity indexed by floor. What has not been seen so far is how to get the <code>key</code> of an object, but it is just another property (directly in <code>v</code>, not in the <code>values</code> array):</p>
 
-<p><a href="http://www.postgresql.org/docs/current/static/catalog-pg-class.html"><code>pg_class</code></a> stores the type of object in <code>relkind</code>: 'r' for tables. Restricting for just tables, and working on the table name:</p>
-
-<p>```
-book=#  select relname from pg_class where relkind = 'r';</p>
-
-<pre><code>     relname         
-</code></pre>
-
-<hr />
-
-<p> pg_statistic
- pg_type
- pg_attribute
- pg_authid
- pg_proc
- pg_class
- pg_database
- pg_user_mapping
- pg_constraint
- pg_inherits
- pg_index
- pg_operator
- pg_opfamily
- pg_opclass
- pg_amop
- pg_amproc
- pg_language
- pg_largeobject_metadata
-...
-```</p>
-
-<p>Ok, that's a bit long. Removing these <code>pg_</code> named tables:</p>
-
-<p>```
-book=# select relname from pg_class where relkind = 'r' and relname not like 'pg_%';</p>
-
-<pre><code>     relname         
-</code></pre>
-
-<hr />
-
-<p> sql_implementation_info
- sql_languages
- sql_packages
- sql_parts
- sql_sizing
- sql_sizing_profiles
- sql_features
- countries
- events
- cities
- venues
-(11 rows)
-```</p>
-
-<p>Interestingly, only the tables that are visible in the current database are listed (I have other databases, with more user created tables).</p>
-
-<p>Still I need to remove the <code>sql_</code> named tables. Using PostgreSQL <a href="http://www.postgresql.org/docs/current/static/functions-matching.html#FUNCTIONS-POSIX-REGEXP">regular expression operators</a>:
-```
-book=# select relname from pg_class where relkind = 'r' and relname !~ '<sup>(pg<em>|sql</em>)';</sup></p>
-
-<h2>  relname  </h2>
-
-<p> countries
- events
- cities
- venues
-(4 rows)
-```</p>
-
-<p>This is one approach. Another would be to try to mimic the behaviour of the <code>\d</code> console command. The <a href="http://www.postgresql.org/docs/current/static/app-psql.html"><code>psql</code></a> option <code>-E</code> can be used to check what queries are used to implement specific console commands:</p>
-
-<p>```
-$ psql -E book
-psql (9.1.1)
-Type "help" for help.</p>
-
-<p>book=# \d
-<strong><strong><strong><strong>* QUERY </strong></strong></strong></strong>**
-SELECT n.nspname as "Schema",
-  c.relname as "Name",
-  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' WHEN 'f' THEN 'foreign table' END as "Type",
-  pg_catalog.pg_get_userbyid(c.relowner) as "Owner"
-FROM pg_catalog.pg_class c</p>
-
-<pre><code> LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-</code></pre>
-
-<p>WHERE c.relkind IN ('r','v','S','f','')</p>
-
-<pre><code>  AND n.nspname &lt;&gt; 'pg_catalog'
-  AND n.nspname &lt;&gt; 'information_schema'
-  AND n.nspname !~ '^pg_toast'
-</code></pre>
-
-<p>  AND pg_catalog.pg_table_is_visible(c.oid)
-ORDER BY 1,2;</p>
-
-<hr />
-
-<pre><code>              List of relations
-</code></pre>
-
-<p> Schema |        Name         |   Type   |   Owner <br/>
---------+---------------------+----------+-----------
- public | cities              | table    | fdumontmd
- public | countries           | table    | fdumontmd
- public | events              | table    | fdumontmd
- public | events_event_id_seq | sequence | fdumontmd
- public | venues              | table    | fdumontmd
- public | venues_venue_id_seq | sequence | fdumontmd
-(6 rows)
-```</p>
-
-<p>The minimal query that lists the user created tables in the current database seems to be:</p>
-
-<p>```
-book=# select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace where c.relkind = 'r' and pg_catalog.pg_table_is_visible(c.oid) and n.nspname &lt;> 'pg_catalog';</p>
-
-<h2>  relname  </h2>
-
-<p> countries
- events
- cities
- venues
-(4 rows)
-```</p>
-
-<p>But given that <code>pg_class</code> only lists the tables in the current database, and assuming you don't use <code>pg_</code> or <code>sql_</code> prefixes, the first query is clearly easier.</p>
-
-<h3>Country name for the event 'My Book Signing'</h3>
-
-<p>Based on the content of the book so far, a possible solution uses <code>INNER JOIN</code>:</p>
-
-<p>```
-book=# select c.country_name from events e inner join venues v on e.venue_id = v.venue_id inner join countries c on v.country_code = c.country_code where title = 'My Book Signing';</p>
-
-<h2> country_name  </h2>
-
-<p> United States
-(1 row)
-```</p>
-
-<p>But this is a bit verbose. The structure of the tables makes it possible to use <a href="http://www.postgresql.org/docs/current/static/queries-table-expressions.html"><code>NATURAL JOIN</code></a>:</p>
-
-<p>```
-book=# select country_name from events natural join venues natural join countries where title = 'My Book Signing';</p>
-
-<h2> country_name  </h2>
-
-<p> United States
-(1 row)
-```</p>
-
-<p>When using <code>NATURAL JOIN</code>, PostgreSQL will join on all the columns that are found in both tables (based on their names). For instance, both <code>events</code> and <code>venues</code> have a <code>venue_id</code> column (and no other column with the same name), so the join is on this column.</p>
-
-<p>And other interesting difference is that <code>NATURAL JOIN</code> removes the duplicate columns:</p>
-
-<p><code>
-book=# select * from events natural join venues natural join countries where title = 'My Book Signing';
- country_code | venue_id | event_id |      title      |       starts        |        ends         |     name      | street_address |  type   | postal_code | active | country_name  
---------------+----------+----------+-----------------+---------------------+---------------------+---------------+----------------+---------+-------------+--------+---------------
- us           |        2 |        1 | My Book Signing | 2012-02-15 17:30:00 | 2012-02-15 19:30:00 | Powel's Books |                | public  | 97205       | t      | United States
-(1 row)
-</code></p>
-
-<p>whereas <code>INNER JOIN</code> does not:
-```
-book=# select * from events e inner join venues v on e.venue_id = v.venue_id inner join countries c on v.country_code = c.country_code where title = 'My Book Signing';
- event_id |      title      |       starts        |        ends         | venue_id | venue_id |     name      | street_address |  type   | postal_code | country_code | active | country_code | country_name<br/>
-----------+-----------------+---------------------+---------------------+----------+----------+---------------+----------------+---------+-------------+--------------+--------+--------------+---------------</p>
-
-<pre><code>    1 | My Book Signing | 2012-02-15 17:30:00 | 2012-02-15 19:30:00 |        2 |        2 | Powel's Books |                | public  | 97205       | us           | t      | us           | United States
-</code></pre>
-
-<p>(1 row)
-```</p>
-
-<h3>Add a new column</h3>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Add a new column to <code>venues</code>  </span></figcaption>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Mapping data  </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">venues</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">active</span> <span class="nb">boolean</span> <span class="k">DEFAULT</span> <span class="k">TRUE</span><span class="p">;</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">parsed_data</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">values</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">floor</span> <span class="o">=</span> <span class="o">~~</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">data</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">=</span> <span class="nx">parsed_data</span><span class="p">.</span><span class="nx">capacity</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">data</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Checking that is is now there:
-```
-book=# \d venues</p>
+<p>A quick test:</p>
 
-<pre><code>                                    Table "public.venues"
- Column     |          Type          |                         Modifiers                         
+<p>```
+curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
+{
+  "inputs":[</p>
+
+<pre><code>["rooms","101"],["rooms","102"],["rooms","103"]],
 </code></pre>
 
-<p>----------------+------------------------+-----------------------------------------------------------
- venue_id       | integer                | not null default nextval('venues_venue_id_seq'::regclass)
- name           | character varying(255) |
- street_address | text                   |
- type           | character(7)           | default 'public'::bpchar
- postal_code    | character varying(9)   |
- country_code   | character(2)           |
- active         | boolean                | default true
-Indexes:</p>
+<p>  "query":[</p>
 
-<pre><code>"venues_pkey" PRIMARY KEY, btree (venue_id)
+<pre><code>{"map":{
+  "language":"javascript",
+  "source":
+    "function(v) {
+      var parsed_data = JSON.parse(v.values[0].data); 
+      var data = {};
+      var floor = ~~(parseInt(v.key) / 100);
+      data[floor] = parsed_data.capacity; 
+      return [data];
+    }"}
+} ]
 </code></pre>
 
-<p>Check constraints:</p>
+<p>}</p>
 
-<pre><code>"venues_type_check" CHECK (type = ANY (ARRAY['public'::bpchar, 'private'::bpchar]))
-</code></pre>
+<p>Ctrl-D</p>
 
-<p>Foreign-key constraints:</p>
-
-<pre><code>"venues_country_code_fkey" FOREIGN KEY (country_code, postal_code) REFERENCES cities(country_code, postal_code) MATCH FULL
-</code></pre>
-
-<p>Referenced by:</p>
-
-<pre><code>TABLE "events" CONSTRAINT "events_venue_id_fkey" FOREIGN KEY (venue_id) REFERENCES venues(venue_id)
-</code></pre>
-
-<p>```</p>
-
-<p>or directly by <code>select</code>:
-```
-book=# select * from venues;
- venue_id |       name       | street_address |  type   | postal_code | country_code | active
-----------+------------------+----------------+---------+-------------+--------------+--------</p>
-
-<pre><code>    1 | Crystal Ballroom |                | public  | 97205       | us           | t
-    2 | Powel's Books    |                | public  | 97205       | us           | t
-</code></pre>
-
-<p>(2 rows)
+<p>[{"1":3},{"1":2},{"1":2}]
 ```</p>
 
-<p>And this completes Day 1. Tomorrow, stored procedures, triggers, views, rules, and other goodies are on the menu.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[New Book: Seven Databases in Seven Weeks]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/"/>
-    <updated>2011-12-03T12:21:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/03/new-book-seven-databases-in-seven-weeks</id>
-    <content type="html"><![CDATA[<p>It is early December still, but the good people of the <a href="http://pragprog.com/">Pragmatic Bookshelf</a> have delivered an early Christmas present: <a href="http://pragprog.com/book/rwdata/seven-databases-in-seven-weeks">Seven Databases in Seven Weeks</a>, by Eric Redmond and Jim Wilson.</p>
-
-<!--more-->
-
-
-<p>The book is in Beta, but there are chapters for 5 databases, so there plenty of material already.</p>
-
-<p>The idea of covering 7 databases, even superficially, is a good one, perhaps even better than for <a href="http://pragprog.com/book/btlang/seven-languages-in-seven-weeks">languages</a>: while the choice of a language is often beyond the control of any single developer, the choice of a database (perhaps from the NoSQL family as a complement to a core, mandated SQL one) is possible. As with languages, trying to use a new database is if it was similar to one you're already familiar with is likely to end badly. A good understanding of what each of them is good for, what problem they intend to solve, and what niche they fit better is mandatory.</p>
-
-<p>I have been working with relational databases mostly so far (and, professionally, with one of the worst databases that people can charge money for), so I am eager to be introduced to the other kinds, without the usual cheerleading that is found in many tutorials.</p>
-
-<p>In the coming weeks, assuming the book is timely updated, I'll be blogging my way through it, just as I did through <a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Seven Languages in Seven Weeks</a>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Languages in Seven Weeks Wrap Up]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/11/26/seven-languages-in-seven-weeks-wrap-up/"/>
-    <updated>2011-11-26T12:24:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/11/26/seven-languages-in-seven-weeks-wrap-up</id>
-    <content type="html"><![CDATA[<p>Wow, seven weeks already. And seven languages later, time to see where I can go from here.</p>
-
-<!--more-->
-
-
-<p>This was a rather pleasant journey. I felt that some exercises with Io and Scala were more frustrating than the rest, but overall it was not too taxing.</p>
-
-<p>It brought interesting benefits: I got a better look at emerging trends in software, but now it is up to me to develop this first look into something useable.</p>
-
-<h2>General comments</h2>
-
-<p>The exercises level was rather uneven. I guess that is inevitable, given that some of the languages were introduced as stepping stones for others. Still, from a CSV parser (even one using meta-programming) to a backtracking maze solver, there's a fairly large range.</p>
-
-<p>The idea of just giving enough information to get started, but not so much that the book is the only source of information needed to solve the exercises, was very good. A language is not just a syntax, a semantic, and a library. It is most of all a community, a set of websites, forums, mailing lists, ... It was smart to push the reader towards that.</p>
-
-<p>And yes, clearly, each language was barely covered, but some of the third day exercises were hinting at the more advanced features.</p>
-
-<p>All in all, this was a good book. It is useful to be exposed to different languages, if only to expand one's approach to problem solving. The features of tomorrow's mainstream languages are being explored today in smaller languages; being at least aware of this evolution is required to grow as a professional software engineer.</p>
-
-<p>But the author spends way too much time complaining about syntax (or claiming that a particular syntax is a weakness). I find the accusation that Scala's syntax is too academic particularly pointless. Rightfully, he adds that this is subjective, but what on earth is an academic syntax? A syntax is either easy on the fingers or not (the former being better), and either adapted to the semantic or not. It can support the features, or make them ugly. It should be concise in what it promotes, and verbose in what it discourages.</p>
-
-<p>As far as I could tell, each language had a syntax that matches its needs and those of its users.</p>
-
-<p>Conclusion: I recommend the book. Even knowing some of the languages I still learned a few things, and for those languages I knew, I had a chance for a second look and a new appreciation of what they offer.</p>
-
-<h2>From here to a bit further</h2>
-
-<p>It would be unfortunate if this book was the last step I took in these various languages. So here I recap what I think of each language, and where I'd like to go with them.</p>
-
-<h3>Ruby</h3>
-
-<p>I like Ruby. It's fun, open, does not make judgment about what is proper software engineering (who cares if you like monkey patching...). The syntax binds all the features well, and the ecosystem is really interesting.</p>
-
-<p>It might not have the performance, and no concurrency model worth mentioning, but as a new glue or script language, or perhaps for the Rails platform (although my current needs are not met by RoR), it shines.</p>
-
-<p>I had read the <a href="http://pragprog.com/book/ruby/programming-ruby">Programming Ruby</a> (the pickaxe book), and a few books on Rails, and I liked what I saw.</p>
-
-<p>I'll probably follow up with <a href="http://pragprog.com/book/ppmetr/metaprogramming-ruby">Metaprogramming Ruby</a>.</p>
-
-<p>And as I'm doing a lot of web development, I will try to look at Ruby driven <a href="http://seleniumhq.org/">Selenium</a>.</p>
-
-<h3>Io</h3>
-
-<p>Well, I won't spend much more time with Io. I really don't see any advantages. Yes, it's compact, the interpreter is small, so it's ideal for embedded languages. Which I don't need.</p>
-
-<p>As I said earlier, there is a prototype based, functional Lisp inspired language that is worth learning. It is supported by several major software companies or organisations, has users in the billions (or will soon): Javascript.</p>
-
-<h3>Prolog</h3>
-
-<p>I had learned Prolog at university. I had enjoyed it at the time, and doing the exercises reminded me of that fun.</p>
-
-<p>Prolog is, by and large, about exploring search trees, so the techniques it teaches are usable in other languages. The maze solver in Haskell is essentially a tree search and would be implemented the same way in Prolog.</p>
-
-<p>I'm glad that a recent trip back to Europe allowed me to retrieve my two Prolog books: <a href="http://mitpress.mit.edu/catalog/item/default.asp?ttype=2&amp;tid=8327">The Art of Prolog</a> and <a href="http://mitpress.mit.edu/catalog/item/default.asp?ttype=2&amp;tid=8336">The Craft of Prolog</a>. Both are large, so it might take a while.</p>
-
-<h3>Scala</h3>
-
-<p>I didn't know Scala but had heard about it and was very curious. It is indeed fairly expressive, more concise than Java, and the concurrency model much better.</p>
-
-<p>The type system is somewhat strange: much better than Java, but more verbose and less flexible than Haskell, and sometimes with bizarre results: the concatenation of a <code>List</code> of <code>Int</code> and a <code>List</code> of <code>String</code> is a <code>List</code> of <code>Any</code>...</p>
-
-<p>In any case, Scala seems to be gaining momentum, so I'll try and learn more about it in the near future. There are plenty of books, at least one free (<a href="http://programmingscala.com/">Programming Scala</a>, from O'Reilly), and one by the language creator (<a href="http://www.artima.com/shop/programming_in_scala">Programming in Scala</a>).</p>
-
-<h3>Erlang</h3>
-
-<p>Erlang was another language I had checked before, yet this book showed me something new. An important development of Erlang is OTP (Open Telecom Platform), but until very recently, there were few resources to learn about it.</p>
-
-<p>The whole concept of supervisors is just the beginning; as far as I can tell, OTP offers a large range of tools to monitor and keep processes alive on a network. Where this really becomes interesting, is that Scala is adopting some ideas (<a href="http://akka.io/">Akka</a> is inspired by Erlang/OTP), so some knowledge of one can be reused.</p>
-
-<p>There is an entry level book, <a href="http://pragprog.com/book/jaerlang/programming-erlang">Programming in Erlang</a>, by Joe Armstrong (Erlang's father), and a couple of more advanced books, specifically on OTP: <a href="http://www.manning.com/logan/">Erlang and OTP in Action</a> and <a href="http://shop.oreilly.com/product/9780596518189.do">Erlang Programming</a>. I'm going through Programming in Erlang, then the in Action one.</p>
-
-<h3>Clojure</h3>
-
-<p>Clojure is a Lisp for the JVM. That in itself should make it interesting, but somehow it does not do it for me. Maybe it is that Clojure is not as good Lisp it could be because of the JVM limitations. Or maybe I'm just not into Lisp anymore (I used to like Perl too, but wonder why today).</p>
-
-<p>But with my professional investment in the JVM, I will probably investigate Clojure a bit further. Just not urgently.</p>
-
-<p>It might be interesting to see if <a href="http://norvig.com/paip.html">Paradigms of Artificial Intelligence Programming</a> can easily be ported to Clojure.</p>
-
-<h3>Haskell</h3>
-
-<p>Haskell is an interesting language. But it is extremely demanding, and there are few resources to come to grip with it. I knew enough about Haskell to go through this book easily, but whenever I try to go further, I find that difficulties accumulate quickly.</p>
-
-<p>It appears that Haskell's features are all somewhat complicated in their own way:</p>
-
-<h4>Types</h4>
-
-<p>Haskell type system is perhaps the most sophisticated of all widely used type systems. Basic Haskell type system is already very rich, but <a href="http://www.haskell.org/ghc/">GHC</a> adds extensions that brings the expressivity of the type system to new heights.</p>
-
-<p>I would assume that Haskell strength must be in this type system; there are interesting libraries and applications that are built around clever use of types. But there are few resources on using types for design (or designing with types), except for very academic papers with no obvious practical uses (I probably lack imagination)</p>
-
-<p>GHC's extensions are similarly explored in other academic papers, but the sum of these extensions is hard to make sense of (and it sometimes feels like the authors of GHC are also trying to make sense of this patchwork and find a more consistent set of features).</p>
-
-<p>This is in serious needs of a good book, but I can't think of any that fits the bill.</p>
-
-<h4>Laziness</h4>
-
-<p>Haskell's laziness goes much further than Clojure's. I did not mention it in <a href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/">Haskell Day 3</a>'s Maze solution, but laziness makes this implementation very effective: only the first solution is computed. While the implementation is strictly equivalent to nested list comprehensions, only the part required for the first output is actually run.</p>
-
-<p>Laziness (combine with the List Monad) makes the algorithm very short: a mere 14 lines. But it makes it also very obscure. I know, intellectually, that laziness will run just a much as needed, but I don't understand it as well as, say, I understand the time and space cost of an algorithm in C.</p>
-
-<p>When digging a bit deeper in Haskell, newcomers learn to be wary of laziness: it introduces space leaks that can be hard to track. Solutions exist, but are spread in academic papers that require extensive understanding of the whole background theories (why do academic papers always refer to other, more obscure academic papers, and never to a single "Idiot Guide to..."?)</p>
-
-<p>Of all the features of Haskell, I would think that laziness is the harder to master. There are few generally available resources. <a href="http://www.cambridge.org/gb/knowledge/isbn/item1161740/?site_locale=en_GB">Purely Functional Data Structures</a> explores laziness and provides a theoretical framework to compute the time cost of lazy algorithms, but does so assuming a partial laziness built on top of SML.</p>
-
-<p><a href="http://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A Functional Programming Approach</a> is about Haskell, but appears to be out of print (glad I got a copy when I first got interested in Haskell).</p>
-
-<p>Both books are in my todo stack (which by now requires all my skills in rock climbing to handle).</p>
-
-<h4>Syntax</h4>
-
-<p>Haskell's syntax is another of its strengths: it is very compact, and the type system abstracts away many details. So it's no surprise that many people (or maybe just me) have a problem with it.</p>
-
-<p>I learned OCaml at university (those were good days). My first few assignments, I had to implement my own list like data type, because I could not figure out how to use the default list in pattern matching. The language was so weird that it did not even occurred to me that a language whose standard list type was unusable would not leave the lab it grew in. Then eventually the syntax settled in my brain, and I started to wonder why it had been so hard before.</p>
-
-<p>Haskell is similar (they are both somewhat descendant of ML), but far more abstract (OCaml does not support either type classes or user operators). So just looking at an expression, it is not easy to assign it a type (there might be many) or a single meaning (there might be many as well).</p>
-
-<p>Another thing that I find hard to keep under control is the creation of anonymous functions. Between higher order functions that produce functions, and the do notation (which produces functions as well), it is hard to track what is going on, even it apparently simple expressions.</p>
-
-<p>This is not to say that Haskell's syntax does not "work". It does, clearly, but the expressivity it grants is difficult to master.</p>
-
-<h4>The compiler</h4>
-
-<p>The compiler is another peace of the puzzle. All compilers are fantastically complex beasts; the underlying theories are just as fascinating as they are overwhelming. But in general, at least with regular imperative (or perhaps just with strict languages), my intuitions about what is costly, what is a possible leak, ... just based on the code, are usually correct. With Haskell, there are many areas where I'm not sure what the compiler will do. Functional languages enthusiasts used to say that any inefficiency in their favourite language was just waiting for a sufficiently advanced compiler, but now I have a feeling that understanding what the compiler is doing is just as hard as figuring out program wide memory allocation in C...</p>
-
-<p>And it matters. Strictness analysis, for instance, is used by GHC (and, I suppose, other Haskell compilers) to figure out which expressions could be strict (i.e. not lazy) without changing the overall semantic. This changes the time and space cost of some expressions, and makes performance difficult to predict.</p>
-
-<h4>The meta-language</h4>
-
-<p>Haskell is its own meta-language. What is a core feature in most languages is just a library in Haskell. This means that there is little uniformity even in fundamental part of the languages. There are <a href="http://www.randomhacks.net/articles/2007/03/10/haskell-8-ways-to-report-errors">8 ways to report errors</a> (perhaps more today). And at least that many monad transformer libraries.</p>
-
-<p>Having to combine these various libraries (and more importantly, the libraries that use them) is difficult, and adds accidental complexity. What makes it more frustrating is that Haskell type system is otherwise very effective at making it easy to create code parts that can be combined in various ways (while checking that the combination always make some sense).</p>
-
-<p>It would be good to standardise some of these, and maybe the <a href="http://hackage.haskell.org/platform/">Haskell Platform</a> will achieve this, although it would be nice if it was keeping up with at least GHC (at the time of writing, version 7.0.3 is in the Platform, but 7.2.2 is already out, with important changes).</p>
-
-<h4>and so on...</h4>
-
-<p>I would like to like Haskell. But if any language can be accused of being too academic, it is Haskell. Sometimes it feels like the main purpose of the language is to make it possible to prove, through the type system, that a specific, inefficient sort algorithm is indeed a sort algorithm.</p>
-
-<p>I'm really curious about organisations that use Haskell for commercial purposes. What kind of features do they use the most? Is laziness really a good thing, or it is flushed away from the code and replaced by explicit on demand evaluation? Given a chance, I'd like to work in such an organisation, as I feel Haskell requires a different approach to large scale problem solving than the one I'm used to.</p>
-
-<h3>Other topics</h3>
-
-<p>From the same publisher (<a href="http://pragprog.com/">The Pragmatic Bookshelf</a>) as this book,
-<a href="http://pragprog.com/book/rwdata/seven-databases-in-seven-weeks">Seven Databases in Seven Weeks</a> is looking very interesting. I'm also professionally bound to SQL, so I haven't really been paying attention to the whole NoSQL movement. Yet there are definitively interesting things going on, and the variety of alternative database models makes such a book a welcome introduction.</p>
-
-<p>As I've been doing way too much sequential processing in the past, I am looking to expand my horizon and learn about large scale concurrency (Erlang, Scala, ... help here), and asynchronous, event based processing. <a href="http://www.manning.com/etzion/">Event Processing in Action</a> appears to be a decent way to get started.</p>
-
-<p>Finally, and while it is completely unrelated to whatever this book was about, I haven't studied algorithms since I left university. I really feel I should get back to that topic, and <a href="http://www.algorist.com/">The Algorithm Design Manual</a> is just what I need.</p>
+<p>Ok, looking good. Now the <code>reduce</code> part. It is strictly identical to the book's <code>reduce</code> function, but I just renamed some variables to make it clear what is being iterated over:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Reducing data  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">totals</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">v</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">floor</span> <span class="k">in</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span> <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="p">)</span>
+</span><span class='line'>    <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">floor</span><span class="p">];</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">floor</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>  <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>  <span class="k">return</span> <span class="p">[</span><span class="nx">totals</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Testing:</p>
+
+<p>```
+curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
+{
+  "inputs":[</p>
+
+<pre><code>["rooms","101"],["rooms","102"],["rooms","103"]],
+</code></pre>
+
+<p>  "query":[</p>
+
+<pre><code>{"map":{
+  "language":"javascript",
+  "source":
+    "function(v) {
+      var parsed_data = JSON.parse(v.values[0].data); 
+      var data = {};
+      var floor = ~~(parseInt(v.key) / 100);
+      data[floor] = parsed_data.capacity; 
+      return [data];
+    }"}
+},
+{"reduce": {
+    "language": "javascript",
+    "source":
+      "function(v) {
+          var totals = {};
+          for (var i in v) {
+            for(var floor in v[i]) {
+              if( totals[floor] ) 
+                totals[floor] += v[i][floor];
+              else
+                totals[floor] = v[i][floor];
+            } 
+          }
+
+          return [totals];
+        }"}
+} ]
+</code></pre>
+
+<p>}</p>
+
+<p>Ctrl-D</p>
+
+<p>[{"1":7}]
+```</p>
+
+<p>Ok, still looking good. Let's run it on the whole set:</p>
+
+<p>```
+curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
+{
+  "inputs":"rooms",
+  "query":[</p>
+
+<pre><code>{"map":{
+  "language":"javascript",
+  "source":
+    "function(v) {
+      var parsed_data = JSON.parse(v.values[0].data); 
+      var data = {};
+      var floor = ~~(parseInt(v.key) / 100);
+      data[floor] = parsed_data.capacity; 
+      return [data];
+    }"}
+},
+{"reduce": {
+    "language": "javascript",
+    "source":
+      "function(v) {
+          var totals = {};
+          for (var i in v) {
+            for(var floor in v[i]) {
+              if( totals[floor] ) 
+                totals[floor] += v[i][floor];
+              else
+                totals[floor] = v[i][floor];
+            } 
+          }
+
+          return [totals];
+        }"}
+} ]
+</code></pre>
+
+<p>}</p>
+
+<p>Ctrl-D</p>
+
+<p>[</p>
+
+<pre><code>{
+    "1": 456, 
+    "10": 445, 
+    "100": 452, 
+    "11": 448, 
+    "12": 482, 
+    "13": 452, 
+    "14": 489, 
+    "15": 467, 
+    "16": 461, 
+    "17": 471, 
+    "18": 426, 
+    "19": 426, 
+    "2": 394, 
+    "20": 413, 
+    "21": 428, 
+    "22": 460, 
+    "23": 447, 
+    "24": 443, 
+    "25": 430, 
+    "26": 430, 
+    "27": 447, 
+    "28": 486, 
+    "29": 429, 
+    "3": 437, 
+    "30": 434, 
+    "31": 415, 
+    "32": 483, 
+    "33": 460, 
+    "34": 440, 
+    "35": 519, 
+    "36": 492, 
+    "37": 422, 
+    "38": 413, 
+    "39": 439, 
+    "4": 451, 
+    "40": 440, 
+    "41": 458, 
+    "42": 386, 
+    "43": 488, 
+    "44": 428, 
+    "45": 423, 
+    "46": 487, 
+    "47": 463, 
+    "48": 408, 
+    "49": 422, 
+    "5": 417, 
+    "50": 464, 
+    "51": 434, 
+    "52": 429, 
+    "53": 468, 
+    "54": 412, 
+    "55": 440, 
+    "56": 427, 
+    "57": 458, 
+    "58": 420, 
+    "59": 438, 
+    "6": 426, 
+    "60": 464, 
+    "61": 446, 
+    "62": 412, 
+    "63": 431, 
+    "64": 445, 
+    "65": 435, 
+    "66": 444, 
+    "67": 449, 
+    "68": 460, 
+    "69": 474, 
+    "7": 436, 
+    "70": 473, 
+    "71": 431, 
+    "72": 457, 
+    "73": 426, 
+    "74": 454, 
+    "75": 463, 
+    "76": 406, 
+    "77": 464, 
+    "78": 441, 
+    "79": 502, 
+    "8": 421, 
+    "80": 477, 
+    "81": 422, 
+    "82": 441, 
+    "83": 466, 
+    "84": 447, 
+    "85": 488, 
+    "86": 486, 
+    "87": 414, 
+    "88": 463, 
+    "89": 494, 
+    "9": 446, 
+    "90": 441, 
+    "91": 459, 
+    "92": 433, 
+    "93": 488, 
+    "94": 450, 
+    "95": 442, 
+    "96": 479, 
+    "97": 460, 
+    "98": 429, 
+    "99": 445
+}
+</code></pre>
+
+<p>]
+```</p>
+
+<h3>Restrict the capacity count to floors 42 and 43</h3>
+
+<p>It should be enough that the key be between 4200 and 4390:</p>
+
+<p>```
+curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
+{
+  "inputs":{</p>
+
+<pre><code>"bucket": "rooms",
+"key_filters": [["string_to_int"], ["between", 4200, 4399]]
+</code></pre>
+
+<p>  },
+  "query":[</p>
+
+<pre><code>{"map":{
+  "language":"javascript",
+  "source":
+    "function(v) {
+      var parsed_data = JSON.parse(v.values[0].data); 
+      var data = {};
+      var floor = ~~(parseInt(v.key) / 100);
+      data[floor] = parsed_data.capacity; 
+      return [data];
+    }"}
+},
+{"reduce": {
+    "language": "javascript",
+    "source":
+      "function(v) {
+          var totals = {};
+          for (var i in v) {
+            for(var floor in v[i]) {
+              if( totals[floor] ) 
+                totals[floor] += v[i][floor];
+              else
+                totals[floor] = v[i][floor];
+            } 
+          }
+
+          return [totals];
+        }"}
+} ]
+</code></pre>
+
+<p>}</p>
+
+<p>Ctrl-D</p>
+
+<p>[{"42":386,"43":488}]
+```</p>
+
+<p>The output matches what was computed for the whole set of rooms, which is always a good thing.</p>
+
+<p>And this completes Day 2. I must admit I have so far mixed feelings: I understand better what Riak tries to achieve, but the example is just not the kind of things Riak should be used for, and the Mapreduce syntax is a bit heavy (although, fortunately, very regular).</p>
+
+<p>Tomorrow will cover Vector Clocks, the mechanism that Riak exposes both to move conflicts resolution to the client side, and to help the client to implement a decent resolution.</p>
 ]]></content>
   </entry>
   

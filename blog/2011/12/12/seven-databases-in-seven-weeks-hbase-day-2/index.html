@@ -1,0 +1,472 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks HBase Day 2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="And on the second day with HBase, we load it with Wikipedia. Actually I had to do it twice to get it to work: on my first attempt the process kind of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks HBase Day 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-12T23:46:00+09:00" pubdate data-updated="true">Dec 12<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>And on the second day with HBase, we load it with <a href="http://www.wikipedia.org/">Wikipedia</a>. Actually I had to do it twice to get it to work: on my first attempt the process kind of froze at about 200,000 articles.</p>
+
+<!--more-->
+
+
+<p>After some digging (and finding this very helpful <a href="http://ofps.oreilly.com/titles/9781449396107/installation.html">page</a> from <a href="http://ofps.oreilly.com/titles/9781449396107/">HBase: The Definitive Guide</a>), I tried again with a different setting for the limit on open files:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ulimit -n 10240</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With that, HBase was able to keep churning along (the limit is per session, so HBase had to be restarted). I started the import process in the morning, and when I finally stopped it it had passed 10,000,000 pages (not all of them actual articles). Parsing links was equally successful.</p>
+
+<h3>Consistency</h3>
+
+<p>Unlike Riak, which offers <a href="http://en.wikipedia.org/wiki/Eventual_consistency">eventual consistency</a>, HBase ensures row level consistency. This means that each row has only one value, and a write to the row is either entirely successful, or not performed at all (so an update will never be applied partially).</p>
+
+<p>This idea that each row is atomic is a simple yet effective mental model; I feel I should be able to use this model to design reliable solutions on HBase. To make them fast as well is a different matter entirely: I&#8217;d first need more experience with the concept of column families and their various options.</p>
+
+<h3>Logging</h3>
+
+<p>HBase uses <a href="http://en.wikipedia.org/wiki/Write-ahead_logging">Write-Ahead Logging</a>, exactly like PostgreSQL and many other databases (Riak too) and file systems. This is a low level mechanism designed to help with consistency: first a description of the updates is written into a log file (and flushed); then the update is performed. If there&#8217;s a problem during the update, it is always possible to compare the write-ahead log and execute again whatever updates are missing or partial.</p>
+
+<h3>Regions and servers</h3>
+
+<p>I must say I am still a bit unclear on this topic: I have a standalone instance of HBase, so naturally there is no distribution involved.</p>
+
+<p>HBase first keep the data sorted by key, and distributes contiguous chunks of data to each region (growing the number of regions if needed).</p>
+
+<h3>HBase and names</h3>
+
+<p>In a typical relational database, just as in a normal programming language, the name you give to things (tables, columns or variables) is a programmer oriented feature that has no impact on performance.</p>
+
+<p>The idea that you should use short variable names for &#8216;performance reason&#8217; is either a joke or a beginner&#8217;s mistake.</p>
+
+<p>Except in HBase, where the length of names can impact storage performance. See the <a href="http://hbase.apache.org/book.html#rowkey.design">HBase book, Try to minimize row and column sizes</a>.</p>
+
+<h2>Exercises</h2>
+
+<h3>Compression in HBase</h3>
+
+<p>I could not really find any article on the pros and cons of compression in either HBase or Hadoop. I guess the pros and cons here are the same as any other use of compression: trading IO for CPU. Smaller (because compressed) data can be saved to and read from the disk faster, but at the cost of higher CPU usage.</p>
+
+<h3>Bloom filters</h3>
+
+<p>Bloom filters are describe on the always helpful <a href="http://en.wikipedia.org/wiki/Bloom_filter">Wikipedia</a>. Such a filter is a tool to determine quickly if a piece of information in not in a specific storage, with a configurable probability for false positive.</p>
+
+<p>Say you have a key value distributed data store. For each store, you maintain a Bloom filter of the keys.</p>
+
+<p>Assuming you are looking for a key, you can use the Bloom filters to quickly determine where to look further.</p>
+
+<p>If a Bloom filter for a store states the key is not present, you know you can ignore the store. If it says the key is present, it could be wrong, so you have to look. How often it returns yes when it should say no is a trade-off between the size of the filter and the probability of error.</p>
+
+<p>With HBase being distributed by default, knowing where to look for a key or a key, column pair can increase performance.</p>
+
+<h3>Column family options for compression</h3>
+
+<p>There use to be <code>RECORD</code> and <code>BLOCK</code> options, but they appear deprecated. What is left is to specify the compression algorithm for either regular compression, or compacting compression (which happens when HBase reorganize the store). The compacting compression setting can use the same values (i.e. algorithm names) as the compression setting. In the shell, the option is <code>COMPRESSION_COMPACT</code>.</p>
+
+<p>The available algorithms are <code>NONE</code> (no encryption), <code>GZ</code>, <code>LZO</code> and <code>SNAPPY</code> (which is probably better still than LZO).</p>
+
+<h3>Column family compression design consideration</h3>
+
+<p>I could not find any definitive answer to this, but I would guess that:</p>
+
+<ul>
+<li>already compressed data (such as JPEG) should be in an uncompressed column family</li>
+<li>rarely used by very large data could use a slower but more efficient algorithm such as GZ</li>
+<li>small but very often used families should not be compressed</li>
+</ul>
+
+
+<h3>Installing LZO</h3>
+
+<p>To install LZO compression is not exactly trivial, especially on Mac OS X.</p>
+
+<p>The first step is to install the library; I did it with <a href="http://mxcl.github.com/homebrew/">Homebrew</a>. It installs 64 bits versions by default; the only thing to remember is that by default on Mac OS X 10.7, the default compiler is <a href="http://llvm.org">LLVM</a>, but often <a href="http://gcc.gnu.org/">GCC</a> is better.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo brew install lzo --use-gcc</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and LZO will end up under <code>/usr/local/Cellar/lzo/2.06/</code></p>
+
+<p>Next step is to build the hadoop LZO plugin. The basic information is available on the Hadoop <a href="http://wiki.apache.org/hadoop/UsingLzoCompression">wiki</a>, but the main repository it refers to is obsolete. There is another, maintained <a href="https://github.com/toddlipcon/hadoop-lzo">repository</a> on Github.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone https://github.com/toddlipcon/hadoop-lzo</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Mac OS X</h4>
+
+<p>Building on Linux should work right away, but Mac OS X (especially 10.7) is slightly different in frustrating way. The <code>ld</code> command is not GNU, but BSD, so it does not understand the same options.</p>
+
+<p>To get the library to compile, you need to edit the <code>build.xml</code> file and clear the <code>LDFLAGS</code> (by default the value is <code>-Wl,--no-as-needed</code>, it needs to be empty).</p>
+
+<p>Liquid error: ClassNotFound: no lexer for alias &#8216;txt&#8217; found</p>
+
+<p>From inside the repository, it can be applied with</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>patch -p1 &lt; hadoop-lzo.patch</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once this is done, the <code>ant</code> invocation documented in the Wiki should almost work. Two things need to be changed: first is the use of <code>GCC</code> instead of <code>LLVM</code> (by setting the <code>CC</code> variable); second is the strange name of the <code>include</code> directory for Java. The build script expects it under <code>$JAVA_HOME/include</code>, but of course in Mac OS X it had to be somewhere else (<code>/System/Library/Frameworks/JavaVM.framework/Headers</code>, if you need to know), so I added it directly to the include path <code>C_INCLUDE_PATH</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>env JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/ \
+</span><span class='line'>C_INCLUDE_PATH=/System/Library/Frameworks/JavaVM.framework/Headers:/usr/local/Cellar/lzo/2.06/include/ \
+</span><span class='line'>LIBRARY_PATH=/usr/local/Cellar/lzo/2.06/lib/ CFAGS='-arch x86_64' \
+</span><span class='line'>CC=/usr/bin/gcc-4.2  ant clean compile-native test tar</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Normally, you should now have a <code>build</code> directory with the jar and native libraries.</p>
+
+<p>The final step is to deploy this in HBase. HBase expect everything to be under the <code>$HBASE_HOME/lib</code>. The instructions from the wiki give the right commands (I just added the creation of the <code>$HBASE_HOME/lib/native</code> directory, which does not exist by default):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cp build/hadoop-lzo-0.4.15/hadoop-lzo-0.4.15.jar $HBASE_HOME/lib/
+</span><span class='line'>mkdir -p $HBASE_HOME/lib/native
+</span><span class='line'>tar -cBf - -C build/hadoop-lzo-0.4.15/lib/native/ . | tar -xBvf - -C $HBASE_HOME/lib/native</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you can test whether the new library is enabled: run the command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./bin/hbase org.apache.hadoop.hbase.util.CompressionTest /tmp/data.lzo lzo</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and it should output:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>11/12/14 09:13:21 INFO lzo.GPLNativeCodeLoader: Loaded native gpl library
+</span><span class='line'>11/12/14 09:13:21 INFO lzo.LzoCodec: Successfully loaded & initialized native-lzo library [hadoop-lzo rev c7d54fffe5a853c437ee23413ba71fc6af23c91d]
+</span><span class='line'>11/12/14 09:13:21 INFO compress.CodecPool: Got brand-new compressor
+</span><span class='line'>SUCCESS</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that&#8217;s it. The most frustrating part is that HBase will appear to hang when you try to enable a table that uses LZO compression if anything went wrong (and forgot to test as above). The logs will reveal that <code>hadoop-native</code> cannot be found. This means that the native libraries cannot be loaded. So make sure that you have all the files below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.0.dylib
+</span><span class='line'>$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.a
+</span><span class='line'>$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.dylib
+</span><span class='line'>$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.la</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After that, restart the server, and you can use LZO compression instead of GZ.</p>
+
+<p>And this completes Day 2. Next and final day is about deploying HBase to the cloud. This might take more than just a day as I need some time to figure out how to use <a href="http://aws.amazon.com/ec2/">AWS EC2</a> and which options to choose, but hopefully I&#8217;ll be able to deploy Riak there as well.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-12T23:46:00+09:00" pubdate data-updated="true">Dec 12<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/" title="Previous Post: Seven Databases in Seven Weeks HBase Day 1">&laquo; Seven Databases in Seven Weeks HBase Day 1</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/" title="next Post: Seven Databases in Seven Weeks HBase Day 3">Seven Databases in Seven Weeks HBase Day 3 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">Seven Databases in Seven Weeks HBase Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">Seven Databases in Seven Weeks HBase Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">Seven Databases in Seven Weeks HBase Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Seven Databases in Seven Weeks Riak Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Seven Databases in Seven Weeks Riak Day 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

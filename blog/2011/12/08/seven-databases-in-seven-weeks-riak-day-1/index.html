@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks Riak Day 1 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="The second database is Riak, a key-value distributed store. Key-value stores a not really new (many property or configuration files are really basic &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks Riak Day 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-08T10:22:00+09:00" pubdate data-updated="true">Dec 8<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>The second database is <a href="http://basho.com/products/riak-overview/">Riak</a>, a key-value distributed store. Key-value stores a not really new (many property or configuration files are really basic key-value stores, and <a href="http://en.wikipedia.org/wiki/Berkeley_DB">Berkeley DB</a> has long been a good choice for those who needed something a little bit more robust than simple files but not as complex as a relational database).</p>
+
+<p>Still, going from this simple concept to a distributed store that can execute data processing on each of its nodes requires more than simply scaling things up, and I hope that this book will give me some idea of how such a store (and the other NoSQL) might fit in the solution landscape.</p>
+
+<!--more-->
+
+
+<p>
+But that is probably getting a bit ahead of myself; right now I&#8217;d be happy just to know how to use Riak.</p>
+
+<p>The client can be the simple <a href="http://curl.haxx.se/"><code>cURL</code></a> command, as Riak&#8217;s interface is based on HTTP. This simplifies the technical stack, but pushes some of the complexity on the client. It is clear that Riak will not provide anything as easy and convenient as PostgreSQL&#8217;s <code>psql</code>.</p>
+
+<p>Riak&#8217;s basic API is a REST based CRUD (with Create being pretty much the same as Update). Additional attributes, such as meta-data or the more important links are passed as headers in the HTTP request.</p>
+
+<p>It is simple, but somewhat inconvenient: there is no concept of partial update. When you want to update an object, you need to pass all the relevant data: meta-data, links, and content. Forget to mention one, and Riak will forget it too.</p>
+
+<h3>When was this book written?</h3>
+
+<p>I had <a href="">noticed</a> that the book refers to PostgreSQL 9.0 when <a href="http://www.postgresql.org/docs/9.1/static/release-9-1-2.html">9.1</a> has been out for a while. In this chapter on Riak, the author uses an apparently old format for the URLs, <code>/riak/bucket/key</code>, whereas the <a href="http://wiki.basho.com/HTTP-Store-Object.html">official documentation</a> recommends <code>/buckets/bucket/keys/key</code> (for instance, <code>/buckets/animals/keys/polly</code>). Both formats can be used and are interoperable, but there is no need to teach already deprecated formats.</p>
+
+<p>Of course, I found out about this new format after I completed all the exercises for today. So I will still use the old format for today.</p>
+
+<p>Presumably this will be fixed by the time the book gets published.</p>
+
+<h3>Simple but useful trick</h3>
+
+<p>Reading unformatted JSON data can be difficult. I found that Python provides a simple way to pretty print JSON output:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>python -mjson.tool</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(there are certainly other tools. Python is just the first one I came upon). To turn this into a simple, easy to use command, I added this to my <code>.profile</code> file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>alias ppjs='python -mjson.tool'
+</span><span class='line'>alias ppjsless='python -mjson.tool | less'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That way, I can just pipe the output of <code>curl</code> into <code>ppjsless</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8091/stats | ppjsless</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>This unfortunately does not work with <code>curl</code> additional output (such as HTTP headers).</p>
+
+<h2>Exercises</h2>
+
+<h3>Online documentation</h3>
+
+<p>The root of the wiki is <a href="http://wiki.basho.com/">here</a>, and the HTTP (not just REST) API is <a href="http://wiki.basho.com/HTTP-API.html">here</a>.</p>
+
+<h3>Mime types</h3>
+
+<p>As always, <a href="http://en.wikipedia.org/wiki/Internet_media_type">Wikipedia</a> is very useful.</p>
+
+<h3>Differences between the dev1, dev2 and dev3 servers</h3>
+
+<p>The only difference is the port number. But there is some intelligence in the startup script to map each server to its own directory for permanent storage.</p>
+
+<h3>Link from Polly to her picture</h3>
+
+<p>This creates the link. Note, as I mentioned above, that the content needs to be repeated. Putting no body would cause a <code>curl</code> error (as an HTTP <code>PUT</code> request must have a body):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X PUT http://localhost:8091/riak/animals/polly \
+</span><span class='line'>-H "Content-type: application/json" \
+</span><span class='line'>-H "Link: &lt;/riak/photo/polly.jpg&gt;; riaktag=\"photo\"" \
+</span><span class='line'>-d '{"nickname" : "Sweet Polly Purebred", "breed" : "Purebred"}'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The image can be retrived from Polly by following the link:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8091/riak/animals/polly/_,photo,_</span></code></pre></td></tr></table></div></figure>
+
+
+<p>or, using the new format:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8091/buckets/animals/keys/polly/_,photo,_</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>POST</code> a new type of document</h3>
+
+<p>Here I upload the Seven Databases in Seven Weeks (legal) PDF:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -i -X POST http://localhost:8091/riak/documents \
+</span><span class='line'>-H "Content-type: application/pdf" \
+</span><span class='line'>--data-binary @seven-databases-in-seven-weeks_b1_0.pdf </span></code></pre></td></tr></table></div></figure>
+
+
+<p>I use the <code>-i</code> option to retrieve the HTTP headers of the response and get the generated key. The command above has this output:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>HTTP/1.1 100 Continue
+</span><span class='line'>
+</span><span class='line'>HTTP/1.1 201 Created
+</span><span class='line'>Vary: Accept-Encoding
+</span><span class='line'>Server: MochiWeb/1.1 WebMachine/1.9.0 (someone had painted it blue)
+</span><span class='line'>Location: /riak/documents/6WCpgTjMpvHiojiHeH7vsGBXdHC
+</span><span class='line'>Date: Thu, 08 Dec 2011 09:16:18 GMT
+</span><span class='line'>Content-Type: application/pdf
+</span><span class='line'>Content-Length: 0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Otherwise, I could list the keys for this bucket:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8091/riak/documents?keys=true | ppjs
+</span><span class='line'>
+</span><span class='line'>{
+</span><span class='line'>    "keys": [
+</span><span class='line'>        "6WCpgTjMpvHiojiHeH7vsGBXdHC"
+</span><span class='line'>    ], 
+</span><span class='line'>    "props": {
+</span><span class='line'>        "allow_mult": false, 
+</span><span class='line'>        "basic_quorum": false, 
+</span><span class='line'>        "big_vclock": 50, 
+</span><span class='line'>        "chash_keyfun": {
+</span><span class='line'>            "fun": "chash_std_keyfun", 
+</span><span class='line'>            "mod": "riak_core_util"
+</span><span class='line'>        }, 
+</span><span class='line'>        "dw": "quorum", 
+</span><span class='line'>        "last_write_wins": false, 
+</span><span class='line'>        "linkfun": {
+</span><span class='line'>            "fun": "mapreduce_linkfun", 
+</span><span class='line'>            "mod": "riak_kv_wm_link_walker"
+</span><span class='line'>        }, 
+</span><span class='line'>        "n_val": 3, 
+</span><span class='line'>        "name": "documents", 
+</span><span class='line'>        "notfound_ok": true, 
+</span><span class='line'>        "old_vclock": 86400, 
+</span><span class='line'>        "postcommit": [], 
+</span><span class='line'>        "pr": 0, 
+</span><span class='line'>        "precommit": [], 
+</span><span class='line'>        "pw": 0, 
+</span><span class='line'>        "r": "quorum", 
+</span><span class='line'>        "rw": "quorum", 
+</span><span class='line'>        "small_vclock": 10, 
+</span><span class='line'>        "w": "quorum", 
+</span><span class='line'>        "young_vclock": 20
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I can use the URL below to retrieve the document in a browser:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8091/riak/documents/6WCpgTjMpvHiojiHeH7vsGBXdHC</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>PUT</code> a medecine image and link to Ace</h3>
+
+<p>Once again, nothing too complex, but everything has to be done at the same time, as partial updates are not possible:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X PUT http://localhost:8091/riak/medecine/antibiotics \
+</span><span class='line'>-H "Content-type: image/jpeg" -H "Link: &lt;/riak/animals/ace&gt;; riaktag=\"for\"" \
+</span><span class='line'>--data-binary @medecine.jpg </span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then the image itself can be retrieve at:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8091/riak/medecine/antibiotics</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, I can get the poor patient by following links:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:8091/riak/medecine/antibiotics/animals,for,_
+</span><span class='line'>
+</span><span class='line'>--ZhESIca7K0r54xNT0w737ZZDbvl
+</span><span class='line'>Content-Type: multipart/mixed; boundary=WZgHw2YUOMNtda2iM46bNdvXxt7
+</span><span class='line'>
+</span><span class='line'>--WZgHw2YUOMNtda2iM46bNdvXxt7
+</span><span class='line'>X-Riak-Vclock: a85hYGBgzGDKBVIcR4M2cvvdjT+YwZTImsfKUDcx5ARfFgA=
+</span><span class='line'>Location: /riak/animals/ace
+</span><span class='line'>Content-Type: application/json
+</span><span class='line'>Link: &lt;/riak/animals&gt;; rel="up"
+</span><span class='line'>Etag: 6egZ1heUAPW7DEy0HjO7K0
+</span><span class='line'>Last-Modified: Thu, 08 Dec 2011 01:40:14 GMT
+</span><span class='line'>
+</span><span class='line'>{"nickname" : "The Wonder Dog", "breed" : "German Shepherd"}
+</span><span class='line'>--WZgHw2YUOMNtda2iM46bNdvXxt7--
+</span><span class='line'>
+</span><span class='line'>--ZhESIca7K0r54xNT0w737ZZDbvl--</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And this completes Day 1. The basic REST API is not complex, but its simplicity cuts both ways. There is a lot of typing required; I expect client libraries to be much easier to use, at the cost of having to write an application or script to do anything.</p>
+
+<p>Tomorrow will cover MapReduce in the context of Riak.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-08T10:22:00+09:00" pubdate data-updated="true">Dec 8<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/" title="Previous Post: Seven Databases in Seven Weeks PostgreSQL Day 3">&laquo; Seven Databases in Seven Weeks PostgreSQL Day 3</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/" title="next Post: Seven Databases in Seven Weeks Riak Day 2">Seven Databases in Seven Weeks Riak Day 2 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">Seven Databases in Seven Weeks HBase Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">Seven Databases in Seven Weeks HBase Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">Seven Databases in Seven Weeks HBase Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Seven Databases in Seven Weeks Riak Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Seven Databases in Seven Weeks Riak Day 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

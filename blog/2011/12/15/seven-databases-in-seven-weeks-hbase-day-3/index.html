@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks HBase Day 3 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="The third day with HBase is a bit short, but opens to a world of
+possibilities: the Cloud. This is where HBase belongs. No personal (or even that &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks HBase Day 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-15T16:27:00+09:00" pubdate data-updated="true">Dec 15<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>The third day with HBase is a bit short, but opens to a world of
+possibilities: the Cloud.</p>
+
+<p>This is where HBase belongs. No personal (or even that many corporate)
+networks are large enough to let it perform correctly.</p>
+
+<p>HBase depends on a large number of servers running in parallel for
+its performance, and there are few other places to find that many
+machines.</p>
+
+<!--more-->
+
+
+<h3>Thrift</h3>
+
+<p>The first topic for today is <a href="http://thrift.apache.org/">Thrift</a>, a
+generic remote interface to program servers (and a gift from the new
+Evil Empire, Facebook).</p>
+
+<p>It is a tool to document a binary API, and generate client stubs to
+use this API. HBase supports such an API, making it possible to write
+clients in a variety of languages.</p>
+
+<p>Using Thrift on your own project (on the server side, if you have any)
+would make it possible to use different languages on the client side,
+depending on whichever better fits the needs (scripting languages for
+glue scripts, &#8230;)</p>
+
+<p>When I tried the example from the book, I had to change the connection
+address of the <code>thrift_example.rb</code> code from <code>localhost</code> to
+<code>127.0.0.1</code>, otherwise Thrift would refuse the connection.</p>
+
+<h3>Whirr</h3>
+
+<p><a href="http://whirr.apache.org/">Whirr</a> is far more exciting. It is a tool
+to deploy and configure some specific servers on (among others)
+<a href="http://aws.amazon.com/ec2/">Amazon EC2</a>.</p>
+
+<p>The first, and perhaps the most complex step is to open an account on
+<a href="http://aws.amazon.com/">AWS</a>. It will require a phone, a credit card,
+a computer, and some time. And perhaps a couple of emails if the
+account opening remains stuck in &#8220;Pending verification&#8221; status.</p>
+
+<p>Once this is done, Whirr can be used to create instances (be careful
+with that: Amazon will charge at least one hour for each server even
+if you take it down after a couple of minutes), download and install
+specific servers (mostly from the <a href="http://hadoop.apache.org/">Hadoop</a>
+family), configure them, all of this from the comfort of the command
+line (which is my case is cosily close to a cup of warm coco, so it is
+very comfortable indeed).</p>
+
+<p>All you have to do is retrieve you security token from your AWS
+account page, create a public/private key pair, then write a recipe
+file (which describes what kind of machines and how many you need,
+what to install on each, &#8230;), and Whirr takes care of the rest. The
+first two steps only have to be done once; you can deploy as many
+recipes as you need.</p>
+
+<p>The setup process takes a few minutes, then you can connect with SSH
+to one of your remote servers.</p>
+
+<p>Whirr also creates a security configuration for each recipe, opening
+only the ports that are required by the servers in the recipe,
+limiting source of the connections to specific servers. You can also
+edit the security rules directly in the recipe if you want.</p>
+
+<p>The ease with which this can be done is really surprising. It reminds
+me of how easy it was to deploy a Rails application on
+<a href="http://www.heroku.com/">Heroku</a>.</p>
+
+<p>Now, I do not have any foreseen uses for such computing capacity, but
+I can see how it could be helpful for any organisation to be able to
+run occasional large data processing jobs without having to maintain a
+permanent data center.</p>
+
+<h2>Exercises</h2>
+
+<p>There is only one exercise today: to open a Thrift connection to an
+AWS deployed HBase.</p>
+
+<p>The method described in the book is to open the port 9090 to the
+world, and to hope to be the only one to know about this port: a
+likely possibility, but who would want to take such a chance in
+production?</p>
+
+<p>Fortunately, there is a better solution: SSH Tunneling. It is very
+easy to set up and requires nothing but what we already have.</p>
+
+<p>The general idea is to open a ssh tunnel between a local port and a
+remote port: whatever you puts in the local port is taken by ssh,
+transported over the SSH connection; once it reaches the remote
+machine, the remote ssh instance will forward the data to the remote
+port, as if it was a client running on the remote machine.</p>
+
+<p>The transport between the two machines only requires the remote one to
+have the SSH port open (which is both the case, and secure). You have
+to use authentication and encryption for the transport.</p>
+
+<p>And what is required to implement this SSH tunneling:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -i keys/id_rsa -f ${USER}@&lt;SERVER_NAME&gt; -L 9090:&lt;SERVER_NAME&gt;:9090 -N</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(from the directory where you created the <code>keys</code> directory)</p>
+
+<p>Here I map the local port 9090 to the remote machine&#8217;s port 9090. That
+way I don&#8217;t even have to change my <code>thrift_example.rb</code> code. But of
+course, if I had to connect to different machines, I would use
+different ports.</p>
+
+<p>The Thrift server must be started as in the book (binding to
+<code>0.0.0.0</code>) because the binding will be from the network IP, not the
+loop IP:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo /usr/local/hbase-0.90.3/bin/hbase-daemon.sh start thrift -b 0.0.0.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this in place, and after creating some tables in the remote
+HBase:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby thrift_example.rb 
+</span><span class='line'>links
+</span><span class='line'>  from:
+</span><span class='line'>    maxVersions: 1
+</span><span class='line'>    compression: NONE
+</span><span class='line'>    bloomFilterType: ROWCOL
+</span><span class='line'>  to:
+</span><span class='line'>    maxVersions: 1
+</span><span class='line'>    compression: NONE
+</span><span class='line'>    bloomFilterType: ROWCOL
+</span><span class='line'>wiki
+</span><span class='line'>  revision:
+</span><span class='line'>    maxVersions: 2147483647
+</span><span class='line'>    compression: NONE
+</span><span class='line'>    bloomFilterType: NONE
+</span><span class='line'>  text:
+</span><span class='line'>    maxVersions: 2147483647
+</span><span class='line'>    compression: GZ
+</span><span class='line'>    bloomFilterType: ROW</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(be careful not to use LZO as a compression algorithm in the remote
+HBase, as I did when I tried the first time: the default HBase has no
+LZO support and will fail when you try to enable a table with LZO compression).</p>
+
+<p>To take a tunnel down, you&#8217;ll have to find and kill it (as far as I
+can tell). If you have no other ssh connections, <code>killall ssh</code> is a
+simple solution.</p>
+
+<h2>Wrapping up HBase</h2>
+
+<p>I like what I see with HBase: the project has strong backers among its
+users (Yahoo, Facebook, &#8230;); it belongs to a large family of tools
+that help to design Big Data solutions, and integrates well with some
+Cloud networks</p>
+
+<p>The model is easy to understand (the book mentions the possibility of
+eventual consistency due to regional replication, but this remains a
+simpler model than Riak&#8217;s), and close to the original MapReduce
+concept.</p>
+
+<p>This is really one tool I will have a closer look to in the near
+future.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-15T16:27:00+09:00" pubdate data-updated="true">Dec 15<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/" title="Previous Post: Seven Databases in Seven Weeks HBase Day 2">&laquo; Seven Databases in Seven Weeks HBase Day 2</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">Seven Databases in Seven Weeks HBase Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">Seven Databases in Seven Weeks HBase Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">Seven Databases in Seven Weeks HBase Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Seven Databases in Seven Weeks Riak Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Seven Databases in Seven Weeks Riak Day 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

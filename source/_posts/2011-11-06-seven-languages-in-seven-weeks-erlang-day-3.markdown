@@ -26,7 +26,8 @@ That sounds like the [`supervisor`](http://www.erlang.org/doc/man/supervisor.htm
 
 There is a fairly detailed description of the setup in [Learn you some Erlang for great good](http://learnyousomeerlang.com/), but it requires a good understanding of everything that comes before. A much shorter introduction is found [here](http://www.hccp.org/supervisors.html).
 
-For, using `supervisor` for keeping the `translate_service` up and running (assuming it dies on unknown words):
+For instance, using `supervisor` for keeping the `translate_service`
+up and running (assuming it dies on unknown words):
 
 {% include_code Supervised Translation Service lang:erlang 7l7w/erlang/translate_service_sup.erl %}
 

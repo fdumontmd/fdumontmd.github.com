@@ -227,12 +227,18 @@
         <lastmod>2011-12-15T18:58:19+09:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/
+        </loc>
+        <lastmod>2011-12-18T19:51:56+09:00</lastmod>
+    </url>
+    <url>
         <loc>http://blog.wakatta.jp/about/</loc>
         <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2011-12-15T18:58:19+09:00</lastmod>
+        <lastmod>2011-12-18T19:51:56+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
@@ -244,6 +250,6 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2011-12-15T18:58:19+09:00</lastmod>
+        <lastmod>2011-12-18T19:51:56+09:00</lastmod>
     </url>
 </urlset>

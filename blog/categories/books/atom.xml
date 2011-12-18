@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-12-15T18:59:48+09:00</updated>
+  <updated>2011-12-18T19:53:18+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,496 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks Riak on EC2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/"/>
+    <updated>2011-12-17T14:36:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2</id>
+    <content type="html"><![CDATA[<p>The third day with Riak had proposed to deploy Riak on a
+<a href="http://aws.amazon.com/ec2/">EC2</a> cluster as an exercise. I could not
+do it then due to poor network connectivity and lack of time (I was
+traveling), but I did it since and here I explain how.</p>
+
+<!--more-->
+
+
+<p>EC2 is a service from Amazon to commission a number of virtual
+computers with specific performance characteristics, and with use
+charged by the hour (the rate depending of the performance).</p>
+
+<p>The whole process is fairly simple and flexible. I got my computers up
+and running in minutes. Setting up Riak was a bit more involved (I
+should probably had tried on my local network first), but eventually I
+was able to load the data and run the queries I wanted.</p>
+
+<p>In outline, here's the process</p>
+
+<ul>
+<li>figure out the security requirements</li>
+<li>think about the cluster organisation</li>
+<li>create a few instances of virtual computers</li>
+<li>create the security configuration</li>
+<li>connect to each machine and set it up</li>
+<li>open an SSL tunnel</li>
+<li>...</li>
+<li>Profit!</li>
+</ul>
+
+
+<p>And now the details.</p>
+
+<h3>Security requirements</h3>
+
+<p>There will be a few machines, and I need each Riak instance to speak
+to each other. This means I need to keep all the required ports open.</p>
+
+<p>As each instance is on a different machine (presumably, I could have
+several instances on each machine but I want to keep things simple), I
+can use the same ports for each instance. I will just have to give
+them different names.</p>
+
+<p>Basho has a helpful
+<a href="http://wiki.basho.com/Network-Security-and-Firewall-Configurations.html">page</a>
+on this topic. It lists the defaults ports (all of them TCP):</p>
+
+<ul>
+<li>epmd's listener: 4369</li>
+<li>handoff_port listener: 8099</li>
+<li>web_port: 8098</li>
+<li>pb_port: 8087</li>
+<li>plus a range than can be configured. As I have just a small
+network, I restrict this range to 6000-6999.</li>
+</ul>
+
+
+<p>These are the ports I will open in my configuration settings.</p>
+
+<h3>Cluster organisation</h3>
+
+<p>I want a simple setup:</p>
+
+<ul>
+<li>3 machines</li>
+<li>first one is the ring leader</li>
+<li>first one is also my interface for client connections</li>
+</ul>
+
+
+<p>So I need to set 3 machines up, make the last two join the first, and
+open an SSL tunnel from my local machine to the ring leader.</p>
+
+<h3>EC2 instances</h3>
+
+<p>First I had to sign up to <a href="http://aws.amazon.com/">AWS</a>.</p>
+
+<p>Once this is done, I can use the console, select the EC2 tab, and
+click on "Launch Instance".</p>
+
+<p>I chose "Launch Classic Wizard" to have as much flexibility as possible:</p>
+
+<p><img src="https://lh6.googleusercontent.com/-MKXddn82uO8/Tu23KOzMhGI/AAAAAAAAB6Y/XpOren_ANVk/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.26.png"></p>
+
+<p>Then I select a basic 64bit Amazon Linux:</p>
+
+<p><img src="https://lh3.googleusercontent.com/--F8ajmA-58c/Tu23KHI9YNI/AAAAAAAAB6U/1fCrHF_tqg0/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.34.png"></p>
+
+<p>I request 3 instances of type Micro (I'm just playing; I don't really care about performance):</p>
+
+<p><img src="https://lh4.googleusercontent.com/-w31FLsR0iC8/Tu2222Q_ZtI/AAAAAAAAB58/E-E86lTf7xg/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.44.png"></p>
+
+<p>I just click through the next two screens (I do not have any specific need for such tuning):</p>
+
+<p><img src="https://lh5.googleusercontent.com/-kRBmxXnSwRc/Tu222wmgj4I/AAAAAAAAB50/U1Rwuqv6R9o/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.05.png">
+<img src="https://lh3.googleusercontent.com/-WiqCpx2PT70/Tu222Iz5nTI/AAAAAAAAB5s/k1ZuuVs1yrE/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.08.png"></p>
+
+<p>For the key pair, I just give a name, then download the file. I will use it later to connect to my new machines:</p>
+
+<p><img src="https://lh4.googleusercontent.com/-JEnCFjVIM54/Tu222D8yOGI/AAAAAAAAB5o/qdAleXN-iDU/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.28.png"></p>
+
+<p>For the security, I first name my group, then I can use this name as the source parameter for the rules. All the rules are Custom TCP ones; I just need to give the ports (as determined above):</p>
+
+<p><img src="https://lh3.googleusercontent.com/-dSxG8pYQLEc/Tu222KSxpgI/AAAAAAAAB5w/AtiqjF-QTts/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.41.18.png"></p>
+
+<p>And then I can finally start my new machines.</p>
+
+<p>On my first attempts, two of the machines did not start; I just created a couple of new machines of the same kind (64bit Amazon Linux Micro), and put them in the same security group.</p>
+
+<p>Here are the complete security rules (I had to add some after the initial setup):</p>
+
+<p><img src="https://lh6.googleusercontent.com/-tSUcf1TbrLQ/Tu23KB_o3wI/AAAAAAAAB6Q/2OopRB6HFeE/s640/Screen%252520Shot%2525202011-12-18%252520at%25252017.05.42.png"></p>
+
+<p>With this, I have a small cluster of machines. Time to connect and put
+them to good use.</p>
+
+<h3>Configuring each machine</h3>
+
+<p>From the EC2 Dashboard, I can access my instances, and get the address for each.</p>
+
+<p>Using the private key downloaded earlier, I can open an SSH connection
+to each machine. Note that the user is by default called <code>ec2-user</code>:</p>
+
+<p><code>
+ssh -i riak-private.pem ec2-user@&lt;MACHINE_NAME&gt;
+</code></p>
+
+<p>On each, I first need to install riak. I download it directly from
+Basho <a href="http://downloads.basho.com/riak/CURRENT/">website</a>.</p>
+
+<p>Each machine has some basic tools, but no Erlang compiler. To avoid
+any complications, I chose and retrieved a binary distribution:</p>
+
+<p><code>
+wget http://downloads.basho.com/riak/CURRENT/riak-1.0.2-1.el6.x86_64.rpm
+</code></p>
+
+<p>Then I  installed the  downloaded package  (<code>ec2-user</code> can  use <code>sudo</code>
+without having to provide a password):</p>
+
+<p><code>
+sudo rpm -Uvh riak-1.0.2-1.el6.x86_64.rpm
+</code></p>
+
+<p>There are a few error messages (or perhaps warnings), but the package
+is installed and running.</p>
+
+<p>Riak is installed but not started yet. It is important to get the
+configuration right before starting it.</p>
+
+<h4>Common configuration</h4>
+
+<p>For each server, I give it a name that includes the local network IP
+address (not the loopback IP address <code>127.0.0.1</code>). It is important,
+otherwise the machines cannot talk to each others.</p>
+
+<p>I can get it by running <code>ifconfig</code>. I look for the ethernet setup and especially the <code>inet</code> value:
+this is the IP address in Amazon private network. I need to remember
+the IP address for what I will call the first machine, so I copy it
+somewhere (and call it here <code>&lt;IP_ADDRESS_1&gt;</code>)</p>
+
+<p>Using <code>sudo -e /etc/riak/vm.args</code>, I can edit the name of each node. I set it to <code>riak_ec2_1@&lt;IP_ADDRESS&gt;</code>, (or <code>riak_ec2_2</code>, <code>riak_ec2_3</code>, ...).</p>
+
+<p>Note: the editor will be <code>vi</code>.</p>
+
+<p>I also need to change the <code>app.config</code> file:</p>
+
+<p><code>
+sudo -e /etc/riak/app.config`
+</code></p>
+
+<p>I first need to insert a range restriction configuration. I insert the
+following block near the top:</p>
+
+<p>```
+{ kernel, [</p>
+
+<pre><code>        {inet_dist_listen_min, 6000},
+        {inet_dist_listen_max, 6999}
+        ]},
+</code></pre>
+
+<p>```</p>
+
+<p>For the first machine (the one named <code>riak_ec2_1</code>), I also need to
+extend the <code>http</code> interface list. By default it only listen to the
+loopback interface (<code>127.0.0.1</code>), but I also need it to listen to the
+ethernet interface (see above). Otherwise, I will not be able to set
+the SSL tunnel up.</p>
+
+<p>So I replace the lines that read
+<code>
+{http, [ {"127.0.0.1", 8098 } ]},
+</code>
+by something like
+<code>
+{http, [ {"127.0.0.1", 8098 }, {"&lt;IP_ADDRESS_1&gt;", 8098} ]},
+</code></p>
+
+<p>Once this is done, I started the instances:</p>
+
+<p><code>
+sudo riak start
+</code></p>
+
+<p>I can test each instance with:
+<code>
+curl http://localhost:8098/stats | python -mjson.tool
+</code></p>
+
+<p>Finally, I can link all instances together by executing on the second
+and third machine:</p>
+
+<p><code>
+sudo riak-admin join riak_ec2_1@&lt;IP_ADDRESS_1&gt;
+</code></p>
+
+<p>Testing again the status should show three instances in the same ring.</p>
+
+<p>In case of error, uninstall riak, delete the <code>/var/lib/riak</code> directory,
+and start again (as I did).</p>
+
+<h3>Setting up the SSL tunnel</h3>
+
+<p>Nothing simpler. Using the first machine name (the one I configured
+for connection from the ethernet interface):</p>
+
+<p><code>
+ssh -i riak-private.pem -f ec2-user@&lt;MACHINE_NAME&gt; \
+-L 8098:ec2-user@&lt;MACHINE_NAME&gt;:8098 -N
+</code></p>
+
+<p>And now I can run from my local machine</p>
+
+<p><code>
+curl http://localhost:8098/stats | python -mjson.tool
+</code></p>
+
+<p>and get the status of the Riak server as if it was local.</p>
+
+<h3>Loading data and running queries</h3>
+
+<p>The book suggest to use the example data from Basho's
+<a href="http://wiki.basho.com/Loading-Data-and-Running-MapReduce-Queries.html">website</a>,
+which is what I did. I downloaded the
+<a href="http://wiki.basho.com/attachments/goog.csv"><code>goog.csv</code></a> data file and
+the <a href="http://wiki.basho.com/attachments/load_data"><code>load_data</code></a>
+script. I changed the port number in the latter to use 8098 instead of
+8091, then I just ran it: the data is send through the SSL tunnel and
+loaded in my EC2 cluster (but it is very slow).</p>
+
+<p>Once this was done, I checked the various queries proposed on the page, and also implemented the MapReduce Challenge:</p>
+
+<h3>MapReduce Challenge</h3>
+
+<p>The MapReduce Challenge is to compute the days with the highest volume
+of dollar traded. This first step is to compute this value, as it is
+not part of the initial data.</p>
+
+<p>I use a definition found
+<a href="http://wiki.fool.com/Daily_dollar_volume">here</a>, which makes
+intuitive sense: <code>Volume*(High - Low)/2</code></p>
+
+<h4>Dollar Traded Volume by Month</h4>
+
+<p>I need to keep both the date and the amount, so my map function will
+keep both items in a data structured indexed by month:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dollar Traded by Month  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">month</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">pair</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">pair</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Then when reducing, I can compare the traded amount and keep the best:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Highest by month  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">month</span> <span class="k">in</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">?</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>  <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span>  <span class="p">}</span> <span class="k">else</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>  <span class="p">})</span>
+</span><span class='line'>  <span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>To test the whole, I can use the following command, then copy and
+paste the query, and execute with <code>Ctrl-D</code>. The command below is run on
+my local machine, but thanks to the SSL tunnel, it will execute on the
+cluster:</p>
+
+<p><code>
+curl -X POST http://127.0.0.1:8098/mapred \
+-H "Content-Type: application/json" -d @-
+</code></p>
+
+<p>And the query:
+```
+{"inputs":"goog",
+ "query":[{"map":{"language":"javascript",</p>
+
+<pre><code>              "source":"function(value, keyData, arg) {
+</code></pre>
+
+<p>  var data = Riak.mapValuesJson(value)[0];
+  var month = value.key.split('-').slice(0,2).join('-');
+  var pair = {};
+  pair['date'] = value.key;
+  pair['traded'] = data.Volume * (data.High - data.Low) / 2;
+  var obj = {};
+  obj[month] = pair;
+  return [obj];
+}"}},</p>
+
+<pre><code>     {"reduce":{"language":"javascript",
+                "source":"function(values, arg) {
+</code></pre>
+
+<p>  return [ values.reduce(function(acc, item) {</p>
+
+<pre><code>for(var month in item) {
+  if(acc[month]) {
+    acc[month] = acc[month]['traded'] &lt; item[month]['traded'] ?
+</code></pre>
+
+<p>  item[month] : acc[month];</p>
+
+<pre><code>  } else acc[month] = item[month];
+}
+return acc;
+</code></pre>
+
+<p>  })
+  ];
+}",</p>
+
+<pre><code>     "keep":true}}]}
+</code></pre>
+
+<p>```</p>
+
+<h4>Day by Highest Dollar Traded</h4>
+
+<p>For this one I use a similar approach: I create pairs with the date
+and the amount of dollar traded, but this pair is what I return
+directly (instead of returning it indexed by month).</p>
+
+<p>Indexing by date would not work as in the reduce step I would have to
+keep the result in a simple (i.e. not indexed) variable, and therefore
+would forget the date. By keeping both data items (the date and the
+volume traded in dollar) in the same object, I can reduce a list of
+such objects to a single item and still retain all the relevant information.</p>
+
+<p>The mapping function creates just a pair object from the data:
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dollar Traded by Day  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The reducing function retains the best date by volume traded in dollar
+for each batch. It is simpler than the previous one as the values are
+simple (i.e. not indexed):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Highest ever  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">){</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span>         <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">)</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="nx">item</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">item</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>         <span class="k">else</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="nx">item</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>         <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">})</span>
+</span><span class='line'>     <span class="p">];</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>And the query:
+```
+{"inputs":"goog",
+ "query":[{"map":{"language":"javascript",</p>
+
+<pre><code>              "source":"function(value, keyData, arg) {
+</code></pre>
+
+<p>  var data = Riak.mapValuesJson(value)[0];
+  var obj = {};
+  obj['date'] = value.key;
+  obj['traded'] = data.Volume * (data.High - data.Low) / 2;
+  return [obj];
+}"}},</p>
+
+<pre><code>     {"reduce":{"language":"javascript",
+                "source":"function(values, arg){
+</code></pre>
+
+<p>  return [ values.reduce(function(acc, item){</p>
+
+<pre><code>             if(acc) { acc = (acc['traded'] &lt; item['traded']) ? item : acc; }
+             else { acc = item[date]; }
+         return acc;
+        })
+     ];
+</code></pre>
+
+<p>}",</p>
+
+<pre><code>     "keep":true}}]}
+</code></pre>
+
+<p>```</p>
+
+<p>And that's it for today.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks HBase Day 3]]></title>
@@ -1207,545 +1697,6 @@ design of a solution built on Riak.</p>
 <a href="http://www.allthingsdistributed.com/2007/10/amazons_dynamo.html">Amazon Dynamo Paper</a>
 and the other relevant literature, so I have hope yet I will come up with a
 reasonable understanding of all this.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks Riak Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/"/>
-    <updated>2011-12-08T22:59:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2</id>
-    <content type="html"><![CDATA[<p>Day 2 with Riak, to cover Mapreduce, distribution, rings and consistency.</p>
-
-<p>Mapreduce will be familiar to anyone who has been paying attention to Google. The basic idea comes from functional programming, but Google showed how it could be used to distribute the load over many machines (this in turn spawned two distinct recent developments in software: one is the range of databases explicitly built around the concept of Mapreduce; the other is the idea that functional languages are better suited to do concurrent and parallel programming).</p>
-
-<!--more-->
-
-
-<h3>A followup to yesterday simple trick</h3>
-
-<p>There is an alternative, maybe even simpler than yesterday's use of <code>python -mjson.tool</code>. It is shown (maybe a bit late) in the book: using an <code>Accept: text/plain</code> header in the HTTP request, as in:</p>
-
-<p><code>
-curl -H "Accept: text/plain" http://localhost:8091/stats
-</code></p>
-
-<p>This asks Riak to return plain text instead of json data; Riak helpfully interprets that as meaning the same data, but formatted for people. The advantage of this approach is that is still works even when <code>curl</code> generates extra output:</p>
-
-<p><code>
-curl -v -H "Accept: text/plain" http//localhost:8091/stats
-</code></p>
-
-<p>will both generate verbose debugging output, and get the data in human format.</p>
-
-<h3>Nothing wrong with Mapreduce per se, but...</h3>
-
-<p>I understand that the examples have to remain simple enough to be implementable on a (possible shared) single personal computer, but I still think that the authors are being dishonest when they contrast Mapreduce to an "SQL" based solution.</p>
-
-<p>The problem with this solution is that it is just what a self-taught coder with no understanding of SQL might produced (ok, I'm being unfair. Some college educated programmer I have known actually write code like that as well). But this idea of pushing the code to the data instead of pulling the data to the code is exactly what a database like PostgreSQL does.</p>
-
-<p>An actual SQL solution would be much simpler, would run fully in the database (no need for a script to create the initial data), and would deliver the data long before you'd be done coding and debugging the Javascript Mapreduce code.</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>A real SQL solution  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="c1">-- SQL supports composite primary key, which this problem maps well to</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">hotel</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">floor</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">room</span>  <span class="nb">int</span>  <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">capacity</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">style</span> <span class="nb">char</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="k">CHECK</span> <span class="p">(</span><span class="n">style</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;queen&#39;</span><span class="p">,</span> <span class="s1">&#39;king&#39;</span><span class="p">,</span> <span class="s1">&#39;suite&#39;</span><span class="p">)</span> <span class="p">),</span>
-</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">floor</span><span class="p">,</span> <span class="n">room</span><span class="p">)</span>
-</span><span class='line'><span class="p">);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">-- a simple function to provide a easy to use random range</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">FUNCTION</span> <span class="n">random</span><span class="p">(</span><span class="nb">numeric</span><span class="p">,</span> <span class="nb">numeric</span><span class="p">)</span>
-</span><span class='line'><span class="k">RETURNS</span> <span class="nb">numeric</span> <span class="k">AS</span>
-</span><span class='line'><span class="err">$$</span>
-</span><span class='line'>   <span class="k">SELECT</span> <span class="p">(</span><span class="err">$</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="err">$</span><span class="mi">2</span> <span class="o">-</span> <span class="err">$</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">random</span><span class="p">())::</span><span class="nb">numeric</span><span class="p">;</span>
-</span><span class='line'><span class="err">$$</span> <span class="k">LANGUAGE</span> <span class="s1">&#39;sql&#39;</span> <span class="k">VOLATILE</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">-- using generate_series and the random function above</span>
-</span><span class='line'><span class="c1">-- to fill all the rooms, in pure PostgreSQL</span>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">hotel</span> <span class="p">(</span><span class="n">floor</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">capacity</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">SELECT</span> <span class="n">f</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="p">(</span><span class="nb">ARRAY</span><span class="p">[</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;queen&#39;</span><span class="p">,</span> <span class="s1">&#39;king&#39;</span><span class="p">,</span> <span class="s1">&#39;suite&#39;</span><span class="p">])[</span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)],</span> <span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span> <span class="k">FROM</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span> <span class="k">AS</span> <span class="n">f</span><span class="p">,</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span> <span class="k">AS</span> <span class="n">r</span><span class="p">);</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">-- the basic query</span>
-</span><span class='line'><span class="k">SELECT</span> <span class="n">style</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">capacity</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">hotel</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">style</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">-- same query with filter</span>
-</span><span class='line'><span class="k">SELECT</span> <span class="n">style</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">capacity</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">hotel</span> <span class="k">WHERE</span> <span class="n">floor</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">=</span> <span class="mi">10</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">style</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>It does not help that actually testing the code on Riak, I had to wait about 10 seconds while PostgreSQL answer was immediate. Of course, I have 3 instances of Riak on a single machine, which is certainly not a typical setup.</p>
-
-<p>Riak is on a specific point among the trade off line to which data stores are constrained by the <a href="http://en.wikipedia.org/wiki/CAP_theorem">CAP theorem</a>. It would have been better to work on an example (maybe using more complex data, loaded from a file, like the movie database in PostgreSQL Day 3) that plays into Riak strengths rather showing how badly it performs compared to a much easier and more natural solution in SQL.</p>
-
-<p>It might have been enough to ask the reader to imagine the dataset to be so large that it could not fit in a single server (for instance, a simulation of the <a href="http://en.wikipedia.org/wiki/Hilbert's_paradox_of_the_Grand_Hotel">Hilbert's Hotel</a>), or to simulate a rocky network by shutting down some nodes at awkward moments, and show how Riak still delivers the goods. In such conditions most SQL databases would start to show their limits, and these would be legitimate.</p>
-
-<h3>Another comment on the example</h3>
-
-<p>If you run all the examples and the exercises, you will notice something interesting: there is a floor 101. That's actually a bug in the initial seeding script: the room number should range over 0 to 99, not 1 to 100. Mapping composite keys to a single value is not always safe. Oh well...</p>
-
-<p>I've changed my script after I went through everything, rebuild the data, and ran everything again.</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Updated seeding script  (hotel.rb)</span> <a href='/downloads/code/7d7w/riak/hotel.rb'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># generate loads and loads of rooms with random styles and capacities</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;ripple&#39;</span>
-</span><span class='line'><span class="no">STYLES</span> <span class="o">=</span> <span class="sx">%w{single double queen king suite}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">Riak</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:http_port</span> <span class="o">=&gt;</span> <span class="mi">8091</span><span class="p">)</span>
-</span><span class='line'><span class="n">bucket</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">bucket</span><span class="p">(</span><span class="s1">&#39;rooms&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="c1"># Create 100 floors to the building</span>
-</span><span class='line'><span class="k">for</span> <span class="n">floor</span> <span class="k">in</span> <span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">100</span>
-</span><span class='line'>  <span class="n">current_rooms_block</span> <span class="o">=</span> <span class="n">floor</span> <span class="o">*</span> <span class="mi">100</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Making rooms </span><span class="si">#{</span><span class="n">current_rooms_block</span><span class="si">}</span><span class="s2"> - </span><span class="si">#{</span><span class="n">current_rooms_block</span> <span class="o">+</span> <span class="mi">99</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="c1"># Put 100 rooms on each floor (huge hotel!)</span>
-</span><span class='line'>  <span class="k">for</span> <span class="n">room</span> <span class="k">in</span> <span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">99</span>
-</span><span class='line'>    <span class="c1"># Create a unique room number as the key</span>
-</span><span class='line'>    <span class="n">ro</span> <span class="o">=</span> <span class="no">Riak</span><span class="o">::</span><span class="no">RObject</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="p">(</span><span class="n">current_rooms_block</span> <span class="o">+</span> <span class="n">room</span><span class="p">))</span>
-</span><span class='line'>    <span class="c1"># Randomly grab a room style, and make up a capacity</span>
-</span><span class='line'>    <span class="n">style</span> <span class="o">=</span> <span class="no">STYLES</span><span class="o">[</span><span class="nb">rand</span><span class="p">(</span><span class="no">STYLES</span><span class="o">.</span><span class="n">length</span><span class="p">)</span><span class="o">]</span>
-</span><span class='line'>    <span class="n">capacity</span> <span class="o">=</span> <span class="nb">rand</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="c1"># Store the room information as a JSON value </span>
-</span><span class='line'>    <span class="n">ro</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
-</span><span class='line'>    <span class="n">ro</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;style&#39;</span> <span class="o">=&gt;</span> <span class="n">style</span><span class="p">,</span> <span class="s1">&#39;capacity&#39;</span> <span class="o">=&gt;</span> <span class="n">capacity</span><span class="p">}</span>
-</span><span class='line'>    <span class="n">ro</span><span class="o">.</span><span class="n">store</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h3>Partial updates are not supported, unless they are</h3>
-
-<p>So I said yesterday that partial updates are not supported. And if they are, I really have not found a way to get them to work.</p>
-
-<p>Except for buckets. You can update properties of a bucket without having to specify every one of them. Which is good. But still, it might have been good for the rest of the data to have this feature.</p>
-
-<p>The fact that the properties of buckets are probably fixed, meaning you can't remove any, makes a partial update non ambiguous. Supporting partial updates on generic data would require a way to specify whether the update was complete or partial, and a way to remove properties. I can see why Riak designers chose not to go that way, but it still feels a bit ad hoc overall.</p>
-
-<h3>CAP choices</h3>
-
-<p>The section called "On Consistency and Durability" is more interesting, and better shows which features Riak attempts to provide.</p>
-
-<p>The ability to choose from various strategies to implement consistency and durability certainly introduces additional ways to make a mistake, but it also offers flexibility where the relational databases typically offer little.</p>
-
-<h2>Exercises</h2>
-
-<h3>Online Riak Mapreduce documentation</h3>
-
-<p>The documentation is <a href="http://wiki.basho.com/MapReduce.html">http://wiki.basho.com/MapReduce.html</a>.</p>
-
-<h3>Riak contrib functions</h3>
-
-<p>Google is a good friend. The central <a href="http://contrib.basho.com/">site</a> and the <a href="https://github.com/basho/riak_function_contrib">repository</a>.</p>
-
-<h3>Keys filter documentation</h3>
-
-<p><a href="http://wiki.basho.com/Key-Filters.html">http://wiki.basho.com/Key-Filters.html</a></p>
-
-<h3>Total capacity by floor</h3>
-
-<p>The first step is to map the original data to an array of capacity indexed by floor. What has not been seen so far is how to get the <code>key</code> of an object, but it is just another property (directly in <code>v</code>, not in the <code>values</code> array):</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Mapping data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">parsed_data</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">values</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">floor</span> <span class="o">=</span> <span class="o">~~</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">);</span>
-</span><span class='line'>  <span class="nx">data</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">=</span> <span class="nx">parsed_data</span><span class="p">.</span><span class="nx">capacity</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">data</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>A quick test:</p>
-
-<p>```
-curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
-{
-  "inputs":[</p>
-
-<pre><code>["rooms","101"],["rooms","102"],["rooms","103"]],
-</code></pre>
-
-<p>  "query":[</p>
-
-<pre><code>{"map":{
-  "language":"javascript",
-  "source":
-    "function(v) {
-      var parsed_data = JSON.parse(v.values[0].data); 
-      var data = {};
-      var floor = ~~(parseInt(v.key) / 100);
-      data[floor] = parsed_data.capacity; 
-      return [data];
-    }"}
-} ]
-</code></pre>
-
-<p>}</p>
-
-<p>Ctrl-D</p>
-
-<p>[{"1":3},{"1":2},{"1":2}]
-```</p>
-
-<p>Ok, looking good. Now the <code>reduce</code> part. It is strictly identical to the book's <code>reduce</code> function, but I just renamed some variables to make it clear what is being iterated over:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Reducing data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">totals</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">v</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">floor</span> <span class="k">in</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span> <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="p">)</span>
-</span><span class='line'>    <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">floor</span><span class="p">];</span>
-</span><span class='line'>  <span class="k">else</span>
-</span><span class='line'>    <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">floor</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>  <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>  <span class="k">return</span> <span class="p">[</span><span class="nx">totals</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Testing:</p>
-
-<p>```
-curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
-{
-  "inputs":[</p>
-
-<pre><code>["rooms","101"],["rooms","102"],["rooms","103"]],
-</code></pre>
-
-<p>  "query":[</p>
-
-<pre><code>{"map":{
-  "language":"javascript",
-  "source":
-    "function(v) {
-      var parsed_data = JSON.parse(v.values[0].data); 
-      var data = {};
-      var floor = ~~(parseInt(v.key) / 100);
-      data[floor] = parsed_data.capacity; 
-      return [data];
-    }"}
-},
-{"reduce": {
-    "language": "javascript",
-    "source":
-      "function(v) {
-          var totals = {};
-          for (var i in v) {
-            for(var floor in v[i]) {
-              if( totals[floor] ) 
-                totals[floor] += v[i][floor];
-              else
-                totals[floor] = v[i][floor];
-            } 
-          }
-
-          return [totals];
-        }"}
-} ]
-</code></pre>
-
-<p>}</p>
-
-<p>Ctrl-D</p>
-
-<p>[{"1":7}]
-```</p>
-
-<p>Ok, still looking good. Let's run it on the whole set:</p>
-
-<p>```
-curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
-{
-  "inputs":"rooms",
-  "query":[</p>
-
-<pre><code>{"map":{
-  "language":"javascript",
-  "source":
-    "function(v) {
-      var parsed_data = JSON.parse(v.values[0].data); 
-      var data = {};
-      var floor = ~~(parseInt(v.key) / 100);
-      data[floor] = parsed_data.capacity; 
-      return [data];
-    }"}
-},
-{"reduce": {
-    "language": "javascript",
-    "source":
-      "function(v) {
-          var totals = {};
-          for (var i in v) {
-            for(var floor in v[i]) {
-              if( totals[floor] ) 
-                totals[floor] += v[i][floor];
-              else
-                totals[floor] = v[i][floor];
-            } 
-          }
-
-          return [totals];
-        }"}
-} ]
-</code></pre>
-
-<p>}</p>
-
-<p>Ctrl-D</p>
-
-<p>[</p>
-
-<pre><code>{
-    "1": 456, 
-    "10": 445, 
-    "100": 452, 
-    "11": 448, 
-    "12": 482, 
-    "13": 452, 
-    "14": 489, 
-    "15": 467, 
-    "16": 461, 
-    "17": 471, 
-    "18": 426, 
-    "19": 426, 
-    "2": 394, 
-    "20": 413, 
-    "21": 428, 
-    "22": 460, 
-    "23": 447, 
-    "24": 443, 
-    "25": 430, 
-    "26": 430, 
-    "27": 447, 
-    "28": 486, 
-    "29": 429, 
-    "3": 437, 
-    "30": 434, 
-    "31": 415, 
-    "32": 483, 
-    "33": 460, 
-    "34": 440, 
-    "35": 519, 
-    "36": 492, 
-    "37": 422, 
-    "38": 413, 
-    "39": 439, 
-    "4": 451, 
-    "40": 440, 
-    "41": 458, 
-    "42": 386, 
-    "43": 488, 
-    "44": 428, 
-    "45": 423, 
-    "46": 487, 
-    "47": 463, 
-    "48": 408, 
-    "49": 422, 
-    "5": 417, 
-    "50": 464, 
-    "51": 434, 
-    "52": 429, 
-    "53": 468, 
-    "54": 412, 
-    "55": 440, 
-    "56": 427, 
-    "57": 458, 
-    "58": 420, 
-    "59": 438, 
-    "6": 426, 
-    "60": 464, 
-    "61": 446, 
-    "62": 412, 
-    "63": 431, 
-    "64": 445, 
-    "65": 435, 
-    "66": 444, 
-    "67": 449, 
-    "68": 460, 
-    "69": 474, 
-    "7": 436, 
-    "70": 473, 
-    "71": 431, 
-    "72": 457, 
-    "73": 426, 
-    "74": 454, 
-    "75": 463, 
-    "76": 406, 
-    "77": 464, 
-    "78": 441, 
-    "79": 502, 
-    "8": 421, 
-    "80": 477, 
-    "81": 422, 
-    "82": 441, 
-    "83": 466, 
-    "84": 447, 
-    "85": 488, 
-    "86": 486, 
-    "87": 414, 
-    "88": 463, 
-    "89": 494, 
-    "9": 446, 
-    "90": 441, 
-    "91": 459, 
-    "92": 433, 
-    "93": 488, 
-    "94": 450, 
-    "95": 442, 
-    "96": 479, 
-    "97": 460, 
-    "98": 429, 
-    "99": 445
-}
-</code></pre>
-
-<p>]
-```</p>
-
-<h3>Restrict the capacity count to floors 42 and 43</h3>
-
-<p>It should be enough that the key be between 4200 and 4390:</p>
-
-<p>```
-curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
-{
-  "inputs":{</p>
-
-<pre><code>"bucket": "rooms",
-"key_filters": [["string_to_int"], ["between", 4200, 4399]]
-</code></pre>
-
-<p>  },
-  "query":[</p>
-
-<pre><code>{"map":{
-  "language":"javascript",
-  "source":
-    "function(v) {
-      var parsed_data = JSON.parse(v.values[0].data); 
-      var data = {};
-      var floor = ~~(parseInt(v.key) / 100);
-      data[floor] = parsed_data.capacity; 
-      return [data];
-    }"}
-},
-{"reduce": {
-    "language": "javascript",
-    "source":
-      "function(v) {
-          var totals = {};
-          for (var i in v) {
-            for(var floor in v[i]) {
-              if( totals[floor] ) 
-                totals[floor] += v[i][floor];
-              else
-                totals[floor] = v[i][floor];
-            } 
-          }
-
-          return [totals];
-        }"}
-} ]
-</code></pre>
-
-<p>}</p>
-
-<p>Ctrl-D</p>
-
-<p>[{"42":386,"43":488}]
-```</p>
-
-<p>The output matches what was computed for the whole set of rooms, which is always a good thing.</p>
-
-<p>And this completes Day 2. I must admit I have so far mixed feelings: I understand better what Riak tries to achieve, but the example is just not the kind of things Riak should be used for, and the Mapreduce syntax is a bit heavy (although, fortunately, very regular).</p>
-
-<p>Tomorrow will cover Vector Clocks, the mechanism that Riak exposes both to move conflicts resolution to the client side, and to help the client to implement a decent resolution.</p>
 ]]></content>
   </entry>
   

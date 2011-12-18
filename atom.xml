@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-12-15T18:59:48+09:00</updated>
+  <updated>2011-12-18T19:53:18+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,507 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks Riak on EC2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/"/>
+    <updated>2011-12-17T14:36:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2</id>
+    <content type="html"><![CDATA[<p>The third day with Riak had proposed to deploy Riak on a
+<a href="http://aws.amazon.com/ec2/">EC2</a> cluster as an exercise. I could not
+do it then due to poor network connectivity and lack of time (I was
+traveling), but I did it since and here I explain how.</p>
+
+<!--more-->
+
+
+<p>EC2 is a service from Amazon to commission a number of virtual
+computers with specific performance characteristics, and with use
+charged by the hour (the rate depending of the performance).</p>
+
+<p>The whole process is fairly simple and flexible. I got my computers up
+and running in minutes. Setting up Riak was a bit more involved (I
+should probably had tried on my local network first), but eventually I
+was able to load the data and run the queries I wanted.</p>
+
+<p>In outline, here&#8217;s the process</p>
+
+<ul>
+<li>figure out the security requirements</li>
+<li>think about the cluster organisation</li>
+<li>create a few instances of virtual computers</li>
+<li>create the security configuration</li>
+<li>connect to each machine and set it up</li>
+<li>open an SSL tunnel</li>
+<li>&#8230;</li>
+<li>Profit!</li>
+</ul>
+
+
+<p>And now the details.</p>
+
+<h3>Security requirements</h3>
+
+<p>There will be a few machines, and I need each Riak instance to speak
+to each other. This means I need to keep all the required ports open.</p>
+
+<p>As each instance is on a different machine (presumably, I could have
+several instances on each machine but I want to keep things simple), I
+can use the same ports for each instance. I will just have to give
+them different names.</p>
+
+<p>Basho has a helpful
+<a href="http://wiki.basho.com/Network-Security-and-Firewall-Configurations.html">page</a>
+on this topic. It lists the defaults ports (all of them TCP):</p>
+
+<ul>
+<li>epmd&#8217;s listener: 4369</li>
+<li>handoff_port listener: 8099</li>
+<li>web_port: 8098</li>
+<li>pb_port: 8087</li>
+<li>plus a range than can be configured. As I have just a small
+network, I restrict this range to 6000-6999.</li>
+</ul>
+
+
+<p>These are the ports I will open in my configuration settings.</p>
+
+<h3>Cluster organisation</h3>
+
+<p>I want a simple setup:</p>
+
+<ul>
+<li>3 machines</li>
+<li>first one is the ring leader</li>
+<li>first one is also my interface for client connections</li>
+</ul>
+
+
+<p>So I need to set 3 machines up, make the last two join the first, and
+open an SSL tunnel from my local machine to the ring leader.</p>
+
+<h3>EC2 instances</h3>
+
+<p>First I had to sign up to <a href="http://aws.amazon.com/">AWS</a>.</p>
+
+<p>Once this is done, I can use the console, select the EC2 tab, and
+click on &#8220;Launch Instance&#8221;.</p>
+
+<p>I chose &#8220;Launch Classic Wizard&#8221; to have as much flexibility as possible:</p>
+
+<p><img src="https://lh6.googleusercontent.com/-MKXddn82uO8/Tu23KOzMhGI/AAAAAAAAB6Y/XpOren_ANVk/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.26.png"></p>
+
+<p>Then I select a basic 64bit Amazon Linux:</p>
+
+<p><img src="https://lh3.googleusercontent.com/--F8ajmA-58c/Tu23KHI9YNI/AAAAAAAAB6U/1fCrHF_tqg0/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.34.png"></p>
+
+<p>I request 3 instances of type Micro (I&#8217;m just playing; I don&#8217;t really care about performance):</p>
+
+<p><img src="https://lh4.googleusercontent.com/-w31FLsR0iC8/Tu2222Q_ZtI/AAAAAAAAB58/E-E86lTf7xg/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.44.png"></p>
+
+<p>I just click through the next two screens (I do not have any specific need for such tuning):</p>
+
+<p><img src="https://lh5.googleusercontent.com/-kRBmxXnSwRc/Tu222wmgj4I/AAAAAAAAB50/U1Rwuqv6R9o/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.05.png">
+<img src="https://lh3.googleusercontent.com/-WiqCpx2PT70/Tu222Iz5nTI/AAAAAAAAB5s/k1ZuuVs1yrE/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.08.png"></p>
+
+<p>For the key pair, I just give a name, then download the file. I will use it later to connect to my new machines:</p>
+
+<p><img src="https://lh4.googleusercontent.com/-JEnCFjVIM54/Tu222D8yOGI/AAAAAAAAB5o/qdAleXN-iDU/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.28.png"></p>
+
+<p>For the security, I first name my group, then I can use this name as the source parameter for the rules. All the rules are Custom TCP ones; I just need to give the ports (as determined above):</p>
+
+<p><img src="https://lh3.googleusercontent.com/-dSxG8pYQLEc/Tu222KSxpgI/AAAAAAAAB5w/AtiqjF-QTts/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.41.18.png"></p>
+
+<p>And then I can finally start my new machines.</p>
+
+<p>On my first attempts, two of the machines did not start; I just created a couple of new machines of the same kind (64bit Amazon Linux Micro), and put them in the same security group.</p>
+
+<p>Here are the complete security rules (I had to add some after the initial setup):</p>
+
+<p><img src="https://lh6.googleusercontent.com/-tSUcf1TbrLQ/Tu23KB_o3wI/AAAAAAAAB6Q/2OopRB6HFeE/s640/Screen%252520Shot%2525202011-12-18%252520at%25252017.05.42.png"></p>
+
+<p>With this, I have a small cluster of machines. Time to connect and put
+them to good use.</p>
+
+<h3>Configuring each machine</h3>
+
+<p>From the EC2 Dashboard, I can access my instances, and get the address for each.</p>
+
+<p>Using the private key downloaded earlier, I can open an SSH connection
+to each machine. Note that the user is by default called <code>ec2-user</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -i riak-private.pem ec2-user@&lt;MACHINE_NAME&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On each, I first need to install riak. I download it directly from
+Basho <a href="http://downloads.basho.com/riak/CURRENT/">website</a>.</p>
+
+<p>Each machine has some basic tools, but no Erlang compiler. To avoid
+any complications, I chose and retrieved a binary distribution:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>wget http://downloads.basho.com/riak/CURRENT/riak-1.0.2-1.el6.x86_64.rpm</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I  installed the  downloaded package  (<code>ec2-user</code> can  use <code>sudo</code>
+without having to provide a password):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo rpm -Uvh riak-1.0.2-1.el6.x86_64.rpm</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There are a few error messages (or perhaps warnings), but the package
+is installed and running.</p>
+
+<p>Riak is installed but not started yet. It is important to get the
+configuration right before starting it.</p>
+
+<h4>Common configuration</h4>
+
+<p>For each server, I give it a name that includes the local network IP
+address (not the loopback IP address <code>127.0.0.1</code>). It is important,
+otherwise the machines cannot talk to each others.</p>
+
+<p>I can get it by running <code>ifconfig</code>. I look for the ethernet setup and especially the <code>inet</code> value:
+this is the IP address in Amazon private network. I need to remember
+the IP address for what I will call the first machine, so I copy it
+somewhere (and call it here <code>&lt;IP_ADDRESS_1&gt;</code>)</p>
+
+<p>Using <code>sudo -e /etc/riak/vm.args</code>, I can edit the name of each node. I set it to <code>riak_ec2_1@&lt;IP_ADDRESS&gt;</code>, (or <code>riak_ec2_2</code>, <code>riak_ec2_3</code>, &#8230;).</p>
+
+<p>Note: the editor will be <code>vi</code>.</p>
+
+<p>I also need to change the <code>app.config</code> file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo -e /etc/riak/app.config`</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I first need to insert a range restriction configuration. I insert the
+following block near the top:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{ kernel, [
+</span><span class='line'>            {inet_dist_listen_min, 6000},
+</span><span class='line'>            {inet_dist_listen_max, 6999}
+</span><span class='line'>            ]},</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the first machine (the one named <code>riak_ec2_1</code>), I also need to
+extend the <code>http</code> interface list. By default it only listen to the
+loopback interface (<code>127.0.0.1</code>), but I also need it to listen to the
+ethernet interface (see above). Otherwise, I will not be able to set
+the SSL tunnel up.</p>
+
+<p>So I replace the lines that read</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{http, [ {"127.0.0.1", 8098 } ]},</span></code></pre></td></tr></table></div></figure>
+
+
+<p>by something like</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{http, [ {"127.0.0.1", 8098 }, {"&lt;IP_ADDRESS_1&gt;", 8098} ]},</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once this is done, I started the instances:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo riak start</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I can test each instance with:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8098/stats | python -mjson.tool</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, I can link all instances together by executing on the second
+and third machine:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo riak-admin join riak_ec2_1@&lt;IP_ADDRESS_1&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing again the status should show three instances in the same ring.</p>
+
+<p>In case of error, uninstall riak, delete the <code>/var/lib/riak</code> directory,
+and start again (as I did).</p>
+
+<h3>Setting up the SSL tunnel</h3>
+
+<p>Nothing simpler. Using the first machine name (the one I configured
+for connection from the ethernet interface):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -i riak-private.pem -f ec2-user@&lt;MACHINE_NAME&gt; \
+</span><span class='line'>-L 8098:ec2-user@&lt;MACHINE_NAME&gt;:8098 -N</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And now I can run from my local machine</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8098/stats | python -mjson.tool</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and get the status of the Riak server as if it was local.</p>
+
+<h3>Loading data and running queries</h3>
+
+<p>The book suggest to use the example data from Basho&#8217;s
+<a href="http://wiki.basho.com/Loading-Data-and-Running-MapReduce-Queries.html">website</a>,
+which is what I did. I downloaded the
+<a href="http://wiki.basho.com/attachments/goog.csv"><code>goog.csv</code></a> data file and
+the <a href="http://wiki.basho.com/attachments/load_data"><code>load_data</code></a>
+script. I changed the port number in the latter to use 8098 instead of
+8091, then I just ran it: the data is send through the SSL tunnel and
+loaded in my EC2 cluster (but it is very slow).</p>
+
+<p>Once this was done, I checked the various queries proposed on the page, and also implemented the MapReduce Challenge:</p>
+
+<h3>MapReduce Challenge</h3>
+
+<p>The MapReduce Challenge is to compute the days with the highest volume
+of dollar traded. This first step is to compute this value, as it is
+not part of the initial data.</p>
+
+<p>I use a definition found
+<a href="http://wiki.fool.com/Daily_dollar_volume">here</a>, which makes
+intuitive sense: <code>Volume*(High - Low)/2</code></p>
+
+<h4>Dollar Traded Volume by Month</h4>
+
+<p>I need to keep both the date and the amount, so my map function will
+keep both items in a data structured indexed by month:</p>
+
+<figure class='code'><figcaption><span>Dollar Traded by Month  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">month</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">pair</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">pair</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then when reducing, I can compare the traded amount and keep the best:</p>
+
+<figure class='code'><figcaption><span>Highest by month  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">month</span> <span class="k">in</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">?</span>
+</span><span class='line'>  <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'>  <span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To test the whole, I can use the following command, then copy and
+paste the query, and execute with <code>Ctrl-D</code>. The command below is run on
+my local machine, but thanks to the SSL tunnel, it will execute on the
+cluster:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X POST http://127.0.0.1:8098/mapred \
+</span><span class='line'>-H "Content-Type: application/json" -d @-</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the query:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{"inputs":"goog",
+</span><span class='line'> "query":[{"map":{"language":"javascript",
+</span><span class='line'>                  "source":"function(value, keyData, arg) {
+</span><span class='line'>  var data = Riak.mapValuesJson(value)[0];
+</span><span class='line'>  var month = value.key.split('-').slice(0,2).join('-');
+</span><span class='line'>  var pair = {};
+</span><span class='line'>  pair['date'] = value.key;
+</span><span class='line'>  pair['traded'] = data.Volume * (data.High - data.Low) / 2;
+</span><span class='line'>  var obj = {};
+</span><span class='line'>  obj[month] = pair;
+</span><span class='line'>  return [obj];
+</span><span class='line'>}"}},
+</span><span class='line'>         {"reduce":{"language":"javascript",
+</span><span class='line'>                    "source":"function(values, arg) {
+</span><span class='line'>  return [ values.reduce(function(acc, item) {
+</span><span class='line'>    for(var month in item) {
+</span><span class='line'>      if(acc[month]) {
+</span><span class='line'>        acc[month] = acc[month]['traded'] &lt; item[month]['traded'] ?
+</span><span class='line'>  item[month] : acc[month];
+</span><span class='line'>      } else acc[month] = item[month];
+</span><span class='line'>    }
+</span><span class='line'>    return acc;
+</span><span class='line'>  })
+</span><span class='line'>  ];
+</span><span class='line'>}",
+</span><span class='line'>         "keep":true}}]}</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Day by Highest Dollar Traded</h4>
+
+<p>For this one I use a similar approach: I create pairs with the date
+and the amount of dollar traded, but this pair is what I return
+directly (instead of returning it indexed by month).</p>
+
+<p>Indexing by date would not work as in the reduce step I would have to
+keep the result in a simple (i.e. not indexed) variable, and therefore
+would forget the date. By keeping both data items (the date and the
+volume traded in dollar) in the same object, I can reduce a list of
+such objects to a single item and still retain all the relevant information.</p>
+
+<p>The mapping function creates just a pair object from the data:</p>
+
+<figure class='code'><figcaption><span>Dollar Traded by Day  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The reducing function retains the best date by volume traded in dollar
+for each batch. It is simpler than the previous one as the values are
+simple (i.e. not indexed):</p>
+
+<figure class='code'><figcaption><span>Highest ever  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">){</span>
+</span><span class='line'>             <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">)</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">item</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">item</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>             <span class="k">else</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="nx">item</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>             <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">})</span>
+</span><span class='line'>         <span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the query:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{"inputs":"goog",
+</span><span class='line'> "query":[{"map":{"language":"javascript",
+</span><span class='line'>                  "source":"function(value, keyData, arg) {
+</span><span class='line'>  var data = Riak.mapValuesJson(value)[0];
+</span><span class='line'>  var obj = {};
+</span><span class='line'>  obj['date'] = value.key;
+</span><span class='line'>  obj['traded'] = data.Volume * (data.High - data.Low) / 2;
+</span><span class='line'>  return [obj];
+</span><span class='line'>}"}},
+</span><span class='line'>         {"reduce":{"language":"javascript",
+</span><span class='line'>                    "source":"function(values, arg){
+</span><span class='line'>  return [ values.reduce(function(acc, item){
+</span><span class='line'>                 if(acc) { acc = (acc['traded'] &lt; item['traded']) ? item : acc; }
+</span><span class='line'>                 else { acc = item[date]; }
+</span><span class='line'>             return acc;
+</span><span class='line'>            })
+</span><span class='line'>         ];
+</span><span class='line'>}",
+</span><span class='line'>         "keep":true}}]}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that&#8217;s it for today.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks HBase Day 3]]></title>
@@ -6228,241 +6729,6 @@ But that is probably getting a bit ahead of myself; right now I&#8217;d be happy
 <p>If I rename <code>acc</code> to <code>g</code>, and move <code>x</code> to the parameter list (uncurrying the <code>go</code> function), I get the original definition.</p>
 
 <p>QED.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Languages in Seven Weeks Clojure Day 1]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/"/>
-    <updated>2011-11-11T08:02:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1</id>
-    <content type="html"><![CDATA[<p>Sixth week, sixth language, this time <a href="http://clojure.org/">Clojure</a>, the latest attempt to make <a href="http://en.wikipedia.org/wiki/Lisp_(programming_language)">Lisp</a> popular.</p>
-
-<!--more-->
-
-
-<p>Clojure has the usual features of Lisp: code as data, macros, lists among many other containers (no, Lisp is not just lists), and so on. It also brings other features, such as pattern matching, and treating some containers as functions for specific purposes (both features that <a href="http://arclanguage.org/">Arc</a>, the language that <a href="http://www.paulgraham.com/">Paul Graham</a> invented, seems also to have). Pattern matching is certainly a welcome feature; I have to see more Clojure code to figure out whether I like the data as function one (I&#8217;m sure it allows very neat idioms).</p>
-
-<p>Clojure is also supports a kind of lazy evaluation, but simpler than Haskell&#8217;s.</p>
-
-<p>Finally, Clojure runs on both the JVM and the CLR, which allows it to go wherever either platform goes (which means pretty much everywhere), and to reuse these platforms&#8217; extensive libraries.</p>
-
-<p>The first day covers little, compared to other languages. Various containers are introduced, along with some useful functions operating on them; pattern matching is described (it is similar to Erlang&#8217;s and other functional languages); finally we learn how to define functions, and use them in higher-order functions like <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/apply"><code>apply</code></a>.</p>
-
-<h2>Exercises</h2>
-
-<p>Comparatively to previous languages&#8217; first day, today is very short and simple.</p>
-
-<h3>Define function big</h3>
-
-<p>Nothing special here, the function <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/count"><code>count</code></a> works on all collections, including strings.</p>
-
-<figure class='code'><figcaption><span>Define function big  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="k">defn </span><span class="nv">big</span>
-</span><span class='line'>             <span class="s">&quot;Is string st longer than n characters?&quot;</span>
-</span><span class='line'>             <span class="p">[</span><span class="nv">st</span> <span class="nv">n</span><span class="p">]</span>
-</span><span class='line'>             <span class="p">(</span><span class="nb">&gt; </span><span class="p">(</span><span class="nb">count </span><span class="nv">st</span><span class="p">)</span> <span class="nv">n</span><span class="p">))</span>
-</span><span class='line'><span class="o">#</span><span class="ss">&#39;user/big</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Testing:</p>
-
-<figure class='code'><figcaption><span>Test function big  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">big</span> <span class="s">&quot;hello&quot;</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="nv">false</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">big</span> <span class="s">&quot;hello&quot;</span> <span class="mi">4</span><span class="p">)</span>
-</span><span class='line'><span class="nv">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Define function collection-type</h3>
-
-<p>Using only functions and concepts seen so far, a first implementation using map. First I use the repl to get the class of these containers:</p>
-
-<figure class='code'><figcaption><span>class of containers  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="p">())</span>
-</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">PersistentList$EmptyList</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">PersistentList</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="p">[])</span>
-</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">PersistentVector</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="p">{})</span>
-</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">PersistentArrayMap</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So the empty list has a different class from a non-empty list.</p>
-
-<p>Now I can map these classes to the proper symbol:</p>
-
-<figure class='code'><figcaption><span>mapping classes to symbols  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">col-classes</span> <span class="p">{(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">())</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="p">[])</span> <span class="nv">:vector,</span> <span class="p">(</span><span class="nb">class </span><span class="p">{})</span> <span class="nv">:map</span><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>With this, getting the right answer is as simple as:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">col-classes</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">()))</span>
-</span><span class='line'><span class="nv">:list</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">col-classes</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
-</span><span class='line'><span class="nv">:list</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">col-classes</span> <span class="p">(</span><span class="nb">class </span><span class="p">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">]))</span>
-</span><span class='line'><span class="nv">:vector</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">col-classes</span> <span class="p">(</span><span class="nb">class </span><span class="p">{</span><span class="nv">:one</span> <span class="s">&quot;one&quot;</span><span class="p">}))</span>
-</span><span class='line'><span class="nv">:map</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So the function can be written as:</p>
-
-<figure class='code'><figcaption><span>Define function collection-type  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="k">defn </span><span class="nv">collection-type</span>
-</span><span class='line'>             <span class="s">&quot;Return either :list, :vector or :map, depending of the type of col.&quot;</span>
-</span><span class='line'>             <span class="p">[</span><span class="nv">col</span><span class="p">]</span>
-</span><span class='line'>             <span class="p">({(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">())</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="p">[])</span> <span class="nv">:vector,</span> <span class="p">(</span><span class="nb">class </span><span class="p">{})</span> <span class="nv">:map</span><span class="p">}</span> <span class="p">(</span><span class="nb">class </span><span class="nv">col</span><span class="p">)))</span>
-</span><span class='line'><span class="o">#</span><span class="ss">&#39;user/collection-type</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Testing it on literal values:</p>
-
-<figure class='code'><figcaption><span>Test function collection-type  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="p">())</span>
-</span><span class='line'><span class="nv">:list</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="o">&#39;</span><span class="p">())</span>
-</span><span class='line'><span class="nv">:list</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">))</span>
-</span><span class='line'><span class="nv">:list</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">])</span>
-</span><span class='line'><span class="nv">:vector</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="p">{</span><span class="nv">:one</span> <span class="s">&quot;one&quot;</span><span class="p">})</span>
-</span><span class='line'><span class="nv">:map</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Interesting, perhaps, but there must be a better way. Using type predicates (<a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/list?"><code>list?</code></a>, <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/map?"><code>map?</code></a> and <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/vector?"><code>vector?</code></a>), and the already seen <a href="http://clojure.org/special_forms#Special%20Forms--(if%20test%20then%20else?"><code>if</code></a>):</p>
-
-<figure class='code'><figcaption><span>collection-type, predicate edition  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="n">user</span><span class="o">=&gt;</span> <span class="p">(</span><span class="n">defn</span> <span class="n">collection</span><span class="o">-</span><span class="n">type</span>
-</span><span class='line'>             <span class="s">&quot;Return either :list, :vector or :map, depending of the type of col.&quot;</span>
-</span><span class='line'>             <span class="p">[</span><span class="n">col</span><span class="p">]</span>
-</span><span class='line'>             <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="n">list</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">list</span>
-</span><span class='line'>                 <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="n">map</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">map</span>
-</span><span class='line'>                     <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="n">vector</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">vector</span><span class="p">))))</span>
-</span><span class='line'><span class="err">#&#39;</span><span class="n">user</span><span class="o">/</span><span class="n">collection</span><span class="o">-</span><span class="n">type</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Testing output is not repeated, as it is identical to the one above.</p>
-
-<p>These nested <code>if</code>&#8217;s are ugly. Fortunately, Lisp has a kind of generalized <code>switch</code>, called <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/cond"><code>cond</code></a>. So the definition above is equivalent to</p>
-
-<figure class='code'><figcaption><span>collection-type, cond predicate edition  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="n">user</span><span class="o">=&gt;</span> <span class="p">(</span><span class="n">defn</span> <span class="n">collection</span><span class="o">-</span><span class="n">type</span>
-</span><span class='line'>             <span class="s">&quot;Return either :list, :vector or :map, depending of the type of col.&quot;</span>
-</span><span class='line'>             <span class="p">[</span><span class="n">col</span><span class="p">]</span>
-</span><span class='line'>             <span class="p">(</span><span class="k">cond</span> <span class="p">(</span><span class="n">list</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">list</span>
-</span><span class='line'>                   <span class="p">(</span><span class="n">map</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">map</span>
-</span><span class='line'>                   <span class="p">(</span><span class="n">vector</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">vector</span><span class="p">))</span>
-</span><span class='line'><span class="err">#&#39;</span><span class="n">user</span><span class="o">/</span><span class="n">collection</span><span class="o">-</span><span class="n">type</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now this is clean and elegant.</p>
-
-<p>Once again, the test returns the expected results so they are not reproduced.</p>
-
-<p>One thing to note: the <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/cons"><code>cons</code></a> function does not return a list, but a sequence (this is unlike <code>cons</code> in all the other Lisps):</p>
-
-<figure class='code'><figcaption><span>cons is not a team player  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">cons </span><span class="mi">1</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">2</span> <span class="mi">3</span><span class="p">))</span>
-</span><span class='line'><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="p">(</span><span class="nb">cons </span><span class="mi">1</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">2</span> <span class="mi">3</span><span class="p">)))</span>
-</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">Cons</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">list?</span> <span class="p">(</span><span class="nb">cons </span><span class="mi">1</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">2</span> <span class="mi">3</span><span class="p">)))</span>
-</span><span class='line'><span class="nv">false</span>
-</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">seq? </span><span class="p">(</span><span class="nb">cons </span><span class="mi">1</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">2</span> <span class="mi">3</span><span class="p">)))</span>
-</span><span class='line'><span class="nv">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Fortunately, <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/assoc"><code>assoc</code></a> is better behaved:</p>
-
-<figure class='code'><figcaption><span>assoc  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="p">(</span><span class="nb">assoc </span> <span class="p">{</span><span class="nv">:two</span> <span class="mi">2</span><span class="p">}</span> <span class="nv">:one</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class='line'><span class="nv">:map</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I like the idea of a collection&#8217;s type not changing when I add element, so the behaviour of <code>cons</code> is something I will have to watch for (or find the better way that must exist).</p>
-
-<p>And this is all for Day 1.</p>
 ]]></content>
   </entry>
   

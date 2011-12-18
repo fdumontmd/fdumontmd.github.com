@@ -1,0 +1,806 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks Riak on EC2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="The third day with Riak had proposed to deploy Riak on a
+EC2 cluster as an exercise. I could not
+do it then due to poor network connectivity and lack &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks Riak on EC2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-17T14:36:00+09:00" pubdate data-updated="true">Dec 17<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>The third day with Riak had proposed to deploy Riak on a
+<a href="http://aws.amazon.com/ec2/">EC2</a> cluster as an exercise. I could not
+do it then due to poor network connectivity and lack of time (I was
+traveling), but I did it since and here I explain how.</p>
+
+<!--more-->
+
+
+<p>EC2 is a service from Amazon to commission a number of virtual
+computers with specific performance characteristics, and with use
+charged by the hour (the rate depending of the performance).</p>
+
+<p>The whole process is fairly simple and flexible. I got my computers up
+and running in minutes. Setting up Riak was a bit more involved (I
+should probably had tried on my local network first), but eventually I
+was able to load the data and run the queries I wanted.</p>
+
+<p>In outline, here&#8217;s the process</p>
+
+<ul>
+<li>figure out the security requirements</li>
+<li>think about the cluster organisation</li>
+<li>create a few instances of virtual computers</li>
+<li>create the security configuration</li>
+<li>connect to each machine and set it up</li>
+<li>open an SSL tunnel</li>
+<li>&#8230;</li>
+<li>Profit!</li>
+</ul>
+
+
+<p>And now the details.</p>
+
+<h3>Security requirements</h3>
+
+<p>There will be a few machines, and I need each Riak instance to speak
+to each other. This means I need to keep all the required ports open.</p>
+
+<p>As each instance is on a different machine (presumably, I could have
+several instances on each machine but I want to keep things simple), I
+can use the same ports for each instance. I will just have to give
+them different names.</p>
+
+<p>Basho has a helpful
+<a href="http://wiki.basho.com/Network-Security-and-Firewall-Configurations.html">page</a>
+on this topic. It lists the defaults ports (all of them TCP):</p>
+
+<ul>
+<li>epmd&#8217;s listener: 4369</li>
+<li>handoff_port listener: 8099</li>
+<li>web_port: 8098</li>
+<li>pb_port: 8087</li>
+<li>plus a range than can be configured. As I have just a small
+network, I restrict this range to 6000-6999.</li>
+</ul>
+
+
+<p>These are the ports I will open in my configuration settings.</p>
+
+<h3>Cluster organisation</h3>
+
+<p>I want a simple setup:</p>
+
+<ul>
+<li>3 machines</li>
+<li>first one is the ring leader</li>
+<li>first one is also my interface for client connections</li>
+</ul>
+
+
+<p>So I need to set 3 machines up, make the last two join the first, and
+open an SSL tunnel from my local machine to the ring leader.</p>
+
+<h3>EC2 instances</h3>
+
+<p>First I had to sign up to <a href="http://aws.amazon.com/">AWS</a>.</p>
+
+<p>Once this is done, I can use the console, select the EC2 tab, and
+click on &#8220;Launch Instance&#8221;.</p>
+
+<p>I chose &#8220;Launch Classic Wizard&#8221; to have as much flexibility as possible:</p>
+
+<p><img src="https://lh6.googleusercontent.com/-MKXddn82uO8/Tu23KOzMhGI/AAAAAAAAB6Y/XpOren_ANVk/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.26.png"></p>
+
+<p>Then I select a basic 64bit Amazon Linux:</p>
+
+<p><img src="https://lh3.googleusercontent.com/--F8ajmA-58c/Tu23KHI9YNI/AAAAAAAAB6U/1fCrHF_tqg0/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.34.png"></p>
+
+<p>I request 3 instances of type Micro (I&#8217;m just playing; I don&#8217;t really care about performance):</p>
+
+<p><img src="https://lh4.googleusercontent.com/-w31FLsR0iC8/Tu2222Q_ZtI/AAAAAAAAB58/E-E86lTf7xg/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.44.png"></p>
+
+<p>I just click through the next two screens (I do not have any specific need for such tuning):</p>
+
+<p><img src="https://lh5.googleusercontent.com/-kRBmxXnSwRc/Tu222wmgj4I/AAAAAAAAB50/U1Rwuqv6R9o/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.05.png">
+<img src="https://lh3.googleusercontent.com/-WiqCpx2PT70/Tu222Iz5nTI/AAAAAAAAB5s/k1ZuuVs1yrE/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.08.png"></p>
+
+<p>For the key pair, I just give a name, then download the file. I will use it later to connect to my new machines:</p>
+
+<p><img src="https://lh4.googleusercontent.com/-JEnCFjVIM54/Tu222D8yOGI/AAAAAAAAB5o/qdAleXN-iDU/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.28.png"></p>
+
+<p>For the security, I first name my group, then I can use this name as the source parameter for the rules. All the rules are Custom TCP ones; I just need to give the ports (as determined above):</p>
+
+<p><img src="https://lh3.googleusercontent.com/-dSxG8pYQLEc/Tu222KSxpgI/AAAAAAAAB5w/AtiqjF-QTts/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.41.18.png"></p>
+
+<p>And then I can finally start my new machines.</p>
+
+<p>On my first attempts, two of the machines did not start; I just created a couple of new machines of the same kind (64bit Amazon Linux Micro), and put them in the same security group.</p>
+
+<p>Here are the complete security rules (I had to add some after the initial setup):</p>
+
+<p><img src="https://lh6.googleusercontent.com/-tSUcf1TbrLQ/Tu23KB_o3wI/AAAAAAAAB6Q/2OopRB6HFeE/s640/Screen%252520Shot%2525202011-12-18%252520at%25252017.05.42.png"></p>
+
+<p>With this, I have a small cluster of machines. Time to connect and put
+them to good use.</p>
+
+<h3>Configuring each machine</h3>
+
+<p>From the EC2 Dashboard, I can access my instances, and get the address for each.</p>
+
+<p>Using the private key downloaded earlier, I can open an SSH connection
+to each machine. Note that the user is by default called <code>ec2-user</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -i riak-private.pem ec2-user@&lt;MACHINE_NAME&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On each, I first need to install riak. I download it directly from
+Basho <a href="http://downloads.basho.com/riak/CURRENT/">website</a>.</p>
+
+<p>Each machine has some basic tools, but no Erlang compiler. To avoid
+any complications, I chose and retrieved a binary distribution:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>wget http://downloads.basho.com/riak/CURRENT/riak-1.0.2-1.el6.x86_64.rpm</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I  installed the  downloaded package  (<code>ec2-user</code> can  use <code>sudo</code>
+without having to provide a password):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo rpm -Uvh riak-1.0.2-1.el6.x86_64.rpm</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There are a few error messages (or perhaps warnings), but the package
+is installed and running.</p>
+
+<p>Riak is installed but not started yet. It is important to get the
+configuration right before starting it.</p>
+
+<h4>Common configuration</h4>
+
+<p>For each server, I give it a name that includes the local network IP
+address (not the loopback IP address <code>127.0.0.1</code>). It is important,
+otherwise the machines cannot talk to each others.</p>
+
+<p>I can get it by running <code>ifconfig</code>. I look for the ethernet setup and especially the <code>inet</code> value:
+this is the IP address in Amazon private network. I need to remember
+the IP address for what I will call the first machine, so I copy it
+somewhere (and call it here <code>&lt;IP_ADDRESS_1&gt;</code>)</p>
+
+<p>Using <code>sudo -e /etc/riak/vm.args</code>, I can edit the name of each node. I set it to <code>riak_ec2_1@&lt;IP_ADDRESS&gt;</code>, (or <code>riak_ec2_2</code>, <code>riak_ec2_3</code>, &#8230;).</p>
+
+<p>Note: the editor will be <code>vi</code>.</p>
+
+<p>I also need to change the <code>app.config</code> file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo -e /etc/riak/app.config`</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I first need to insert a range restriction configuration. I insert the
+following block near the top:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{ kernel, [
+</span><span class='line'>            {inet_dist_listen_min, 6000},
+</span><span class='line'>            {inet_dist_listen_max, 6999}
+</span><span class='line'>            ]},</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the first machine (the one named <code>riak_ec2_1</code>), I also need to
+extend the <code>http</code> interface list. By default it only listen to the
+loopback interface (<code>127.0.0.1</code>), but I also need it to listen to the
+ethernet interface (see above). Otherwise, I will not be able to set
+the SSL tunnel up.</p>
+
+<p>So I replace the lines that read</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{http, [ {"127.0.0.1", 8098 } ]},</span></code></pre></td></tr></table></div></figure>
+
+
+<p>by something like</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{http, [ {"127.0.0.1", 8098 }, {"&lt;IP_ADDRESS_1&gt;", 8098} ]},</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once this is done, I started the instances:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo riak start</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I can test each instance with:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8098/stats | python -mjson.tool</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, I can link all instances together by executing on the second
+and third machine:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo riak-admin join riak_ec2_1@&lt;IP_ADDRESS_1&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing again the status should show three instances in the same ring.</p>
+
+<p>In case of error, uninstall riak, delete the <code>/var/lib/riak</code> directory,
+and start again (as I did).</p>
+
+<h3>Setting up the SSL tunnel</h3>
+
+<p>Nothing simpler. Using the first machine name (the one I configured
+for connection from the ethernet interface):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -i riak-private.pem -f ec2-user@&lt;MACHINE_NAME&gt; \
+</span><span class='line'>-L 8098:ec2-user@&lt;MACHINE_NAME&gt;:8098 -N</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And now I can run from my local machine</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8098/stats | python -mjson.tool</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and get the status of the Riak server as if it was local.</p>
+
+<h3>Loading data and running queries</h3>
+
+<p>The book suggest to use the example data from Basho&#8217;s
+<a href="http://wiki.basho.com/Loading-Data-and-Running-MapReduce-Queries.html">website</a>,
+which is what I did. I downloaded the
+<a href="http://wiki.basho.com/attachments/goog.csv"><code>goog.csv</code></a> data file and
+the <a href="http://wiki.basho.com/attachments/load_data"><code>load_data</code></a>
+script. I changed the port number in the latter to use 8098 instead of
+8091, then I just ran it: the data is send through the SSL tunnel and
+loaded in my EC2 cluster (but it is very slow).</p>
+
+<p>Once this was done, I checked the various queries proposed on the page, and also implemented the MapReduce Challenge:</p>
+
+<h3>MapReduce Challenge</h3>
+
+<p>The MapReduce Challenge is to compute the days with the highest volume
+of dollar traded. This first step is to compute this value, as it is
+not part of the initial data.</p>
+
+<p>I use a definition found
+<a href="http://wiki.fool.com/Daily_dollar_volume">here</a>, which makes
+intuitive sense: <code>Volume*(High - Low)/2</code></p>
+
+<h4>Dollar Traded Volume by Month</h4>
+
+<p>I need to keep both the date and the amount, so my map function will
+keep both items in a data structured indexed by month:</p>
+
+<figure class='code'><figcaption><span>Dollar Traded by Month  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">month</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">pair</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">pair</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then when reducing, I can compare the traded amount and keep the best:</p>
+
+<figure class='code'><figcaption><span>Highest by month  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">month</span> <span class="k">in</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">?</span>
+</span><span class='line'>  <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'>  <span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To test the whole, I can use the following command, then copy and
+paste the query, and execute with <code>Ctrl-D</code>. The command below is run on
+my local machine, but thanks to the SSL tunnel, it will execute on the
+cluster:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X POST http://127.0.0.1:8098/mapred \
+</span><span class='line'>-H "Content-Type: application/json" -d @-</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the query:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{"inputs":"goog",
+</span><span class='line'> "query":[{"map":{"language":"javascript",
+</span><span class='line'>                  "source":"function(value, keyData, arg) {
+</span><span class='line'>  var data = Riak.mapValuesJson(value)[0];
+</span><span class='line'>  var month = value.key.split('-').slice(0,2).join('-');
+</span><span class='line'>  var pair = {};
+</span><span class='line'>  pair['date'] = value.key;
+</span><span class='line'>  pair['traded'] = data.Volume * (data.High - data.Low) / 2;
+</span><span class='line'>  var obj = {};
+</span><span class='line'>  obj[month] = pair;
+</span><span class='line'>  return [obj];
+</span><span class='line'>}"}},
+</span><span class='line'>         {"reduce":{"language":"javascript",
+</span><span class='line'>                    "source":"function(values, arg) {
+</span><span class='line'>  return [ values.reduce(function(acc, item) {
+</span><span class='line'>    for(var month in item) {
+</span><span class='line'>      if(acc[month]) {
+</span><span class='line'>        acc[month] = acc[month]['traded'] &lt; item[month]['traded'] ?
+</span><span class='line'>  item[month] : acc[month];
+</span><span class='line'>      } else acc[month] = item[month];
+</span><span class='line'>    }
+</span><span class='line'>    return acc;
+</span><span class='line'>  })
+</span><span class='line'>  ];
+</span><span class='line'>}",
+</span><span class='line'>         "keep":true}}]}</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Day by Highest Dollar Traded</h4>
+
+<p>For this one I use a similar approach: I create pairs with the date
+and the amount of dollar traded, but this pair is what I return
+directly (instead of returning it indexed by month).</p>
+
+<p>Indexing by date would not work as in the reduce step I would have to
+keep the result in a simple (i.e. not indexed) variable, and therefore
+would forget the date. By keeping both data items (the date and the
+volume traded in dollar) in the same object, I can reduce a list of
+such objects to a single item and still retain all the relevant information.</p>
+
+<p>The mapping function creates just a pair object from the data:</p>
+
+<figure class='code'><figcaption><span>Dollar Traded by Day  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The reducing function retains the best date by volume traded in dollar
+for each batch. It is simpler than the previous one as the values are
+simple (i.e. not indexed):</p>
+
+<figure class='code'><figcaption><span>Highest ever  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">){</span>
+</span><span class='line'>             <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">)</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">item</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">item</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>             <span class="k">else</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="nx">item</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>             <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">})</span>
+</span><span class='line'>         <span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the query:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{"inputs":"goog",
+</span><span class='line'> "query":[{"map":{"language":"javascript",
+</span><span class='line'>                  "source":"function(value, keyData, arg) {
+</span><span class='line'>  var data = Riak.mapValuesJson(value)[0];
+</span><span class='line'>  var obj = {};
+</span><span class='line'>  obj['date'] = value.key;
+</span><span class='line'>  obj['traded'] = data.Volume * (data.High - data.Low) / 2;
+</span><span class='line'>  return [obj];
+</span><span class='line'>}"}},
+</span><span class='line'>         {"reduce":{"language":"javascript",
+</span><span class='line'>                    "source":"function(values, arg){
+</span><span class='line'>  return [ values.reduce(function(acc, item){
+</span><span class='line'>                 if(acc) { acc = (acc['traded'] &lt; item['traded']) ? item : acc; }
+</span><span class='line'>                 else { acc = item[date]; }
+</span><span class='line'>             return acc;
+</span><span class='line'>            })
+</span><span class='line'>         ];
+</span><span class='line'>}",
+</span><span class='line'>         "keep":true}}]}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that&#8217;s it for today.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-17T14:36:00+09:00" pubdate data-updated="true">Dec 17<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/" title="Previous Post: Seven Databases in Seven Weeks HBase Day 3">&laquo; Seven Databases in Seven Weeks HBase Day 3</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Seven Databases in Seven Weeks Riak on EC2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">Seven Databases in Seven Weeks HBase Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">Seven Databases in Seven Weeks HBase Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">Seven Databases in Seven Weeks HBase Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Seven Databases in Seven Weeks Riak Day 3</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

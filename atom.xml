@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-12-18T19:53:18+09:00</updated>
+  <updated>2011-12-23T16:41:30+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,375 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks mongoDB Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/"/>
+    <updated>2011-12-23T08:19:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1</id>
+    <content type="html"><![CDATA[<p>It has been &#8230; a little over a week since I closed with HBase so it
+is time to move to the next database in the program:
+<a href="http://www.mongodb.org/">mongoDB</a>. It is a so-called
+<a href="http://en.wikipedia.org/wiki/Document-oriented_database">document oriented database</a>,
+relying on Javascript and JSON like Riak but, mongoDB, unlike Riak,
+has a built-in support for querying, and can also perform partial
+updates.</p>
+
+<p>Fittingly, this first day is about CRUD and queries.</p>
+
+<!--more-->
+
+
+<h3>CRUD in mongoDB</h3>
+
+<p>Unlike Riak, mongoDB makes a difference between Create and Update
+operations. It is not possible to insert documents with the same id
+twice in the same collection:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.test.insert( { _id: 'one', value: 1 } )
+</span><span class='line'>&gt; db.test.find()
+</span><span class='line'>{ "_id" : "one", "value" : 1 }
+</span><span class='line'>&gt; db.test.insert( { _id: 'one', value: 2 } )
+</span><span class='line'>E11000 duplicate key error index: book.test.$_id_  dup key: { : "one" }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Like in SQL, the Read, Update and Delete operations all operate on the
+result of a search. And because the criteria query for a search is
+just a JSON document, it is possible to reuse it in different
+contexts. Combined with JavaScript as a query/shell language, this
+makes a very flexible combination.</p>
+
+<h3>Reaching into objects</h3>
+
+<p>As documents are naturally nested, it is important to know how to
+refer to nested attributes and how to use them in queries.</p>
+
+<p>Using the JSON nesting notation is possible but does not have the
+expected semantic (unless you change your expectations):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.towns.find( { mayor: { name: 'Sam Adams' } }, {name: 1} )
+</span><span class='line'>&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The query above returns nothing, despite the fact that there is a town
+whose mayor is named &#8216;Sam Adams&#8217;. The problem here is that this
+specific notation will match documents in the collection whose <code>mayor</code>
+attribute has the exact value <code>{ name: 'Sam Adams' }</code>, rather than
+merely those whose <code>mayor</code> attribute has a sub-attribute <code>name</code> with
+the <code>Sam Adams</code> value (and possible other sub-attributes, a
+possibility that the first query denies).</p>
+
+<p>The correct form for the query is</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.towns.find( { 'mayor.name' : 'Sam Adams' }, {name: 1})
+</span><span class='line'>{ "_id" : ObjectId("4eed55b0ef971f5317e68e91"), "name" : "Portland" }
+</span><span class='line'>&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="http://www.mongodb.org/display/DOCS/Dot+Notation+%28Reaching+into+Objects%29">This documentation</a>
+from the official website was very useful to me in clarifying this aspect.</p>
+
+<h3>The <a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-Metaoperator%3A%7B%7B%24not%7D%7D"><code>$not</code></a> operator</h3>
+
+<p>I first got curious about this operator because the example from the
+book did not work. It generated an error in mongoDB 2.0.2 (the latest
+at the time of writing).</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s1">&#39;exports.foods&#39;</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">$not</span> <span class="o">:</span> <span class="p">{</span> <span class="nx">name</span> <span class="o">:</span> <span class="s1">&#39;burgers&#39;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">_id</span> <span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">name</span> <span class="o">:</span> <span class="mi">1</span> <span class="p">}</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The error is</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>error: { "$err" : "invalid use of $not", "code" : 13034 }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the
+<a href="https://github.com/mongodb/mongo/blob/master/db/queryutil.cpp">source code</a>,
+it seems $not cannot be applied to a (implicit) equal operator. So the
+book code should be using <code>$ne</code>:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span> <span class="p">{</span> <span class="s1">&#39;exports.foods.name&#39;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$ne</span><span class="o">:</span> <span class="s1">&#39;burgers&#39;</span> <span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It does not help that the online shell (accessible from the &#8216;Try it
+out&#8217; link on <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>) does
+not return an error for the book query. It does not return anything
+at all, so it is still not correct.</p>
+
+<p>Still, even with 2.0.2, this query:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.countries.find( {$not: { name: 'United States' } } )
+</span><span class='line'>&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>is accepted but does not return every country but US. Yet again it
+returns nothing.</p>
+
+<p>As far as I can tell, this query is actually incorrect (the <code>$not</code>
+operator should be applied to an operator, not a match), so its value
+is irrelevant, but it is worrying that the parser allows this code.</p>
+
+<p>The general problem is that the semantic of <code>$not</code> is not exactly
+the same as the similar operator from logic. So basic logic reasoning
+cannot help.</p>
+
+<p>I suppose this is just something to keep in mind: be wary of using
+<code>$not</code>.</p>
+
+<h2>Exercises</h2>
+
+<h3>The online mongoDB documentation</h3>
+
+<p>is <a href="http://www.mongodb.org/display/DOCS/Manual">here</a>.</p>
+
+<h3>Query using regular expressions</h3>
+
+<p>As explained
+<a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-RegularExpressions">here</a>,
+mongoDB supports two notations: a direct JavaScript regexp object
+using <code>/.../</code> and slightly more verbose but more flexible <code>$regexp</code>
+operator. The syntax for the regular expression in both cases is the
+same.</p>
+
+<h3>mongoDB drivers</h3>
+
+<p>The <a href="http://www.mongodb.org/display/DOCS/Drivers">list of drivers</a>.</p>
+
+<h3>Print a JSON document containing <code>{ "hello" : "world" }</code></h3>
+
+<p>The <code>tojson</code> function can display (and pretty-print) JSON documents:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">tojson</span><span class="p">({</span> <span class="s2">&quot;hello&quot;</span><span class="o">:</span> <span class="s2">&quot;world&quot;</span> <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Find a town by case insensitive regular expression search</h3>
+
+<p>This would be the <code>i</code> option to the regular expression:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">towns</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="sr">/new/i</span><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Find all cities whose names contain an ‘e’, and are famous for food or beer.</h3>
+
+<p>A good use for the
+<a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24in"><code>$in</code></a>
+operator:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">towns</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span> <span class="o">:</span> <span class="sr">/e/</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">famous_for</span> <span class="o">:</span>
+</span><span class='line'>      <span class="p">{</span> <span class="nx">$in</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;food&#39;</span><span class="p">,</span> <span class="s1">&#39;beer&#39;</span><span class="p">]</span> <span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>or the equivalent but verbose:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">towns</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="sr">/e/</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">$or</span><span class="o">:</span> <span class="p">[{</span><span class="nx">famous_for</span> <span class="o">:</span> <span class="s1">&#39;food&#39;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">famous_for</span><span class="o">:</span> <span class="s1">&#39;beer&#39;</span><span class="p">}</span> <span class="p">]</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Find all countries that do not export tasty bacon</h3>
+
+<p>To find countries that export tasty bacon, one has to use
+<a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24elemMatch"><code>$elemMatch</code></a>. It
+should not come as a surprise that it is used here as well, but with
+the dreaded <code>$not</code>:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span><span class="s1">&#39;exports.foods&#39;</span><span class="o">:</span>
+</span><span class='line'>     <span class="p">{</span> <span class="nx">$not</span><span class="o">:</span>
+</span><span class='line'>       <span class="p">{</span><span class="nx">$elemMatch</span><span class="o">:</span>
+</span><span class='line'>        <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;bacon&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">tasty</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span> <span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span> <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="s2">&quot;ca&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;Canada&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">{</span> <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="s2">&quot;mx&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;Mexico&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(I had not deleted Canada from the database).</p>
+
+<p>The seemingly equivalent</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">$not</span><span class="o">:</span>
+</span><span class='line'>      <span class="p">{</span><span class="s1">&#39;exports.foods&#39;</span><span class="o">:</span>
+</span><span class='line'>       <span class="p">{</span> <span class="nx">$elemMatch</span><span class="o">:</span>
+</span><span class='line'>         <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;bacon&#39;</span><span class="p">,</span>
+</span><span class='line'>           <span class="nx">tasty</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span> <span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>will not work. It does not return anything. See above my findings on <code>$not</code>.</p>
+
+<h3>Create a database <code>blogger</code> with a collection of <code>articles</code></h3>
+
+<h4>A new database:</h4>
+
+<p>Creating a new database is extremely easy: just name it when you
+launch the <code>mongo</code> shell command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mongo blogger</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>A new collection:</h4>
+
+<p>Like for the database, a collection is created just by inserting
+something in it:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">articles</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Frederic&#39;</span><span class="p">,</span> <span class="nx">email</span><span class="o">:</span> <span class="s1">&#39;my@email.org&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">creation</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span>
+</span><span class='line'>      <span class="nx">test</span><span class="o">:</span> <span class="s1">&#39;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&#39;</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Update the article with an array of comments</h4>
+
+<p>With the operator
+<a href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24set"><code>$set</code></a>,
+I can specify just what I need to update, not the whole document as in
+Riak:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">articles</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span><span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">&quot;4ef3c78c7d67f191b06653e4&quot;</span><span class="p">)</span> <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="nx">$set</span><span class="o">:</span> <span class="p">{</span> <span class="nx">comments</span><span class="o">:</span>
+</span><span class='line'>             <span class="p">[</span> <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Me too&#39;</span><span class="p">},</span>
+</span><span class='line'>               <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Me three&#39;</span><span class="p">},</span>
+</span><span class='line'>               <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;I know all your secret&#39;</span> <span class="p">}</span> <span class="p">]</span>
+</span><span class='line'>           <span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I can check the inserted value with <code>db.articles.findOne()</code> (without
+arguments it returns the first element in the collection, and pretty
+prints it):</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">&quot;4ef3c78c7d67f191b06653e4&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="s2">&quot;comments&quot;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                        <span class="s2">&quot;author&quot;</span> <span class="o">:</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;Me too&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                        <span class="s2">&quot;author&quot;</span> <span class="o">:</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;Me three&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                        <span class="s2">&quot;author&quot;</span> <span class="o">:</span> <span class="s2">&quot;Carol&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;I know all your secrets&quot;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>        <span class="p">],</span>
+</span><span class='line'>        <span class="s2">&quot;creation&quot;</span> <span class="o">:</span> <span class="nx">ISODate</span><span class="p">(</span><span class="s2">&quot;2011-12-23T00:13:00.636Z&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="s2">&quot;email&quot;</span> <span class="o">:</span> <span class="s2">&quot;my@email.org&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;Frederic&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;test&quot;</span> <span class="o">:</span> <span class="s2">&quot;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tomorrow will cover indexing, and more advanced uses of the data (such
+as MapReduce).</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks Riak on EC2]]></title>
@@ -6559,176 +6928,6 @@ But that is probably getting a bit ahead of myself; right now I&#8217;d be happy
 <p>Ok, nothing fancy. But looking at the doc I see it is possible to extend basic Java classes, so I think there&#8217;s far more depth to this construct. Otherwise, there&#8217;s always <code>defmacro</code> to play with.</p>
 
 <p>And this completes Day 2.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Haskell: foldr as foldl]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/11/11/haskell-foldr-as-foldl/"/>
-    <updated>2011-11-11T08:03:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/11/11/haskell-foldr-as-foldl</id>
-    <content type="html"><![CDATA[<p>In a previous <a href="http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/">post</a>, I tried to show how to derive the formula expression <code>foldl</code> in terms of <code>foldr</code>. Unsurprisingly, there is a way to express <code>foldr</code> in terms <code>foldl</code>: <code>foldr f a bs = foldl (\g b x -&gt; g (f b x)) id bs a</code>. Today I&#8217;ll try to derive this definition.</p>
-
-<!--more-->
-
-
-<p>Of course, <code>foldl</code> is strict, so it cannot work on infinite lists. Therefore, the new <code>foldr</code> would be similarly limited.</p>
-
-<p>I&#8217;ll start again from a standard definition for both functions. First <code>foldr</code>:</p>
-
-<figure class='code'><figcaption><span>foldr  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="ow">::</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
-</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
-</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span> <span class="p">(</span><span class="n">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then <code>foldl</code>:</p>
-
-<figure class='code'><figcaption><span>foldl  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
-</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
-</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">f</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span> <span class="n">b</span><span class="p">)</span> <span class="n">bs</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Derivation</h2>
-
-<p>Once again, I will use the function building fold rather than value building one. This time, the <code>f</code> argument to <code>foldr</code> has already the right type, so I will not need <code>flip</code>.</p>
-
-<p>I first reorganize the arguments order a bit, putting <code>a</code> at the end:</p>
-
-<figure class='code'><figcaption><span>foldr_alt basic equation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="n">a</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The base case is once again <code>id</code>:</p>
-
-<figure class='code'><figcaption><span>foldr_alt on empty list  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">id</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and is trivially true:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>foldr f a [] == a                  -- by definition of foldr
-</span><span class='line'>             == id a               -- by definition of id
-</span><span class='line'>             == (foldr_alt f []) a -- by definition of foldr_alt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The recursive case is not surprising either:</p>
-
-<figure class='code'><figcaption><span>foldr_alt on non empty list  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It follows from the induction hypothesis: given <code>foldr f a bs == foldr_alt f bs a</code>, then <code>foldr f a (b:bs) == foldr_alt f (b:bs) a</code></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>foldr f a (b:bs) == f b (foldr f a bs)           -- by definition of foldr
-</span><span class='line'>                 == f b (foldr_alt f bs a)       -- by induction hypothesis
-</span><span class='line'>                 == (f b) . (foldr_alt f bs) $ a -- currying and definition of . and $
-</span><span class='line'>                 == (foldr_alt f (b:bs)) $ a     -- by definition of foldr_alt
-</span><span class='line'>                 == foldr_alt f (b:bs) a         -- uncurrying and definition of $</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But <code>foldl</code> is nowhere to be seen&#8230; which is not surprising considering that <code>foldl</code> is tail recursive while <code>foldr</code> and <code>foldr_alt</code> are both body recursive&#8230; maybe using an accumulator, we could turn <code>foldr_alt</code> to a tail recursive function.</p>
-
-<p>The initial value for the accumulator must be the identity of the composition function, that is, <code>id</code>.</p>
-
-<figure class='code'><figcaption><span>accumulator version of foldr_alt  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>foldr_acc</code> is once again easy to define. The base case:</p>
-
-<figure class='code'><figcaption><span>foldr_acc base case  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">acc</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For the recursive case, notice that <code>f b</code> is composed with the <em>rest</em> of the function to the right. As the accumulator represents the previous part of the function, <code>f b</code> will be composed with this accumulator to the left:</p>
-
-<figure class='code'><figcaption><span>foldr_acc recursive case  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="p">(</span><span class="n">acc</span> <span class="o">.</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">))</span> <span class="n">bs</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The proof is less straightforward; I am not very familiar with equational reasoning, so maybe something simpler is possible. Note that in this proof, I need the list argument to be finite.</p>
-
-<p>First, the base case:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>foldr_alt f [] == id                 -- by definition of foldr_alt
-</span><span class='line'>               == foldr_acc f id []  -- by definition of foldr_acc</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For the recursive case, I will not actually use an induction hypothesis. Instead, I will use the fact that the list is finite, and the fact that the composition function is, well, a function. <code>f == g</code> implies <code>acc . f == acc . g</code> for any terminating <code>acc</code>.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>acc . foldr_alt f (b1:b2:bs) == acc . (f b1) . (foldr_alt f (b2:bs))  
-</span><span class='line'>  -- by definition of foldr_alt
-</span><span class='line'>                         == acc . (f b1) . (f b2) . (foldr_alt f bs)  
-</span><span class='line'>  -- by definition of foldr_alt again
-</span><span class='line'>                         == acc . (f b1) . (f b2) . .. (f bn)         
-</span><span class='line'>  -- by induction over the list bs, which must be finite
-</span><span class='line'>                         == foldr_acc f (acc .(f b1) . (f b2) . ... ) []
-</span><span class='line'>  -- by definition of foldr_acc f _ []
-</span><span class='line'>                         == foldr_acc f (acc . (f b1) . (f b2) . ..) [bn]  
-</span><span class='line'>  -- by definition of foldr_acc, recursive case
-</span><span class='line'>                         == foldr_acc f acc (b1:b2:bs)
-</span><span class='line'>  -- by induction over the lenght of (b1:b2:bs), and definition of foldr_acc, recursive case</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The fact that the equation only holds for list of finite lengths should not be surprising, but might still be a limitation of my proof.</p>
-
-<p>With <code>foldr_acc</code> defined as above, converting to <code>foldl</code> is immediate:</p>
-
-<figure class='code'><figcaption><span>foldr as foldl  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">go</span> <span class="n">id</span> <span class="n">bs</span>
-</span><span class='line'>  <span class="kr">where</span> <span class="n">go</span> <span class="n">acc</span> <span class="n">b</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">acc</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span> <span class="n">x</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If I rename <code>acc</code> to <code>g</code>, and move <code>x</code> to the parameter list (uncurrying the <code>go</code> function), I get the original definition.</p>
-
-<p>QED.</p>
 ]]></content>
   </entry>
   

@@ -1,0 +1,676 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks mongoDB Day 1 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="It has been &#8230; a little over a week since I closed with HBase so it
+is time to move to the next database in the program:
+mongoDB. It is a so- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks mongoDB Day 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-23T08:19:00+09:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>It has been &#8230; a little over a week since I closed with HBase so it
+is time to move to the next database in the program:
+<a href="http://www.mongodb.org/">mongoDB</a>. It is a so-called
+<a href="http://en.wikipedia.org/wiki/Document-oriented_database">document oriented database</a>,
+relying on Javascript and JSON like Riak but, mongoDB, unlike Riak,
+has a built-in support for querying, and can also perform partial
+updates.</p>
+
+<p>Fittingly, this first day is about CRUD and queries.</p>
+
+<!--more-->
+
+
+<h3>CRUD in mongoDB</h3>
+
+<p>Unlike Riak, mongoDB makes a difference between Create and Update
+operations. It is not possible to insert documents with the same id
+twice in the same collection:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.test.insert( { _id: 'one', value: 1 } )
+</span><span class='line'>&gt; db.test.find()
+</span><span class='line'>{ "_id" : "one", "value" : 1 }
+</span><span class='line'>&gt; db.test.insert( { _id: 'one', value: 2 } )
+</span><span class='line'>E11000 duplicate key error index: book.test.$_id_  dup key: { : "one" }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Like in SQL, the Read, Update and Delete operations all operate on the
+result of a search. And because the criteria query for a search is
+just a JSON document, it is possible to reuse it in different
+contexts. Combined with JavaScript as a query/shell language, this
+makes a very flexible combination.</p>
+
+<h3>Reaching into objects</h3>
+
+<p>As documents are naturally nested, it is important to know how to
+refer to nested attributes and how to use them in queries.</p>
+
+<p>Using the JSON nesting notation is possible but does not have the
+expected semantic (unless you change your expectations):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.towns.find( { mayor: { name: 'Sam Adams' } }, {name: 1} )
+</span><span class='line'>&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The query above returns nothing, despite the fact that there is a town
+whose mayor is named &#8216;Sam Adams&#8217;. The problem here is that this
+specific notation will match documents in the collection whose <code>mayor</code>
+attribute has the exact value <code>{ name: 'Sam Adams' }</code>, rather than
+merely those whose <code>mayor</code> attribute has a sub-attribute <code>name</code> with
+the <code>Sam Adams</code> value (and possible other sub-attributes, a
+possibility that the first query denies).</p>
+
+<p>The correct form for the query is</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.towns.find( { 'mayor.name' : 'Sam Adams' }, {name: 1})
+</span><span class='line'>{ "_id" : ObjectId("4eed55b0ef971f5317e68e91"), "name" : "Portland" }
+</span><span class='line'>&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="http://www.mongodb.org/display/DOCS/Dot+Notation+%28Reaching+into+Objects%29">This documentation</a>
+from the official website was very useful to me in clarifying this aspect.</p>
+
+<h3>The <a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-Metaoperator%3A%7B%7B%24not%7D%7D"><code>$not</code></a> operator</h3>
+
+<p>I first got curious about this operator because the example from the
+book did not work. It generated an error in mongoDB 2.0.2 (the latest
+at the time of writing).</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s1">&#39;exports.foods&#39;</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">$not</span> <span class="o">:</span> <span class="p">{</span> <span class="nx">name</span> <span class="o">:</span> <span class="s1">&#39;burgers&#39;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">_id</span> <span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">name</span> <span class="o">:</span> <span class="mi">1</span> <span class="p">}</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The error is</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>error: { "$err" : "invalid use of $not", "code" : 13034 }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From the
+<a href="https://github.com/mongodb/mongo/blob/master/db/queryutil.cpp">source code</a>,
+it seems $not cannot be applied to a (implicit) equal operator. So the
+book code should be using <code>$ne</code>:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span> <span class="p">{</span> <span class="s1">&#39;exports.foods.name&#39;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$ne</span><span class="o">:</span> <span class="s1">&#39;burgers&#39;</span> <span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It does not help that the online shell (accessible from the &#8216;Try it
+out&#8217; link on <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>) does
+not return an error for the book query. It does not return anything
+at all, so it is still not correct.</p>
+
+<p>Still, even with 2.0.2, this query:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.countries.find( {$not: { name: 'United States' } } )
+</span><span class='line'>&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>is accepted but does not return every country but US. Yet again it
+returns nothing.</p>
+
+<p>As far as I can tell, this query is actually incorrect (the <code>$not</code>
+operator should be applied to an operator, not a match), so its value
+is irrelevant, but it is worrying that the parser allows this code.</p>
+
+<p>The general problem is that the semantic of <code>$not</code> is not exactly
+the same as the similar operator from logic. So basic logic reasoning
+cannot help.</p>
+
+<p>I suppose this is just something to keep in mind: be wary of using
+<code>$not</code>.</p>
+
+<h2>Exercises</h2>
+
+<h3>The online mongoDB documentation</h3>
+
+<p>is <a href="http://www.mongodb.org/display/DOCS/Manual">here</a>.</p>
+
+<h3>Query using regular expressions</h3>
+
+<p>As explained
+<a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-RegularExpressions">here</a>,
+mongoDB supports two notations: a direct JavaScript regexp object
+using <code>/.../</code> and slightly more verbose but more flexible <code>$regexp</code>
+operator. The syntax for the regular expression in both cases is the
+same.</p>
+
+<h3>mongoDB drivers</h3>
+
+<p>The <a href="http://www.mongodb.org/display/DOCS/Drivers">list of drivers</a>.</p>
+
+<h3>Print a JSON document containing <code>{ "hello" : "world" }</code></h3>
+
+<p>The <code>tojson</code> function can display (and pretty-print) JSON documents:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">tojson</span><span class="p">({</span> <span class="s2">&quot;hello&quot;</span><span class="o">:</span> <span class="s2">&quot;world&quot;</span> <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Find a town by case insensitive regular expression search</h3>
+
+<p>This would be the <code>i</code> option to the regular expression:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">towns</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="sr">/new/i</span><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Find all cities whose names contain an ‘e’, and are famous for food or beer.</h3>
+
+<p>A good use for the
+<a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24in"><code>$in</code></a>
+operator:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">towns</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span> <span class="o">:</span> <span class="sr">/e/</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">famous_for</span> <span class="o">:</span>
+</span><span class='line'>      <span class="p">{</span> <span class="nx">$in</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;food&#39;</span><span class="p">,</span> <span class="s1">&#39;beer&#39;</span><span class="p">]</span> <span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>or the equivalent but verbose:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">towns</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="sr">/e/</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">$or</span><span class="o">:</span> <span class="p">[{</span><span class="nx">famous_for</span> <span class="o">:</span> <span class="s1">&#39;food&#39;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">famous_for</span><span class="o">:</span> <span class="s1">&#39;beer&#39;</span><span class="p">}</span> <span class="p">]</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Find all countries that do not export tasty bacon</h3>
+
+<p>To find countries that export tasty bacon, one has to use
+<a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24elemMatch"><code>$elemMatch</code></a>. It
+should not come as a surprise that it is used here as well, but with
+the dreaded <code>$not</code>:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span><span class="s1">&#39;exports.foods&#39;</span><span class="o">:</span>
+</span><span class='line'>     <span class="p">{</span> <span class="nx">$not</span><span class="o">:</span>
+</span><span class='line'>       <span class="p">{</span><span class="nx">$elemMatch</span><span class="o">:</span>
+</span><span class='line'>        <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;bacon&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">tasty</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span> <span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span> <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="s2">&quot;ca&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;Canada&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">{</span> <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="s2">&quot;mx&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;Mexico&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(I had not deleted Canada from the database).</p>
+
+<p>The seemingly equivalent</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">$not</span><span class="o">:</span>
+</span><span class='line'>      <span class="p">{</span><span class="s1">&#39;exports.foods&#39;</span><span class="o">:</span>
+</span><span class='line'>       <span class="p">{</span> <span class="nx">$elemMatch</span><span class="o">:</span>
+</span><span class='line'>         <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;bacon&#39;</span><span class="p">,</span>
+</span><span class='line'>           <span class="nx">tasty</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span> <span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>will not work. It does not return anything. See above my findings on <code>$not</code>.</p>
+
+<h3>Create a database <code>blogger</code> with a collection of <code>articles</code></h3>
+
+<h4>A new database:</h4>
+
+<p>Creating a new database is extremely easy: just name it when you
+launch the <code>mongo</code> shell command:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mongo blogger</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>A new collection:</h4>
+
+<p>Like for the database, a collection is created just by inserting
+something in it:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">articles</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Frederic&#39;</span><span class="p">,</span> <span class="nx">email</span><span class="o">:</span> <span class="s1">&#39;my@email.org&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">creation</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span>
+</span><span class='line'>      <span class="nx">test</span><span class="o">:</span> <span class="s1">&#39;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&#39;</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Update the article with an array of comments</h4>
+
+<p>With the operator
+<a href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24set"><code>$set</code></a>,
+I can specify just what I need to update, not the whole document as in
+Riak:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">articles</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span><span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">&quot;4ef3c78c7d67f191b06653e4&quot;</span><span class="p">)</span> <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="nx">$set</span><span class="o">:</span> <span class="p">{</span> <span class="nx">comments</span><span class="o">:</span>
+</span><span class='line'>             <span class="p">[</span> <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Me too&#39;</span><span class="p">},</span>
+</span><span class='line'>               <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Me three&#39;</span><span class="p">},</span>
+</span><span class='line'>               <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;I know all your secret&#39;</span> <span class="p">}</span> <span class="p">]</span>
+</span><span class='line'>           <span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I can check the inserted value with <code>db.articles.findOne()</code> (without
+arguments it returns the first element in the collection, and pretty
+prints it):</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">&quot;4ef3c78c7d67f191b06653e4&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="s2">&quot;comments&quot;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                        <span class="s2">&quot;author&quot;</span> <span class="o">:</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;Me too&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                        <span class="s2">&quot;author&quot;</span> <span class="o">:</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;Me three&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                        <span class="s2">&quot;author&quot;</span> <span class="o">:</span> <span class="s2">&quot;Carol&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;I know all your secrets&quot;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>        <span class="p">],</span>
+</span><span class='line'>        <span class="s2">&quot;creation&quot;</span> <span class="o">:</span> <span class="nx">ISODate</span><span class="p">(</span><span class="s2">&quot;2011-12-23T00:13:00.636Z&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="s2">&quot;email&quot;</span> <span class="o">:</span> <span class="s2">&quot;my@email.org&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;Frederic&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;test&quot;</span> <span class="o">:</span> <span class="s2">&quot;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Tomorrow will cover indexing, and more advanced uses of the data (such
+as MapReduce).</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-23T08:19:00+09:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/" title="Previous Post: Seven Databases in Seven Weeks Riak on EC2">&laquo; Seven Databases in Seven Weeks Riak on EC2</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">mongoDB Day 1</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks mongoDB Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Seven Databases in Seven Weeks Riak on EC2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">Seven Databases in Seven Weeks HBase Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">Seven Databases in Seven Weeks HBase Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">Seven Databases in Seven Weeks HBase Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-12-23T16:41:30+09:00</updated>
+  <updated>2011-12-25T13:43:22+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,406 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks mongoDB Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/"/>
+    <updated>2011-12-24T14:49:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2</id>
+    <content type="html"><![CDATA[<p>Today the book covers all kinds of queries goodness in mongoDB:
+indexing, advanced group queries, and MapReduce.</p>
+
+<p>Once again, the contrast with Riak is stark. mongoDB is able to
+optimize queries on its JSON documents because it understand the
+format directly (whereas it is stored as an opaque block in Riak).
+Using JavaScript is also simpler: no need to quote the function codes;
+just pass a function object to the commands that need one.</p>
+
+<!--more-->
+
+
+<h3>Indexes</h3>
+
+<p>mongoDB comes by default with fairly sophisticated indexing
+options. Perhaps not as many as PostgreSQL, but still very
+flexible. Two basic types, range (B-Tree) and geospatial indexes;
+multikeys (with the ability to sort each key in a different order);
+sparse, &#8230;</p>
+
+<p>Combined with the
+<a href="http://www.mongodb.org/display/DOCS/Explain"><code>explain</code></a> function,
+this makes classic (i.e. non MapReduce) queries usable.</p>
+
+<p>Thus mongoDB is a good hybrid between traditional databases (although
+document rather than schema oriented), and new MapReduce platforms
+such as <a href="http://hadoop.apache.org/"><code>Hadoop</code></a>.</p>
+
+<h3>Aggregation</h3>
+
+<p>mongoDB also supports a number of aggregation functions. The most
+flexible one,
+<a href="http://www.mongodb.org/display/DOCS/Aggregation#Aggregation-Group"><code>group</code></a>,
+is not compatible with sharding, but otherwise it provides yet more
+coverage of relational database features.</p>
+
+<h3>MapReduce</h3>
+
+<p>Using mongoDB&#8217;s
+<a href="http://www.mongodb.org/display/DOCS/MapReduce"><code>mapreduce</code></a> is much
+easier than using Riak`s: the functions do not have to be passed as
+strings, they can be stored in the server directly from the shell, and
+because mongoDB understand JSON directly, there is not need to first
+parse the document</p>
+
+<p>On the other hand, Riak&#8217;s agnostic approach makes
+it possible to MapReduce other kinds of data.</p>
+
+<h2>Exercises</h2>
+
+<h3>Shortcut for the admin commands</h3>
+
+<p>I could not find a single place with the info. The mongo shell
+<a href="http://api.mongodb.org/js/current/">API</a> has no central list of
+functions; instead they are spread in the documentation or source for
+each prototype.</p>
+
+<p>In general, an admin command that takes a mongoDB object as a
+first argument will have an equivalent method in the relevant prototype.</p>
+
+<p>For instance, the
+<a href="http://www.mongodb.org/display/DOCS/List+of+Database+Commands"><code>dbStats</code></a>
+command takes a
+<a href="http://api.mongodb.org/js/current/symbols/_global_.html#DB"><code>DB</code></a>;
+in the
+<a href="http://api.mongodb.org/js/current/symbols/src/shell_db.js.html"><code>db.js</code></a>
+source file of the <code>DB</code> prototype, there is a <code>stats</code> method that
+invokes the <code>dbStats</code> command.</p>
+
+<h3>Online documentation for Queries and Cursors</h3>
+
+<p>As stated in the
+<a href="http://www.mongodb.org/display/DOCS/Queries+and+Cursors">documentation</a>,
+mongoDB returns a cursor for each queries; it is up to the client to
+iterate over the cursor to retrieve results.</p>
+
+<p>The mongo shell usually hides the existence of cursors, but even there
+it is possible to expose them, using JavaScript.</p>
+
+<h3>mongoDB documentation for MapReduce</h3>
+
+<p>The documentation is
+<a href="http://www.mongodb.org/display/DOCS/MapReduce">here</a>.</p>
+
+<h3>Collection function code</h3>
+
+<p>In each case, I got the code by running <code>db.towns.functionName</code> (note
+the absence of parenthesis). The mongo shell direct access to
+JavaScript source code is especially convenient.</p>
+
+<h4>Collection <code>help</code></h4>
+
+<p>The source code is just a long list of <code>print</code> statements.</p>
+
+<h4>Collection <code>findOne</code></h4>
+
+<p>The code will first execute a query, returning a cursor. The cursor is
+then checked for the presence of results; if there is any, the first
+one is returned.</p>
+
+<h4>Collection <code>stats</code></h4>
+
+<p>This function will simply delegate the job to the <code>runCommand</code> method,
+invoking the <code>collStats</code> command.</p>
+
+<h3>Finalize method</h3>
+
+<p>The <code>finalize</code> function is very simple: rename the attribute <code>count</code>
+to <code>total</code>:</p>
+
+<figure class='code'><figcaption><span>finalize function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">finalize</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span> <span class="nx">total</span><span class="o">:</span> <span class="nx">value</span><span class="p">.</span><span class="nx">count</span> <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use it, just add the <code>finalize</code> attribute to the <code>mapReduce</code> command:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">results</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">mapReduce</span><span class="o">:</span> <span class="s1">&#39;phones&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">map</span><span class="o">:</span> <span class="nx">map</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">reduce</span><span class="o">:</span> <span class="nx">reduce</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">finalize</span><span class="o">:</span> <span class="nx">finalize</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">out</span><span class="o">:</span> <span class="s1">&#39;phones.report&#39;</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, I can check  the result with <code>db.phones.report.find()</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.phones.report.find()
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 1 }, "value" : { "total" : 35 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 2 }, "value" : { "total" : 30 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 3 }, "value" : { "total" : 35 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 4 }, "value" : { "total" : 22 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 5 }, "value" : { "total" : 35 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 6 }, "value" : { "total" : 19 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 7 }, "value" : { "total" : 32 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 8 }, "value" : { "total" : 32 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 1 }, "value" : { "total" : 7 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 2 }, "value" : { "total" : 5 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 3 }, "value" : { "total" : 5 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 4 }, "value" : { "total" : 10 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 5 }, "value" : { "total" : 6 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 6 }, "value" : { "total" : 4 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 7 }, "value" : { "total" : 6 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 8 }, "value" : { "total" : 5 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5, 6 ], "country" : 1 }, "value" : { "total" : 116 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5, 6 ], "country" : 2 }, "value" : { "total" : 103 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5, 6 ], "country" : 3 }, "value" : { "total" : 118 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5, 6 ], "country" : 4 }, "value" : { "total" : 104 } }
+</span><span class='line'>has more</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Use of driver</h3>
+
+<p>I used Java, and simply reimplemented the original Phones collection
+in a different database:</p>
+
+<figure class='code'><figcaption><span> (MongoTest.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/mongo/src/main/java/jp/wakatta/MongoTest.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Math</span><span class="o">.</span><span class="na">floor</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Math</span><span class="o">.</span><span class="na">random</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Math</span><span class="o">.</span><span class="na">round</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.BasicDBObject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.DB</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.DBCollection</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.DBObject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.Mongo</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MongoTest</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">// connect to the database server</span>
+</span><span class='line'>          <span class="c1">// note: use 127.0.0.1 instead of localhost</span>
+</span><span class='line'>          <span class="c1">// as mongoDB only listen to the loopback</span>
+</span><span class='line'>          <span class="c1">// interface and not the ethernet one</span>
+</span><span class='line'>          <span class="n">Mongo</span> <span class="n">m</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Mongo</span><span class="o">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// make sure we&#39;re in a clean state</span>
+</span><span class='line'>          <span class="n">m</span><span class="o">.</span><span class="na">dropDatabase</span><span class="o">(</span><span class="s">&quot;java&quot;</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// create and access the database</span>
+</span><span class='line'>          <span class="n">DB</span> <span class="n">db</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">getDB</span><span class="o">(</span><span class="s">&quot;java&quot;</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// create collection and populate it</span>
+</span><span class='line'>          <span class="n">DBCollection</span> <span class="n">phones</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="na">getCollection</span><span class="o">(</span><span class="s">&quot;phones&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">populatePhones</span><span class="o">(</span> <span class="mi">800</span><span class="o">,</span> <span class="mi">5550000</span><span class="o">,</span> <span class="mi">5650000</span> <span class="o">,</span> <span class="n">phones</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// create index</span>
+</span><span class='line'>          <span class="n">phones</span><span class="o">.</span><span class="na">createIndex</span><span class="o">(</span><span class="k">new</span> <span class="n">BasicDBObject</span><span class="o">(</span><span class="s">&quot;display&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">));</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// list the indexes</span>
+</span><span class='line'>          <span class="n">List</span><span class="o">&lt;</span><span class="n">DBObject</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">phones</span><span class="o">.</span><span class="na">getIndexInfo</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="n">DBObject</span> <span class="n">o</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">o</span><span class="o">);</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>          <span class="c1">// close and cleanup</span>
+</span><span class='line'>          <span class="n">m</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">ex</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">populatePhones</span><span class="o">(</span><span class="kt">long</span> <span class="n">area</span><span class="o">,</span> <span class="kt">long</span> <span class="n">start</span><span class="o">,</span> <span class="kt">long</span> <span class="n">stop</span><span class="o">,</span> <span class="n">DBCollection</span> <span class="n">coll</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">long</span> <span class="n">i</span><span class="o">=</span><span class="n">start</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">stop</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="kt">long</span> <span class="n">country</span> <span class="o">=</span> <span class="n">round</span><span class="o">(</span><span class="n">floor</span><span class="o">(</span><span class="mi">1</span> <span class="o">+</span> <span class="o">(</span><span class="n">random</span><span class="o">()</span> <span class="o">*</span> <span class="mi">8</span><span class="o">)));</span>
+</span><span class='line'>          <span class="kt">long</span> <span class="n">num</span> <span class="o">=</span> <span class="o">(</span><span class="n">country</span> <span class="o">*</span> <span class="mi">10000000000</span><span class="n">l</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">area</span> <span class="o">*</span> <span class="mi">10000000</span><span class="o">)</span> <span class="o">+</span> <span class="n">i</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">BasicDBObject</span> <span class="n">phone</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BasicDBObject</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">BasicDBObject</span> <span class="n">components</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BasicDBObject</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">phone</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;_id&quot;</span><span class="o">,</span> <span class="n">num</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">components</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;country&quot;</span><span class="o">,</span> <span class="n">country</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">components</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;area&quot;</span><span class="o">,</span> <span class="n">area</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">components</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;prefix&quot;</span><span class="o">,</span> <span class="o">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">10000</span><span class="o">));</span>
+</span><span class='line'>          <span class="n">components</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;number&quot;</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">phone</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;components&quot;</span><span class="o">,</span> <span class="n">components</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">phone</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;display&quot;</span><span class="o">,</span> <span class="s">&quot;+&quot;</span> <span class="o">+</span> <span class="n">country</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">area</span> <span class="o">+</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">coll</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">phone</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the complete project, I just used Maven to fetch the mongoDB
+driver:</p>
+
+<figure class='code'><figcaption><span> (pom.xml)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/mongo/pom.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>mongo-test<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;name&gt;</span>mongo-test<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>org.mongodb<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>mongo-java-driver<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>2.7.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ugly, but it does the job.</p>
+
+<p>And that&#8217;s all for today.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks mongoDB Day 1]]></title>
@@ -6674,260 +7074,6 @@ But that is probably getting a bit ahead of myself; right now I&#8217;d be happy
 <p>I always found Lisp languages to be very elegant and expressive; Clojure definitively is a Lisp, and I really wanted to like the language. Yet for some reason I found it somewhat disappointing. Perhaps it is the limitations the designers put (for good reason) in the language. Perhaps it is the fact that the language runs on the JVM, an environment that I instinctively link to all things corporate, safe and boring, so I don&#8217;t really believe it could be exciting.</p>
 
 <p>I&#8217;m not really sure, perhaps it is just that I&#8217;m feeling tired and I have a cold, and Clojure really is awesome. So I&#8217;ll have another look at that language, and I hope I can give it the attention it seems to deserve.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Languages in Seven Weeks Clojure Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/"/>
-    <updated>2011-11-12T19:25:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2</id>
-    <content type="html"><![CDATA[<p>Today Clojure&#8217;s coverage is getting beefier with tail recursion (soso), lazy sequences and &#8230; macros!</p>
-
-<!--more-->
-
-
-<p>The support for tail recursion is disappointing. But given that the JVM implementers never actually understood the value of tail recursion (or perhaps they overestimated its cost), it would have been surprising if a language running on top of the JVM had a solution. Scala is similarly limited.</p>
-
-<p>Lazy sequences are cool, but not spectacularly so. It is a more restricted concept than laziness in Haskell. Still, lazy lists form a large part of my use of Haskell&#8217;s laziness (perhaps the only part I can use), so I do not expect to feel limited in any way with Clojure.</p>
-
-<p>Finally, macros. Writing macros separates men from boys. Writing macros that write macros separates gods from men. Macros are good. Abuse of macros can cause headaches, but the good kind (it&#8217;s just your brain swelling).</p>
-
-<h2>Exercises</h2>
-
-<h3>Implementation of common macros in Clojure</h3>
-
-<p>That one is very easy. The web site has a dedicated <a href="http://clojure.org/macros">page</a> with the common macros. The source code is available for each. <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/defmacro"><code>defmacro</code></a> is actually a macro, and its source code is, well, let&#8217;s just say I&#8217;m happy someone else wrote it. And yes, it is a macro that writes macros.</p>
-
-<p>To expand the code of macros, I wrote this small function to recursively expand macro definitions:</p>
-
-<figure class='code'><figcaption><span>rec-expand function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">rec-expand</span> <span class="p">[</span><span class="nv">lst</span><span class="p">]</span>
-</span><span class='line'>          <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">seq? </span><span class="nv">lst</span><span class="p">)</span> <span class="p">(</span><span class="nb">map </span><span class="nv">rec-expand</span> <span class="p">(</span><span class="nb">macroexpand </span><span class="nv">lst</span><span class="p">))</span> <span class="nv">lst</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Without it, it is difficult to see deeply into the code:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (macroexpand '(defn collection-type                                                                                   
-</span><span class='line'>             "Return either :list, :vector or :map, depending of the type of col."                      
-</span><span class='line'>             [col]                                                                                      
-</span><span class='line'>             (cond (list? col) :list
-</span><span class='line'>                   (map? col) :map
-</span><span class='line'>                   (vector? col) :vector)))
-</span><span class='line'>(def collection-type (.withMeta (clojure.core/fn collection-type ([col] (cond (list? col) :list (map? col) :map (vector? col) :vector))) (.meta (var collection-type))))</span></code></pre></td></tr></table></div></figure>
-
-
-<p><a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/macroexpand"><code>macroexpand</code></a> did not expand the <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/cond"><code>cond</code></a> macros.</p>
-
-<p>With <code>rec-expand</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (rec-expand '(defn collection-type                                                                                   
-</span><span class='line'>             "Return either :list, :vector or :map, depending of the type of col."                      
-</span><span class='line'>             [col]                                                                                      
-</span><span class='line'>             (cond (list? col) :list
-</span><span class='line'>                   (map? col) :map
-</span><span class='line'>                   (vector? col) :vector))) 
-</span><span class='line'>(def collection-type (. (fn* collection-type ([col] (if (list? col) :list (if (map? col) :map (if (vector? col) :vector ()))))) withMeta (. (var collection-type) meta)))</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Implementation of a lazy sequence</h3>
-
-<p>For this exercise, I use <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/lazy-seq"><code>lazy-seq</code></a>, which evaluates its body on demand (and remembers the value).</p>
-
-<p>One first example is a simple reimplementation of <code>(iterate inc n)</code>:</p>
-
-<figure class='code'><figcaption><span>upfrom  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">upfrom</span> <span class="p">[</span><span class="nv">n</span><span class="p">]</span>
-</span><span class='line'>    <span class="s">&quot;[n, n+1, n+2, ....&quot;</span>
-</span><span class='line'>    <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nb">cons </span><span class="nv">n</span> <span class="p">(</span><span class="nf">upfrom</span> <span class="p">(</span><span class="nb">inc </span><span class="nv">n</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Testing it:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (take 10 (upfrom 0))
-</span><span class='line'>(0 1 2 3 4 5 6 7 8 9)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A bit more interesting, perhaps, is a Fibonacci sequence not using <code>map</code>:</p>
-
-<figure class='code'><figcaption><span>Fibonacci sequence  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">fibs</span> <span class="p">[</span><span class="nv">a</span> <span class="nv">b</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Fibonacci sequence starting with a, b, ...&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nb">cons </span><span class="nv">a</span> <span class="p">(</span><span class="nf">fibs</span> <span class="nv">b</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">a</span> <span class="nv">b</span><span class="p">)))))</span>
-</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">fib</span> <span class="p">(</span><span class="nf">fibs</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Computing the 20 first Fibonacci numbers:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (take 20 fib)
-</span><span class='line'>(1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Unless with else condition</h3>
-
-<p>For this exercise, I use two features that were not covered in the book</p>
-
-<ul>
-<li>variable lists of arguments support</li>
-<li>backquote notation</li>
-</ul>
-
-
-<p>Clojure support for variable lists of arguments is nice: there can be a different body for each list, and the last one can a placeholder variable for &#8220;all the remaining arguments&#8221;. The concept of arguments (and variable lists) applies to everything that takes arguments: functions, macros, &#8230; Here I use it to differentiate between basic <code>(unless test body)</code> and <code>(unless test body else)</code>.</p>
-
-<p>Backquote notation is what makes macro useable. Rather than using <code>list</code> to build the form, I use the backquote. Then expressions prefixed with tilde are replaced by their value. Lisps had an identical concept (but comma was used instead of tilde).</p>
-
-<p>This makes macros shorter and easier to read.</p>
-
-<figure class='code'><figcaption><span>extended unless  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defmacro </span><span class="nv">unless</span>
-</span><span class='line'>  <span class="p">([</span><span class="nv">test</span> <span class="nv">body</span><span class="p">]</span> <span class="o">`</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="nv">~test</span><span class="p">)</span> <span class="nv">~body</span><span class="p">))</span>
-</span><span class='line'>  <span class="p">([</span><span class="nv">test</span> <span class="nv">body</span> <span class="nv">alt</span><span class="p">]</span> <span class="o">`</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="nv">~test</span><span class="p">)</span> <span class="nv">~body</span> <span class="nv">~alt</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Testing it:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (unless false (println "Danger!"))
-</span><span class='line'>Danger!
-</span><span class='line'>nil
-</span><span class='line'>user=&gt; (unless true (println "Danger!") (println "No danger...")) 
-</span><span class='line'>No danger...
-</span><span class='line'>nil</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Using defrecord and defprotocol</h3>
-
-<p>Ok, I&#8217;m not very inspired by this exercise. I was thinking of doing the classic shape class hierarchy, but finally settled for an employee protocol:</p>
-
-<figure class='code'><figcaption><span>Employee protocol  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defprotocol</span> <span class="nv">Employee</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">e</span> <span class="nv">h</span><span class="p">])</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">e</span> <span class="nv">a</span><span class="p">]))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The first implementation is a manager, which is modeled according to things I&#8217;ve heard about other companies, not mine, where managers are hard-working and have to be pulled from their desk to be fed:</p>
-
-<figure class='code'><figcaption><span>Manager implementation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defrecord</span> <span class="nv">Manager</span> <span class="p">[</span><span class="nv">hobby</span><span class="p">]</span>
-</span><span class='line'>  <span class="nv">Employee</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">h</span><span class="p">]</span>
-</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Working &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours then &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours of &quot;</span> <span class="nv">hobby</span><span class="p">)))</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">a</span><span class="p">]</span>
-</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;You are too modest. You deserve &quot;</span> <span class="p">(</span><span class="nb">* </span><span class="mf">1.1</span> <span class="nv">a</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Testing the manager:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (def m (Manager. "golf"))
-</span><span class='line'>#'user/m
-</span><span class='line'>user=&gt; (work m 8)
-</span><span class='line'>Working 4 hours then 4 hours of golf
-</span><span class='line'>nil
-</span><span class='line'>user=&gt; (get-raise m 1000)
-</span><span class='line'>You are too modest. You deserve 1100.0
-</span><span class='line'>nil</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Of course we need people to actually do something:</p>
-
-<figure class='code'><figcaption><span>Worker implemenation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defrecord</span> <span class="nv">Worker</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="nv">Employee</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">h</span><span class="p">]</span>
-</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Working &quot;</span> <span class="nv">h</span> <span class="s">&quot; hours then &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours overtime&quot;</span><span class="p">)))</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">a</span><span class="p">]</span>
-</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;There is an economic crisis. Be happy with &quot;</span> <span class="p">(</span><span class="nb">* </span><span class="mf">0.1</span> <span class="nv">a</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Testing the worker:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (def w (Worker.))
-</span><span class='line'>#'user/w
-</span><span class='line'>user=&gt; (work w 8)
-</span><span class='line'>Working 8 hours then 4 hours overtime
-</span><span class='line'>nil
-</span><span class='line'>user=&gt; (get-raise w 100)
-</span><span class='line'>There is an economic crisis. Be happy with 10.0
-</span><span class='line'>nil</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok, nothing fancy. But looking at the doc I see it is possible to extend basic Java classes, so I think there&#8217;s far more depth to this construct. Otherwise, there&#8217;s always <code>defmacro</code> to play with.</p>
-
-<p>And this completes Day 2.</p>
 ]]></content>
   </entry>
   

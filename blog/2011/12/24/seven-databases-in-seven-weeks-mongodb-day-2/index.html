@@ -1,0 +1,708 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks mongoDB Day 2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Today the book covers all kinds of queries goodness in mongoDB:
+indexing, advanced group queries, and MapReduce. Once again, the contrast with Riak &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks mongoDB Day 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-24T14:49:00+09:00" pubdate data-updated="true">Dec 24<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Today the book covers all kinds of queries goodness in mongoDB:
+indexing, advanced group queries, and MapReduce.</p>
+
+<p>Once again, the contrast with Riak is stark. mongoDB is able to
+optimize queries on its JSON documents because it understand the
+format directly (whereas it is stored as an opaque block in Riak).
+Using JavaScript is also simpler: no need to quote the function codes;
+just pass a function object to the commands that need one.</p>
+
+<!--more-->
+
+
+<h3>Indexes</h3>
+
+<p>mongoDB comes by default with fairly sophisticated indexing
+options. Perhaps not as many as PostgreSQL, but still very
+flexible. Two basic types, range (B-Tree) and geospatial indexes;
+multikeys (with the ability to sort each key in a different order);
+sparse, &#8230;</p>
+
+<p>Combined with the
+<a href="http://www.mongodb.org/display/DOCS/Explain"><code>explain</code></a> function,
+this makes classic (i.e. non MapReduce) queries usable.</p>
+
+<p>Thus mongoDB is a good hybrid between traditional databases (although
+document rather than schema oriented), and new MapReduce platforms
+such as <a href="http://hadoop.apache.org/"><code>Hadoop</code></a>.</p>
+
+<h3>Aggregation</h3>
+
+<p>mongoDB also supports a number of aggregation functions. The most
+flexible one,
+<a href="http://www.mongodb.org/display/DOCS/Aggregation#Aggregation-Group"><code>group</code></a>,
+is not compatible with sharding, but otherwise it provides yet more
+coverage of relational database features.</p>
+
+<h3>MapReduce</h3>
+
+<p>Using mongoDB&#8217;s
+<a href="http://www.mongodb.org/display/DOCS/MapReduce"><code>mapreduce</code></a> is much
+easier than using Riak`s: the functions do not have to be passed as
+strings, they can be stored in the server directly from the shell, and
+because mongoDB understand JSON directly, there is not need to first
+parse the document</p>
+
+<p>On the other hand, Riak&#8217;s agnostic approach makes
+it possible to MapReduce other kinds of data.</p>
+
+<h2>Exercises</h2>
+
+<h3>Shortcut for the admin commands</h3>
+
+<p>I could not find a single place with the info. The mongo shell
+<a href="http://api.mongodb.org/js/current/">API</a> has no central list of
+functions; instead they are spread in the documentation or source for
+each prototype.</p>
+
+<p>In general, an admin command that takes a mongoDB object as a
+first argument will have an equivalent method in the relevant prototype.</p>
+
+<p>For instance, the
+<a href="http://www.mongodb.org/display/DOCS/List+of+Database+Commands"><code>dbStats</code></a>
+command takes a
+<a href="http://api.mongodb.org/js/current/symbols/_global_.html#DB"><code>DB</code></a>;
+in the
+<a href="http://api.mongodb.org/js/current/symbols/src/shell_db.js.html"><code>db.js</code></a>
+source file of the <code>DB</code> prototype, there is a <code>stats</code> method that
+invokes the <code>dbStats</code> command.</p>
+
+<h3>Online documentation for Queries and Cursors</h3>
+
+<p>As stated in the
+<a href="http://www.mongodb.org/display/DOCS/Queries+and+Cursors">documentation</a>,
+mongoDB returns a cursor for each queries; it is up to the client to
+iterate over the cursor to retrieve results.</p>
+
+<p>The mongo shell usually hides the existence of cursors, but even there
+it is possible to expose them, using JavaScript.</p>
+
+<h3>mongoDB documentation for MapReduce</h3>
+
+<p>The documentation is
+<a href="http://www.mongodb.org/display/DOCS/MapReduce">here</a>.</p>
+
+<h3>Collection function code</h3>
+
+<p>In each case, I got the code by running <code>db.towns.functionName</code> (note
+the absence of parenthesis). The mongo shell direct access to
+JavaScript source code is especially convenient.</p>
+
+<h4>Collection <code>help</code></h4>
+
+<p>The source code is just a long list of <code>print</code> statements.</p>
+
+<h4>Collection <code>findOne</code></h4>
+
+<p>The code will first execute a query, returning a cursor. The cursor is
+then checked for the presence of results; if there is any, the first
+one is returned.</p>
+
+<h4>Collection <code>stats</code></h4>
+
+<p>This function will simply delegate the job to the <code>runCommand</code> method,
+invoking the <code>collStats</code> command.</p>
+
+<h3>Finalize method</h3>
+
+<p>The <code>finalize</code> function is very simple: rename the attribute <code>count</code>
+to <code>total</code>:</p>
+
+<figure class='code'><figcaption><span>finalize function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">finalize</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span> <span class="nx">total</span><span class="o">:</span> <span class="nx">value</span><span class="p">.</span><span class="nx">count</span> <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use it, just add the <code>finalize</code> attribute to the <code>mapReduce</code> command:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">results</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">mapReduce</span><span class="o">:</span> <span class="s1">&#39;phones&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">map</span><span class="o">:</span> <span class="nx">map</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">reduce</span><span class="o">:</span> <span class="nx">reduce</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">finalize</span><span class="o">:</span> <span class="nx">finalize</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">out</span><span class="o">:</span> <span class="s1">&#39;phones.report&#39;</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, I can check  the result with <code>db.phones.report.find()</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; db.phones.report.find()
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 1 }, "value" : { "total" : 35 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 2 }, "value" : { "total" : 30 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 3 }, "value" : { "total" : 35 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 4 }, "value" : { "total" : 22 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 5 }, "value" : { "total" : 35 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 6 }, "value" : { "total" : 19 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 7 }, "value" : { "total" : 32 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 4, 5, 6 ], "country" : 8 }, "value" : { "total" : 32 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 1 }, "value" : { "total" : 7 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 2 }, "value" : { "total" : 5 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 3 }, "value" : { "total" : 5 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 4 }, "value" : { "total" : 10 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 5 }, "value" : { "total" : 6 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 6 }, "value" : { "total" : 4 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 7 }, "value" : { "total" : 6 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5 ], "country" : 8 }, "value" : { "total" : 5 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5, 6 ], "country" : 1 }, "value" : { "total" : 116 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5, 6 ], "country" : 2 }, "value" : { "total" : 103 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5, 6 ], "country" : 3 }, "value" : { "total" : 118 } }
+</span><span class='line'>{ "_id" : { "digits" : [ 0, 1, 2, 3, 5, 6 ], "country" : 4 }, "value" : { "total" : 104 } }
+</span><span class='line'>has more</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Use of driver</h3>
+
+<p>I used Java, and simply reimplemented the original Phones collection
+in a different database:</p>
+
+<figure class='code'><figcaption><span> (MongoTest.java)</span> <a href='/downloads/code/7d7w/mongo/src/main/java/jp/wakatta/MongoTest.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Math</span><span class="o">.</span><span class="na">floor</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Math</span><span class="o">.</span><span class="na">random</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Math</span><span class="o">.</span><span class="na">round</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.BasicDBObject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.DB</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.DBCollection</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.DBObject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.mongodb.Mongo</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MongoTest</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">// connect to the database server</span>
+</span><span class='line'>          <span class="c1">// note: use 127.0.0.1 instead of localhost</span>
+</span><span class='line'>          <span class="c1">// as mongoDB only listen to the loopback</span>
+</span><span class='line'>          <span class="c1">// interface and not the ethernet one</span>
+</span><span class='line'>          <span class="n">Mongo</span> <span class="n">m</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Mongo</span><span class="o">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// make sure we&#39;re in a clean state</span>
+</span><span class='line'>          <span class="n">m</span><span class="o">.</span><span class="na">dropDatabase</span><span class="o">(</span><span class="s">&quot;java&quot;</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// create and access the database</span>
+</span><span class='line'>          <span class="n">DB</span> <span class="n">db</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">getDB</span><span class="o">(</span><span class="s">&quot;java&quot;</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// create collection and populate it</span>
+</span><span class='line'>          <span class="n">DBCollection</span> <span class="n">phones</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="na">getCollection</span><span class="o">(</span><span class="s">&quot;phones&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">populatePhones</span><span class="o">(</span> <span class="mi">800</span><span class="o">,</span> <span class="mi">5550000</span><span class="o">,</span> <span class="mi">5650000</span> <span class="o">,</span> <span class="n">phones</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// create index</span>
+</span><span class='line'>          <span class="n">phones</span><span class="o">.</span><span class="na">createIndex</span><span class="o">(</span><span class="k">new</span> <span class="n">BasicDBObject</span><span class="o">(</span><span class="s">&quot;display&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">));</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">// list the indexes</span>
+</span><span class='line'>          <span class="n">List</span><span class="o">&lt;</span><span class="n">DBObject</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">phones</span><span class="o">.</span><span class="na">getIndexInfo</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="n">DBObject</span> <span class="n">o</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">o</span><span class="o">);</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>          <span class="c1">// close and cleanup</span>
+</span><span class='line'>          <span class="n">m</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">ex</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">populatePhones</span><span class="o">(</span><span class="kt">long</span> <span class="n">area</span><span class="o">,</span> <span class="kt">long</span> <span class="n">start</span><span class="o">,</span> <span class="kt">long</span> <span class="n">stop</span><span class="o">,</span> <span class="n">DBCollection</span> <span class="n">coll</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">long</span> <span class="n">i</span><span class="o">=</span><span class="n">start</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">stop</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="kt">long</span> <span class="n">country</span> <span class="o">=</span> <span class="n">round</span><span class="o">(</span><span class="n">floor</span><span class="o">(</span><span class="mi">1</span> <span class="o">+</span> <span class="o">(</span><span class="n">random</span><span class="o">()</span> <span class="o">*</span> <span class="mi">8</span><span class="o">)));</span>
+</span><span class='line'>          <span class="kt">long</span> <span class="n">num</span> <span class="o">=</span> <span class="o">(</span><span class="n">country</span> <span class="o">*</span> <span class="mi">10000000000</span><span class="n">l</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">area</span> <span class="o">*</span> <span class="mi">10000000</span><span class="o">)</span> <span class="o">+</span> <span class="n">i</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">BasicDBObject</span> <span class="n">phone</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BasicDBObject</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">BasicDBObject</span> <span class="n">components</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BasicDBObject</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">phone</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;_id&quot;</span><span class="o">,</span> <span class="n">num</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">components</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;country&quot;</span><span class="o">,</span> <span class="n">country</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">components</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;area&quot;</span><span class="o">,</span> <span class="n">area</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">components</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;prefix&quot;</span><span class="o">,</span> <span class="o">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">10000</span><span class="o">));</span>
+</span><span class='line'>          <span class="n">components</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;number&quot;</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">phone</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;components&quot;</span><span class="o">,</span> <span class="n">components</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">phone</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;display&quot;</span><span class="o">,</span> <span class="s">&quot;+&quot;</span> <span class="o">+</span> <span class="n">country</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">area</span> <span class="o">+</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">coll</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">phone</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the complete project, I just used Maven to fetch the mongoDB
+driver:</p>
+
+<figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/mongo/pom.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>mongo-test<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;name&gt;</span>mongo-test<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>org.mongodb<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>mongo-java-driver<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>2.7.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ugly, but it does the job.</p>
+
+<p>And that&#8217;s all for today.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-24T14:49:00+09:00" pubdate data-updated="true">Dec 24<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/" title="Previous Post: Seven Databases in Seven Weeks mongoDB Day 1">&laquo; Seven Databases in Seven Weeks mongoDB Day 1</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">mongoDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">mongoDB Day 2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Seven Databases in Seven Weeks mongoDB Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks mongoDB Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Seven Databases in Seven Weeks Riak on EC2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">Seven Databases in Seven Weeks HBase Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">Seven Databases in Seven Weeks HBase Day 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

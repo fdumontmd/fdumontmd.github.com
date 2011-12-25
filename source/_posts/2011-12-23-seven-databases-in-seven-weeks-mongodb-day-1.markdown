@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Seven Databases in Seven Weeks mongoDB Day 1"
+title: "Seven Databases in Seven Weeks MongoDB Day 1"
 date: 2011-12-23 08:19
 comments: true
 categories: [Books]
@@ -10,9 +10,9 @@ series: "Seven Databases in Seven Weeks"
 
 It has been ... a little over a week since I closed with HBase so it
 is time to move to the next database in the program:
-[mongoDB](http://www.mongodb.org/). It is a so-called
+[MongoDB](http://www.mongodb.org/). It is a so-called
 [document oriented database](http://en.wikipedia.org/wiki/Document-oriented_database),
-relying on Javascript and JSON like Riak but, mongoDB, unlike Riak,
+relying on Javascript and JSON like Riak but, MongoDB, unlike Riak,
 has a built-in support for querying, and can also perform partial
 updates.
 
@@ -20,9 +20,9 @@ Fittingly, this first day is about CRUD and queries.
 
 <!--more-->
 
-### CRUD in mongoDB
+### CRUD in MongoDB
 
-Unlike Riak, mongoDB makes a difference between Create and Update
+Unlike Riak, MongoDB makes a difference between Create and Update
 operations. It is not possible to insert documents with the same id
 twice in the same collection:
 
@@ -74,7 +74,7 @@ from the official website was very useful to me in clarifying this aspect.
 ### The [`$not`](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-Metaoperator%3A%7B%7B%24not%7D%7D) operator
 
 I first got curious about this operator because the example from the
-book did not work. It generated an error in mongoDB 2.0.2 (the latest
+book did not work. It generated an error in MongoDB 2.0.2 (the latest
 at the time of writing).
 
 {% codeblock lang:javascript %}
@@ -130,7 +130,7 @@ I suppose this is just something to keep in mind: be wary of using
 
 ## Exercises
 
-### The online mongoDB documentation
+### The online MongoDB documentation
 
 is [here](http://www.mongodb.org/display/DOCS/Manual).
 
@@ -138,12 +138,12 @@ is [here](http://www.mongodb.org/display/DOCS/Manual).
 
 As explained
 [here](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-RegularExpressions),
-mongoDB supports two notations: a direct JavaScript regexp object
+MongoDB supports two notations: a direct JavaScript regexp object
 using `/.../` and slightly more verbose but more flexible `$regexp`
 operator. The syntax for the regular expression in both cases is the
 same.
 
-### mongoDB drivers
+### MongoDB drivers
 
 The [list of drivers](http://www.mongodb.org/display/DOCS/Drivers).
 

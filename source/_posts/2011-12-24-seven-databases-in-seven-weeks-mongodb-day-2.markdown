@@ -1,16 +1,16 @@
 ---
 layout: post
-title: "Seven Databases in Seven Weeks mongoDB Day 2"
+title: "Seven Databases in Seven Weeks MongoDB Day 2"
 date: 2011-12-24 14:49
 comments: true
 categories: [Books]
 tags: [7databases7weeks, databases, mongodb]
 series: "Seven Databases in Seven Weeks"
 ---
-Today the book covers all kinds of queries goodness in mongoDB:
+Today the book covers all kinds of queries goodness in MongoDB:
 indexing, advanced group queries, and MapReduce.
 
-Once again, the contrast with Riak is stark. mongoDB is able to
+Once again, the contrast with Riak is stark. MongoDB is able to
 optimize queries on its JSON documents because it understand the
 format directly (whereas it is stored as an opaque block in Riak).
 Using JavaScript is also simpler: no need to quote the function codes;
@@ -21,7 +21,7 @@ just pass a function object to the commands that need one.
 
 ### Indexes
 
-mongoDB comes by default with fairly sophisticated indexing
+MongoDB comes by default with fairly sophisticated indexing
 options. Perhaps not as many as PostgreSQL, but still very
 flexible. Two basic types, range (B-Tree) and geospatial indexes;
 multikeys (with the ability to sort each key in a different order);
@@ -31,13 +31,13 @@ Combined with the
 [`explain`](http://www.mongodb.org/display/DOCS/Explain) function,
 this makes classic (i.e. non MapReduce) queries usable.
 
-Thus mongoDB is a good hybrid between traditional databases (although
+Thus MongoDB is a good hybrid between traditional databases (although
 document rather than schema oriented), and new MapReduce platforms
 such as [`Hadoop`](http://hadoop.apache.org/).
 
 ### Aggregation
 
-mongoDB also supports a number of aggregation functions. The most
+MongoDB also supports a number of aggregation functions. The most
 flexible one,
 [`group`](http://www.mongodb.org/display/DOCS/Aggregation#Aggregation-Group),
 is not compatible with sharding, but otherwise it provides yet more
@@ -45,11 +45,11 @@ coverage of relational database features.
 
 ### MapReduce
 
-Using mongoDB's
+Using MongoDB's
 [`mapreduce`](http://www.mongodb.org/display/DOCS/MapReduce) is much
 easier than using Riak`s: the functions do not have to be passed as
 strings, they can be stored in the server directly from the shell, and
-because mongoDB understand JSON directly, there is not need to first
+because MongoDB understand JSON directly, there is not need to first
 parse the document
 
 On the other hand, Riak's agnostic approach makes
@@ -64,7 +64,7 @@ I could not find a single place with the info. The mongo shell
 functions; instead they are spread in the documentation or source for
 each prototype.
 
-In general, an admin command that takes a mongoDB object as a
+In general, an admin command that takes a MongoDB object as a
 first argument will have an equivalent method in the relevant prototype.
 
 For instance, the
@@ -80,13 +80,13 @@ invokes the `dbStats` command.
 
 As stated in the
 [documentation](http://www.mongodb.org/display/DOCS/Queries+and+Cursors),
-mongoDB returns a cursor for each queries; it is up to the client to
+MongoDB returns a cursor for each queries; it is up to the client to
 iterate over the cursor to retrieve results.
 
 The mongo shell usually hides the existence of cursors, but even there
 it is possible to expose them, using JavaScript.
 
-### mongoDB documentation for MapReduce
+### MongoDB documentation for MapReduce
 
 The documentation is
 [here](http://www.mongodb.org/display/DOCS/MapReduce).
@@ -169,7 +169,7 @@ in a different database:
 
 {% include_code lang:java 7d7w/mongo/src/main/java/jp/wakatta/MongoTest.java %}
 
-For the complete project, I just used Maven to fetch the mongoDB
+For the complete project, I just used Maven to fetch the MongoDB
 driver:
 
 {% include_code lang:xml 7d7w/mongo/pom.xml %}

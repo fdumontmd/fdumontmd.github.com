@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-12-25T13:43:22+09:00</updated>
+  <updated>2011-12-26T00:08:02+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -14,14 +14,14 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks mongoDB Day 2]]></title>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks MongoDB Day 2]]></title>
     <link href="http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/"/>
     <updated>2011-12-24T14:49:00+09:00</updated>
     <id>http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2</id>
-    <content type="html"><![CDATA[<p>Today the book covers all kinds of queries goodness in mongoDB:
+    <content type="html"><![CDATA[<p>Today the book covers all kinds of queries goodness in MongoDB:
 indexing, advanced group queries, and MapReduce.</p>
 
-<p>Once again, the contrast with Riak is stark. mongoDB is able to
+<p>Once again, the contrast with Riak is stark. MongoDB is able to
 optimize queries on its JSON documents because it understand the
 format directly (whereas it is stored as an opaque block in Riak).
 Using JavaScript is also simpler: no need to quote the function codes;
@@ -32,7 +32,7 @@ just pass a function object to the commands that need one.</p>
 
 <h3>Indexes</h3>
 
-<p>mongoDB comes by default with fairly sophisticated indexing
+<p>MongoDB comes by default with fairly sophisticated indexing
 options. Perhaps not as many as PostgreSQL, but still very
 flexible. Two basic types, range (B-Tree) and geospatial indexes;
 multikeys (with the ability to sort each key in a different order);
@@ -42,13 +42,13 @@ sparse, &#8230;</p>
 <a href="http://www.mongodb.org/display/DOCS/Explain"><code>explain</code></a> function,
 this makes classic (i.e. non MapReduce) queries usable.</p>
 
-<p>Thus mongoDB is a good hybrid between traditional databases (although
+<p>Thus MongoDB is a good hybrid between traditional databases (although
 document rather than schema oriented), and new MapReduce platforms
 such as <a href="http://hadoop.apache.org/"><code>Hadoop</code></a>.</p>
 
 <h3>Aggregation</h3>
 
-<p>mongoDB also supports a number of aggregation functions. The most
+<p>MongoDB also supports a number of aggregation functions. The most
 flexible one,
 <a href="http://www.mongodb.org/display/DOCS/Aggregation#Aggregation-Group"><code>group</code></a>,
 is not compatible with sharding, but otherwise it provides yet more
@@ -56,11 +56,11 @@ coverage of relational database features.</p>
 
 <h3>MapReduce</h3>
 
-<p>Using mongoDB&#8217;s
+<p>Using MongoDB&#8217;s
 <a href="http://www.mongodb.org/display/DOCS/MapReduce"><code>mapreduce</code></a> is much
 easier than using Riak`s: the functions do not have to be passed as
 strings, they can be stored in the server directly from the shell, and
-because mongoDB understand JSON directly, there is not need to first
+because MongoDB understand JSON directly, there is not need to first
 parse the document</p>
 
 <p>On the other hand, Riak&#8217;s agnostic approach makes
@@ -75,7 +75,7 @@ it possible to MapReduce other kinds of data.</p>
 functions; instead they are spread in the documentation or source for
 each prototype.</p>
 
-<p>In general, an admin command that takes a mongoDB object as a
+<p>In general, an admin command that takes a MongoDB object as a
 first argument will have an equivalent method in the relevant prototype.</p>
 
 <p>For instance, the
@@ -91,13 +91,13 @@ invokes the <code>dbStats</code> command.</p>
 
 <p>As stated in the
 <a href="http://www.mongodb.org/display/DOCS/Queries+and+Cursors">documentation</a>,
-mongoDB returns a cursor for each queries; it is up to the client to
+MongoDB returns a cursor for each queries; it is up to the client to
 iterate over the cursor to retrieve results.</p>
 
 <p>The mongo shell usually hides the existence of cursors, but even there
 it is possible to expose them, using JavaScript.</p>
 
-<h3>mongoDB documentation for MapReduce</h3>
+<h3>MongoDB documentation for MapReduce</h3>
 
 <p>The documentation is
 <a href="http://www.mongodb.org/display/DOCS/MapReduce">here</a>.</p>
@@ -348,7 +348,7 @@ in a different database:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>For the complete project, I just used Maven to fetch the mongoDB
+<p>For the complete project, I just used Maven to fetch the MongoDB
 driver:</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/mongo/pom.xml'>download</a></figcaption>
@@ -414,15 +414,15 @@ driver:</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks mongoDB Day 1]]></title>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks MongoDB Day 1]]></title>
     <link href="http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/"/>
     <updated>2011-12-23T08:19:00+09:00</updated>
     <id>http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1</id>
     <content type="html"><![CDATA[<p>It has been &#8230; a little over a week since I closed with HBase so it
 is time to move to the next database in the program:
-<a href="http://www.mongodb.org/">mongoDB</a>. It is a so-called
+<a href="http://www.mongodb.org/">MongoDB</a>. It is a so-called
 <a href="http://en.wikipedia.org/wiki/Document-oriented_database">document oriented database</a>,
-relying on Javascript and JSON like Riak but, mongoDB, unlike Riak,
+relying on Javascript and JSON like Riak but, MongoDB, unlike Riak,
 has a built-in support for querying, and can also perform partial
 updates.</p>
 
@@ -431,9 +431,9 @@ updates.</p>
 <!--more-->
 
 
-<h3>CRUD in mongoDB</h3>
+<h3>CRUD in MongoDB</h3>
 
-<p>Unlike Riak, mongoDB makes a difference between Create and Update
+<p>Unlike Riak, MongoDB makes a difference between Create and Update
 operations. It is not possible to insert documents with the same id
 twice in the same collection:</p>
 
@@ -493,7 +493,7 @@ from the official website was very useful to me in clarifying this aspect.</p>
 <h3>The <a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-Metaoperator%3A%7B%7B%24not%7D%7D"><code>$not</code></a> operator</h3>
 
 <p>I first got curious about this operator because the example from the
-book did not work. It generated an error in mongoDB 2.0.2 (the latest
+book did not work. It generated an error in MongoDB 2.0.2 (the latest
 at the time of writing).</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -522,7 +522,7 @@ at the time of writing).</p>
 
 
 <p>From the
-<a href="https://github.com/mongodb/mongo/blob/master/db/queryutil.cpp">source code</a>,
+<a href="https://github.com/mongodb/mongo/blob/master/src/mongo/db/queryutil.cpp">source code</a>,
 it seems $not cannot be applied to a (implicit) equal operator. So the
 book code should be using <code>$ne</code>:</p>
 
@@ -560,7 +560,7 @@ cannot help.</p>
 
 <h2>Exercises</h2>
 
-<h3>The online mongoDB documentation</h3>
+<h3>The online MongoDB documentation</h3>
 
 <p>is <a href="http://www.mongodb.org/display/DOCS/Manual">here</a>.</p>
 
@@ -568,12 +568,12 @@ cannot help.</p>
 
 <p>As explained
 <a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-RegularExpressions">here</a>,
-mongoDB supports two notations: a direct JavaScript regexp object
+MongoDB supports two notations: a direct JavaScript regexp object
 using <code>/.../</code> and slightly more verbose but more flexible <code>$regexp</code>
 operator. The syntax for the regular expression in both cases is the
 same.</p>
 
-<h3>mongoDB drivers</h3>
+<h3>MongoDB drivers</h3>
 
 <p>The <a href="http://www.mongodb.org/display/DOCS/Drivers">list of drivers</a>.</p>
 

@@ -5,13 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Seven Databases in Seven Weeks mongoDB Day 1 - Wakatta!</title>
+  <title>Seven Databases in Seven Weeks MongoDB Day 1 - Wakatta!</title>
   <meta name="author" content="Frédéric Dumont">
 
   
   <meta name="description" content="It has been &#8230; a little over a week since I closed with HBase so it
 is time to move to the next database in the program:
-mongoDB. It is a so- &hellip;">
+MongoDB. It is a so- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,7 +79,7 @@ mongoDB. It is a so- &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Seven Databases in Seven Weeks mongoDB Day 1</h1>
+      <h1 class="entry-title">Seven Databases in Seven Weeks MongoDB Day 1</h1>
     
     
       <p class="meta">
@@ -104,9 +104,9 @@ mongoDB. It is a so- &hellip;">
 
 <div class="entry-content"><p>It has been &#8230; a little over a week since I closed with HBase so it
 is time to move to the next database in the program:
-<a href="http://www.mongodb.org/">mongoDB</a>. It is a so-called
+<a href="http://www.mongodb.org/">MongoDB</a>. It is a so-called
 <a href="http://en.wikipedia.org/wiki/Document-oriented_database">document oriented database</a>,
-relying on Javascript and JSON like Riak but, mongoDB, unlike Riak,
+relying on Javascript and JSON like Riak but, MongoDB, unlike Riak,
 has a built-in support for querying, and can also perform partial
 updates.</p>
 
@@ -115,9 +115,9 @@ updates.</p>
 <!--more-->
 
 
-<h3>CRUD in mongoDB</h3>
+<h3>CRUD in MongoDB</h3>
 
-<p>Unlike Riak, mongoDB makes a difference between Create and Update
+<p>Unlike Riak, MongoDB makes a difference between Create and Update
 operations. It is not possible to insert documents with the same id
 twice in the same collection:</p>
 
@@ -177,7 +177,7 @@ from the official website was very useful to me in clarifying this aspect.</p>
 <h3>The <a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-Metaoperator%3A%7B%7B%24not%7D%7D"><code>$not</code></a> operator</h3>
 
 <p>I first got curious about this operator because the example from the
-book did not work. It generated an error in mongoDB 2.0.2 (the latest
+book did not work. It generated an error in MongoDB 2.0.2 (the latest
 at the time of writing).</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -206,7 +206,7 @@ at the time of writing).</p>
 
 
 <p>From the
-<a href="https://github.com/mongodb/mongo/blob/master/db/queryutil.cpp">source code</a>,
+<a href="https://github.com/mongodb/mongo/blob/master/src/mongo/db/queryutil.cpp">source code</a>,
 it seems $not cannot be applied to a (implicit) equal operator. So the
 book code should be using <code>$ne</code>:</p>
 
@@ -244,7 +244,7 @@ cannot help.</p>
 
 <h2>Exercises</h2>
 
-<h3>The online mongoDB documentation</h3>
+<h3>The online MongoDB documentation</h3>
 
 <p>is <a href="http://www.mongodb.org/display/DOCS/Manual">here</a>.</p>
 
@@ -252,12 +252,12 @@ cannot help.</p>
 
 <p>As explained
 <a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-RegularExpressions">here</a>,
-mongoDB supports two notations: a direct JavaScript regexp object
+MongoDB supports two notations: a direct JavaScript regexp object
 using <code>/.../</code> and slightly more verbose but more flexible <code>$regexp</code>
 operator. The syntax for the regular expression in both cases is the
 same.</p>
 
-<h3>mongoDB drivers</h3>
+<h3>MongoDB drivers</h3>
 
 <p>The <a href="http://www.mongodb.org/display/DOCS/Drivers">list of drivers</a>.</p>
 
@@ -511,7 +511,7 @@ as MapReduce).</p>
         <a class="basic-alignment left" href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/" title="Previous Post: Seven Databases in Seven Weeks Riak on EC2">&laquo; Seven Databases in Seven Weeks Riak on EC2</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/" title="next Post: Seven Databases in Seven Weeks mongoDB Day 2">Seven Databases in Seven Weeks mongoDB Day 2 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/" title="next Post: Seven Databases in Seven Weeks MongoDB Day 2">Seven Databases in Seven Weeks MongoDB Day 2 &raquo;</a>
       
     </p>
   </footer>
@@ -561,9 +561,9 @@ as MapReduce).</p>
 		
 			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
 		
-			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">mongoDB Day 1</a></li>
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
 		
-			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">mongoDB Day 2</a></li>
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
 		
 		</ul>
 </section>
@@ -572,11 +572,11 @@ as MapReduce).</p>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Seven Databases in Seven Weeks mongoDB Day 2</a>
+        <a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Seven Databases in Seven Weeks MongoDB Day 2</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks mongoDB Day 1</a>
+        <a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks MongoDB Day 1</a>
       </li>
     
       <li class="post">

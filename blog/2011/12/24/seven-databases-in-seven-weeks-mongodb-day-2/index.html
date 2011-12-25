@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Seven Databases in Seven Weeks mongoDB Day 2 - Wakatta!</title>
+  <title>Seven Databases in Seven Weeks MongoDB Day 2 - Wakatta!</title>
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="Today the book covers all kinds of queries goodness in mongoDB:
+  <meta name="description" content="Today the book covers all kinds of queries goodness in MongoDB:
 indexing, advanced group queries, and MapReduce. Once again, the contrast with Riak &hellip;">
   
 
@@ -78,7 +78,7 @@ indexing, advanced group queries, and MapReduce. Once again, the contrast with R
   
   <header>
     
-      <h1 class="entry-title">Seven Databases in Seven Weeks mongoDB Day 2</h1>
+      <h1 class="entry-title">Seven Databases in Seven Weeks MongoDB Day 2</h1>
     
     
       <p class="meta">
@@ -101,10 +101,10 @@ indexing, advanced group queries, and MapReduce. Once again, the contrast with R
   </header>
 
 
-<div class="entry-content"><p>Today the book covers all kinds of queries goodness in mongoDB:
+<div class="entry-content"><p>Today the book covers all kinds of queries goodness in MongoDB:
 indexing, advanced group queries, and MapReduce.</p>
 
-<p>Once again, the contrast with Riak is stark. mongoDB is able to
+<p>Once again, the contrast with Riak is stark. MongoDB is able to
 optimize queries on its JSON documents because it understand the
 format directly (whereas it is stored as an opaque block in Riak).
 Using JavaScript is also simpler: no need to quote the function codes;
@@ -115,7 +115,7 @@ just pass a function object to the commands that need one.</p>
 
 <h3>Indexes</h3>
 
-<p>mongoDB comes by default with fairly sophisticated indexing
+<p>MongoDB comes by default with fairly sophisticated indexing
 options. Perhaps not as many as PostgreSQL, but still very
 flexible. Two basic types, range (B-Tree) and geospatial indexes;
 multikeys (with the ability to sort each key in a different order);
@@ -125,13 +125,13 @@ sparse, &#8230;</p>
 <a href="http://www.mongodb.org/display/DOCS/Explain"><code>explain</code></a> function,
 this makes classic (i.e. non MapReduce) queries usable.</p>
 
-<p>Thus mongoDB is a good hybrid between traditional databases (although
+<p>Thus MongoDB is a good hybrid between traditional databases (although
 document rather than schema oriented), and new MapReduce platforms
 such as <a href="http://hadoop.apache.org/"><code>Hadoop</code></a>.</p>
 
 <h3>Aggregation</h3>
 
-<p>mongoDB also supports a number of aggregation functions. The most
+<p>MongoDB also supports a number of aggregation functions. The most
 flexible one,
 <a href="http://www.mongodb.org/display/DOCS/Aggregation#Aggregation-Group"><code>group</code></a>,
 is not compatible with sharding, but otherwise it provides yet more
@@ -139,11 +139,11 @@ coverage of relational database features.</p>
 
 <h3>MapReduce</h3>
 
-<p>Using mongoDB&#8217;s
+<p>Using MongoDB&#8217;s
 <a href="http://www.mongodb.org/display/DOCS/MapReduce"><code>mapreduce</code></a> is much
 easier than using Riak`s: the functions do not have to be passed as
 strings, they can be stored in the server directly from the shell, and
-because mongoDB understand JSON directly, there is not need to first
+because MongoDB understand JSON directly, there is not need to first
 parse the document</p>
 
 <p>On the other hand, Riak&#8217;s agnostic approach makes
@@ -158,7 +158,7 @@ it possible to MapReduce other kinds of data.</p>
 functions; instead they are spread in the documentation or source for
 each prototype.</p>
 
-<p>In general, an admin command that takes a mongoDB object as a
+<p>In general, an admin command that takes a MongoDB object as a
 first argument will have an equivalent method in the relevant prototype.</p>
 
 <p>For instance, the
@@ -174,13 +174,13 @@ invokes the <code>dbStats</code> command.</p>
 
 <p>As stated in the
 <a href="http://www.mongodb.org/display/DOCS/Queries+and+Cursors">documentation</a>,
-mongoDB returns a cursor for each queries; it is up to the client to
+MongoDB returns a cursor for each queries; it is up to the client to
 iterate over the cursor to retrieve results.</p>
 
 <p>The mongo shell usually hides the existence of cursors, but even there
 it is possible to expose them, using JavaScript.</p>
 
-<h3>mongoDB documentation for MapReduce</h3>
+<h3>MongoDB documentation for MapReduce</h3>
 
 <p>The documentation is
 <a href="http://www.mongodb.org/display/DOCS/MapReduce">here</a>.</p>
@@ -431,7 +431,7 @@ in a different database:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>For the complete project, I just used Maven to fetch the mongoDB
+<p>For the complete project, I just used Maven to fetch the MongoDB
 driver:</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/mongo/pom.xml'>download</a></figcaption>
@@ -538,7 +538,7 @@ driver:</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/" title="Previous Post: Seven Databases in Seven Weeks mongoDB Day 1">&laquo; Seven Databases in Seven Weeks mongoDB Day 1</a>
+        <a class="basic-alignment left" href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/" title="Previous Post: Seven Databases in Seven Weeks MongoDB Day 1">&laquo; Seven Databases in Seven Weeks MongoDB Day 1</a>
       
       
     </p>
@@ -589,9 +589,9 @@ driver:</p>
 		
 			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
 		
-			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">mongoDB Day 1</a></li>
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
 		
-			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">mongoDB Day 2</a></li>
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
 		
 		</ul>
 </section>
@@ -600,11 +600,11 @@ driver:</p>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Seven Databases in Seven Weeks mongoDB Day 2</a>
+        <a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Seven Databases in Seven Weeks MongoDB Day 2</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks mongoDB Day 1</a>
+        <a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks MongoDB Day 1</a>
       </li>
     
       <li class="post">

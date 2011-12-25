@@ -95,7 +95,7 @@ error: { "$err" : "invalid use of $not", "code" : 13034 }
 ```
 
 From the
-[source code](https://github.com/mongodb/mongo/blob/master/db/queryutil.cpp),
+[source code](https://github.com/mongodb/mongo/blob/master/src/mongo/db/queryutil.cpp),
 it seems $not cannot be applied to a (implicit) equal operator. So the
 book code should be using `$ne`:
 

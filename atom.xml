@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2011-12-26T00:08:02+09:00</updated>
+  <updated>2011-12-26T23:25:50+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,327 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks MongoDB Day 3]]></title>
+    <link href="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/"/>
+    <updated>2011-12-25T17:18:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3</id>
+    <content type="html"><![CDATA[<p>Final day with MongoDB. First to cover geospatial indexing; then to
+explore MongoDB&#8217;s approach to the CAP theorem.</p>
+
+<!--more-->
+
+
+<p>Like PostgreSQL, MongoDB has integrated support for geometric of
+geographic data and queries. Finding the neighbours of a point or
+location is trivial, and such queries are optimized using dedicated
+kind of indexes.</p>
+
+<p>Regarding the CAP theorem, MongoDB strictly separates Availability
+from Partition tolerance: replica sets are designed for availability,
+using a quorum approach (like Riak) to select the most recent data in
+case of conflict.</p>
+
+<p>Sharding is the dedicated mechanism for partitions. A replica set can
+own a shard of the data.</p>
+
+<p>Unlike with Riak, where availability and partitioning are functions of
+the properties set on buckets, MongoDB requires the whole topology to
+be explicitly configured. I assume that what MongoDB loses in
+flexibility, it gets it back in predictability.</p>
+
+<h2>Exercises</h2>
+
+<h3>Replica set configuration options</h3>
+
+<p>The documentation is
+<a href="http://www.mongodb.org/display/DOCS/Replica+Set+Configuration">here</a>.</p>
+
+<h3>Spherical geo index</h3>
+
+<p>I don&#8217;t know if this is another instance of the book describing
+features from old version of MongoDB, but there is no such thing as a
+spherical geo index.</p>
+
+<p>Spherical searches rely on standard <code>2d</code> indexing, as explained
+<a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing#GeospatialIndexing-TheEarthisRoundbutMapsareFlat">here</a>.</p>
+
+<h3>Find all cities within a 50 mile radius of London</h3>
+
+<p>To solve this exercise, it is necessary to format the data as required
+in the
+<a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing#GeospatialIndexing-NewSphericalModel">documentation</a>. Unfortunately,
+the data files in the code for the second beta version of the book use
+latitude, longitude whereas MongoDB expects longitude, latitude
+(i.e. a X, Y coordinate).</p>
+
+<p>I used the small script below to reformat the data file, and imported
+the reformated one:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sed -e 's/^\(.*\)latitude\(.*\), *longitude\([^}]*\)}\(.*\)$/\1longitude\3, latitude\2}\4/' \
+</span><span class='line'>mongo_cities1000.json &gt; mongo_cities1000_lon_lat.json</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With that loaded, and with the geospatial indexing in place, MongoDB
+is ready to run the queries.</p>
+
+<p>First I need to locate London. There are a few places named London,
+but I assume the authors meant the one in England. I create a <code>centre</code>
+variable to be used in the queries.</p>
+
+<figure class='code'><figcaption><span>Finding London  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">london</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">findOne</span><span class="p">(</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;London&#39;</span><span class="p">,</span> <span class="nx">country</span><span class="o">:</span> <span class="s1">&#39;GB&#39;</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">location</span><span class="o">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">centre</span> <span class="o">=</span> <span class="p">[</span><span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">longitude</span><span class="p">,</span> <span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">latitude</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As indicated in the documentation, I have to measure distances in
+radians. For this I need to know the
+<a href="http://en.wikipedia.org/wiki/Earth_radius">Earth Radius</a> in miles.</p>
+
+<figure class='code'><figcaption><span>Earth Radius and Range  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">earthRadius</span> <span class="o">=</span> <span class="mi">3959</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">range</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally I can run my queries. I have a few options:</p>
+
+<h4><code>geoNear</code> command</h4>
+
+<p>I can pass the <code>spherical: true</code> option to the <code>geoNear</code> command. By
+default, the query will only return 100 results.</p>
+
+<figure class='code'><figcaption><span>geoNear  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">geoNear</span><span class="o">:</span> <span class="s2">&quot;cities&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">near</span><span class="o">:</span> <span class="nx">centre</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">spherical</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">maxDistance</span><span class="o">:</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As it turns out, there are far more cities in this range. A circle of
+500 miles radius around London includes much of Western Europe:</p>
+
+<div class="gmap" id="map_canvas"></div>
+
+
+<p>To get unlimited results, I set the number of possible results to the
+number of cities:</p>
+
+<figure class='code'><figcaption><span>unlimited geoNear  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">geoNear</span><span class="o">:</span> <span class="s2">&quot;cities&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">near</span><span class="o">:</span> <span class="nx">centre</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">spherical</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">num</span><span class="o">:</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">count</span><span class="p">(),</span>
+</span><span class='line'>      <span class="nx">maxDistance</span><span class="o">:</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4><code>$within</code> operator</h4>
+
+<p>Alternatively, I can use the <code>$within</code> operator. I get the spherical
+behaviour by specifying a <code>centerSphere</code>:</p>
+
+<figure class='code'><figcaption><span>$within  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">location</span><span class="o">:</span>
+</span><span class='line'>      <span class="p">{</span> <span class="nx">$within</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$centerSphere</span><span class="o">:</span> <span class="p">[</span><span class="nx">centre</span><span class="p">,</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span><span class="p">]</span>
+</span><span class='line'>      <span class="p">}}})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This query will return cities within the range, just like the
+unlimited <code>geoNear</code> one.</p>
+
+<h3>Sharded replicas</h3>
+
+<p>This is the kind of things that is not overly difficult, but
+tedious. And I don&#8217;t like tedious.</p>
+
+<p>As a good UNIX geek, I&#8217;d rather spend hours to automate what would
+have taken me 10 minutes to do manually. So here&#8217;s the automated setup
+in Bash scripts.</p>
+
+<p>First I create all the necessary directories:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir mongo{1..6}
+</span><span class='line'>mkdir mongoconfig</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I start two sets of 3 replicas that can also be sharded:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>for i in {1..6}; do
+</span><span class='line'>  s=$(( (i-1 ) / 3 + 1))
+</span><span class='line'>  mongod --replSet shard$s --shardsvr --dbpath ./mongo$i \
+</span><span class='line'>  --port 2701$i --logpath ./mongod_$i.log --rest &
+</span><span class='line'>done</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I setup each replica set:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>for i in 1 2; do
+</span><span class='line'>  members=""
+</span><span class='line'>  p=$(( (i-1) * 3 + 1))
+</span><span class='line'>  for j in 1 2 3; do
+</span><span class='line'>    members="$members, { _id: $j, host: 'localhost:2701$((p+j-1))'}"
+</span><span class='line'>  done
+</span><span class='line'>  members=${members:1} 
+</span><span class='line'>  mongo localhost:2701$p &lt;&lt;HERE
+</span><span class='line'>rs.initiate({
+</span><span class='line'>  _id: 'shard$i',
+</span><span class='line'>  members: [ $members ]
+</span><span class='line'>})
+</span><span class='line'>HERE
+</span><span class='line'>done</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point it is good to wait a minute for the replica sets to be
+fully online.</p>
+
+<p>Next step is to figure out the shards URL: they are composed of the
+shard name, followed by the list of comma separated servers:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>shards=()
+</span><span class='line'>for i in 1 2; do
+</span><span class='line'>  p=$(( (i-1) * 3 + 1))
+</span><span class='line'>  output=`mongo --quiet localhost:2701$p/test&lt;&lt;HERE
+</span><span class='line'>db.isMaster().setName + '/' + db.isMaster().hosts
+</span><span class='line'>HERE`
+</span><span class='line'>  shards=( "${shards[@]}" ${output%?bye} )
+</span><span class='line'>done</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now it is time to start the config server. I move it to the port <code>27019</code> as <code>27016</code> is already in use:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mongod --configsvr --dbpath ./mongoconfig --port 27019 --logpath=mongoconfig.log &
+</span><span class='line'>sleep 1
+</span><span class='line'>mongos --configdb localhost:27019 --chunkSize 1 --port 27020 --logpath=mongos.log &</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And finally I add the shards to the config mongo, and enable sharding
+on <code>test</code> for both the <code>cities</code> collection and GridFS:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>for shard in ${shards[@]}; do
+</span><span class='line'>  echo $shard
+</span><span class='line'>  mongo localhost:27020/admin --quiet &lt;&lt;HERE
+</span><span class='line'>db.runCommand( { addshard: "$shard" })
+</span><span class='line'>HERE
+</span><span class='line'>done
+</span><span class='line'>mongo localhost:27020/admin --quiet &lt;&lt;HERE
+</span><span class='line'>db.runCommand( { enablesharding : "test" } );
+</span><span class='line'>db.runCommand( { shardcollection : "test.cities", key : {name : 1} } );
+</span><span class='line'>db.runCommand( { shardcollection : "test.fs.chunks", key : { files_id : 1 } } )
+</span><span class='line'>HERE</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I can check that everything looks ok with:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mongo localhost:27020/admin --quiet &lt;&lt;HERE
+</span><span class='line'>db.runCommand( { listshards : 1 })
+</span><span class='line'>HERE</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Of course, all these scripts would be useless to actually distribute
+the servers on different machines. Given some time, I&#8217;ll try to setup
+a AWS EC2 cluster as I did for Riak.</p>
+
+<p>At this point, I tried to import the cities data file. It was somewhat
+slower than without replicas, but not significantly so.</p>
+
+<p>I also added a file, using the same command as in the book.</p>
+
+<p>Now, to test the replicas, I killed the two primary servers (to
+identify them, I used <code>ps auxw | grep mongod</code>, which gave me the
+process id I needed to kill).</p>
+
+<p>With two servers down, <code>mongofiles -h localhost:27020 get my_file.txt</code>
+was still able to retrieve the file.</p>
+
+<h2>Wrapping up MongoDB</h2>
+
+<p>MongoDB is the first database besides PostgreSQL I feel comfortable
+using. They both provide more &#8220;database-like&#8221; features than either
+Riak or HBase: integrated queries, advanced indexing, &#8230; The use of
+JavaScript is well integrated and pleasant to use.</p>
+
+<p>Moreover, MongoDB&#8217;s approach to the CAP theorem is simple. While it is
+less flexible or dynamic than Riak&#8217;s, its simplicity makes it easy to
+reason about.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks MongoDB Day 2]]></title>
@@ -6716,364 +7037,6 @@ But that is probably getting a bit ahead of myself; right now I&#8217;d be happy
 
 
 <p>And that&#8217;s all for Day 1.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Languages in Seven Weeks Clojure Day 3]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/"/>
-    <updated>2011-11-13T20:30:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3</id>
-    <content type="html"><![CDATA[<p>The final day with Clojure covers its support for concurrent programming. It has a bestiary of concepts that are somewhat similar yet distinct from other modern languages.</p>
-
-<!--more-->
-
-
-<p>First of all Clojure adopts the <a href="http://en.wikipedia.org/wiki/Software_transactional_memory">Software Transactional Memory</a>, an approach mutable state and concurrency that is similar to databases. The idea is not really new, but it became more popular with Hashell&#8217;s implementation.</p>
-
-<p>There are also atoms, which are variables which guarantee atomic updates. The atomicity is a property of the atom, rather than of the functions that are used to update it, which is really nice.</p>
-
-<p>Futures are also present. They represent values whose value is being computed in a dedicated thread. Trying to read from a <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/future"><code>future</code></a> could block if the value has not been computed yet (yes, Java has the same concept).</p>
-
-<p>Finally, agents are &#8230; somewhat perplexing. They look like agents in other languages (Io, Scala, Erlang, &#8230;), except that they do not have any special behaviour attached. Instead, any function sent to them is queued and executed sequentially in a dedicated thread. At least, that&#8217;s how I understand currently, but when I tried to use them for the Barber shop simulation, I ran into some problems, so there is more to this story.</p>
-
-<h2>Exercises</h2>
-
-<h3>Find the implemenation of a blocking queue</h3>
-
-<p>The description of <a href="http://richhickey.github.com/clojure-contrib/seq-utils-api.html#clojure.contrib.seq-utils/fill-queue"><code>fill-queue</code></a> is a bit confusing, but it looks like a blocking lazy queue.</p>
-
-<h3>Accounts simulation</h3>
-
-<p>The code is very straightforward. An account is a <code>ref</code>, whose value is the balance. I add a validator function to each to ensure that the balance is not negative (<code>check-balance</code> is passed to <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/set-validator!"><code>set-validator!</code></a> in <code>make-account</code>).</p>
-
-<p>The <code>credit</code> and <code>debit</code> functions just update the balance with the <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/alter"><code>alter</code></a> function. The transaction is not provided at this level just yet.</p>
-
-<p>The <code>balance</code> function is just there for clarity.</p>
-
-<p>The various <code>bank-</code> functions just operate on a vector of accounts, so they take the <code>bank</code> (a <code>vector</code>), and an <code>acc_num</code> (account number).</p>
-
-<p>The <code>bank-transfer</code> is the only function using a transaction: it moves an amount between two accounts. To test the transaction failure mode, I credit the recipient account before I debit the other.</p>
-
-<p>Finally, <code>bank-balances</code> prints the balance of all accounts.</p>
-
-<figure class='code'><figcaption><span>Accounts simulation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">check-balance</span> <span class="p">[</span><span class="nv">b</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Check that the balance of account is not negative&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">&lt;= </span><span class="mi">0</span> <span class="nv">b</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">make-account</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="s">&quot;Create a new account&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">r</span> <span class="p">(</span><span class="nb">ref </span><span class="mi">0</span><span class="p">)]</span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">set-validator!</span> <span class="nv">r</span> <span class="nv">check-balance</span><span class="p">)</span>
-</span><span class='line'>      <span class="nv">r</span><span class="p">))</span>  
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">credit</span> <span class="p">[</span><span class="nv">account,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Add amount to account&#39;s balance&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">alter </span><span class="nv">account</span> <span class="nv">+</span> <span class="nv">amount</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">debit</span> <span class="p">[</span><span class="nv">account,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Debit amount from account&#39;s balance&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">alter </span><span class="nv">account</span> <span class="nv">-</span> <span class="nv">amount</span><span class="p">))</span>
-</span><span class='line'>  
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">balance</span> <span class="p">[</span><span class="nv">account</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Return balance of account&quot;</span>
-</span><span class='line'>  <span class="nv">@account</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">make-bank</span> <span class="p">[</span><span class="nv">n</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Create a bank of n accounts&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">vec</span> <span class="p">(</span><span class="nf">repeatedly</span> <span class="nv">n</span> <span class="nv">make-account</span><span class="p">)))</span>
-</span><span class='line'>  
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-credit</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Add amount to acc_num&#39;s balance&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">credit</span> <span class="p">(</span><span class="nb">nth </span><span class="nv">bank</span> <span class="nv">acc_num</span><span class="p">)</span> <span class="nv">amount</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-debit</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Debit amount from acc_num&#39;s balance&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">debit</span> <span class="p">(</span><span class="nb">nth </span><span class="nv">bank</span> <span class="nv">acc_num</span><span class="p">)</span> <span class="nv">amount</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-balance</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Return the balance of acc_num&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">balance</span> <span class="p">(</span><span class="nb">nth </span><span class="nv">bank</span> <span class="nv">acc_num</span><span class="p">)))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-transfer</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num1,</span> <span class="nv">acc_num2,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Transfer amount from acc_num1 to acc_num2 in bank&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">dosync </span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">bank-credit</span> <span class="nv">bank</span> <span class="nv">acc_num2</span> <span class="nv">amount</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">bank-debit</span> <span class="nv">bank</span> <span class="nv">acc_num1</span> <span class="nv">amount</span><span class="p">)))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-balances</span> <span class="p">[</span><span class="nv">bank</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Show the balance of all accounts&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="p">(</span><span class="nb">count </span><span class="nv">bank</span><span class="p">)]</span>
-</span><span class='line'>      <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Account &quot;</span> <span class="nv">i</span> <span class="s">&quot;: &quot;</span> <span class="p">(</span><span class="nf">bank-balance</span> <span class="nv">bank</span> <span class="nv">i</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The test code:</p>
-
-<figure class='code'><figcaption><span>Test code  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="c1">;; create the bank</span>
-</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">bank</span> <span class="p">(</span><span class="nf">make-bank</span> <span class="mi">3</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; put some money in</span>
-</span><span class='line'><span class="p">(</span><span class="nb">dosync </span><span class="p">(</span><span class="nf">bank-credit</span> <span class="nv">bank</span> <span class="mi">0</span> <span class="mi">100</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; show the balances</span>
-</span><span class='line'><span class="p">(</span><span class="nf">bank-balances</span> <span class="nv">bank</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; a first transfer</span>
-</span><span class='line'><span class="p">(</span><span class="nb">dosync </span><span class="p">(</span><span class="nf">bank-transfer</span> <span class="nv">bank</span> <span class="mi">0</span> <span class="mi">1</span> <span class="mi">75</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; show the balances</span>
-</span><span class='line'><span class="p">(</span><span class="nf">bank-balances</span> <span class="nv">bank</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; not enough fund, so it will fail</span>
-</span><span class='line'><span class="p">(</span><span class="nb">dosync </span><span class="p">(</span><span class="nf">bank-transfer</span> <span class="nv">bank</span> <span class="mi">0</span> <span class="mi">2</span> <span class="mi">75</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; and indeed, the balances have not changed</span>
-</span><span class='line'><span class="p">(</span><span class="nf">bank-balances</span> <span class="nv">bank</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>When input into the repl, the test code gives the following output:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>user=&gt; (def bank (make-bank 3))
-</span><span class='line'>#'user/bank
-</span><span class='line'>user=&gt; (dosync (bank-credit bank 0 100))
-</span><span class='line'>100
-</span><span class='line'>user=&gt; (bank-balances bank)
-</span><span class='line'>Account 0: 100
-</span><span class='line'>Account 1: 0
-</span><span class='line'>Account 2: 0
-</span><span class='line'>nil
-</span><span class='line'>user=&gt; (dosync (bank-transfer bank 0 1 75))
-</span><span class='line'>25
-</span><span class='line'>user=&gt; (bank-balances bank)
-</span><span class='line'>Account 0: 25
-</span><span class='line'>Account 1: 75
-</span><span class='line'>Account 2: 0
-</span><span class='line'>nil
-</span><span class='line'>user=&gt; (dosync (bank-transfer bank 0 2 75))
-</span><span class='line'>java.lang.IllegalStateException: Invalid reference state (NO_SOURCE_FILE:0)
-</span><span class='line'>user=&gt; (bank-balances bank)
-</span><span class='line'>Account 0: 25
-</span><span class='line'>Account 1: 75
-</span><span class='line'>Account 2: 0
-</span><span class='line'>nil</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So the balance is protected from being negative, and the transaction is rolled back. Despite the fact that the amount was supposed to be credited to account number 2 first, the balance of that account has not changed as the transaction failed.</p>
-
-<h3>Barber shop simulation</h3>
-
-<p>This problem was mostly a matter of figuring out the right model. The concept of agent seems to have some hidden complexity (or lock) which prevented my initial solution from working.</p>
-
-<p>The idea is that the <code>barber</code> is an agent; it is updated by a function representing getting an haircut (<code>get-haircut</code>). The value of the agent is the number of client served.</p>
-
-<p>The <code>waiting-room</code> is an atom. It&#8217;s value is the number of free chairs.</p>
-
-<p>The <code>get-haircut</code> function is sent to the <code>barber</code>. When it starts, it frees (increase) the <code>waiting-room</code> count of free chairs. Then it waits for 20 milliseconds, and finally updates the <code>barber</code> count of clients.</p>
-
-<p>Finally, the <code>try-to-sit</code> function checks the number of free chairs: if none, the customer just leaves. Otherwise, the customer sits in a chair (signaling it&#8217;s intent to get a haircut by sending <code>get-haircut</code> to the <code>barber</code>), and the count of free chairs is decreased. I tried to print a statement when a customer leaves because there is no chair, but there were too many such messages so I commented it out.</p>
-
-<figure class='code'><figcaption><span>Barber problem, part 1  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">barber</span> <span class="p">(</span><span class="nb">agent </span><span class="mi">0</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">waiting-room</span> <span class="p">(</span><span class="nf">atom</span> <span class="mi">3</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">get-haircut</span> <span class="p">[</span><span class="nv">count</span><span class="p">]</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">waiting-room</span> <span class="nv">inc</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">println </span><span class="s">&quot;Start haircut&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="mi">20</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">inc </span><span class="nv">count</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">try-to-sit</span> <span class="p">[</span><span class="nv">count</span><span class="p">]</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">== </span><span class="nv">count</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">do</span>
-</span><span class='line'>          <span class="c1">;;(println &quot;No free chairs. The customer leaves&quot;)</span>
-</span><span class='line'>          <span class="nv">count</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">do</span>
-</span><span class='line'>          <span class="p">(</span><span class="nb">println </span><span class="s">&quot;Sit in waiting room&quot;</span><span class="p">)</span>
-</span><span class='line'>          <span class="p">(</span><span class="nb">send </span><span class="nv">barber</span> <span class="nv">get-haircut</span><span class="p">)</span>
-</span><span class='line'>          <span class="p">(</span><span class="nb">dec </span><span class="nv">count</span><span class="p">))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>When a new customer walks in, it will try to sit in a free chair. This is done in the <code>new-customer</code> function.</p>
-
-<p>The <code>shop-loop</code> is a tail recursive loop that initiates a <code>new-customer</code> at random intervals. It runs until after at least <code>max</code> milliseconds.</p>
-
-<figure class='code'><figcaption><span>Barber problem, part 2  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">new-customer</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">waiting-room</span> <span class="nv">try-to-sit</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">shop-loop</span> <span class="p">[</span><span class="nv">max</span><span class="p">]</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">orig</span> <span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)]</span>
-</span><span class='line'>      <span class="p">(</span><span class="nb">loop </span><span class="p">[]</span>
-</span><span class='line'>          <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">&lt; </span><span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)</span> <span class="nv">orig</span><span class="p">)</span> <span class="nv">max</span><span class="p">)</span>
-</span><span class='line'>              <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">next</span> <span class="p">(</span><span class="nb">+ </span><span class="mi">10</span> <span class="p">(</span><span class="nb">rand </span><span class="mi">20</span><span class="p">))]</span>
-</span><span class='line'>                  <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="nv">next</span><span class="p">)</span>
-</span><span class='line'>                  <span class="p">(</span><span class="nf">new-customer</span><span class="p">)</span>
-</span><span class='line'>                  <span class="p">(</span><span class="nf">recur</span><span class="p">))</span>
-</span><span class='line'>              <span class="nv">max</span><span class="p">))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally we get to the main function. First <code>init</code> is defined to help reset the values of atoms and agents. Then <code>start</code> will indeed reset all values, then run <code>shop-loop</code> in a <code>future</code>, wait the required amount of time, and finally get the current value of <code>barber</code> (which might not have fully finished). My first version tried to run <code>shop-loop</code> on a dedicated agent, but that was for some reason blocking on the <code>barber</code> agent, so I used a <code>future</code> instead.</p>
-
-<figure class='code'><figcaption><span>Barber problem, part 3  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">init</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">v</span><span class="p">]</span> <span class="nv">v</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">start</span> <span class="p">[</span><span class="nv">max</span><span class="p">]</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">println </span><span class="s">&quot;starting&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">send </span><span class="nv">barber</span> <span class="nv">init</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">waiting-room</span> <span class="nv">init</span> <span class="mi">3</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">future</span> <span class="p">(</span><span class="nf">shop-loop</span> <span class="nv">max</span><span class="p">))</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="nv">max</span><span class="p">)</span>
-</span><span class='line'>  <span class="nv">@barber</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>With this implementation, the barber performed 458 hair cuts (500 was the theoretical maximum).</p>
-
-<h2>Wrapping up Clojure</h2>
-
-<p>There is much more to Clojure that what has been covered so far. The object model is far more flexible than Java&#8217;s. Metadata can be added to various entities, which I understand could be used to improve interactive usage (documentation strings are already a kinf of metadata).</p>
-
-<p>I always found Lisp languages to be very elegant and expressive; Clojure definitively is a Lisp, and I really wanted to like the language. Yet for some reason I found it somewhat disappointing. Perhaps it is the limitations the designers put (for good reason) in the language. Perhaps it is the fact that the language runs on the JVM, an environment that I instinctively link to all things corporate, safe and boring, so I don&#8217;t really believe it could be exciting.</p>
-
-<p>I&#8217;m not really sure, perhaps it is just that I&#8217;m feeling tired and I have a cold, and Clojure really is awesome. So I&#8217;ll have another look at that language, and I hope I can give it the attention it seems to deserve.</p>
 ]]></content>
   </entry>
   

@@ -1,0 +1,643 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks MongoDB Day 3 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Final day with MongoDB. First to cover geospatial indexing; then to
+explore MongoDB&#8217;s approach to the CAP theorem. Like PostgreSQL, MongoDB has &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    
+
+  
+    <script src="/javascripts/london_map.js"></script>  
+    
+
+
+   <link rel="stylesheet" media="all" href="/stylesheets/gmap.css"/>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks MongoDB Day 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-25T17:18:00+09:00" pubdate data-updated="true">Dec 25<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Final day with MongoDB. First to cover geospatial indexing; then to
+explore MongoDB&#8217;s approach to the CAP theorem.</p>
+
+<!--more-->
+
+
+<p>Like PostgreSQL, MongoDB has integrated support for geometric of
+geographic data and queries. Finding the neighbours of a point or
+location is trivial, and such queries are optimized using dedicated
+kind of indexes.</p>
+
+<p>Regarding the CAP theorem, MongoDB strictly separates Availability
+from Partition tolerance: replica sets are designed for availability,
+using a quorum approach (like Riak) to select the most recent data in
+case of conflict.</p>
+
+<p>Sharding is the dedicated mechanism for partitions. A replica set can
+own a shard of the data.</p>
+
+<p>Unlike with Riak, where availability and partitioning are functions of
+the properties set on buckets, MongoDB requires the whole topology to
+be explicitly configured. I assume that what MongoDB loses in
+flexibility, it gets it back in predictability.</p>
+
+<h2>Exercises</h2>
+
+<h3>Replica set configuration options</h3>
+
+<p>The documentation is
+<a href="http://www.mongodb.org/display/DOCS/Replica+Set+Configuration">here</a>.</p>
+
+<h3>Spherical geo index</h3>
+
+<p>I don&#8217;t know if this is another instance of the book describing
+features from old version of MongoDB, but there is no such thing as a
+spherical geo index.</p>
+
+<p>Spherical searches rely on standard <code>2d</code> indexing, as explained
+<a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing#GeospatialIndexing-TheEarthisRoundbutMapsareFlat">here</a>.</p>
+
+<h3>Find all cities within a 50 mile radius of London</h3>
+
+<p>To solve this exercise, it is necessary to format the data as required
+in the
+<a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing#GeospatialIndexing-NewSphericalModel">documentation</a>. Unfortunately,
+the data files in the code for the second beta version of the book use
+latitude, longitude whereas MongoDB expects longitude, latitude
+(i.e. a X, Y coordinate).</p>
+
+<p>I used the small script below to reformat the data file, and imported
+the reformated one:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sed -e 's/^\(.*\)latitude\(.*\), *longitude\([^}]*\)}\(.*\)$/\1longitude\3, latitude\2}\4/' \
+</span><span class='line'>mongo_cities1000.json &gt; mongo_cities1000_lon_lat.json</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With that loaded, and with the geospatial indexing in place, MongoDB
+is ready to run the queries.</p>
+
+<p>First I need to locate London. There are a few places named London,
+but I assume the authors meant the one in England. I create a <code>centre</code>
+variable to be used in the queries.</p>
+
+<figure class='code'><figcaption><span>Finding London  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">london</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">findOne</span><span class="p">(</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;London&#39;</span><span class="p">,</span> <span class="nx">country</span><span class="o">:</span> <span class="s1">&#39;GB&#39;</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">location</span><span class="o">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">centre</span> <span class="o">=</span> <span class="p">[</span><span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">longitude</span><span class="p">,</span> <span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">latitude</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As indicated in the documentation, I have to measure distances in
+radians. For this I need to know the
+<a href="http://en.wikipedia.org/wiki/Earth_radius">Earth Radius</a> in miles.</p>
+
+<figure class='code'><figcaption><span>Earth Radius and Range  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">earthRadius</span> <span class="o">=</span> <span class="mi">3959</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">range</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally I can run my queries. I have a few options:</p>
+
+<h4><code>geoNear</code> command</h4>
+
+<p>I can pass the <code>spherical: true</code> option to the <code>geoNear</code> command. By
+default, the query will only return 100 results.</p>
+
+<figure class='code'><figcaption><span>geoNear  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">geoNear</span><span class="o">:</span> <span class="s2">&quot;cities&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">near</span><span class="o">:</span> <span class="nx">centre</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">spherical</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">maxDistance</span><span class="o">:</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As it turns out, there are far more cities in this range. A circle of
+500 miles radius around London includes much of Western Europe:</p>
+
+<div class="gmap" id="map_canvas"></div>
+
+
+<p>To get unlimited results, I set the number of possible results to the
+number of cities:</p>
+
+<figure class='code'><figcaption><span>unlimited geoNear  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">geoNear</span><span class="o">:</span> <span class="s2">&quot;cities&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">near</span><span class="o">:</span> <span class="nx">centre</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">spherical</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">num</span><span class="o">:</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">count</span><span class="p">(),</span>
+</span><span class='line'>      <span class="nx">maxDistance</span><span class="o">:</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4><code>$within</code> operator</h4>
+
+<p>Alternatively, I can use the <code>$within</code> operator. I get the spherical
+behaviour by specifying a <code>centerSphere</code>:</p>
+
+<figure class='code'><figcaption><span>$within  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">location</span><span class="o">:</span>
+</span><span class='line'>      <span class="p">{</span> <span class="nx">$within</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$centerSphere</span><span class="o">:</span> <span class="p">[</span><span class="nx">centre</span><span class="p">,</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span><span class="p">]</span>
+</span><span class='line'>      <span class="p">}}})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This query will return cities within the range, just like the
+unlimited <code>geoNear</code> one.</p>
+
+<h3>Sharded replicas</h3>
+
+<p>This is the kind of things that is not overly difficult, but
+tedious. And I don&#8217;t like tedious.</p>
+
+<p>As a good UNIX geek, I&#8217;d rather spend hours to automate what would
+have taken me 10 minutes to do manually. So here&#8217;s the automated setup
+in Bash scripts.</p>
+
+<p>First I create all the necessary directories:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir mongo{1..6}
+</span><span class='line'>mkdir mongoconfig</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I start two sets of 3 replicas that can also be sharded:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>for i in {1..6}; do
+</span><span class='line'>  s=$(( (i-1 ) / 3 + 1))
+</span><span class='line'>  mongod --replSet shard$s --shardsvr --dbpath ./mongo$i \
+</span><span class='line'>  --port 2701$i --logpath ./mongod_$i.log --rest &
+</span><span class='line'>done</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I setup each replica set:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>for i in 1 2; do
+</span><span class='line'>  members=""
+</span><span class='line'>  p=$(( (i-1) * 3 + 1))
+</span><span class='line'>  for j in 1 2 3; do
+</span><span class='line'>    members="$members, { _id: $j, host: 'localhost:2701$((p+j-1))'}"
+</span><span class='line'>  done
+</span><span class='line'>  members=${members:1} 
+</span><span class='line'>  mongo localhost:2701$p &lt;&lt;HERE
+</span><span class='line'>rs.initiate({
+</span><span class='line'>  _id: 'shard$i',
+</span><span class='line'>  members: [ $members ]
+</span><span class='line'>})
+</span><span class='line'>HERE
+</span><span class='line'>done</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point it is good to wait a minute for the replica sets to be
+fully online.</p>
+
+<p>Next step is to figure out the shards URL: they are composed of the
+shard name, followed by the list of comma separated servers:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>shards=()
+</span><span class='line'>for i in 1 2; do
+</span><span class='line'>  p=$(( (i-1) * 3 + 1))
+</span><span class='line'>  output=`mongo --quiet localhost:2701$p/test&lt;&lt;HERE
+</span><span class='line'>db.isMaster().setName + '/' + db.isMaster().hosts
+</span><span class='line'>HERE`
+</span><span class='line'>  shards=( "${shards[@]}" ${output%?bye} )
+</span><span class='line'>done</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now it is time to start the config server. I move it to the port <code>27019</code> as <code>27016</code> is already in use:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mongod --configsvr --dbpath ./mongoconfig --port 27019 --logpath=mongoconfig.log &
+</span><span class='line'>sleep 1
+</span><span class='line'>mongos --configdb localhost:27019 --chunkSize 1 --port 27020 --logpath=mongos.log &</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And finally I add the shards to the config mongo, and enable sharding
+on <code>test</code> for both the <code>cities</code> collection and GridFS:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>for shard in ${shards[@]}; do
+</span><span class='line'>  echo $shard
+</span><span class='line'>  mongo localhost:27020/admin --quiet &lt;&lt;HERE
+</span><span class='line'>db.runCommand( { addshard: "$shard" })
+</span><span class='line'>HERE
+</span><span class='line'>done
+</span><span class='line'>mongo localhost:27020/admin --quiet &lt;&lt;HERE
+</span><span class='line'>db.runCommand( { enablesharding : "test" } );
+</span><span class='line'>db.runCommand( { shardcollection : "test.cities", key : {name : 1} } );
+</span><span class='line'>db.runCommand( { shardcollection : "test.fs.chunks", key : { files_id : 1 } } )
+</span><span class='line'>HERE</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I can check that everything looks ok with:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mongo localhost:27020/admin --quiet &lt;&lt;HERE
+</span><span class='line'>db.runCommand( { listshards : 1 })
+</span><span class='line'>HERE</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Of course, all these scripts would be useless to actually distribute
+the servers on different machines. Given some time, I&#8217;ll try to setup
+a AWS EC2 cluster as I did for Riak.</p>
+
+<p>At this point, I tried to import the cities data file. It was somewhat
+slower than without replicas, but not significantly so.</p>
+
+<p>I also added a file, using the same command as in the book.</p>
+
+<p>Now, to test the replicas, I killed the two primary servers (to
+identify them, I used <code>ps auxw | grep mongod</code>, which gave me the
+process id I needed to kill).</p>
+
+<p>With two servers down, <code>mongofiles -h localhost:27020 get my_file.txt</code>
+was still able to retrieve the file.</p>
+
+<h2>Wrapping up MongoDB</h2>
+
+<p>MongoDB is the first database besides PostgreSQL I feel comfortable
+using. They both provide more &#8220;database-like&#8221; features than either
+Riak or HBase: integrated queries, advanced indexing, &#8230; The use of
+JavaScript is well integrated and pleasant to use.</p>
+
+<p>Moreover, MongoDB&#8217;s approach to the CAP theorem is simple. While it is
+less flexible or dynamic than Riak&#8217;s, its simplicity makes it easy to
+reason about.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-25T17:18:00+09:00" pubdate data-updated="true">Dec 25<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/" title="Previous Post: Seven Databases in Seven Weeks MongoDB Day 2">&laquo; Seven Databases in Seven Weeks MongoDB Day 2</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">MongoDB Day 3</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">Seven Databases in Seven Weeks MongoDB Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Seven Databases in Seven Weeks MongoDB Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks MongoDB Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Seven Databases in Seven Weeks Riak on EC2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">Seven Databases in Seven Weeks HBase Day 3</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

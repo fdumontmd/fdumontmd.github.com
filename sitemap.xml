@@ -245,12 +245,18 @@
         <lastmod>2011-12-25T17:21:05+09:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/
+        </loc>
+        <lastmod>2011-12-26T23:24:07+09:00</lastmod>
+    </url>
+    <url>
         <loc>http://blog.wakatta.jp/about/</loc>
         <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2011-12-26T00:05:24+09:00</lastmod>
+        <lastmod>2011-12-26T23:24:07+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
@@ -262,6 +268,6 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2011-12-26T00:05:24+09:00</lastmod>
+        <lastmod>2011-12-26T23:24:07+09:00</lastmod>
     </url>
 </urlset>

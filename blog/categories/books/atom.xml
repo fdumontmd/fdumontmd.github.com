@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-06T16:22:00+09:00</updated>
+  <updated>2012-01-06T16:34:53+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -154,7 +154,7 @@ E. Knuth to the world).</p>
 Safari or Chrome, and no idea in IE or Opera. Of course, it is not as
 good as the output of LaTeX, but for the Web it is acceptable.</p>
 
-<p>Given the recurrence</p>
+<p>For instance, given the recurrence</p>
 
 <div markdown="0">
 $$

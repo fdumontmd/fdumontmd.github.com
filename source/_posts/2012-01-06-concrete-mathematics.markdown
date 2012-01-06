@@ -43,7 +43,7 @@ The quality of rendering is variable: pretty good in Firefox, OK in
 Safari or Chrome, and no idea in IE or Opera. Of course, it is not as
 good as the output of LaTeX, but for the Web it is acceptable.
 
-Given the recurrence
+For instance, given the recurrence
 <div markdown="0">
 $$
 \begin{align}

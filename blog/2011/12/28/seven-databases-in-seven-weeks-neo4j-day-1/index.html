@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks Neo4j Day 1 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="As the book is still in beta and incomplete, I skip CouchDB (the
+chapter is not there yet in beta 2.0), and will spend this week with
+Neo4j. Neo4j is &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks Neo4j Day 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-28T17:05:00+09:00" pubdate data-updated="true">Dec 28<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>As the book is still in beta and incomplete, I skip CouchDB (the
+chapter is not there yet in beta 2.0), and will spend this week with
+<a href="http://neo4j.org/">Neo4j</a>.</p>
+
+<p>Neo4j is a graph database, meaning it focuses on navigation between
+vertices (called nodes in Neo4j), through edges (called
+relationships). While other databases made it possible to join various
+pieces of data, Neo4j treats this as the main semantic mechanism</p>
+
+<!--more-->
+
+
+<p>Neo4j can be distributed for high-availability, and is partition
+tolerant, but sharding is not supported (at the time of writing).</p>
+
+<p>The first day focuses on basic creation and navigation of data. <a href="http://docs.neo4j.org/chunked/stable/graphdb-neo4j-nodes.html">Nodes</a>
+and
+<a href="http://docs.neo4j.org/chunked/stable/graphdb-neo4j-relationships.html">relationships</a>
+are the basic entities; by default nodes have just an id, while
+relationships are identified by the out and in nodes, and a type.</p>
+
+<p>To spice this up a bit, it is possible to attach
+<a href="http://docs.neo4j.org/chunked/stable/graphdb-neo4j-properties.html">properties</a>
+to both nodes and relationships. Values can be scalar or arrays of
+basic types (boolean, number, or string).</p>
+
+<p>To navigate the data, the easiest seems to be the use of
+<a href="https://github.com/tinkerpop/gremlin/wiki">Gremlin</a>, a language and
+database independent graph traversal language (the language has to be
+a JVM one).</p>
+
+<h2>Exercises</h2>
+
+<h3>Neo4j Wiki</h3>
+
+<p>The Wiki is <a href="http://wiki.neo4j.org/content/Main_Page">here</a>.</p>
+
+<h3>Gremlin Documentation</h3>
+
+<p>There is a <a href="https://github.com/tinkerpop/gremlin/wiki">wiki</a>.</p>
+
+<h3>List of Gremlin Steps</h3>
+
+<p>They are listed on the
+<a href="https://github.com/tinkerpop/gremlin/wiki/Gremlin-Steps">wiki</a>.</p>
+
+<h3>Neo4j Shells</h3>
+
+<p>It is hard not to find them, as they&#8217;re already in the Web Admin
+Console. Both
+<a href="http://docs.neo4j.org/chunked/snapshot/cypher-query-lang.html">Cipher</a>
+and the
+<a href="http://docs.neo4j.org/chunked/snapshot/rest-api.html">ReST API</a> can
+be used directly from the console, although the ReST API is limited
+there (for instance the <code>traverse</code> operation is not supported). Full
+access requires an external client such as <code>curl</code>.</p>
+
+<h3>Find all node names with another shell</h3>
+
+<p>In Cipher, there is no direct way to use all nodes as a starting
+point, so instead I try to find all nodes linked to the first one
+through a path that can be empty (i.e. the starting node is also
+included). To remove duplicates, I use the
+<a href="http://docs.neo4j.org/chunked/snapshot/query-aggregation.html#aggregation-distinct"><code>DISTINCT</code></a>
+function, but it must be applied in the context of an aggregation, so
+I have to apply
+<a href="http://docs.neo4j.org/chunked/snapshot/query-aggregation.html#aggregation-collect"><code>COLLECT</code></a>
+as well:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>START n=node(0)
+</span><span class='line'>MATCH n-[*0..]-x
+</span><span class='line'>RETURN COLLECT(DISTINCT x.name)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>which produces</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>==&gt; +----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+</span><span class='line'>==&gt; | collect(distinct x.name)                                                                                                                                             |
+</span><span class='line'>==&gt; +----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+</span><span class='line'>==&gt; | List(Prancing Wolf Ice Wine 2007, riesling, Prancing Wolf Spatleses 2007, Prancing Wolf Winery, Prancing Wolf Kabinett 2002, Tom, Wine Expert Monthly, Patty, Alice) |
+</span><span class='line'>==&gt;
+</span><span class='line'>+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not exactly as easy as the Gremlin equivalent <code>g.V.name</code>.</p>
+
+<p>There is no way to achieve anything similar using the
+ReST API, as
+its traversal operation only returns full objects (either nodes,
+relationships or paths), and not properties.</p>
+
+<h3>Delete all the nodes and edges in your database</h3>
+
+<p>Well, the book already showed the powerful <code>g.clear</code> Gremlin
+command. It should be followed by <code>g.addVertex()</code> to get back to the
+original state (with just one node).</p>
+
+<p>And that&#8217;s all for today.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-28T17:05:00+09:00" pubdate data-updated="true">Dec 28<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/" title="Previous Post: Seven Databases in Seven Weeks MongoDB Day 3">&laquo; Seven Databases in Seven Weeks MongoDB Day 3</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/" title="next Post: Seven Databases in Seven Weeks Neo4j Day 2">Seven Databases in Seven Weeks Neo4j Day 2 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">MongoDB Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Neo4j Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Neo4j Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Neo4j Day 3</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Concrete Mathematics Chapter 1 Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/06/concrete-mathematics/">Concrete Mathematics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Seven Databases in Seven Weeks Neo4j Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Seven Databases in Seven Weeks Neo4j Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

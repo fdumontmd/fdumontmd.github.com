@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Mathematics | Wakatta!]]></title>
+  <link href="http://blog.wakatta.jp/blog/categories/mathematics/atom.xml" rel="self"/>
+  <link href="http://blog.wakatta.jp/"/>
+  <updated>2012-01-06T16:22:00+09:00</updated>
+  <id>http://blog.wakatta.jp/</id>
+  <author>
+    <name><![CDATA[Frédéric Dumont]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Notes]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes/"/>
+    <updated>2012-01-06T13:52:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes</id>
+    <content type="html"><![CDATA[<p>For the first post of this hopefully long series, I have a few notes I
+wrote down as I was reading Chapter 1. Nothing revolutionary, but it
+gives me a chance to play with math notation.</p>
+
+<!--more-->
+
+
+<h1>Lines in the Plane</h1>
+
+<p>I must admit that my memories of Geometry are far, far away (the
+subject was not addressed at all when I studied Mathematics at
+university, and I had no need for Geometry in my work since), so I
+spent perhaps an unreasonable amount of time to check the validity of
+the most elementary steps.</p>
+
+<p>It goes without saying that the exercises of a Geometric nature are
+particularly challenging (as if I needed the extra difficulty).</p>
+
+<h2>Intersecting lines</h2>
+
+<p>The notion that one line will add $k$ new regions if it intersects
+other lines at $k-1$ points is due to the fact that $k-1$ distinct
+lines define at least $k$ regions (more if they are not all parallel),
+and one more line that intersects them all will divide these $k$
+regions in two.</p>
+
+<h1>Josephus Problem</h1>
+
+<h2>$J(5 \cdot 2^m) = 2^{m+1} + 1$</h2>
+
+<p>This is based on the fact that $J(10) = 5$ and $J(2n) = 2J(n) -1$.</p>
+
+<p>By recurrence:</p>
+
+<p><em>Base case</em>: it is true for $m = 1$: $J(5\cdot 2) = J(10) = 5 =
+2^{1+1} + 1$</p>
+
+<p><em>Recurrence</em>: assuming it is true for $m$,</p>
+
+<div markdown="0">
+$$
+\begin{align}
+J(5\cdot 2^{m+1}) &amp;= J(2(5\cdot 2^m))\\\\
+&amp;= 2J(5\cdot 2^m) - 1&amp;&amp;\text{as $J(2n) = 2J(n) -1$}\\\\
+&amp;= 2(2^{m+1}+1) - 1&amp;&amp;\text{by recurrence}\\\\
+&amp;= 2\cdot 2^{m+1} + 2 - 1\\\\
+&amp;= 2^{m+2} + 1
+\end{align}
+$$
+</div>
+
+
+<h2>$A(2^{m}+l) = 2^{m}$</h2>
+
+<p>It took me a while to convince myself that the $l$ was not a problem
+here. This can be seen by considering $l$ in binary notation, and
+using $A(2n) = 2A(n)$ and $A(2n+1) = 2A(n)$ to remove the rightmost
+bit.</p>
+
+<p>That is, with $2^m > l = (b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2$,we have:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+A(2^{m}+l) &amp;= A(2^{m}+(b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2)\\\\
+&amp;= 2A(2^{m-1}+(b_{m-1}b_{m-2}\cdots b_{1})_2)\\\\
+&amp;= 2^{2}A(2^{m-2}+(b_{m-1}b_{m-2}\cdots b_{2})_2)\\\\
+&amp;= 2^{3}A(2^{m-3}+(b_{m-1}b_{m-2}\cdots b_{3})_2)\\\\
+&amp;= \cdots
+\end{align}
+$$
+</div>
+
+
+<p>At each iteration, whether $b_i$ is $0$ or $1$, we can ignore it when
+dividing by $2$. And as $2^m &lt; l$, it takes no more than $m$ steps
+(removing the $m$ bits $b_0$ to $b_{m-1}$) to reduce $A(2^m+l)$ to
+$2^mA(1) = 2^m$</p>
+
+<h2>Radix-based Generalised Josephus Solution</h2>
+
+<p>The equation 1.18:</p>
+
+<p>$$f \left( ( b_m b_{m-1} \cdots b_1 b_0)_d \right) = \left( \alpha_{b_m} \beta_{b_{m-1}} \beta_{b_{m-2}} \cdots \beta_{b_1} \beta_{b_0} \right)_c$$</p>
+
+<p>is so unnaturally smart and simple that I thought the proof must be
+missing. But in fact it is indeed trivial, and just as the book
+states, follows from the rewriting of the argument in base $d$, then
+recurrence over $m$ (with $m$ the number of digits or the argument in
+base $d$).</p>
+
+<p>In the next post in this series, I will start the exercises.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics/"/>
+    <updated>2012-01-06T13:16:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics</id>
+    <content type="html"><![CDATA[<p>Stephen Hawking once said that his editor had warned him that each
+equation in his book would halve the readership.</p>
+
+<p>With that in mind, and taking into account the number of readers of
+this blog (or lack thereof), would I dare put any equations?</p>
+
+<p>You better believe it!</p>
+
+<!--more-->
+
+
+<p>I just picked up my old copy of
+<a href="http://en.wikipedia.org/wiki/Concrete_Mathematics">Concrete Mathematics</a>,
+a book I have too long neglected. The ultimate goal, of course, is
+slaying the
+<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming">Beast</a>,
+which I should try to complete before Donald E. Knuth passes away.
+While I wish him a very long life, long enough at least to complete
+<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming#Volumes">Volume 5</a>,
+and better yet 6 and 7, I should not take his remarkable health as an
+excuse to dither.</p>
+
+<p>For the math notation, I use <a href="http://www.mathjax.org/">MathJax</a>, a
+JavaScript library that can parse either
+<a href="http://www.w3.org/Math/">MathMl</a>, or much better
+<a href="http://www.latex-project.org/">LaTeX</a> (which is based on
+<a href="http://www.math.upenn.edu/TeX.html">TeX</a>, another gift of Donald
+E. Knuth to the world).</p>
+
+<p>The setup for this blog is based on this
+<a href="http://greglus.com/blog/2011/11/29/integrate-MathJax-LaTeX-and-MathML-Markup-in-Octopress/">post</a>.</p>
+
+<p>The quality of rendering is variable: pretty good in Firefox, OK in
+Safari or Chrome, and no idea in IE or Opera. Of course, it is not as
+good as the output of LaTeX, but for the Web it is acceptable.</p>
+
+<p>Given the recurrence</p>
+
+<div markdown="0">
+$$
+\begin{align}
+f(j) &amp; = \alpha_j, &amp;&amp;\text{for $1 \\leq j \\lt  d$}\\\\
+f(dn + j) &amp; = cf(n) + \beta_j, &amp;&amp;\text{for $0 \\leq j \\lt d$ and $n \\geq 1$}
+\end{align}
+$$
+</div>
+
+
+<p>then the solution is</p>
+
+<p>$$f \left( ( b_m b_{m-1} \cdots b_1 b_0)_d \right) = \left( \alpha_{b_m} \beta_{b_{m-1}} \beta_{b_{m-2}} \cdots \beta_{b_1} \beta_{b_0} \right)_c$$</p>
+
+<p>(refer to the book for explanations).</p>
+
+<p>Isn't this lovely?</p>
+]]></content>
+  </entry>
+  
+</feed>

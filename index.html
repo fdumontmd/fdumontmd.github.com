@@ -9,8 +9,9 @@
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="Final day with MongoDB. First to cover geospatial indexing; then to
-explore MongoDB&#8217;s approach to the CAP theorem. ">
+  <meta name="description" content="For the first post of this hopefully long series, I have a few notes I
+wrote down as I was reading Chapter 1. Nothing revolutionary, but it
+gives me &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +78,254 @@ explore MongoDB&#8217;s approach to the CAP theorem. ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Concrete Mathematics Chapter 1 Notes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-06T13:52:00+09:00" pubdate data-updated="true">Jan 6<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>For the first post of this hopefully long series, I have a few notes I
+wrote down as I was reading Chapter 1. Nothing revolutionary, but it
+gives me a chance to play with math notation.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/06/concrete-mathematics/">Concrete Mathematics</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-06T13:16:00+09:00" pubdate data-updated="true">Jan 6<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Stephen Hawking once said that his editor had warned him that each
+equation in his book would halve the readership.</p>
+
+<p>With that in mind, and taking into account the number of readers of
+this blog (or lack thereof), would I dare put any equations?</p>
+
+<p>You better believe it!</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/01/06/concrete-mathematics/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-30T21:15:00+09:00" pubdate data-updated="true">Dec 30<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Third, last and quite short day with Neo4j. Today on the menu:
+transactions, replication, and backups.</p>
+
+<p>Transactions are a standard feature of relational databases, but NOSQL
+databases seem to consider them too costly (of the other databases in
+the book, only HBase and Redis also support transactions, as far as I
+can tell). Neo4j does support them, along with rollbacks.</p>
+
+<p>Replication is Neo4j&#8217;s answer for High Availability and, to some
+extent, Scaling. The latter is limited as Neo4j does not partition the
+data, so everything has to fit in each computer in the cluster.</p>
+
+<p>Finally, backups are exactly what you would expect them to be. Neo4J
+offers both full and incremental backups, which update a previous
+backup.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Seven Databases in Seven Weeks Neo4j Day 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-29T09:17:00+09:00" pubdate data-updated="true">Dec 29<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today we play further with Neo4j, exploring the ReST API, indexes, and
+algorithms in various languages.</p>
+
+<p>The ReST API is always available, although not the easiest thing to
+work with. Besides what the book covers, I also learned how to extend
+it, and how to bypass it for large loads.</p>
+
+<p>Indexing can be manual, as the book shows, or automatic (although
+the
+<a href="http://docs.neo4j.org/chunked/snapshot/auto-indexing.html">documentation</a>
+warns this is still an experimental feature).</p>
+
+<p>Finally, the algorithms are mostly provided by an external library,
+<a href="http://jung.sourceforge.net/">JUNG</a>, so its use require direct access
+to the data, bypassing the server.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Seven Databases in Seven Weeks Neo4j Day 1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-28T17:05:00+09:00" pubdate data-updated="true">Dec 28<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As the book is still in beta and incomplete, I skip CouchDB (the
+chapter is not there yet in beta 2.0), and will spend this week with
+<a href="http://neo4j.org/">Neo4j</a>.</p>
+
+<p>Neo4j is a graph database, meaning it focuses on navigation between
+vertices (called nodes in Neo4j), through edges (called
+relationships). While other databases made it possible to join various
+pieces of data, Neo4j treats this as the main semantic mechanism</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -310,225 +559,6 @@ machines.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">Seven Databases in Seven Weeks HBase Day 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-12T23:46:00+09:00" pubdate data-updated="true">Dec 12<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>And on the second day with HBase, we load it with <a href="http://www.wikipedia.org/">Wikipedia</a>. Actually I had to do it twice to get it to work: on my first attempt the process kind of froze at about 200,000 articles.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">Seven Databases in Seven Weeks HBase Day 1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-11T12:57:00+09:00" pubdate data-updated="true">Dec 11<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>New week, new database. This week is about <a href="">HBase</a>, a product that
-has a significant enterprisy feel about it. First it is written in
-Java, the de facto enterprise language. Then it is already in
-production in very large big data consumers (Facebook among others).</p>
-
-<p>Perhaps more surprising is the fact that it even runs at all on a
-single, personal computer (as the book states, 5 dedicated servers is
-the recommended minimal configuration).</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Seven Databases in Seven Weeks Riak Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-09T22:32:00+09:00" pubdate data-updated="true">Dec 9<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today we complete the tour of Riak features. First conflict resolution
-with vector clocks; then pre and post-commit hooks, and finally
-searching Riak data with a <a href="http://lucene.apache.org/">Solr</a>
-compatible interface.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Seven Databases in Seven Weeks Riak Day 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-08T22:59:00+09:00" pubdate data-updated="true">Dec 8<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Day 2 with Riak, to cover Mapreduce, distribution, rings and consistency.</p>
-
-<p>Mapreduce will be familiar to anyone who has been paying attention to Google. The basic idea comes from functional programming, but Google showed how it could be used to distribute the load over many machines (this in turn spawned two distinct recent developments in software: one is the range of databases explicitly built around the concept of Mapreduce; the other is the idea that functional languages are better suited to do concurrent and parallel programming).</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Seven Databases in Seven Weeks Riak Day 1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-08T10:22:00+09:00" pubdate data-updated="true">Dec 8<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The second database is <a href="http://basho.com/products/riak-overview/">Riak</a>, a key-value distributed store. Key-value stores a not really new (many property or configuration files are really basic key-value stores, and <a href="http://en.wikipedia.org/wiki/Berkeley_DB">Berkeley DB</a> has long been a good choice for those who needed something a little bit more robust than simple files but not as complex as a relational database).</p>
-
-<p>Still, going from this simple concept to a distributed store that can execute data processing on each of its nodes requires more than simply scaling things up, and I hope that this book will give me some idea of how such a store (and the other NoSQL) might fit in the solution landscape.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -550,23 +580,23 @@ compatible interface.</p>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">Seven Databases in Seven Weeks MongoDB Day 3</a>
+        <a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Concrete Mathematics Chapter 1 Notes</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Seven Databases in Seven Weeks MongoDB Day 2</a>
+        <a href="/blog/2012/01/06/concrete-mathematics/">Concrete Mathematics</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks MongoDB Day 1</a>
+        <a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Seven Databases in Seven Weeks Riak on EC2</a>
+        <a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Seven Databases in Seven Weeks Neo4j Day 2</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">Seven Databases in Seven Weeks HBase Day 3</a>
+        <a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Seven Databases in Seven Weeks Neo4j Day 1</a>
       </li>
     
   </ul>
@@ -610,13 +640,14 @@ compatible interface.</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2011 - Frédéric Dumont -
+  Copyright &copy; 2012 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
 </footer>
   
 
+<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -629,6 +660,7 @@ compatible interface.</p>
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
+</div>
 
 
 

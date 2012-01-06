@@ -1,0 +1,829 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks Neo4j Day 3 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Third, last and quite short day with Neo4j. Today on the menu:
+transactions, replication, and backups. Transactions are a standard feature of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks Neo4j Day 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-30T21:15:00+09:00" pubdate data-updated="true">Dec 30<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Third, last and quite short day with Neo4j. Today on the menu:
+transactions, replication, and backups.</p>
+
+<p>Transactions are a standard feature of relational databases, but NOSQL
+databases seem to consider them too costly (of the other databases in
+the book, only HBase and Redis also support transactions, as far as I
+can tell). Neo4j does support them, along with rollbacks.</p>
+
+<p>Replication is Neo4j&#8217;s answer for High Availability and, to some
+extent, Scaling. The latter is limited as Neo4j does not partition the
+data, so everything has to fit in each computer in the cluster.</p>
+
+<p>Finally, backups are exactly what you would expect them to be. Neo4J
+offers both full and incremental backups, which update a previous
+backup.</p>
+
+<!--more-->
+
+
+<h3>Transactions</h3>
+
+<p>I cannot comment much on transactions, as I could not use them: the
+Gremlin shell from the Web Admin console could not find the required
+enumeration (which I imported, though), while the Gremlin standalone
+shell was giving me strange errors when I tried to import the relevant
+classes.</p>
+
+<p>I suppose pure Java would be more reliable, either as standalone code
+or plugin, but I did not explore that possibility.</p>
+
+<h3>High-Availability</h3>
+
+<p>High-availability is achieved by deploying and linking together
+several instances of Neo4j. The setup is somewhat tedious, as there
+are additional processes to configure and run (the coordinators), and
+four different configuration files to edit. Really, this is the kind
+of things you&#8217;d wish <a href="http://whirr.apache.org/">Apache Whirr</a> would do
+for you.</p>
+
+<p>But if you want to do it manually, you should follow the
+<a href="http://docs.neo4j.org/chunked/stable/ha-setup-tutorial.HTML">online documentation</a>
+rather than the book version (at least in beta version 2.0): the book
+use the property <code>ha.zoo_keeper_servers</code> in the <code>neo4j.properties</code>
+configuration file, when the correct property is
+<code>ha.coordinators</code>. What is worse is that it will look like it works,
+until you try to write to a slave over the ReST API, which will fail
+with an exception. Writes to the master would also not be pulled by
+the slaves. Using the right property name fixes these problems.</p>
+
+<p>Once set up, the cluster will have one master and several slaves. The
+master contains the authoritative version of the data. The book
+recommends to always write to slaves, as they have to push any update
+to the master before completing the update, meaning you have a
+guaranteed replication of your data. However, what the book does not
+explain is how to figure out which server is slave, or even whether
+the list of servers in the cluster can be discovered&#8230;.</p>
+
+<p>Actually, it is possible to have some idea of which server is the
+master by querying any server with</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -H "Content-Type:application/json" -d '["org.neo4j:*"]' http://localhost:7471/db/managerver/jmx/query</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(assuming one of the server is listening to port <code>7471</code>). A sample
+reply is shown (only partially, as it is very long) one the
+<a href="http://docs.neo4j.org/chunked/snapshot/ha-setup-tutorial.html">HA setup tutorial</a>. But
+the actual address of each server is not shown, and I could not find
+any way to get the address property to be properly filled.</p>
+
+<p>So the proper way to use such a cluster is probably to use the
+<a href="http://haproxy.1wt.eu/">HAProxy</a>, as explained in
+<a href="http://docs.neo4j.org/chunked/snapshot/ha-haproxy.html">Neo4j HA documentation</a>. It
+can be configured to differentiate between master and slaves, and to
+restrict connections to slaves (keeping the list updated with a
+check). It can also split the requests by some specific parameter (for
+instance, the user id), and direct the requests the same server for a
+given value of the parameter. While Neo4j does not shard the data
+itself, this mechanism can be used to shard the data cache (what must
+be loaded in memory).</p>
+
+<h3>Backups</h3>
+
+<p>Neo4j support remote, full or incremental backups. Incremental backups
+are properly understood as update to the previous backup (either full
+or incremental), and are therefore much faster.</p>
+
+<p>This is a good feature, and should be used often. But as I&#8217;m just
+playing, and the notion of backup does not lend itself to exploration,
+I just looked at them briefly.</p>
+
+<h2>Exercises</h2>
+
+<h3>Neo4j licensing guide</h3>
+
+<p>The <a href="http://neo4j.org/licensing-guide/">guide</a> is fortunately quite
+short.</p>
+
+<h3>Read-only slaves</h3>
+
+<p>This seems to be a description of the original HA feature in Neo4j,
+but as far as I can tell it does not exist anymore. In fact, there is
+an
+<a href="https://github.com/neo4j/enterprise/commit/480256bfff036784dc82897d2348a16e3fbf6c03#ha/src/docs/dev/operation.txt">update</a>
+to the official documentation to remove the mention of read-only
+slave.</p>
+
+<p>There used to be a Java class to create a server as read-only slave,
+as documented
+<a href="http://wiki.neo4j.org/index.php?title=Online_Backup_HA&amp;redirect=no#Starting_a_read-only_slave">here</a>,
+but it no longer exists either.</p>
+
+<h3>Maximum number of nodes supported</h3>
+
+<p><a href="http://docs.neo4j.org/chunked/stable/questions.html#id474370">34.4 billion nodes</a>.</p>
+
+<h3>Replication across three physical servers</h3>
+
+<p>As I already <a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">explained</a> how to setup a cluster of EC2 virtual machines
+for Riak, I will go skip all the details.</p>
+
+<p>I launched four instances: one will be the HAProxy server, the
+remaining three the Neo4j servers.</p>
+
+<h4>Security Setup</h4>
+
+<p>All the rules but the first one are internal (i.e. the source is the
+name of the security group, which should be specific to the cluster).</p>
+
+<ul>
+<li>22 (SSH) - source <code>0.0.0.0/0</code></li>
+<li>2181: coordinator client port</li>
+<li>2888: quorum election port</li>
+<li>3888: leader election port</li>
+<li>6001: inter cluster communication port</li>
+<li>7474: web interface for the Neo4j servers</li>
+<li>8080: admin interface for HAProxy</li>
+<li>80: web interface for the proxy</li>
+</ul>
+
+
+<p>Neo4j does not need ranges, unlike Riak.</p>
+
+<h4>Instance setups</h4>
+
+<p>I connect to each of the Neo4j server, and download the Enterprise
+edition:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>wget http://dist.neo4j.org/neo4j-enterprise-1.5-unix.tar.gz</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First step is to configure the coordinators. I edit the
+<code>conf/coord.cfg</code> file and replace the server.1 property with the block</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>server.1=10.202.90.131:2888:3888    
+</span><span class='line'>server.2=10.202.81.171:2888:3888    
+</span><span class='line'>server.3=10.195.78.222:2888:3888</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(I got the IP addresses by using the <code>ifconfig</code> command on each
+instance). I also update the <code>data/coordinator/myid</code> of each instance
+with own number (1 to 3).</p>
+
+<p>I then modified each <code>conf/neo4j.properties</code>, setting each to its own
+<code>ha.server_id</code>, and setting the <code>ha.coordinators</code> to
+<code>10.202.90.131:2181,10.202.81.171:2181,10.195.78.222:2181</code>. I also
+changed the <code>ha.server</code> to use the <code>eth0</code> IP address rather than <code>localhost</code>.</p>
+
+<p>Finally, I modified each <code>conf/neo4j-server.properties</code>:</p>
+
+<ul>
+<li>the web server needs to listen to the <code>eth0</code> IP address rather than
+<code>localhost</code> (for instance, <code>org.neo4j.server.webserver.address=10.202.90.131</code>);</li>
+<li>the server needs to be set to HA mode:
+<code>org.neo4j.server.database.mode=HA</code></li>
+</ul>
+
+
+<p>Surprisingly enough, the three servers did start and were configured properly&#8230;</p>
+
+<p>I checked the setup with</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -H "Content-Type:application/json" -d '["org.neo4j:*"]'
+</span><span class='line'>http://10.202.90.131:7474/db/manage/server/jmx/query</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I looked for the string <code>InstancesInCluster</code>, and made sure there were
+three known servers.</p>
+
+<p>Finally I pushed something into the second (slave) server using</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -i -X POST http://10.202.81.171:7474/db/data/node \
+</span><span class='line'>-H "Content-Type: appliction/json" \
+</span><span class='line'>-d '{"name": "P.G. Wodehouse", "genre": "British Humour"}'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>then tried to retrieve it from the third (slave) server with</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://10.195.78.222:7474/db/data/node/1
+</span><span class='line'>{
+</span><span class='line'>  "outgoing_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/out",
+</span><span class='line'>  "data" : {
+</span><span class='line'>    "genre" : "British Humour",
+</span><span class='line'>    "name" : "P.G. Wodehouse"
+</span><span class='line'>  },
+</span><span class='line'>  "traverse" : "http://10.195.78.222:7474/db/data/node/1/traverse/{returnType}",
+</span><span class='line'>  "all_typed_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/all/{-list|&|types}",
+</span><span class='line'>  "property" : "http://10.195.78.222:7474/db/data/node/1/properties/{key}",
+</span><span class='line'>  "self" : "http://10.195.78.222:7474/db/data/node/1",
+</span><span class='line'>  "properties" : "http://10.195.78.222:7474/db/data/node/1/properties",
+</span><span class='line'>  "outgoing_typed_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/out/{-list|&|types}",
+</span><span class='line'>  "incoming_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/in",
+</span><span class='line'>  "extensions" : {
+</span><span class='line'>  },
+</span><span class='line'>  "create_relationship" : "http://10.195.78.222:7474/db/data/node/1/relationships",
+</span><span class='line'>  "paged_traverse" : "http://10.195.78.222:7474/db/data/node/1/paged/traverse/{returnType}{?pageSize,leaseTime}",
+</span><span class='line'>  "all_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/all",
+</span><span class='line'>  "incoming_typed_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/in/{-list|&|types}"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So far so good&#8230;</p>
+
+<h3>Load-balancer</h3>
+
+<p>Well, <a href="http://haproxy.1wt.eu">HAproxy</a> seems a good choice, so I&#8217;ll go with that.</p>
+
+<p>The
+<a href="http://docs.neo4j.org/chunked/snapshot/ha-haproxy.html">documentation</a>
+proposes to restrict access to slaves using a &#8220;small extension&#8221;. This
+is in fact a piece of Java code that can be downloaded from
+<a href="https://github.com/dmontag/neo4j-hastatus-extension">Github</a>.</p>
+
+<p>The compiled jar should be copied to the <code>lib</code> directory of each
+instance, and the <code>conf/neo4j-server.properties</code> configuration file
+updated to contain the line</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>org.neo4j.server.thirdparty_jaxrs_classes=org.neo4j.server.hastatus=/hastatus</span></code></pre></td></tr></table></div></figure>
+
+
+<p>as documented on the page above.</p>
+
+<h4>Testing Locally</h4>
+
+<p>As a first test, I deployed HAProxy on my own machine, using this
+configuration file:</p>
+
+<figure class='code'><figcaption><span> (haproxy_local.cfg)</span> <a href='/downloads/code/7d7w/neo4j/haproxy_local.cfg'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='raw'><span class='line'><span class="err">global</span>
+</span><span class='line'><span class="err">    daemon</span>
+</span><span class='line'><span class="err">    maxconn 256</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">defaults</span>
+</span><span class='line'><span class="err">    mode http</span>
+</span><span class='line'><span class="err">    timeout connect 5000ms</span>
+</span><span class='line'><span class="err">    timeout client 50000ms</span>
+</span><span class='line'><span class="err">    timeout server 50000ms</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">frontend http-in</span>
+</span><span class='line'><span class="err">    bind *:7000</span>
+</span><span class='line'><span class="err">    default_backend neo4j-slaves</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">backend neo4j-slaves</span>
+</span><span class='line'><span class="err">    option httpchk GET /hastatus/slave</span>
+</span><span class='line'><span class="err">    server s1 localhost:7471 maxconn 32 check</span>
+</span><span class='line'><span class="err">    server s2 localhost:7472 maxconn 32 check</span>
+</span><span class='line'><span class="err">    server s3 localhost:7473 maxconn 32 check</span>
+</span><span class='line'><span class="err"> </span>
+</span><span class='line'><span class="err">listen admin</span>
+</span><span class='line'><span class="err">    bind *:8080</span>
+</span><span class='line'><span class="err">    stats enable</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I had installed HAProxy with
+<a href="http://mxcl.github.com/homebrew/">Homebrew</a>. The config above does
+not bind to port <code>*:80</code>, so I can run it without root privileges:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/usr/local/sbin/haproxy -f haproxy_local.cfg</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once up, I opened a browser on
+<a href="http://localhost:8080/haproxy?stats">HAProxy stat page</a> (it is not
+JSON, you really need a browser), to check that two instances of Neo4j
+were configured as slaves and available.</p>
+
+<p>Finally, I checked a Gremlin script with:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -X POST
+</span><span class='line'>http://localhost:7000/db/data/ext/GremlinPlugin/graphdb/execute_script
+</span><span class='line'>-H "content-type:application/json" -d '{"script":"g.V.name"}'
+</span><span class='line'>[ "null", "null", "null", "null", "P.G. Wodehouse", "null", "P.G. Wodehouse", "P.G. Wodehouse" ]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(the <code>7000</code> is the HAProxy port, not any of the Neo4j ports). I had a
+few P.G. Wodehouse nodes I inserted when I was testing writes to slaves.</p>
+
+<p>Ok, this is ready to be tested on the AWS cluster.</p>
+
+<h4>Deploying on the cloud</h4>
+
+<p>I used the small cluster deployed in the previous exercise. I just
+copied the Neo4j HAStatus extension jar to each machine (in the <code>lib</code>
+directory), and changed the <code>conf/neo4j-server.properties</code> exactly as
+above.</p>
+
+<p>I quickly checked that the extension was installed with:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://10.202.90.131:7474/hastatus/master
+</span><span class='line'>curl http://10.202.81.171:7474/hastatus/slave
+</span><span class='line'>curl http://10.195.78.222:7474/hastatus/slave</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(each is supposed to return nothing. If there&#8217;s a problem, these
+commands will return an error page).</p>
+
+<p>Everything looks fine. Time to set up the HAProxy machine.</p>
+
+<p>Once again, I followed the instructions from the
+<a href="http://docs.neo4j.org/chunked/stable/ha-haproxy.html">Neo4j documentation</a>:
+first I installed the &#8220;Development Tools&#8221;:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>yum -y groupinstall 'Development Tools'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This step is very fast because they all are stored in the Amazon
+Cloud.</p>
+
+<p>I retrieved the HAProxy code:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>wget http://haproxy.1wt.eu/download/1.4/src/haproxy-1.4.18.tar.gz</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To build it, I used the command <code>make TARGET=26</code> (which means build
+for a recent version of Linux).</p>
+
+<p>I did not copy the executable, as I will run it without root
+privileges anyway.</p>
+
+<p>I created a file <code>haproxy.cfg</code> that contains:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>global
+</span><span class='line'>    daemon
+</span><span class='line'>    maxconn 256
+</span><span class='line'>
+</span><span class='line'>defaults
+</span><span class='line'>    mode http
+</span><span class='line'>    timeout connect 5000ms
+</span><span class='line'>    timeout client 50000ms
+</span><span class='line'>    timeout server 50000ms
+</span><span class='line'>
+</span><span class='line'>frontend http-in
+</span><span class='line'>    bind *:7000
+</span><span class='line'>    default_backend neo4j-slaves
+</span><span class='line'>
+</span><span class='line'>backend neo4j-slaves
+</span><span class='line'>    option httpchk GET /hastatus/slave
+</span><span class='line'>    server s1 10.202.90.131:7474 maxconn 32 check
+</span><span class='line'>    server s2 10.202.81.171:7474 maxconn 32 check
+</span><span class='line'>    server s3 10.195.78.222:7474 maxconn 32 check
+</span><span class='line'> 
+</span><span class='line'>listen admin
+</span><span class='line'>    bind *:8080
+</span><span class='line'>    stats enable</span></code></pre></td></tr></table></div></figure>
+
+
+<p>which is essentially the same file as the file <code>haproxy_local.cfg</code>
+above.</p>
+
+<p>I established SSH tunnels to ports <code>7000</code> and <code>8080</code>, checked the
+status of the proxy on <code>http://localhost:8080/haproxy?stats</code> (I had
+made a mistake to one of the IP address, so I fixed it and restarted
+the proxy).</p>
+
+<p>Finally, I was able to run</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -X POST http://localhost:7000/db/data/ext/GremlinPlugin/graphdb/execute_script \
+</span><span class='line'>-H "content-type:application/json" -d '{"script":"g.V.name"}'
+</span><span class='line'>[ "null", "P.G. Wodehouse" ]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And all was good.</p>
+
+<h2>Wrapping up Neo4j</h2>
+
+<p>This is another database I had to fight all along the way. The
+book, the available documentation, and the actual behaviour of the
+database overlap only partially. Figuring out what is actually
+possible and how to achieve it was harder than for any other databases
+in the book.</p>
+
+<p>One thing that was especially irritating is the error handling of the
+Gremlin shell: a syntax error such as a missing closing quote renders
+the shell unusable: it keeps complaining about the syntax error, but
+offers no way to actually correct it. And I could find no way to
+reset the shell, except by restarting the whole server&#8230;</p>
+
+<p>This, and the fact that both the embedded interpreter or the
+standalone shell are unstable in their own different ways (not to
+mention slightly incompatible) makes Gremlin useless. But the
+alternatives, Cipher or Java, are not really usable either: Cipher is
+too limited, Java too verbose and its syntax ill suited.</p>
+
+<p>This said, Neo4j occupies a fairly specific niche which does not have
+many alternatives. Let&#8217;s hope the ecosystem stabilises into
+something more coherent and stable.</p>
+
+<h2>The other databases</h2>
+
+<p>It seems the Redis might be available soon, but CouchDB is not there
+yet. So I will probably switch to a different book for the time being.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-30T21:15:00+09:00" pubdate data-updated="true">Dec 30<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/" title="Previous Post: Seven Databases in Seven Weeks Neo4j Day 2">&laquo; Seven Databases in Seven Weeks Neo4j Day 2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/01/06/concrete-mathematics/" title="next Post: Concrete Mathematics">Concrete Mathematics &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">MongoDB Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Neo4j Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Neo4j Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Neo4j Day 3</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Concrete Mathematics Chapter 1 Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/06/concrete-mathematics/">Concrete Mathematics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Seven Databases in Seven Weeks Neo4j Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Seven Databases in Seven Weeks Neo4j Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

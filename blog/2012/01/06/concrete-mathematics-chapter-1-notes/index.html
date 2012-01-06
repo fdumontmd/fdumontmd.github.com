@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Concrete Mathematics Chapter 1 Notes - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="For the first post of this hopefully long series, I have a few notes I
+wrote down as I was reading Chapter 1. Nothing revolutionary, but it
+gives me &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>  
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Concrete Mathematics Chapter 1 Notes</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-06T13:52:00+09:00" pubdate data-updated="true">Jan 6<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>For the first post of this hopefully long series, I have a few notes I
+wrote down as I was reading Chapter 1. Nothing revolutionary, but it
+gives me a chance to play with math notation.</p>
+
+<!--more-->
+
+
+<h1>Lines in the Plane</h1>
+
+<p>I must admit that my memories of Geometry are far, far away (the
+subject was not addressed at all when I studied Mathematics at
+university, and I had no need for Geometry in my work since), so I
+spent perhaps an unreasonable amount of time to check the validity of
+the most elementary steps.</p>
+
+<p>It goes without saying that the exercises of a Geometric nature are
+particularly challenging (as if I needed the extra difficulty).</p>
+
+<h2>Intersecting lines</h2>
+
+<p>The notion that one line will add $k$ new regions if it intersects
+other lines at $k-1$ points is due to the fact that $k-1$ distinct
+lines define at least $k$ regions (more if they are not all parallel),
+and one more line that intersects them all will divide these $k$
+regions in two.</p>
+
+<h1>Josephus Problem</h1>
+
+<h2>$J(5 \cdot 2^m) = 2^{m+1} + 1$</h2>
+
+<p>This is based on the fact that $J(10) = 5$ and $J(2n) = 2J(n) -1$.</p>
+
+<p>By recurrence:</p>
+
+<p><em>Base case</em>: it is true for $m = 1$: $J(5\cdot 2) = J(10) = 5 =
+2^{1+1} + 1$</p>
+
+<p><em>Recurrence</em>: assuming it is true for $m$,</p>
+
+<div markdown="0">
+$$
+\begin{align}
+J(5\cdot 2^{m+1}) &amp;= J(2(5\cdot 2^m))&#92;&#92;
+&amp;= 2J(5\cdot 2^m) - 1&amp;&amp;\text{as $J(2n) = 2J(n) -1$}&#92;&#92;
+&amp;= 2(2^{m+1}+1) - 1&amp;&amp;\text{by recurrence}&#92;&#92;
+&amp;= 2\cdot 2^{m+1} + 2 - 1&#92;&#92;
+&amp;= 2^{m+2} + 1
+\end{align}
+$$
+</div>
+
+
+<h2>$A(2^{m}+l) = 2^{m}$</h2>
+
+<p>It took me a while to convince myself that the $l$ was not a problem
+here. This can be seen by considering $l$ in binary notation, and
+using $A(2n) = 2A(n)$ and $A(2n+1) = 2A(n)$ to remove the rightmost
+bit.</p>
+
+<p>That is, with $2^m > l = (b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2$,we have:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+A(2^{m}+l) &amp;= A(2^{m}+(b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2)&#92;&#92;
+&amp;= 2A(2^{m-1}+(b_{m-1}b_{m-2}\cdots b_{1})_2)&#92;&#92;
+&amp;= 2^{2}A(2^{m-2}+(b_{m-1}b_{m-2}\cdots b_{2})_2)&#92;&#92;
+&amp;= 2^{3}A(2^{m-3}+(b_{m-1}b_{m-2}\cdots b_{3})_2)&#92;&#92;
+&amp;= \cdots
+\end{align}
+$$
+</div>
+
+
+<p>At each iteration, whether $b_i$ is $0$ or $1$, we can ignore it when
+dividing by $2$. And as $2^m &lt; l$, it takes no more than $m$ steps
+(removing the $m$ bits $b_0$ to $b_{m-1}$) to reduce $A(2^m+l)$ to
+$2^mA(1) = 2^m$</p>
+
+<h2>Radix-based Generalised Josephus Solution</h2>
+
+<p>The equation 1.18:</p>
+
+<p>$$f \left( ( b_m b_{m-1} \cdots b_1 b_0)_d \right) = \left( \alpha_{b_m} \beta_{b_{m-1}} \beta_{b_{m-2}} \cdots \beta_{b_1} \beta_{b_0} \right)_c$$</p>
+
+<p>is so unnaturally smart and simple that I thought the proof must be
+missing. But in fact it is indeed trivial, and just as the book
+states, follows from the rewriting of the argument in base $d$, then
+recurrence over $m$ (with $m$ the number of digits or the argument in
+base $d$).</p>
+
+<p>In the next post in this series, I will start the exercises.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-06T13:52:00+09:00" pubdate data-updated="true">Jan 6<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>, <a class='category' href='/blog/categories/mathematics/'>Mathematics</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/01/06/concrete-mathematics/" title="Previous Post: Concrete Mathematics">&laquo; Concrete Mathematics</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Concrete Mathematics Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2012/01/06/concrete-mathematics/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Chapter 1 Notes</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Concrete Mathematics Chapter 1 Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/06/concrete-mathematics/">Concrete Mathematics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Seven Databases in Seven Weeks Neo4j Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Seven Databases in Seven Weeks Neo4j Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

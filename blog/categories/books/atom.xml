@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-06T16:34:53+09:00</updated>
+  <updated>2012-01-07T14:40:22+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -50,7 +50,7 @@ regions in two.</p>
 
 <p>This is based on the fact that $J(10) = 5$ and $J(2n) = 2J(n) -1$.</p>
 
-<p>By recurrence:</p>
+<p>By induction:</p>
 
 <p><em>Base case</em>: it is true for $m = 1$: $J(5\cdot 2) = J(10) = 5 =
 2^{1+1} + 1$</p>
@@ -62,7 +62,7 @@ $$
 \begin{align}
 J(5\cdot 2^{m+1}) &amp;= J(2(5\cdot 2^m))\\\\
 &amp;= 2J(5\cdot 2^m) - 1&amp;&amp;\text{as $J(2n) = 2J(n) -1$}\\\\
-&amp;= 2(2^{m+1}+1) - 1&amp;&amp;\text{by recurrence}\\\\
+&amp;= 2(2^{m+1}+1) - 1&amp;&amp;\text{induction hypothesis}\\\\
 &amp;= 2\cdot 2^{m+1} + 2 - 1\\\\
 &amp;= 2^{m+2} + 1
 \end{align}

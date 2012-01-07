@@ -39,7 +39,7 @@ regions in two.
 
 This is based on the fact that $J(10) = 5$ and $J(2n) = 2J(n) -1$.
 
-By recurrence:
+By induction:
 
 *Base case*: it is true for $m = 1$: $J(5\cdot 2) = J(10) = 5 =
 2^{1+1} + 1$
@@ -51,7 +51,7 @@ $$
 \begin{align}
 J(5\cdot 2^{m+1}) &amp;= J(2(5\cdot 2^m))\\\\
 &amp;= 2J(5\cdot 2^m) - 1&amp;&amp;\text{as $J(2n) = 2J(n) -1$}\\\\
-&amp;= 2(2^{m+1}+1) - 1&amp;&amp;\text{by recurrence}\\\\
+&amp;= 2(2^{m+1}+1) - 1&amp;&amp;\text{induction hypothesis}\\\\
 &amp;= 2\cdot 2^{m+1} + 2 - 1\\\\
 &amp;= 2^{m+2} + 1
 \end{align}

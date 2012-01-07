@@ -135,7 +135,7 @@ foldl f a [] == a                  -- by definition of foldl
              == (foldl_alt f []) a -- by definition of foldl_alt
 ```
 
-The recursive case is simple as well (by recursion):
+The recursive case is simple as well (by induction):
 {% codeblock foldl_alt on non empty list lang:haskell %}
 foldl_alt f (b:bs) = (foldl_alt f bs) . (f' b)
   where f' = flip f

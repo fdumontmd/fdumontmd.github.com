@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-08T13:00:23+09:00</updated>
+  <updated>2012-01-08T16:16:34+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -18,7 +18,7 @@
     <link href="http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/"/>
     <updated>2012-01-07T19:09:00+09:00</updated>
     <id>http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups</id>
-    <content type="html"><![CDATA[<p>It took me far longer than it should have, and I had a mitigated
+    <content type="html"><![CDATA[<p>It took me far longer than it should have, and I had a very partial
 success; I guess my excuse is that my brain was still cold...</p>
 
 <p>At least I can claim I did try to solve all the exercises; I really
@@ -72,32 +72,32 @@ move the $n-1$ discs from $A$ to $B$.</p>
 <div markdown="0">
 $$
 \begin{align}
-T(1) &amp;= 2&amp;&amp;\text{base case}\\\\
-T(n) &amp;= T(n-1) + 1 + T(n-1) + 1 + T(n-1)\\\\
-&amp; = 3T(n-1) + 2&amp;&amp;\text{recurrence equation}
+T_1 &amp;= 2&amp;&amp;\text{base case}\\\\
+T_n &amp;= T_{n-1} + 1 + T_{n-1} + 1 + T_{n-1}\\\\
+&amp; = 3T_{n-1} + 2&amp;&amp;\text{recurrence equation}
 \end{align}
 $$
 </div>
 
 
 <p>Using the exact same method as in the book, let's define
-$T(n) + 1= U(n)$:</p>
+$T_n + 1= U_n$:</p>
 
 <div markdown="0">
 $$
 \begin{align}
-U(1) &amp;= T(1) + 1\\\\
+U_1 &amp;= T_1 + 1\\\\
 &amp; = 3\\\\
-U(n) &amp;= T(n) + 1\\\\
-&amp; = 3(U(n-1) -1) + 3\\\\
-&amp; = 3U(n-1) - 3 + 3\\\\
-&amp; = 3U(n-1)
+U_n &amp;= T_n + 1\\\\
+&amp; = 3(U_{n-1} -1) + 3\\\\
+&amp; = 3U_{n-1} - 3 + 3\\\\
+&amp; = 3U_{n-1}
 \end{align}
 $$
 </div>
 
 
-<p>Then, $U(n) = 3^n$, and $T(n) = 3^n-1$.</p>
+<p>Then, $U_n = 3^n$, and $T_n = 3^n-1$.</p>
 
 <h4>Arrangements</h4>
 
@@ -114,17 +114,17 @@ the total number of arrangements.</p>
 <p>Once again, by induction: to move a disk to peg $B$:</p>
 
 <p><em>Base case</em>: moving the smallest disc takes at most $1$ move ($0$ if
-it is already on peg $B$), so $T(1) \le 1$;
+it is already on peg $B$), so $T_1 \le 1$;
 <em>Recurrence</em>: to move the disc of size $n$, assuming it is on $A$, we
 need to move all the smaller discs to $C$ (to clear both $A$ and $B$),
 then move the disc of size $n$, and finally move all the smaller discs
-to $B$. Calling the clearing operation $Cl(n)$, we have
-$T(n) \le Cl(n-1) + 1 + T(n-1)$.</p>
+to $B$. Calling the clearing operation $Cl_n$, we have
+$T_n \le Cl_{n-1} + 1 + T_{n-1}$.</p>
 
-<p>A moment of thought is enough to realise that $Cl(n)$ amounts to the
-same operation as $T(n)$ (that is, move each disc to a specific peg,
-no matter where it currently is), so we have $Cl(n) = T(n)$, and
-therefore $T(n) \le 2T(n-1) + 1$, which is the same recurrence equation
+<p>A moment of thought is enough to realise that $Cl_n$ amounts to the
+same operation as $T_n$ (that is, move each disc to a specific peg,
+no matter where it currently is), so we have $Cl_n = T_n$, and
+therefore $T_n \le 2T_{n-1} + 1$, which is the same recurrence equation
 as the original problem.</p>
 
 <p>Therefore there is no position that is more that $2^n-1$ moves from
@@ -158,14 +158,14 @@ intersecting lines that I feel somewhat confident.</p>
 <div markdown="0">
 $$
 \begin{align}
-C(1) &amp;= 2\\\\
-C(n) &amp;= C(n-1) + 2(n-1)
+C_1 &amp;= 2\\\\
+C_n &amp;= C_{n-1} + 2(n-1)
 \end{align}
 $$
 </div>
 
 
-<p>Already, we have that $C(4) = 14$, which is less than the required
+<p>Already, we have that $C_4 = 14$, which is less than the required
 $16$ for a Venn diagram (and according to this
 <a href="http://www.combinatorics.org/Surveys/ds5/VennEJC.html">document</a>),
 four circles form a <em>Euler diagram</em>, not a Venn diagram.</p>
@@ -176,7 +176,7 @@ recurrence equations above can be rewritten as</p>
 <div markdown="0">
 $$
 \begin{align}
-C(n) &amp;= 2+\sum_{i=1}^{n}2(i-1)\\\\
+C_n &amp;= 2+\sum_{i=1}^{n}2(i-1)\\\\
 &amp;= 2+2\sum_{i=0}^{n-1}i\\\\
 &amp;= 2+2\frac{n(n-1)}{2}\\\\
 &amp;= n^2-n+2
@@ -210,9 +210,9 @@ $k+1$ new regions).</p>
 <div markdown="0">
 $$
 \begin{align}
-B(i) &amp; = 0 &amp;&amp\text{for $1 \\le i \\lt 3$}\\\\
-B(3) &amp; = 1\\\\
-B(n) &amp; = B(n-1) + n - 2\\\\
+B_i &amp; = 0 &amp;&amp\text{for $1 \\le i \\lt 3$}\\\\
+B_3 &amp; = 1\\\\
+B_n &amp; = B_{n-1} + n - 2\\\\
 &amp; = \sum_{i=2}^{n} i-2\\\\
 &amp; = \sum_{i=0}^{n-2} i\\\\
 &amp; = \frac{(n-1)(n-2)}{2}\\\\

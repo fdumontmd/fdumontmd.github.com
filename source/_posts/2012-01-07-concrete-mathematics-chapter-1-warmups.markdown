@@ -8,7 +8,7 @@ tags: [concMath, math]
 series: "Concrete Mathematics"
 js: [math]
 ---
-It took me far longer than it should have, and I had a mitigated
+It took me far longer than it should have, and I had a very partial
 success; I guess my excuse is that my brain was still cold...
 
 At least I can claim I did try to solve all the exercises; I really
@@ -61,30 +61,30 @@ More concisely:
 <div markdown="0">
 $$
 \begin{align}
-T(1) &amp;= 2&amp;&amp;\text{base case}\\\\
-T(n) &amp;= T(n-1) + 1 + T(n-1) + 1 + T(n-1)\\\\
-&amp; = 3T(n-1) + 2&amp;&amp;\text{recurrence equation}
+T_1 &amp;= 2&amp;&amp;\text{base case}\\\\
+T_n &amp;= T_{n-1} + 1 + T_{n-1} + 1 + T_{n-1}\\\\
+&amp; = 3T_{n-1} + 2&amp;&amp;\text{recurrence equation}
 \end{align}
 $$
 </div>
 
 Using the exact same method as in the book, let's define
-$T(n) + 1= U(n)$:
+$T_n + 1= U_n$:
 
 <div markdown="0">
 $$
 \begin{align}
-U(1) &amp;= T(1) + 1\\\\
+U_1 &amp;= T_1 + 1\\\\
 &amp; = 3\\\\
-U(n) &amp;= T(n) + 1\\\\
-&amp; = 3(U(n-1) -1) + 3\\\\
-&amp; = 3U(n-1) - 3 + 3\\\\
-&amp; = 3U(n-1)
+U_n &amp;= T_n + 1\\\\
+&amp; = 3(U_{n-1} -1) + 3\\\\
+&amp; = 3U_{n-1} - 3 + 3\\\\
+&amp; = 3U_{n-1}
 \end{align}
 $$
 </div>
 
-Then, $U(n) = 3^n$, and $T(n) = 3^n-1$.
+Then, $U_n = 3^n$, and $T_n = 3^n-1$.
 
 #### Arrangements
 
@@ -101,17 +101,17 @@ the total number of arrangements.
 Once again, by induction: to move a disk to peg $B$:
 
 *Base case*: moving the smallest disc takes at most $1$ move ($0$ if
-it is already on peg $B$), so $T(1) \le 1$;
+it is already on peg $B$), so $T_1 \le 1$;
 *Recurrence*: to move the disc of size $n$, assuming it is on $A$, we
 need to move all the smaller discs to $C$ (to clear both $A$ and $B$),
 then move the disc of size $n$, and finally move all the smaller discs
-to $B$. Calling the clearing operation $Cl(n)$, we have
-$T(n) \le Cl(n-1) + 1 + T(n-1)$.
+to $B$. Calling the clearing operation $Cl_n$, we have
+$T_n \le Cl_{n-1} + 1 + T_{n-1}$.
 
-A moment of thought is enough to realise that $Cl(n)$ amounts to the
-same operation as $T(n)$ (that is, move each disc to a specific peg,
-no matter where it currently is), so we have $Cl(n) = T(n)$, and
-therefore $T(n) \le 2T(n-1) + 1$, which is the same recurrence equation
+A moment of thought is enough to realise that $Cl_n$ amounts to the
+same operation as $T_n$ (that is, move each disc to a specific peg,
+no matter where it currently is), so we have $Cl_n = T_n$, and
+therefore $T_n \le 2T_{n-1} + 1$, which is the same recurrence equation
 as the original problem.
 
 Therefore there is no position that is more that $2^n-1$ moves from
@@ -145,13 +145,13 @@ So the above observation gives a recurrence equation:
 <div markdown="0">
 $$
 \begin{align}
-C(1) &amp;= 2\\\\
-C(n) &amp;= C(n-1) + 2(n-1)
+C_1 &amp;= 2\\\\
+C_n &amp;= C_{n-1} + 2(n-1)
 \end{align}
 $$
 </div>
 
-Already, we have that $C(4) = 14$, which is less than the required
+Already, we have that $C_4 = 14$, which is less than the required
 $16$ for a Venn diagram (and according to this
 [document](http://www.combinatorics.org/Surveys/ds5/VennEJC.html)),
 four circles form a _Euler diagram_, not a Venn diagram.
@@ -162,7 +162,7 @@ recurrence equations above can be rewritten as
 <div markdown="0">
 $$
 \begin{align}
-C(n) &amp;= 2+\sum_{i=1}^{n}2(i-1)\\\\
+C_n &amp;= 2+\sum_{i=1}^{n}2(i-1)\\\\
 &amp;= 2+2\sum_{i=0}^{n-1}i\\\\
 &amp;= 2+2\frac{n(n-1)}{2}\\\\
 &amp;= n^2-n+2
@@ -195,9 +195,9 @@ Once again, the triangular number sequence is not far:
 <div markdown="0">
 $$
 \begin{align}
-B(i) &amp; = 0 &amp;&amp\text{for $1 \le i \lt 3$}\\\\
-B(3) &amp; = 1\\\\
-B(n) &amp; = B(n-1) + n - 2\\\\
+B_i &amp; = 0 &amp;&amp\text{for $1 \le i \lt 3$}\\\\
+B_3 &amp; = 1\\\\
+B_n &amp; = B_{n-1} + n - 2\\\\
 &amp; = \sum_{i=2}^{n} i-2\\\\
 &amp; = \sum_{i=0}^{n-2} i\\\\
 &amp; = \frac{(n-1)(n-2)}{2}\\\\

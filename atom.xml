@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-07T14:40:22+09:00</updated>
+  <updated>2012-01-08T13:00:23+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,237 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Warmups]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/"/>
+    <updated>2012-01-07T19:09:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups</id>
+    <content type="html"><![CDATA[<p>It took me far longer than it should have, and I had a mitigated
+success; I guess my excuse is that my brain was still cold&#8230;</p>
+
+<p>At least I can claim I did try to solve all the exercises; I really
+spent hours on this.</p>
+
+<!--more-->
+
+
+<h2>Warmups</h2>
+
+<h3>Horse colour</h3>
+
+<p>I kind of botched this one, as I tried to answer it even before
+reading the chapter&#8230; and my first instinct was that such a use of
+induction (taking numbered subsets) was invalid.</p>
+
+<p>Of course it is not. This is a perfectly valid approach, but, as the
+book states, in the present case it breaks down for $n=2$.</p>
+
+<p>Properly expressed with math notation, it becomes clear that the
+&#8220;same colour&#8221; concept is a binary relation (a reflexive, symmetric
+and transitive one). The key is <em>binary</em>: if every pair of horses were
+the same colour, then induction could be used.</p>
+
+<h3>Tower of Hanoi Variation</h3>
+
+<p>The description in the book is somewhat confusing, as it states the
+restriction in terms of absolute positions (that is, no direct move
+between left peg and right peg), rather than relative (if you want to
+move a disc between peg $A$ and peg $B$, you must first move it to peg $C$,
+then to peg $B$).</p>
+
+<p>The first approach does not work (that is, it is impossible to solve
+the problem under these conditions), but obviously the authors meant
+the second approach.</p>
+
+<h4>Number of moves</h4>
+
+<p>This variation can be solved using the exact same tools as the
+original problem.</p>
+
+<p>Assuming we want to move a stack from $A$ to $B$, using $C$ as
+transfer peg: a single disc can be moved in $2$ steps ($A$ to $C$, $C$
+to $B$); to move more than $1$, you first need to move the $n-1$ from
+$A$ to $B$, then move $1$ disk from $A$ to $C$, move the $n-1$ discs
+from $B$ back to $A$, move the one disc from $C$ to $B$, and finally
+move the $n-1$ discs from $A$ to $B$.</p>
+
+<p>More concisely:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+T(1) &amp;= 2&amp;&amp;\text{base case}&#92;&#92;
+T(n) &amp;= T(n-1) + 1 + T(n-1) + 1 + T(n-1)&#92;&#92;
+&amp; = 3T(n-1) + 2&amp;&amp;\text{recurrence equation}
+\end{align}
+$$
+</div>
+
+
+<p>Using the exact same method as in the book, let&#8217;s define
+$T(n) + 1= U(n)$:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+U(1) &amp;= T(1) + 1&#92;&#92;
+&amp; = 3&#92;&#92;
+U(n) &amp;= T(n) + 1&#92;&#92;
+&amp; = 3(U(n-1) -1) + 3&#92;&#92;
+&amp; = 3U(n-1) - 3 + 3&#92;&#92;
+&amp; = 3U(n-1)
+\end{align}
+$$
+</div>
+
+
+<p>Then, $U(n) = 3^n$, and $T(n) = 3^n-1$.</p>
+
+<h4>Arrangements</h4>
+
+<p>As discs must be sorted, to describe an arrangement it is enough to
+list the peg for each disc. As there are $3$ pegs, this means
+there are $3^n$ different arrangements.</p>
+
+<p>The variation takes $3^n-1$ moves, but counting the starting position
+as well, this means $3^n$ different positions, which is the same as
+the total number of arrangements.</p>
+
+<h3>Tower of Hanoi, Initial Setup Variation</h3>
+
+<p>Once again, by induction: to move a disk to peg $B$:</p>
+
+<p><em>Base case</em>: moving the smallest disc takes at most $1$ move ($0$ if
+it is already on peg $B$), so $T(1) \le 1$;
+<em>Recurrence</em>: to move the disc of size $n$, assuming it is on $A$, we
+need to move all the smaller discs to $C$ (to clear both $A$ and $B$),
+then move the disc of size $n$, and finally move all the smaller discs
+to $B$. Calling the clearing operation $Cl(n)$, we have
+$T(n) \le Cl(n-1) + 1 + T(n-1)$.</p>
+
+<p>A moment of thought is enough to realise that $Cl(n)$ amounts to the
+same operation as $T(n)$ (that is, move each disc to a specific peg,
+no matter where it currently is), so we have $Cl(n) = T(n)$, and
+therefore $T(n) \le 2T(n-1) + 1$, which is the same recurrence equation
+as the original problem.</p>
+
+<p>Therefore there is no position that is more that $2^n-1$ moves from
+the target position.</p>
+
+<h3>Venn Diagram with 4 circles</h3>
+
+<p>I completely failed to solve this one, even though I spent most of the
+time on this problem alone. I had the intuition that it could not be
+done; I also found that the maximum number of regions would be 14, but
+not matter what I tried, I could not prove it.</p>
+
+<p>I tried to use Geometry, hoping that a minimal list of constraints on
+the circles would prove that some of the regions that should be
+restricted to two circles were in fact always covered by three or
+more.</p>
+
+<p>Eventually, when I gave up and looked at the solution, I still could not
+understand it. So a circle can only intersect another one in at most 2
+points. OK, so what?</p>
+
+<p>After more research (the Google kind, this time), I found
+<a href="http://www.brynmawr.edu/math/people/anmyers/PAPERS/Venn.pdf">this paper</a>
+which explains why. Each intersection point creates a single new
+region. Although once again I have no intuition I can trust in this
+domain, in this case the reasoning seems similar enough to
+intersecting lines that I feel somewhat confident.</p>
+
+<p>So the above observation gives a recurrence equation:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+C(1) &amp;= 2&#92;&#92;
+C(n) &amp;= C(n-1) + 2(n-1)
+\end{align}
+$$
+</div>
+
+
+<p>Already, we have that $C(4) = 14$, which is less than the required
+$16$ for a Venn diagram (and according to this
+<a href="http://www.combinatorics.org/Surveys/ds5/VennEJC.html">document</a>),
+four circles form a <em>Euler diagram</em>, not a Venn diagram.</p>
+
+<p>Clearly a triangular number sequence is hiding in there. The
+recurrence equations above can be rewritten as</p>
+
+<div markdown="0">
+$$
+\begin{align}
+C(n) &amp;= 2+\sum_{i=1}^{n}2(i-1)&#92;&#92;
+&amp;= 2+2\sum_{i=0}^{n-1}i&#92;&#92;
+&amp;= 2+2\frac{n(n-1)}{2}&#92;&#92;
+&amp;= n^2-n+2
+\end{align}
+$$
+</div>
+
+
+<h3>Bounded Regions in the Plane</h3>
+
+<p>Another one where my intuition for Geometry completely failed me. I
+had a correct start, identifying that each new line intersecting the
+existing ones at $k$ points could at best create $k-1$ new bounded
+regions, but when I try to check this I fumbled.</p>
+
+<p>Yet the reason it simple: a line intersecting 2 others will either
+define a bounded triangle, or cut an existing bounded region in two.</p>
+
+<p>The new bounded regions are not made of arbitrary triple of lines, but
+are next to each others in the plane; really this is similar to the
+fence problem. So a line cutting $k$ other lines will create at best
+$k-1$ new bounded region. The equality is achieved if there are no
+parallel lines, and all the intersection points are distinct.</p>
+
+<p>As the book observes, each new line will also add two new unbounded
+regions (the original problem had that a new line would create
+$k+1$ new regions).</p>
+
+<p>Once again, the triangular number sequence is not far:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+B(i) &amp; = 0 &amp;&amp\text{for $1 &#92;le i &#92;lt 3$}&#92;&#92;
+B(3) &amp; = 1&#92;&#92;
+B(n) &amp; = B(n-1) + n - 2&#92;&#92;
+&amp; = \sum_{i=2}^{n} i-2&#92;&#92;
+&amp; = \sum_{i=0}^{n-2} i&#92;&#92;
+&amp; = \frac{(n-1)(n-2)}{2}&#92;&#92;
+&amp; = S_{n-2}
+\end{align}
+$$
+</div>
+
+
+<h3>Invalid Recurrence</h3>
+
+<p>The recurrence for $H$ has a number of problems. The one I found is
+that it only establishes the induction hypothesis for going from an
+even number to an odd one; nothing can be said for going from an odd
+number to an even one (and indeed, the hypothesis breaks then).</p>
+
+<p>As the book mentions, another problem is the base case, which is
+incompatible with the induction hypothesis.</p>
+
+<h3>Wrapping up</h3>
+
+<p>I spent way too much time on these exercises, but most of it was on
+exercises with a geometric nature: I could not find an algebraic
+description of these problems that would be suitable for the kind of
+treatment this chapter is about. But once I had the equations, I was
+able to solve the problems without trouble.</p>
+
+<p>Next, the homework exercises.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Notes]]></title>
@@ -6997,163 +7228,6 @@ But that is probably getting a bit ahead of myself; right now I&#8217;d be happy
 <p>I have been working with relational databases mostly so far (and, professionally, with one of the worst databases that people can charge money for), so I am eager to be introduced to the other kinds, without the usual cheerleading that is found in many tutorials.</p>
 
 <p>In the coming weeks, assuming the book is timely updated, I&#8217;ll be blogging my way through it, just as I did through <a href="http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks/">Seven Languages in Seven Weeks</a>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Languages in Seven Weeks Wrap Up]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/11/26/seven-languages-in-seven-weeks-wrap-up/"/>
-    <updated>2011-11-26T12:24:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/11/26/seven-languages-in-seven-weeks-wrap-up</id>
-    <content type="html"><![CDATA[<p>Wow, seven weeks already. And seven languages later, time to see where I can go from here.</p>
-
-<!--more-->
-
-
-<p>This was a rather pleasant journey. I felt that some exercises with Io and Scala were more frustrating than the rest, but overall it was not too taxing.</p>
-
-<p>It brought interesting benefits: I got a better look at emerging trends in software, but now it is up to me to develop this first look into something useable.</p>
-
-<h2>General comments</h2>
-
-<p>The exercises level was rather uneven. I guess that is inevitable, given that some of the languages were introduced as stepping stones for others. Still, from a CSV parser (even one using meta-programming) to a backtracking maze solver, there&#8217;s a fairly large range.</p>
-
-<p>The idea of just giving enough information to get started, but not so much that the book is the only source of information needed to solve the exercises, was very good. A language is not just a syntax, a semantic, and a library. It is most of all a community, a set of websites, forums, mailing lists, &#8230; It was smart to push the reader towards that.</p>
-
-<p>And yes, clearly, each language was barely covered, but some of the third day exercises were hinting at the more advanced features.</p>
-
-<p>All in all, this was a good book. It is useful to be exposed to different languages, if only to expand one&#8217;s approach to problem solving. The features of tomorrow&#8217;s mainstream languages are being explored today in smaller languages; being at least aware of this evolution is required to grow as a professional software engineer.</p>
-
-<p>But the author spends way too much time complaining about syntax (or claiming that a particular syntax is a weakness). I find the accusation that Scala&#8217;s syntax is too academic particularly pointless. Rightfully, he adds that this is subjective, but what on earth is an academic syntax? A syntax is either easy on the fingers or not (the former being better), and either adapted to the semantic or not. It can support the features, or make them ugly. It should be concise in what it promotes, and verbose in what it discourages.</p>
-
-<p>As far as I could tell, each language had a syntax that matches its needs and those of its users.</p>
-
-<p>Conclusion: I recommend the book. Even knowing some of the languages I still learned a few things, and for those languages I knew, I had a chance for a second look and a new appreciation of what they offer.</p>
-
-<h2>From here to a bit further</h2>
-
-<p>It would be unfortunate if this book was the last step I took in these various languages. So here I recap what I think of each language, and where I&#8217;d like to go with them.</p>
-
-<h3>Ruby</h3>
-
-<p>I like Ruby. It&#8217;s fun, open, does not make judgment about what is proper software engineering (who cares if you like monkey patching&#8230;). The syntax binds all the features well, and the ecosystem is really interesting.</p>
-
-<p>It might not have the performance, and no concurrency model worth mentioning, but as a new glue or script language, or perhaps for the Rails platform (although my current needs are not met by RoR), it shines.</p>
-
-<p>I had read the <a href="http://pragprog.com/book/ruby/programming-ruby">Programming Ruby</a> (the pickaxe book), and a few books on Rails, and I liked what I saw.</p>
-
-<p>I&#8217;ll probably follow up with <a href="http://pragprog.com/book/ppmetr/metaprogramming-ruby">Metaprogramming Ruby</a>.</p>
-
-<p>And as I&#8217;m doing a lot of web development, I will try to look at Ruby driven <a href="http://seleniumhq.org/">Selenium</a>.</p>
-
-<h3>Io</h3>
-
-<p>Well, I won&#8217;t spend much more time with Io. I really don&#8217;t see any advantages. Yes, it&#8217;s compact, the interpreter is small, so it&#8217;s ideal for embedded languages. Which I don&#8217;t need.</p>
-
-<p>As I said earlier, there is a prototype based, functional Lisp inspired language that is worth learning. It is supported by several major software companies or organisations, has users in the billions (or will soon): Javascript.</p>
-
-<h3>Prolog</h3>
-
-<p>I had learned Prolog at university. I had enjoyed it at the time, and doing the exercises reminded me of that fun.</p>
-
-<p>Prolog is, by and large, about exploring search trees, so the techniques it teaches are usable in other languages. The maze solver in Haskell is essentially a tree search and would be implemented the same way in Prolog.</p>
-
-<p>I&#8217;m glad that a recent trip back to Europe allowed me to retrieve my two Prolog books: <a href="http://mitpress.mit.edu/catalog/item/default.asp?ttype=2&amp;tid=8327">The Art of Prolog</a> and <a href="http://mitpress.mit.edu/catalog/item/default.asp?ttype=2&amp;tid=8336">The Craft of Prolog</a>. Both are large, so it might take a while.</p>
-
-<h3>Scala</h3>
-
-<p>I didn&#8217;t know Scala but had heard about it and was very curious. It is indeed fairly expressive, more concise than Java, and the concurrency model much better.</p>
-
-<p>The type system is somewhat strange: much better than Java, but more verbose and less flexible than Haskell, and sometimes with bizarre results: the concatenation of a <code>List</code> of <code>Int</code> and a <code>List</code> of <code>String</code> is a <code>List</code> of <code>Any</code>&#8230;</p>
-
-<p>In any case, Scala seems to be gaining momentum, so I&#8217;ll try and learn more about it in the near future. There are plenty of books, at least one free (<a href="http://programmingscala.com/">Programming Scala</a>, from O&#8217;Reilly), and one by the language creator (<a href="http://www.artima.com/shop/programming_in_scala">Programming in Scala</a>).</p>
-
-<h3>Erlang</h3>
-
-<p>Erlang was another language I had checked before, yet this book showed me something new. An important development of Erlang is OTP (Open Telecom Platform), but until very recently, there were few resources to learn about it.</p>
-
-<p>The whole concept of supervisors is just the beginning; as far as I can tell, OTP offers a large range of tools to monitor and keep processes alive on a network. Where this really becomes interesting, is that Scala is adopting some ideas (<a href="http://akka.io/">Akka</a> is inspired by Erlang/OTP), so some knowledge of one can be reused.</p>
-
-<p>There is an entry level book, <a href="http://pragprog.com/book/jaerlang/programming-erlang">Programming in Erlang</a>, by Joe Armstrong (Erlang&#8217;s father), and a couple of more advanced books, specifically on OTP: <a href="http://www.manning.com/logan/">Erlang and OTP in Action</a> and <a href="http://shop.oreilly.com/product/9780596518189.do">Erlang Programming</a>. I&#8217;m going through Programming in Erlang, then the in Action one.</p>
-
-<h3>Clojure</h3>
-
-<p>Clojure is a Lisp for the JVM. That in itself should make it interesting, but somehow it does not do it for me. Maybe it is that Clojure is not as good Lisp it could be because of the JVM limitations. Or maybe I&#8217;m just not into Lisp anymore (I used to like Perl too, but wonder why today).</p>
-
-<p>But with my professional investment in the JVM, I will probably investigate Clojure a bit further. Just not urgently.</p>
-
-<p>It might be interesting to see if <a href="http://norvig.com/paip.html">Paradigms of Artificial Intelligence Programming</a> can easily be ported to Clojure.</p>
-
-<h3>Haskell</h3>
-
-<p>Haskell is an interesting language. But it is extremely demanding, and there are few resources to come to grip with it. I knew enough about Haskell to go through this book easily, but whenever I try to go further, I find that difficulties accumulate quickly.</p>
-
-<p>It appears that Haskell&#8217;s features are all somewhat complicated in their own way:</p>
-
-<h4>Types</h4>
-
-<p>Haskell type system is perhaps the most sophisticated of all widely used type systems. Basic Haskell type system is already very rich, but <a href="http://www.haskell.org/ghc/">GHC</a> adds extensions that brings the expressivity of the type system to new heights.</p>
-
-<p>I would assume that Haskell strength must be in this type system; there are interesting libraries and applications that are built around clever use of types. But there are few resources on using types for design (or designing with types), except for very academic papers with no obvious practical uses (I probably lack imagination)</p>
-
-<p>GHC&#8217;s extensions are similarly explored in other academic papers, but the sum of these extensions is hard to make sense of (and it sometimes feels like the authors of GHC are also trying to make sense of this patchwork and find a more consistent set of features).</p>
-
-<p>This is in serious needs of a good book, but I can&#8217;t think of any that fits the bill.</p>
-
-<h4>Laziness</h4>
-
-<p>Haskell&#8217;s laziness goes much further than Clojure&#8217;s. I did not mention it in <a href="http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/">Haskell Day 3</a>&#8217;s Maze solution, but laziness makes this implementation very effective: only the first solution is computed. While the implementation is strictly equivalent to nested list comprehensions, only the part required for the first output is actually run.</p>
-
-<p>Laziness (combine with the List Monad) makes the algorithm very short: a mere 14 lines. But it makes it also very obscure. I know, intellectually, that laziness will run just a much as needed, but I don&#8217;t understand it as well as, say, I understand the time and space cost of an algorithm in C.</p>
-
-<p>When digging a bit deeper in Haskell, newcomers learn to be wary of laziness: it introduces space leaks that can be hard to track. Solutions exist, but are spread in academic papers that require extensive understanding of the whole background theories (why do academic papers always refer to other, more obscure academic papers, and never to a single &#8220;Idiot Guide to&#8230;&#8221;?)</p>
-
-<p>Of all the features of Haskell, I would think that laziness is the harder to master. There are few generally available resources. <a href="http://www.cambridge.org/gb/knowledge/isbn/item1161740/?site_locale=en_GB">Purely Functional Data Structures</a> explores laziness and provides a theoretical framework to compute the time cost of lazy algorithms, but does so assuming a partial laziness built on top of SML.</p>
-
-<p><a href="http://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A Functional Programming Approach</a> is about Haskell, but appears to be out of print (glad I got a copy when I first got interested in Haskell).</p>
-
-<p>Both books are in my todo stack (which by now requires all my skills in rock climbing to handle).</p>
-
-<h4>Syntax</h4>
-
-<p>Haskell&#8217;s syntax is another of its strengths: it is very compact, and the type system abstracts away many details. So it&#8217;s no surprise that many people (or maybe just me) have a problem with it.</p>
-
-<p>I learned OCaml at university (those were good days). My first few assignments, I had to implement my own list like data type, because I could not figure out how to use the default list in pattern matching. The language was so weird that it did not even occurred to me that a language whose standard list type was unusable would not leave the lab it grew in. Then eventually the syntax settled in my brain, and I started to wonder why it had been so hard before.</p>
-
-<p>Haskell is similar (they are both somewhat descendant of ML), but far more abstract (OCaml does not support either type classes or user operators). So just looking at an expression, it is not easy to assign it a type (there might be many) or a single meaning (there might be many as well).</p>
-
-<p>Another thing that I find hard to keep under control is the creation of anonymous functions. Between higher order functions that produce functions, and the do notation (which produces functions as well), it is hard to track what is going on, even it apparently simple expressions.</p>
-
-<p>This is not to say that Haskell&#8217;s syntax does not &#8220;work&#8221;. It does, clearly, but the expressivity it grants is difficult to master.</p>
-
-<h4>The compiler</h4>
-
-<p>The compiler is another peace of the puzzle. All compilers are fantastically complex beasts; the underlying theories are just as fascinating as they are overwhelming. But in general, at least with regular imperative (or perhaps just with strict languages), my intuitions about what is costly, what is a possible leak, &#8230; just based on the code, are usually correct. With Haskell, there are many areas where I&#8217;m not sure what the compiler will do. Functional languages enthusiasts used to say that any inefficiency in their favourite language was just waiting for a sufficiently advanced compiler, but now I have a feeling that understanding what the compiler is doing is just as hard as figuring out program wide memory allocation in C&#8230;</p>
-
-<p>And it matters. Strictness analysis, for instance, is used by GHC (and, I suppose, other Haskell compilers) to figure out which expressions could be strict (i.e. not lazy) without changing the overall semantic. This changes the time and space cost of some expressions, and makes performance difficult to predict.</p>
-
-<h4>The meta-language</h4>
-
-<p>Haskell is its own meta-language. What is a core feature in most languages is just a library in Haskell. This means that there is little uniformity even in fundamental part of the languages. There are <a href="http://www.randomhacks.net/articles/2007/03/10/haskell-8-ways-to-report-errors">8 ways to report errors</a> (perhaps more today). And at least that many monad transformer libraries.</p>
-
-<p>Having to combine these various libraries (and more importantly, the libraries that use them) is difficult, and adds accidental complexity. What makes it more frustrating is that Haskell type system is otherwise very effective at making it easy to create code parts that can be combined in various ways (while checking that the combination always make some sense).</p>
-
-<p>It would be good to standardise some of these, and maybe the <a href="http://hackage.haskell.org/platform/">Haskell Platform</a> will achieve this, although it would be nice if it was keeping up with at least GHC (at the time of writing, version 7.0.3 is in the Platform, but 7.2.2 is already out, with important changes).</p>
-
-<h4>and so on&#8230;</h4>
-
-<p>I would like to like Haskell. But if any language can be accused of being too academic, it is Haskell. Sometimes it feels like the main purpose of the language is to make it possible to prove, through the type system, that a specific, inefficient sort algorithm is indeed a sort algorithm.</p>
-
-<p>I&#8217;m really curious about organisations that use Haskell for commercial purposes. What kind of features do they use the most? Is laziness really a good thing, or it is flushed away from the code and replaced by explicit on demand evaluation? Given a chance, I&#8217;d like to work in such an organisation, as I feel Haskell requires a different approach to large scale problem solving than the one I&#8217;m used to.</p>
-
-<h3>Other topics</h3>
-
-<p>From the same publisher (<a href="http://pragprog.com/">The Pragmatic Bookshelf</a>) as this book,
-<a href="http://pragprog.com/book/rwdata/seven-databases-in-seven-weeks">Seven Databases in Seven Weeks</a> is looking very interesting. I&#8217;m also professionally bound to SQL, so I haven&#8217;t really been paying attention to the whole NoSQL movement. Yet there are definitively interesting things going on, and the variety of alternative database models makes such a book a welcome introduction.</p>
-
-<p>As I&#8217;ve been doing way too much sequential processing in the past, I am looking to expand my horizon and learn about large scale concurrency (Erlang, Scala, &#8230; help here), and asynchronous, event based processing. <a href="http://www.manning.com/etzion/">Event Processing in Action</a> appears to be a decent way to get started.</p>
-
-<p>Finally, and while it is completely unrelated to whatever this book was about, I haven&#8217;t studied algorithms since I left university. I really feel I should get back to that topic, and <a href="http://www.algorist.com/">The Algorithm Design Manual</a> is just what I need.</p>
 ]]></content>
   </entry>
   

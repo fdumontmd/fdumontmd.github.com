@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-07T14:40:22+09:00</updated>
+  <updated>2012-01-08T13:00:23+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,237 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Warmups]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/"/>
+    <updated>2012-01-07T19:09:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups</id>
+    <content type="html"><![CDATA[<p>It took me far longer than it should have, and I had a mitigated
+success; I guess my excuse is that my brain was still cold...</p>
+
+<p>At least I can claim I did try to solve all the exercises; I really
+spent hours on this.</p>
+
+<!--more-->
+
+
+<h2>Warmups</h2>
+
+<h3>Horse colour</h3>
+
+<p>I kind of botched this one, as I tried to answer it even before
+reading the chapter... and my first instinct was that such a use of
+induction (taking numbered subsets) was invalid.</p>
+
+<p>Of course it is not. This is a perfectly valid approach, but, as the
+book states, in the present case it breaks down for $n=2$.</p>
+
+<p>Properly expressed with math notation, it becomes clear that the
+``same colour'' concept is a binary relation (a reflexive, symmetric
+and transitive one). The key is <em>binary</em>: if every pair of horses were
+the same colour, then induction could be used.</p>
+
+<h3>Tower of Hanoi Variation</h3>
+
+<p>The description in the book is somewhat confusing, as it states the
+restriction in terms of absolute positions (that is, no direct move
+between left peg and right peg), rather than relative (if you want to
+move a disc between peg $A$ and peg $B$, you must first move it to peg $C$,
+then to peg $B$).</p>
+
+<p>The first approach does not work (that is, it is impossible to solve
+the problem under these conditions), but obviously the authors meant
+the second approach.</p>
+
+<h4>Number of moves</h4>
+
+<p>This variation can be solved using the exact same tools as the
+original problem.</p>
+
+<p>Assuming we want to move a stack from $A$ to $B$, using $C$ as
+transfer peg: a single disc can be moved in $2$ steps ($A$ to $C$, $C$
+to $B$); to move more than $1$, you first need to move the $n-1$ from
+$A$ to $B$, then move $1$ disk from $A$ to $C$, move the $n-1$ discs
+from $B$ back to $A$, move the one disc from $C$ to $B$, and finally
+move the $n-1$ discs from $A$ to $B$.</p>
+
+<p>More concisely:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+T(1) &amp;= 2&amp;&amp;\text{base case}\\\\
+T(n) &amp;= T(n-1) + 1 + T(n-1) + 1 + T(n-1)\\\\
+&amp; = 3T(n-1) + 2&amp;&amp;\text{recurrence equation}
+\end{align}
+$$
+</div>
+
+
+<p>Using the exact same method as in the book, let's define
+$T(n) + 1= U(n)$:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+U(1) &amp;= T(1) + 1\\\\
+&amp; = 3\\\\
+U(n) &amp;= T(n) + 1\\\\
+&amp; = 3(U(n-1) -1) + 3\\\\
+&amp; = 3U(n-1) - 3 + 3\\\\
+&amp; = 3U(n-1)
+\end{align}
+$$
+</div>
+
+
+<p>Then, $U(n) = 3^n$, and $T(n) = 3^n-1$.</p>
+
+<h4>Arrangements</h4>
+
+<p>As discs must be sorted, to describe an arrangement it is enough to
+list the peg for each disc. As there are $3$ pegs, this means
+there are $3^n$ different arrangements.</p>
+
+<p>The variation takes $3^n-1$ moves, but counting the starting position
+as well, this means $3^n$ different positions, which is the same as
+the total number of arrangements.</p>
+
+<h3>Tower of Hanoi, Initial Setup Variation</h3>
+
+<p>Once again, by induction: to move a disk to peg $B$:</p>
+
+<p><em>Base case</em>: moving the smallest disc takes at most $1$ move ($0$ if
+it is already on peg $B$), so $T(1) \le 1$;
+<em>Recurrence</em>: to move the disc of size $n$, assuming it is on $A$, we
+need to move all the smaller discs to $C$ (to clear both $A$ and $B$),
+then move the disc of size $n$, and finally move all the smaller discs
+to $B$. Calling the clearing operation $Cl(n)$, we have
+$T(n) \le Cl(n-1) + 1 + T(n-1)$.</p>
+
+<p>A moment of thought is enough to realise that $Cl(n)$ amounts to the
+same operation as $T(n)$ (that is, move each disc to a specific peg,
+no matter where it currently is), so we have $Cl(n) = T(n)$, and
+therefore $T(n) \le 2T(n-1) + 1$, which is the same recurrence equation
+as the original problem.</p>
+
+<p>Therefore there is no position that is more that $2^n-1$ moves from
+the target position.</p>
+
+<h3>Venn Diagram with 4 circles</h3>
+
+<p>I completely failed to solve this one, even though I spent most of the
+time on this problem alone. I had the intuition that it could not be
+done; I also found that the maximum number of regions would be 14, but
+not matter what I tried, I could not prove it.</p>
+
+<p>I tried to use Geometry, hoping that a minimal list of constraints on
+the circles would prove that some of the regions that should be
+restricted to two circles were in fact always covered by three or
+more.</p>
+
+<p>Eventually, when I gave up and looked at the solution, I still could not
+understand it. So a circle can only intersect another one in at most 2
+points. OK, so what?</p>
+
+<p>After more research (the Google kind, this time), I found
+<a href="http://www.brynmawr.edu/math/people/anmyers/PAPERS/Venn.pdf">this paper</a>
+which explains why. Each intersection point creates a single new
+region. Although once again I have no intuition I can trust in this
+domain, in this case the reasoning seems similar enough to
+intersecting lines that I feel somewhat confident.</p>
+
+<p>So the above observation gives a recurrence equation:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+C(1) &amp;= 2\\\\
+C(n) &amp;= C(n-1) + 2(n-1)
+\end{align}
+$$
+</div>
+
+
+<p>Already, we have that $C(4) = 14$, which is less than the required
+$16$ for a Venn diagram (and according to this
+<a href="http://www.combinatorics.org/Surveys/ds5/VennEJC.html">document</a>),
+four circles form a <em>Euler diagram</em>, not a Venn diagram.</p>
+
+<p>Clearly a triangular number sequence is hiding in there. The
+recurrence equations above can be rewritten as</p>
+
+<div markdown="0">
+$$
+\begin{align}
+C(n) &amp;= 2+\sum_{i=1}^{n}2(i-1)\\\\
+&amp;= 2+2\sum_{i=0}^{n-1}i\\\\
+&amp;= 2+2\frac{n(n-1)}{2}\\\\
+&amp;= n^2-n+2
+\end{align}
+$$
+</div>
+
+
+<h3>Bounded Regions in the Plane</h3>
+
+<p>Another one where my intuition for Geometry completely failed me. I
+had a correct start, identifying that each new line intersecting the
+existing ones at $k$ points could at best create $k-1$ new bounded
+regions, but when I try to check this I fumbled.</p>
+
+<p>Yet the reason it simple: a line intersecting 2 others will either
+define a bounded triangle, or cut an existing bounded region in two.</p>
+
+<p>The new bounded regions are not made of arbitrary triple of lines, but
+are next to each others in the plane; really this is similar to the
+fence problem. So a line cutting $k$ other lines will create at best
+$k-1$ new bounded region. The equality is achieved if there are no
+parallel lines, and all the intersection points are distinct.</p>
+
+<p>As the book observes, each new line will also add two new unbounded
+regions (the original problem had that a new line would create
+$k+1$ new regions).</p>
+
+<p>Once again, the triangular number sequence is not far:</p>
+
+<div markdown="0">
+$$
+\begin{align}
+B(i) &amp; = 0 &amp;&amp\text{for $1 \\le i \\lt 3$}\\\\
+B(3) &amp; = 1\\\\
+B(n) &amp; = B(n-1) + n - 2\\\\
+&amp; = \sum_{i=2}^{n} i-2\\\\
+&amp; = \sum_{i=0}^{n-2} i\\\\
+&amp; = \frac{(n-1)(n-2)}{2}\\\\
+&amp; = S_{n-2}
+\end{align}
+$$
+</div>
+
+
+<h3>Invalid Recurrence</h3>
+
+<p>The recurrence for $H$ has a number of problems. The one I found is
+that it only establishes the induction hypothesis for going from an
+even number to an odd one; nothing can be said for going from an odd
+number to an even one (and indeed, the hypothesis breaks then).</p>
+
+<p>As the book mentions, another problem is the base case, which is
+incompatible with the induction hypothesis.</p>
+
+<h3>Wrapping up</h3>
+
+<p>I spent way too much time on these exercises, but most of it was on
+exercises with a geometric nature: I could not find an algebraic
+description of these problems that would be suitable for the kind of
+treatment this chapter is about. But once I had the equations, I was
+able to solve the problems without trouble.</p>
+
+<p>Next, the homework exercises.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Notes]]></title>
@@ -1705,114 +1936,6 @@ ecosystem is still evolving, but this means that most of the
 documentation I came upon was already obsolete. The navigation on the
 data was at time very hard to figure out, and the error messages
 (really, the underlying Java exception) not helpful.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks Neo4j Day 1]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/"/>
-    <updated>2011-12-28T17:05:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1</id>
-    <content type="html"><![CDATA[<p>As the book is still in beta and incomplete, I skip CouchDB (the
-chapter is not there yet in beta 2.0), and will spend this week with
-<a href="http://neo4j.org/">Neo4j</a>.</p>
-
-<p>Neo4j is a graph database, meaning it focuses on navigation between
-vertices (called nodes in Neo4j), through edges (called
-relationships). While other databases made it possible to join various
-pieces of data, Neo4j treats this as the main semantic mechanism</p>
-
-<!--more-->
-
-
-<p>Neo4j can be distributed for high-availability, and is partition
-tolerant, but sharding is not supported (at the time of writing).</p>
-
-<p>The first day focuses on basic creation and navigation of data. <a href="http://docs.neo4j.org/chunked/stable/graphdb-neo4j-nodes.html">Nodes</a>
-and
-<a href="http://docs.neo4j.org/chunked/stable/graphdb-neo4j-relationships.html">relationships</a>
-are the basic entities; by default nodes have just an id, while
-relationships are identified by the out and in nodes, and a type.</p>
-
-<p>To spice this up a bit, it is possible to attach
-<a href="http://docs.neo4j.org/chunked/stable/graphdb-neo4j-properties.html">properties</a>
-to both nodes and relationships. Values can be scalar or arrays of
-basic types (boolean, number, or string).</p>
-
-<p>To navigate the data, the easiest seems to be the use of
-<a href="https://github.com/tinkerpop/gremlin/wiki">Gremlin</a>, a language and
-database independent graph traversal language (the language has to be
-a JVM one).</p>
-
-<h2>Exercises</h2>
-
-<h3>Neo4j Wiki</h3>
-
-<p>The Wiki is <a href="http://wiki.neo4j.org/content/Main_Page">here</a>.</p>
-
-<h3>Gremlin Documentation</h3>
-
-<p>There is a <a href="https://github.com/tinkerpop/gremlin/wiki">wiki</a>.</p>
-
-<h3>List of Gremlin Steps</h3>
-
-<p>They are listed on the
-<a href="https://github.com/tinkerpop/gremlin/wiki/Gremlin-Steps">wiki</a>.</p>
-
-<h3>Neo4j Shells</h3>
-
-<p>It is hard not to find them, as they're already in the Web Admin
-Console. Both
-<a href="http://docs.neo4j.org/chunked/snapshot/cypher-query-lang.html">Cipher</a>
-and the
-<a href="http://docs.neo4j.org/chunked/snapshot/rest-api.html">ReST API</a> can
-be used directly from the console, although the ReST API is limited
-there (for instance the <code>traverse</code> operation is not supported). Full
-access requires an external client such as <code>curl</code>.</p>
-
-<h3>Find all node names with another shell</h3>
-
-<p>In Cipher, there is no direct way to use all nodes as a starting
-point, so instead I try to find all nodes linked to the first one
-through a path that can be empty (i.e. the starting node is also
-included). To remove duplicates, I use the
-<a href="http://docs.neo4j.org/chunked/snapshot/query-aggregation.html#aggregation-distinct"><code>DISTINCT</code></a>
-function, but it must be applied in the context of an aggregation, so
-I have to apply
-<a href="http://docs.neo4j.org/chunked/snapshot/query-aggregation.html#aggregation-collect"><code>COLLECT</code></a>
-as well:</p>
-
-<p><code>
-START n=node(0)
-MATCH n-[*0..]-x
-RETURN COLLECT(DISTINCT x.name)
-</code></p>
-
-<p>which produces</p>
-
-<p><code>
-==&gt; +----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-==&gt; | collect(distinct x.name)                                                                                                                                             |
-==&gt; +----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-==&gt; | List(Prancing Wolf Ice Wine 2007, riesling, Prancing Wolf Spatleses 2007, Prancing Wolf Winery, Prancing Wolf Kabinett 2002, Tom, Wine Expert Monthly, Patty, Alice) |
-==&gt;
-+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-</code></p>
-
-<p>Not exactly as easy as the Gremlin equivalent <code>g.V.name</code>.</p>
-
-<p>There is no way to achieve anything similar using the
-ReST API, as
-its traversal operation only returns full objects (either nodes,
-relationships or paths), and not properties.</p>
-
-<h3>Delete all the nodes and edges in your database</h3>
-
-<p>Well, the book already showed the powerful <code>g.clear</code> Gremlin
-command. It should be followed by <code>g.addVertex()</code> to get back to the
-original state (with just one node).</p>
-
-<p>And that's all for today.</p>
 ]]></content>
   </entry>
   

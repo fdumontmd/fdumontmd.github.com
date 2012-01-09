@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Concrete Mathematics Chapter 1 Homework Exercises Part 1 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="I am working my way through the homework exercises, and so far I have
+had more success than with the warmups. Here&#8217;s what I have solved so far &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>  
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Concrete Mathematics Chapter 1 Homework Exercises Part 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-09T20:23:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I am working my way through the homework exercises, and so far I have
+had more success than with the warmups. Here&#8217;s what I have solved so far.</p>
+
+<!--more-->
+
+
+<h2>Homework Exercises</h2>
+
+<h3>Basic recurrence</h3>
+
+<p>This one was fairly simple, so simple that I wasted one hour trying to
+improve the solution.</p>
+
+<p>Just computing the first few terms of the sequence:</p>
+
+<div markdown="0">
+\begin{align}
+Q_0 &amp; = \alpha &#92;&#92;
+Q_1 &amp; = \beta &#92;&#92;
+Q_2 &amp; = \frac{1+\beta}{\alpha}&#92;&#92;
+Q_3 &amp; = \frac{1+\alpha+\beta}{\alpha\beta}&#92;&#92;
+Q_4 &amp; = \frac{\alpha\left( 1 + \alpha + \alpha\beta + \beta\right)}{\alpha\beta(1+\beta)}&#92;&#92;
+&amp; = \frac{(1+\alpha)(1+\beta)}{\beta(1+\beta)}&#92;&#92;
+&amp; = \frac{1+\alpha}{\beta}&#92;&#92;
+Q_5 &amp; = \frac{\alpha\beta\left(1+\alpha+\beta \right)}{\beta \left( 1+\alpha+\beta \right)}&#92;&#92;
+&amp; = \alpha&#92;&#92;
+Q_6 &amp; = \frac{\beta\left( 1+\alpha \right)}{1+\alpha}&#92;&#92;
+&amp; = \beta
+\end{align}
+</div>
+
+
+<p>So the sequence is cyclic. I tried to find a closed formula, but the
+book does not go that far, and it is unlikely to be possible.</p>
+
+<h3>Product of averages</h3>
+
+<h4>$P(n)$ implies $P(n-1)$</h4>
+
+<p>First of all, I checked that nothing fishy was going on with the
+selection of a particular $x_n$, but if $P(n)$ is true, then it is
+true for every $x_1\cdots x_n$ set, and in particular for one with a
+specific $x_n$.</p>
+
+<p>So nothing fishy is going on.</p>
+
+<p>Assuming the given value for $x_n$, we have</p>
+
+<div markdown="0">
+\begin{align}
+\left( \frac{x_1 + \cdots + x_n}{n} \right)^n &amp; = \left( \frac{x_1 + \cdots + x_{n-1} + \frac{x_1+\cdots+x_{n-1}}{n-1}}{n}\right)^n&#92;&#92;
+&amp; = \left( \frac{(n-1)x_1 + \cdots + (n-1)x_{n-1}+x_1+\cdots + x_{n-1}}{n(n-1)}\right)^n&#92;&#92;
+&amp; = \left( \frac{n(x_1+\cdots+x_{n-1})}{n(n-1)}\right)^n&#92;&#92;
+&amp; = \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^n&#92;&#92;
+&amp; = x_n^n
+\end{align}
+</div>
+
+
+<p>So, assuming $P(n)$, we have</p>
+
+<div markdown="0">
+\begin{align}
+x_1\cdots x_{n-1}x_n &amp;\le x_n^n&#92;&#92;
+x_1\cdots x_{n-1} &amp;\le x_n^{n-1}&#92;&#92;
+x_1\cdots x_{n-1} &amp;\le \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^{n-1}&amp;&amp;\text{i.e. $P(n-1)$}
+\end{align}
+</div>
+
+
+<h4>$P(n)$ and $P(2)$ implies $P(2n)$</h4>
+
+<div markdown="0">
+\begin{align}
+x_1\cdots x_{2n} &amp; = x_1\cdots x_{n}x_{n+1}\cdots x_{2n}&amp;&amp;\text{associativity}&#92;&#92;
+&amp; \le \left(\frac{x_1+\cdots+x_n}{n}\right)^n \left(\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n&amp;&amp;\text{applying $P(n)$ twice}&#92;&#92;
+&amp; = \left( \frac{x_1+\cdots+x_n}{n}\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n&#92;&#92;
+&amp; \le \left( \left(\frac{\frac{x_1+\cdots+x_n}{n} + \frac{x_{n+1}+\cdots+x_{2n}}{n}}{2} \right)^2\right)^n&amp;&amp;\text{applying $P(2)$}&#92;&#92;
+&amp; = \left( \frac{x_1+\cdots+x_n+x_{n+1}+\cdots+x_{2n}}{2n}\right)^{2n}&amp;&amp;\text{i.e. $P(2n)$}&#92;&#92;
+\end{align}
+</div>
+
+
+<h4>$P(n) \forall n \ge 1$</h4>
+
+<p>The case for $P(1)$ is trivial, and $P(2)$ is already proven. We have
+$P(n)$ implies $P(n-1)$ and $P(n)$ implies $P(2n)$.</p>
+
+<p>One first approach is to use the basic induction step: we have $P(1)$,
+$P(2)$, and we need $P(n) \implies P(n+1)$.</p>
+
+<p>But $P(n) \implies P(2n) \implies P(2n-1) \implies \cdots \implies
+P(2n-(n-1))$. The last one is $P(n1+)$, so the induction step holds.</p>
+
+<p>Alternatively, we can show that to prove $P$ for a given $n$, we need
+to prove $P$ for a smaller value. As naturals have a minimum, we must
+eventually rely on $P(2)$, which would prove the whole chain.</p>
+
+<p>To see this, for $n \ge 3$, if $n = 2m$, we need to prove $P(m)$; if
+$n = 2m+1$, we need to prove $P(2m+2)$, which is implied by $P(m+1)$.</p>
+
+<p>So, $\forall n \ge 3, \exists m \lt n \mid P(m) \implies P(n)$. That
+with the base cases is enough to establish $P(n) \forall n$.</p>
+
+<h3>Clockwise Tower of Hanoi</h3>
+
+<p>First, both $Q_0$ and $R_0$ are trivial.</p>
+
+<p>Then, to move $n$ discs from $A$ to $B$, you need to move $n-1$ discs
+from $A$ to $C$ (counter-clockwise), then move one disc from $A$ to
+$B$, then move the $n-1$ discs from $C$ to $B$ (again,
+counter-clockwise).</p>
+
+<p>This means $Q_n = R_{n-1} + 1 + R_{n-1} = 2R_{n-1} + 1$.</p>
+
+<p>The case for $R_n$ is a bit more complex. My first (flawed) attempt
+was to observe that to move $n$ discs from $B$ to $A$, you could move
+them from $B$ to $C$, then $C$ to $A$. In other words,</p>
+
+<div markdown="0">
+\begin{align}
+R_n &amp; \ge 2Q_n&#92;&#92;
+&amp; = Q_n + 2R_{n-1} + 1&amp;&amp;\text{Replacing one \(Q_n\) by \(2R_{n-1}+1\)}&#92;&#92;
+&amp; = Q_n + 4Q_{n-1} + 1&amp;&amp;\text{Replacing \(R_{n-1}\) by \(2Q_{n-1}\)}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>But the $4Q_{n-1}$ means moving the stack of $n-1$ discs $4$ times,
+which is the same as moving it just one time (as $3$ times bring it
+back to its original position).</p>
+
+<p>So we&#8217;re left with just $Q_n + Q_{n-1} + 1$. But as I said, this
+reasoning is flawed, as it mixes the count of moves with the effect of
+moves (where $3$ moves are the same as $0$ move).</p>
+
+<p>While it is possible to repair this reasoning by introducing special
+operators that take two parameters (the number of discs, and the
+number of steps), it is simpler to try and express $R_n$ strictly in
+terms $n-1$ stacks and $1$ disc moves.</p>
+
+<p>So, to move $n$ discs from $B$ to $A$, you need to move $n-1$ discs
+from $B$ to $A$ (counter-clockwise), then one disc from $B$ to $C$
+(clockwise), then the $n-1$ discs from $A$ to $B$ (clockwise), then
+one disc from $C$ to $A$ (clockwise), then finally the $n-1$ discs
+from $B$ to $A$ (counter-clockwise).</p>
+
+<p>Or,</p>
+
+<div markdown="0">
+\begin{align}
+R_n &amp;= R_{n-1} + 1 + Q_{n-1} + 1 + R_{n-1}&#92;&#92;
+&amp; = 2R_{n-} + 1 + Q_{n-1} + 1&#92;&#92;
+&amp; = Q_n + Q_{n-1} + 1&amp;&amp;\text{definition of \(Q_n\)}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>As the recurrence is expressed (initially) only in terms of necessary
+moves of strictly smaller stacks, there is no risk of hiding moves
+that are equivalent to no moves (as in my first attempt), so the
+equation is the minimum number of moves.</p>
+
+<h3>Double Tower of Hanoi</h3>
+
+<h4>Basic Problem</h4>
+
+<p>First, notice we should keep each pair together, because otherwise
+they would block larger discs from moving. So each pair of move should
+be used to relocate a pair of identical discs to another peg. So we
+should expect to need twice as many moves as the original tower.</p>
+
+<p>More precisely, with $A(n)$ the number of moves required to solve a
+$2n$ Double Tower of Hanoi, we have:</p>
+
+<div markdown="0">
+\begin{align}
+(1) &amp; = 2&#92;&#92;
+A(n) &amp; = A(n-1) + 2 + A(n-1)&#92;&#92;
+&amp; = 2A(n-1) + 2&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Using $A(n) + 2= U(n)$, we get</p>
+
+<div markdown="0">
+\begin{align}
+U(1) &amp; = 4&#92;&#92;
+U(n) &amp; = 2U(n-1)&#92;&#92;
+&amp; 2^{n+1}&#92;&#92;
+A(n) &amp; = 2^{n+1} -2&#92;&#92;
+     &amp; = 2(T_n)&#92;&#92;
+\end{align}
+</div>
+
+
+<h4>Order Preserving</h4>
+
+<p>If we consider all the $2n$ discs as different, then in $T_{2n}=2^{2n}-1$
+moves, we can recreate the same order as the original.</p>
+
+<p>Of course, we can do better. It is enough to move each pair an even
+number of times: the first time will switch their order; the second
+one will restore it, &#8230;</p>
+
+<p>This is similar to the warmup problem where we cannot move any disc
+directly between any two pegs, so using the same constraint to move
+any pair would get us to the target order in less than $2\cdot 3^n-1$.</p>
+
+<p>But there is still a better way.</p>
+
+<p>A $2$ discs problem needs exactly $3$ moves.  And the $4$ discs
+problem will require just $11$ moves, rather than the $18$ that the
+above formula predicts.</p>
+
+<p>A wild guess: the number of moves is $4(2^n-1)-1$.</p>
+
+<p>In trying to solve (or even write) the recurrence equation, it is
+important to keep in mind that several ways to move the discs, each
+with its own count, will be used.</p>
+
+<p>We know we need two pairs of moves to relocate the two bottom discs
+while keeping the order (assuming there are other discs). In doing so,
+we will move the next two discs an even number of times, requiring
+another 2 times to keep their order. So as long as we make sure the
+last operation has the right (even) number of moves, we do not need to
+keep this constraint on the other operations.</p>
+
+<p>To recap: we need to move the last pair of discs $2$ times. So we first move
+the $n-1$ pairs to a peg, then move the last pair to the other peg,
+then the $n-1$ pairs to the first peg, then the last pair to the last
+peg. At this stage, the $n-1$ discs have move an even number of times,
+so their in the right order, even if we used the non order preserving
+solution that was computed above (requiring $2T_{n-1}$ moves).</p>
+
+<p>At this stage, a bit of notation should clarify:</p>
+
+<div markdown="0">
+\begin{align}
+B(1) &amp; = 3&#92;&#92;
+B(n) &amp; = A(n-1) + 2 + A(n-1) + 2 + B(n-1)&#92;&#92;
+&amp; = 2T_{n-1} + 2 + 2T_{n-1} + 2 + B(n-1)&#92;&#92;
+&amp; = 4T_{n-1}+4+B(n-1)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Trying to prove the guess above:</p>
+
+<div markdown="0">
+\begin{align}
+B(1) &amp; = 4(2^1-1) - 1&#92;&#92;
+&amp; = 3&#92;&#92;
+B(n) &amp; = 4(2^{n-1} -1) + 4 + B(n-1)&#92;&#92;
+&amp; = 4\cdot 2^{n-1} + 4(2^{n-1} - 1) -1&#92;&#92;
+&amp; = 4\cdot 2^n -4 -1&#92;&#92;
+&amp; = 4(2^n-1)-1
+\end{align}
+</div>
+
+
+<p>So the guess was right. It can also be rewritten as</p>
+
+<div markdown="0">
+\begin{align}
+4(2^n-1)-1 &amp = 4\cdot 2^n - 4 -1&#92;&#92;
+&amp; = 2^{n+2} - 5&#92;&#92;
+\end{align}
+</div>
+
+
+<p>which is the book solution.</p>
+
+<p>This being a bonus exercise, I currently experience an intense, although
+pointless, sense of pride and achievement.</p>
+
+<p>No doubt the other exercises will cut me down to size.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-09T20:23:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>, <a class='category' href='/blog/categories/mathematics/'>Mathematics</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/" title="Previous Post: Concrete Mathematics Chapter 1 Warmups">&laquo; Concrete Mathematics Chapter 1 Warmups</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Concrete Mathematics Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2012/01/06/concrete-mathematics/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Chapter 1 Notes</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/">Chapter 1 Warmups</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/">Chapter 1 Homework Exercises Part 1</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/">Concrete Mathematics Chapter 1 Homework Exercises Part 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/">Concrete Mathematics Chapter 1 Warmups</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Concrete Mathematics Chapter 1 Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/06/concrete-mathematics/">Concrete Mathematics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-08T16:16:34+09:00</updated>
+  <updated>2012-01-09T19:30:18+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,292 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/"/>
+    <updated>2012-01-09T20:23:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1</id>
+    <content type="html"><![CDATA[<p>I am working my way through the homework exercises, and so far I have
+had more success than with the warmups. Here's what I have solved so far.</p>
+
+<!--more-->
+
+
+<h2>Homework Exercises</h2>
+
+<h3>Basic recurrence</h3>
+
+<p>This one was fairly simple, so simple that I wasted one hour trying to
+improve the solution.</p>
+
+<p>Just computing the first few terms of the sequence:</p>
+
+<div markdown="0">
+\begin{align}
+Q_0 &amp; = \alpha \\\\
+Q_1 &amp; = \beta \\\\
+Q_2 &amp; = \frac{1+\beta}{\alpha}\\\\
+Q_3 &amp; = \frac{1+\alpha+\beta}{\alpha\beta}\\\\
+Q_4 &amp; = \frac{\alpha\left( 1 + \alpha + \alpha\beta + \beta\right)}{\alpha\beta(1+\beta)}\\\\
+&amp; = \frac{(1+\alpha)(1+\beta)}{\beta(1+\beta)}\\\\
+&amp; = \frac{1+\alpha}{\beta}\\\\
+Q_5 &amp; = \frac{\alpha\beta\left(1+\alpha+\beta \right)}{\beta \left( 1+\alpha+\beta \right)}\\\\
+&amp; = \alpha\\\\
+Q_6 &amp; = \frac{\beta\left( 1+\alpha \right)}{1+\alpha}\\\\
+&amp; = \beta
+\end{align}
+</div>
+
+
+<p>So the sequence is cyclic. I tried to find a closed formula, but the
+book does not go that far, and it is unlikely to be possible.</p>
+
+<h3>Product of averages</h3>
+
+<h4>$P(n)$ implies $P(n-1)$</h4>
+
+<p>First of all, I checked that nothing fishy was going on with the
+selection of a particular $x_n$, but if $P(n)$ is true, then it is
+true for every $x_1\cdots x_n$ set, and in particular for one with a
+specific $x_n$.</p>
+
+<p>So nothing fishy is going on.</p>
+
+<p>Assuming the given value for $x_n$, we have</p>
+
+<div markdown="0">
+\begin{align}
+\left( \frac{x_1 + \cdots + x_n}{n} \right)^n &amp; = \left( \frac{x_1 + \cdots + x_{n-1} + \frac{x_1+\cdots+x_{n-1}}{n-1}}{n}\right)^n\\\\
+&amp; = \left( \frac{(n-1)x_1 + \cdots + (n-1)x_{n-1}+x_1+\cdots + x_{n-1}}{n(n-1)}\right)^n\\\\
+&amp; = \left( \frac{n(x_1+\cdots+x_{n-1})}{n(n-1)}\right)^n\\\\
+&amp; = \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^n\\\\
+&amp; = x_n^n
+\end{align}
+</div>
+
+
+<p>So, assuming $P(n)$, we have</p>
+
+<div markdown="0">
+\begin{align}
+x_1\cdots x_{n-1}x_n &amp;\le x_n^n\\\\
+x_1\cdots x_{n-1} &amp;\le x_n^{n-1}\\\\
+x_1\cdots x_{n-1} &amp;\le \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^{n-1}&amp;&amp;\text{i.e. $P(n-1)$}
+\end{align}
+</div>
+
+
+<h4>$P(n)$ and $P(2)$ implies $P(2n)$</h4>
+
+<div markdown="0">
+\begin{align}
+x_1\cdots x_{2n} &amp; = x_1\cdots x_{n}x_{n+1}\cdots x_{2n}&amp;&amp;\text{associativity}\\\\
+&amp; \le \left(\frac{x_1+\cdots+x_n}{n}\right)^n \left(\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n&amp;&amp;\text{applying $P(n)$ twice}\\\\
+&amp; = \left( \frac{x_1+\cdots+x_n}{n}\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n\\\\
+&amp; \le \left( \left(\frac{\frac{x_1+\cdots+x_n}{n} + \frac{x_{n+1}+\cdots+x_{2n}}{n}}{2} \right)^2\right)^n&amp;&amp;\text{applying $P(2)$}\\\\
+&amp; = \left( \frac{x_1+\cdots+x_n+x_{n+1}+\cdots+x_{2n}}{2n}\right)^{2n}&amp;&amp;\text{i.e. $P(2n)$}\\\\
+\end{align}
+</div>
+
+
+<h4>$P(n) \forall n \ge 1$</h4>
+
+<p>The case for $P(1)$ is trivial, and $P(2)$ is already proven. We have
+$P(n)$ implies $P(n-1)$ and $P(n)$ implies $P(2n)$.</p>
+
+<p>One first approach is to use the basic induction step: we have $P(1)$,
+$P(2)$, and we need $P(n) \implies P(n+1)$.</p>
+
+<p>But $P(n) \implies P(2n) \implies P(2n-1) \implies \cdots \implies
+P(2n-(n-1))$. The last one is $P(n1+)$, so the induction step holds.</p>
+
+<p>Alternatively, we can show that to prove $P$ for a given $n$, we need
+to prove $P$ for a smaller value. As naturals have a minimum, we must
+eventually rely on $P(2)$, which would prove the whole chain.</p>
+
+<p>To see this, for $n \ge 3$, if $n = 2m$, we need to prove $P(m)$; if
+$n = 2m+1$, we need to prove $P(2m+2)$, which is implied by $P(m+1)$.</p>
+
+<p>So, $\forall n \ge 3, \exists m \lt n \mid P(m) \implies P(n)$. That
+with the base cases is enough to establish $P(n) \forall n$.</p>
+
+<h3>Clockwise Tower of Hanoi</h3>
+
+<p>First, both $Q_0$ and $R_0$ are trivial.</p>
+
+<p>Then, to move $n$ discs from $A$ to $B$, you need to move $n-1$ discs
+from $A$ to $C$ (counter-clockwise), then move one disc from $A$ to
+$B$, then move the $n-1$ discs from $C$ to $B$ (again,
+counter-clockwise).</p>
+
+<p>This means $Q_n = R_{n-1} + 1 + R_{n-1} = 2R_{n-1} + 1$.</p>
+
+<p>The case for $R_n$ is a bit more complex. My first (flawed) attempt
+was to observe that to move $n$ discs from $B$ to $A$, you could move
+them from $B$ to $C$, then $C$ to $A$. In other words,</p>
+
+<div markdown="0">
+\begin{align}
+R_n &amp; \ge 2Q_n\\\\
+&amp; = Q_n + 2R_{n-1} + 1&amp;&amp;\text{Replacing one \(Q_n\) by \(2R_{n-1}+1\)}\\\\
+&amp; = Q_n + 4Q_{n-1} + 1&amp;&amp;\text{Replacing \(R_{n-1}\) by \(2Q_{n-1}\)}\\\\
+\end{align}
+</div>
+
+
+<p>But the $4Q_{n-1}$ means moving the stack of $n-1$ discs $4$ times,
+which is the same as moving it just one time (as $3$ times bring it
+back to its original position).</p>
+
+<p>So we're left with just $Q_n + Q_{n-1} + 1$. But as I said, this
+reasoning is flawed, as it mixes the count of moves with the effect of
+moves (where $3$ moves are the same as $0$ move).</p>
+
+<p>While it is possible to repair this reasoning by introducing special
+operators that take two parameters (the number of discs, and the
+number of steps), it is simpler to try and express $R_n$ strictly in
+terms $n-1$ stacks and $1$ disc moves.</p>
+
+<p>So, to move $n$ discs from $B$ to $A$, you need to move $n-1$ discs
+from $B$ to $A$ (counter-clockwise), then one disc from $B$ to $C$
+(clockwise), then the $n-1$ discs from $A$ to $B$ (clockwise), then
+one disc from $C$ to $A$ (clockwise), then finally the $n-1$ discs
+from $B$ to $A$ (counter-clockwise).</p>
+
+<p>Or,</p>
+
+<div markdown="0">
+\begin{align}
+R_n &amp;= R_{n-1} + 1 + Q_{n-1} + 1 + R_{n-1}\\\\
+&amp; = 2R_{n-} + 1 + Q_{n-1} + 1\\\\
+&amp; = Q_n + Q_{n-1} + 1&amp;&amp;\text{definition of \(Q_n\)}\\\\
+\end{align}
+</div>
+
+
+<p>As the recurrence is expressed (initially) only in terms of necessary
+moves of strictly smaller stacks, there is no risk of hiding moves
+that are equivalent to no moves (as in my first attempt), so the
+equation is the minimum number of moves.</p>
+
+<h3>Double Tower of Hanoi</h3>
+
+<h4>Basic Problem</h4>
+
+<p>First, notice we should keep each pair together, because otherwise
+they would block larger discs from moving. So each pair of move should
+be used to relocate a pair of identical discs to another peg. So we
+should expect to need twice as many moves as the original tower.</p>
+
+<p>More precisely, with $A(n)$ the number of moves required to solve a
+$2n$ Double Tower of Hanoi, we have:</p>
+
+<div markdown="0">
+\begin{align}
+(1) &amp; = 2\\\\
+A(n) &amp; = A(n-1) + 2 + A(n-1)\\\\
+&amp; = 2A(n-1) + 2\\\\
+\end{align}
+</div>
+
+
+<p>Using $A(n) + 2= U(n)$, we get</p>
+
+<div markdown="0">
+\begin{align}
+U(1) &amp; = 4\\\\
+U(n) &amp; = 2U(n-1)\\\\
+&amp; 2^{n+1}\\\\
+A(n) &amp; = 2^{n+1} -2\\\\
+     &amp; = 2(T_n)\\\\
+\end{align}
+</div>
+
+
+<h4>Order Preserving</h4>
+
+<p>If we consider all the $2n$ discs as different, then in $T_{2n}=2^{2n}-1$
+moves, we can recreate the same order as the original.</p>
+
+<p>Of course, we can do better. It is enough to move each pair an even
+number of times: the first time will switch their order; the second
+one will restore it, ...</p>
+
+<p>This is similar to the warmup problem where we cannot move any disc
+directly between any two pegs, so using the same constraint to move
+any pair would get us to the target order in less than $2\cdot 3^n-1$.</p>
+
+<p>But there is still a better way.</p>
+
+<p>A $2$ discs problem needs exactly $3$ moves.  And the $4$ discs
+problem will require just $11$ moves, rather than the $18$ that the
+above formula predicts.</p>
+
+<p>A wild guess: the number of moves is $4(2^n-1)-1$.</p>
+
+<p>In trying to solve (or even write) the recurrence equation, it is
+important to keep in mind that several ways to move the discs, each
+with its own count, will be used.</p>
+
+<p>We know we need two pairs of moves to relocate the two bottom discs
+while keeping the order (assuming there are other discs). In doing so,
+we will move the next two discs an even number of times, requiring
+another 2 times to keep their order. So as long as we make sure the
+last operation has the right (even) number of moves, we do not need to
+keep this constraint on the other operations.</p>
+
+<p>To recap: we need to move the last pair of discs $2$ times. So we first move
+the $n-1$ pairs to a peg, then move the last pair to the other peg,
+then the $n-1$ pairs to the first peg, then the last pair to the last
+peg. At this stage, the $n-1$ discs have move an even number of times,
+so their in the right order, even if we used the non order preserving
+solution that was computed above (requiring $2T_{n-1}$ moves).</p>
+
+<p>At this stage, a bit of notation should clarify:</p>
+
+<div markdown="0">
+\begin{align}
+B(1) &amp; = 3\\\\
+B(n) &amp; = A(n-1) + 2 + A(n-1) + 2 + B(n-1)\\\\
+&amp; = 2T_{n-1} + 2 + 2T_{n-1} + 2 + B(n-1)\\\\
+&amp; = 4T_{n-1}+4+B(n-1)\\\\
+\end{align}
+</div>
+
+
+<p>Trying to prove the guess above:</p>
+
+<div markdown="0">
+\begin{align}
+B(1) &amp; = 4(2^1-1) - 1\\\\
+&amp; = 3\\\\
+B(n) &amp; = 4(2^{n-1} -1) + 4 + B(n-1)\\\\
+&amp; = 4\cdot 2^{n-1} + 4(2^{n-1} - 1) -1\\\\
+&amp; = 4\cdot 2^n -4 -1\\\\
+&amp; = 4(2^n-1)-1
+\end{align}
+</div>
+
+
+<p>So the guess was right. It can also be rewritten as</p>
+
+<div markdown="0">
+\begin{align}
+4(2^n-1)-1 &amp = 4\cdot 2^n - 4 -1\\\\
+&amp; = 2^{n+2} - 5\\\\
+\end{align}
+</div>
+
+
+<p>which is the book solution.</p>
+
+<p>This being a bonus exercise, I currently experience an intense, although
+pointless, sense of pride and achievement.</p>
+
+<p>No doubt the other exercises will cut me down to size.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Warmups]]></title>
@@ -871,1071 +1157,6 @@ something more coherent and stable.</p>
 
 <p>It seems the Redis might be available soon, but CouchDB is not there
 yet. So I will probably switch to a different book for the time being.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks Neo4j Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/"/>
-    <updated>2011-12-29T09:17:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2</id>
-    <content type="html"><![CDATA[<p>Today we play further with Neo4j, exploring the ReST API, indexes, and
-algorithms in various languages.</p>
-
-<p>The ReST API is always available, although not the easiest thing to
-work with. Besides what the book covers, I also learned how to extend
-it, and how to bypass it for large loads.</p>
-
-<p>Indexing can be manual, as the book shows, or automatic (although
-the
-<a href="http://docs.neo4j.org/chunked/snapshot/auto-indexing.html">documentation</a>
-warns this is still an experimental feature).</p>
-
-<p>Finally, the algorithms are mostly provided by an external library,
-<a href="http://jung.sourceforge.net/">JUNG</a>, so its use require direct access
-to the data, bypassing the server.</p>
-
-<!--more-->
-
-
-<h3>Creating an index on relationship</h3>
-
-<p>As the index is of type <code>exact</code>, there is no need to create it first
-(although it is
-<a href="http://docs.neo4j.org/chunked/snapshot/rest-api-indexes.html#rest-api-create-node-index">possible</a>). Just
-inserting data in the index will do:</p>
-
-<p><code>
-curl -X POST http://localhost:7474/db/data/index/relationship/published \
--H "Content-Type: application/json" \
--d '{ "uri" : "http://localhost:7474/db/data/relationship/0", \
-"key" : "date", "value" : "1916-11-28" }'
-</code></p>
-
-<h3>About the ReST API</h3>
-
-<p>Clearly this is not how one would want to program. I copied the
-<a href="http://media.pragprog.com/titles/rwdata/code/neo4j/importer.rb"><code>importer.rb</code></a>
-code from the book (instead of just using a downloaded version), and
-ran it for hours before finding a bug in the data to create
-indexes... Running it again with this bug fixed made it much faster
-(as actors were reused instead of being duplicated).</p>
-
-<p>There is a higher level API, <a href="http://neo4j.rubyforge.org/">Neo4j.rb</a>,
-which runs on JRuby (so it does not use the ReST API). It should be
-noted that this is not really a driver, but a library to manage a
-Neo4j database directly in Ruby. Still, with it, it is possible to
-create the database that will be used by a server. There are other
-alternatives (the Gremlin console, for instance), but for Ruby it
-seems to be one of the most advanced, and is still being improved.</p>
-
-<p>There is also a ReST API wrapper called
-<a href="https://github.com/maxdemarzi/neography">neography</a>, but as I'm
-trying to save time I'll go with Neo4j.rb.</p>
-
-<p>To use this API you first need to clone the Git repository:</p>
-
-<p><code>
-git clone git://github.com/andreasronge/neo4j.git
-</code></p>
-
-<p>In the <code>neo4j</code> directory, build then install the gem (making sure
-the default Ruby is JRuby):</p>
-
-<p><code>
-$ gem build neo4j.gemspec
-  Successfully built RubyGem
-  Name: neo4j
-  Version: 1.3.1
-  File: neo4j-1.3.1-java.gem
-$ gem install neo4j-1.3.1-java.gem
-... (lot's of output elided)
-</code></p>
-
-<p>As I said above, it is possible to use it to feed data into a
-database, but it should not be used while the server is running. I
-used it to create the movie network, as it was significantly faster
-than the book Ruby script.</p>
-
-<p>To do so, I first rewrite the import script to use the <code>neo4j</code> gem. I
-am also using the
-<a href="http://neo4j.rubyforge.org/guides/batch_insert.html"><code>Neo4j::Batch::Inserter</code></a>
-for extra performance; the resulting code is less readable, but not
-significantly so. The script is mostly the same size as the original
-one, but much easier to understand (if you know the <code>neo4j</code> gem).</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (importer_driver.rb)</span> <a href='/downloads/code/7d7w/neo4j/importer_driver.rb'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
-</span><span class='line'>
-</span><span class='line'><span class="sx">%w{rubygems neo4j}</span><span class="o">.</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">r</span><span class="o">|</span> <span class="nb">require</span> <span class="n">r</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Movie</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Neo4j</span><span class="o">::</span><span class="no">NodeMixin</span>
-</span><span class='line'>  <span class="n">property</span> <span class="ss">:name</span>
-</span><span class='line'>  <span class="n">index</span> <span class="ss">:name</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Actor</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Neo4j</span><span class="o">::</span><span class="no">NodeMixin</span>
-</span><span class='line'>  <span class="n">property</span> <span class="ss">:name</span>
-</span><span class='line'>  <span class="n">index</span> <span class="ss">:name</span>
-</span><span class='line'>  <span class="n">has_n</span><span class="p">(</span><span class="ss">:acted_in</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="no">Movie</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">get_or_create_node</span><span class="p">(</span><span class="n">inserter</span><span class="p">,</span> <span class="nb">name</span><span class="p">,</span> <span class="n">clazz</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">n</span> <span class="o">=</span> <span class="n">inserter</span><span class="o">.</span><span class="n">index_get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nb">name</span><span class="p">,</span> <span class="ss">:exact</span><span class="p">,</span> <span class="n">clazz</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">first</span> <span class="k">if</span> <span class="n">n</span>
-</span><span class='line'>  <span class="k">unless</span> <span class="n">n</span>
-</span><span class='line'>    <span class="n">n</span> <span class="o">=</span> <span class="n">inserter</span><span class="o">.</span><span class="n">create_node</span><span class="p">({</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="nb">name</span><span class="p">},</span> <span class="n">clazz</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">inserter</span><span class="o">.</span><span class="n">index_flush</span><span class="p">(</span><span class="n">clazz</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>  <span class="n">n</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;begin processing...&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Neo4j</span><span class="o">::</span><span class="no">Config</span><span class="o">[</span><span class="ss">:storage_path</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;NEO4J_HOME&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">/data/graph.db&quot;</span>
-</span><span class='line'><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">inserter</span> <span class="o">=</span> <span class="no">Neo4j</span><span class="o">::</span><span class="no">Batch</span><span class="o">::</span><span class="no">Inserter</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">actor</span><span class="p">,</span> <span class="n">movie</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">next</span> <span class="k">if</span> <span class="n">actor</span><span class="o">.</span><span class="n">empty?</span> <span class="o">||</span> <span class="n">movie</span><span class="o">.</span><span class="n">empty?</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">actor_node</span> <span class="o">=</span> <span class="n">get_or_create_node</span><span class="p">(</span><span class="n">inserter</span><span class="p">,</span> <span class="n">actor</span><span class="p">,</span> <span class="no">Actor</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">movie_node</span> <span class="o">=</span> <span class="n">get_or_create_node</span><span class="p">(</span><span class="n">inserter</span><span class="p">,</span> <span class="n">movie</span><span class="p">,</span> <span class="no">Movie</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">inserter</span><span class="o">.</span><span class="n">create_rel</span><span class="p">(</span><span class="no">Actor</span><span class="o">.</span><span class="n">acted_in</span><span class="p">,</span> <span class="n">actor_node</span><span class="p">,</span> <span class="n">movie_node</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;  </span><span class="si">#{</span><span class="n">count</span><span class="si">}</span><span class="s2"> relationships loaded&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;done!&quot;</span>
-</span><span class='line'><span class="n">inserter</span><span class="o">.</span><span class="n">shutdown</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>I first shut down the Neo4j server. I defined a
-<code>NEO4J_HOME</code> environment variable as the root of the Neo4j instance,
-and cleared the content of <code>$NEO4J_HOME/data/graph.db</code> with</p>
-
-<p><code>
-rm -rf $NEO4J_HOME/data/graph.db/*
-</code></p>
-
-<p>While not strictly necessary, this step helps ensure that the database
-is always in a known (i.e. empty) state each time.</p>
-
-<p>Finally I ran the script with</p>
-
-<p><code>
-jruby importer_driver.rb performance.tsv
-</code></p>
-
-<p>The whole import took a little above 1 hour on my not really powerful
-macBook Air. The original script never finished, even after running a
-few hours.</p>
-
-<p>I also found that index creation is the main cost: my first attempt at
-loading data did not use indexes at all: the whole file was loaded in
-less than 3 minutes (but of course the resulting graph was
-unusable).</p>
-
-<p>The script is not complete; it should certainly handle exceptions and
-close the database properly. But for an initial load it does the job.</p>
-
-<p>After it finished, I just restarted the server.</p>
-
-<p>Note: I strongly suggest backing up the <code>data/graph.db</code> directory just
-after the initial load (and before starting the server). I had a crash
-while running the Kevin Bacon queries, and Neo4j unhelpfully lost the
-property data file, forcing me to import again...</p>
-
-<p>A data corruption during a read only operation does not inspire
-confidence...</p>
-
-<h3>Indexes</h3>
-
-<p>Once thing I had not properly understood, and which caused me some
-problems as I was trying to learn how to use the driver, is that
-all indexes use Lucene. They are either <code>exact</code> or <code>fulltext</code>, and can
-be queried as shown here:</p>
-
-<p>```
-$ curl http://localhost:7474/db/data/index/node/
-{
-  "movies" : {</p>
-
-<pre><code>"template" : "http://localhost:7474/db/data/index/node/movies/{key}/{value}",
-"provider" : "lucene",
-"type" : "exact"
-</code></pre>
-
-<p>  },
-  "actors" : {</p>
-
-<pre><code>"template" : "http://localhost:7474/db/data/index/node/actors/{key}/{value}",
-"provider" : "lucene",
-"type" : "exact"
-</code></pre>
-
-<p>  }
-}
-```</p>
-
-<p>So the fact that the driver only supports Lucene indexes is not a
-limitation. There is nothing else (although presumably there could be).</p>
-
-<h3>Extending Neo4j</h3>
-
-<p>As I found on this
-<a href="http://blog.neo4j.org/2010/12/neo4j-12-m06-is-out-better-rest.html">post</a>,
-it is fairly easy to extend the ReST API with arbitrary
-code. Deploying the code is a simple as copying the jar at the right
-location.</p>
-
-<p>The
-<a href="http://docs.neo4j.org/chunked/snapshot/server-plugins.html">official documentation</a>
-is mostly an updated version of the post above.</p>
-
-<p>I claimed
-<a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">yesterday</a>
-that it was impossible to the ReST API directly to list just the names
-of all the nodes.</p>
-
-<p>Of course, today I know I could pass a Gremlin expression through
-ReST, and get the same result as in the console. But that could be
-considered cheating.</p>
-
-<p>The alternative is to use extend the ReST with a plugin, as I show
-here.</p>
-
-<p>As always, the use of Maven is recommended. My <code>pom.xml</code> loads the
-<code>server-api</code> for Neo4j:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/neo4j/list_names/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'>	<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;artifactId&gt;</span>listNames<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;properties&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;neo4j.version&gt;</span>1.5<span class="nt">&lt;/neo4j.version&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/properties&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;build&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/build&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>org.neo4j<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>server-api<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>${neo4j.version}<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/dependencies&gt;</span>
-</span><span class='line'><span class="nt">&lt;/project&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The Java code is simplified by the use of annotations. The code
-returns an iterator that extract the names of the underlying node
-iterator:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (ListNames.java)</span> <a href='/downloads/code/7d7w/neo4j/list_names/ListNames.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Iterator</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.graphdb.GraphDatabaseService</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.graphdb.Node</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.server.plugins.Description</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.server.plugins.Name</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.server.plugins.PluginTarget</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.server.plugins.ServerPlugin</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.server.plugins.Source</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Description</span><span class="o">(</span><span class="s">&quot;An extension to list all node names&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListNames</span> <span class="kd">extends</span> <span class="n">ServerPlugin</span> <span class="o">{</span>
-</span><span class='line'>	<span class="nd">@Name</span><span class="o">(</span><span class="s">&quot;list_all_names&quot;</span><span class="o">)</span>
-</span><span class='line'>	<span class="nd">@Description</span><span class="o">(</span><span class="s">&quot;List all the node names&quot;</span><span class="o">)</span>
-</span><span class='line'>	<span class="nd">@PluginTarget</span><span class="o">(</span><span class="n">GraphDatabaseService</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">getAllNames</span><span class="o">(</span><span class="nd">@Source</span> <span class="n">GraphDatabaseService</span> <span class="n">graphDb</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>		<span class="kd">final</span> <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span> <span class="n">nodeIterator</span> <span class="o">=</span> <span class="n">graphDb</span><span class="o">.</span><span class="na">getAllNodes</span><span class="o">().</span><span class="na">iterator</span><span class="o">();</span>
-</span><span class='line'>		<span class="k">return</span> <span class="k">new</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>			<span class="kd">public</span> <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">iterator</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>				<span class="k">return</span> <span class="k">new</span> <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>					<span class="nd">@Override</span>
-</span><span class='line'>					<span class="kd">public</span> <span class="kt">void</span> <span class="nf">remove</span><span class="o">()</span> <span class="o">{</span> <span class="c1">// do nothing </span>
-</span><span class='line'>					<span class="o">}</span>
-</span><span class='line'>					<span class="nd">@Override</span>
-</span><span class='line'>					<span class="kd">public</span> <span class="n">String</span> <span class="nf">next</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>						<span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>							<span class="k">return</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">nodeIterator</span><span class="o">.</span><span class="na">next</span><span class="o">().</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">);</span>
-</span><span class='line'>						<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>							<span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-</span><span class='line'>						<span class="o">}</span>
-</span><span class='line'>					<span class="o">}</span>
-</span><span class='line'>					<span class="nd">@Override</span>
-</span><span class='line'>					<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasNext</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>						<span class="k">return</span> <span class="n">nodeIterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();</span>
-</span><span class='line'>					<span class="o">}</span>
-</span><span class='line'>				<span class="o">};</span>
-</span><span class='line'>			<span class="o">}</span>
-</span><span class='line'>		<span class="o">};</span>
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Finally, it is important to have add a file
-<code>META-INF/services/org.neo4j.server.plugins.ServerPlugin</code> with the
-complete name of the new plugins (in this case, just one):</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (org.neo4j.server.plugins.ServerPlugin)</span> <a href='/downloads/code/7d7w/neo4j/list_names/org.neo4j.server.plugins.ServerPlugin'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='raw'><span class='line'><span class="err">jp.wakatta.ListNames</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The jar should be copied to the <code>plugins</code> directory of the Neo4j
-instance, and Neo4j restarted.</p>
-
-<p>It is possible to test the correct deployment of the plugin using the
-ReST API:</p>
-
-<p>```
-$ curl  http://localhost:7474/db/data/
-{
-  "relationship_index" : "http://localhost:7474/db/data/index/relationship",
-  "node" : "http://localhost:7474/db/data/node",
-  "relationship_types" : "http://localhost:7474/db/data/relationship/types",
-  "neo4j_version" : "1.5",
-  "batch" : "http://localhost:7474/db/data/batch",
-  "extensions_info" : "http://localhost:7474/db/data/ext",
-  "node_index" : "http://localhost:7474/db/data/index/node",
-  "reference_node" : "http://localhost:7474/db/data/node/0",
-  "extensions" : {</p>
-
-<pre><code>"CypherPlugin" : {
-  "execute_query" : "http://localhost:7474/db/data/ext/CypherPlugin/graphdb/execute_query"
-},
-"GremlinPlugin" : {
-  "execute_script" : "http://localhost:7474/db/data/ext/GremlinPlugin/graphdb/execute_script"
-},
-"ListNames" : {
-  "list_all_names" : "http://localhost:7474/db/data/ext/ListNames/graphdb/list_all_names"
-}
-</code></pre>
-
-<p>  }
-}
-```</p>
-
-<p>The query returns the list of each extension, as well as the URL to
-call it. Using the <code>GET</code> method, the extension is self documenting:</p>
-
-<p><code>
-$ curl http://localhost:7474/db/data/ext/ListNames/grphdb/list_all_names
-{
-  "extends" : "graphdb",
-  "description" : "List all the node names",
-  "name" : "list_all_names",
-  "parameters" : [ ]
-}
-</code></p>
-
-<p>Finally, it can be invoked with the <code>POST</code> method:</p>
-
-<p><code>
-$ curl -X POST http://localhost:7474/db/data/ext/ListNames/grphdb/list_all_names
-[ "", "actor", "film", "Leif Andrée", "7X - This is Our Kids ", ...
-</code></p>
-
-<h2>Of course Kevin Bacon</h2>
-
-<p>This section is about the code of the book version beta 2.0.</p>
-
-<p>I had trouble to get the code to work in Neo4j 1.5. Here I document
-the alternative code I came up with and used.</p>
-
-<h3>Defining steps in Gremlin</h3>
-
-<p>I could not get the book code to define the <code>costars</code> step to work: it
-seems <code>outV</code> does not accept a filter expression as argument.</p>
-
-<p>Even with the addition of a dedicated <code>filter</code> step, I could not
-filter properly. Instead, I started from scratch, using the
-<a href="https://github.com/tinkerpop/gremlin/wiki/User-Defined-Steps">Gremlin wiki</a>
-code as a basis:</p>
-
-<p>```
-Gremlin.defineStep('costars',</p>
-
-<pre><code>               [Vertex, Pipe],
-               {_().sideEffect{start = it}.
-                   outE('Movie#acted_in').inV.inE('Movie#acted_in').
-                   outV.filter{!start.equals(it)}.uniqueObject()})
-</code></pre>
-
-<p>```</p>
-
-<p>Note the use of <code>sideEffect</code> to introduce the variable <code>start</code> into
-the expression. Not doing this (and instead following the book code),
-the filter was not working at all (i.e. the start node was
-still part of the result). Also I have a different type for the
-relationship (<code>Movie#acted_in</code>) as it was generated by Neo4j.rb.</p>
-
-<h3>From Elvis to Kevin Bacon</h3>
-
-<p>The <code>loop</code> step does not emit intermediate node by default, so while
-the query in the book is accepted, it does not return any result
-because the actual degree of separation between Elvis and Kevin Bacon
-is just 3.</p>
-
-<p>The latest version of Gremlin extends the basic <code>loop</code> pattern to emit
-intermediate nodes if requested, but this is not possible with the
-version embedded in Neo4j 1.5 admin console.</p>
-
-<p>The standalone Gremlin shell version 1.3 is a bit too old (it links
-against Neo4j version 1.5.M01, whose database format is not compatible
-with version 1.5's format). So I tried the current head of the Git
-<a href="https://github.com/tinkerpop/gremlin">repository</a>.</p>
-
-<p>To build it you will need to download half the Internet, so be
-patient.</p>
-
-<p>The build command is <code>mvn install</code> (the install step will make the
-scripts to launch the console).</p>
-
-<p>Once started, you can load the database with:</p>
-
-<p><code>
-g = new Neo4jGraph('/users/x/neo4j-enterprise-1.5/data/graph.db')
-</code></p>
-
-<p>The code <code>costars</code> step that was working in the console no longer does
-in the shell. I had to replace the <code>uniqueObject()</code> step with
-<code>dedup()</code>, and make sure
-everything is on a single line:</p>
-
-<p><code>
-Gremlin.defineStep('costars', [Vertex, Pipe], {_().sideEffect{start = it}.outE('Movie#acted_in').inV.inE('Movie#acted_in').outV.filter{!start.equals(it)}.dedup()})
-</code></p>
-
-<p>Finally, the command to find nodes by index has to explicitly use the
-index:</p>
-
-<p><code>
-bacon = g.idx('Actor_exact')[['name':'Kevin Bacon']].next()
-elvis = g.idx('Actor_exact')[['name':'Elvis Presley']].next()
-</code></p>
-
-<p>(if you created the data using the original import command, the index
-name is <code>actors</code>).</p>
-
-<p>As frustrating as it all is, the end result is that the <code>loop</code> step
-can now be used as needed:</p>
-
-<p><code>
-elvis.costars.loop(1){ it.loops &lt; 4}{true}.filter{it.equals(bacon)}.paths.next().name.grep{it}
-</code></p>
-
-<p>I also had to change the query once more to use <code>next</code> instead of <code>&gt;&gt; 1</code> as
-in the book, as that does not work in the latest version of Gremlin
-either.</p>
-
-<h3>Random walk</h3>
-
-<p>Once again, I had to change the code from the book to get it to work:
-adding a dedicated <code>filter</code> step did the trick:</p>
-
-<p><code>
-bacon.outE.filter{ rand.nextDouble() &lt;= 0.01 }.inV.inE.outV.loop(5){ it.loops &lt; 3 }.count()
-</code></p>
-
-<p>The <code>loop</code> argument does not change, as the filter expression already
-counted as a step in the book version.</p>
-
-<h3>Centrality</h3>
-
-<p>I had a small problem with the book code: the query is not run if the
-command is followed by <code>; ''</code> (which the book uses to prevent the
-display of the results). Just running this:</p>
-
-<p><code>
-role_count = [:]; count = 0
-g.V.in.groupCount(role_count).loop(2){ count++ &lt; 1000 }
-role_count.sort{a,b -&gt; a.value &lt;=&gt; b.value}
-</code></p>
-
-<p>works. Why on earth would such a small change have such an impact is
-beyond me. Now I'm scared of Groovy.</p>
-
-<h3>JUNG Algorithms</h3>
-
-<p>This time the book code was working as intended, but I found that
-there is an even more central actor than Donald Sutherland: Bobby
-Vitale...</p>
-
-<h2>Exercises</h2>
-
-<h3>Neo4j ReST API</h3>
-
-<p>The documentation is <a href="http://docs.neo4j.org/chunked/stable/rest-api.html">here</a>.</p>
-
-<h3>Binding or ReST API</h3>
-
-<p>See above my useo Neo4j.rb.</p>
-
-<h3>API for the JUNG project</h3>
-
-<p>The API is <a href="http://jung.sourceforge.net/doc/api/index.html">here</a>.</p>
-
-<h3>Path-finding as a step</h3>
-
-<p>I am using the Gremlin shell, rather than the Neo4j console.</p>
-
-<p><code>
-Gremlin.defineStep('path_to', [Vertex, Pipe], {Vertex to, Integer max -&gt; _().costars.loop(1){ it.loops &lt; max }{true}.filter{it.equals(to)}})     
-</code></p>
-
-<p>I used the possibility to pass arguments to the closure to introduce
-both the target node and the loop limit as parameters. Otherwise the
-code is identical to the one I was using above. With this, the
-path from Elvis to Kevin Bacon becomes</p>
-
-<p><code>
-gremlin&gt; elvis.path_to3(bacon, 4).paths.next().name.grep{it}
-==&gt;Elvis Presley    
-==&gt;Frankie and Johnny
-==&gt;Nathan Lane
-==&gt;He Said, She Said
-==&gt;Kevin Bacon
-</code></p>
-
-<h3>A family graph</h3>
-
-<p>I used Ruby (with the Neo4j.rb library). The code first defines a
-<code>family</code> data structure that maps each family member to other members
-keyed by their relationships.</p>
-
-<p>The code first iterate over the family members and inserts them; it
-then goes over the <code>family</code> structure a second time to insert the
-relationships.</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (family.rb)</span> <a href='/downloads/code/7d7w/neo4j/family.rb'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
-</span><span class='line'>
-</span><span class='line'><span class="sx">%w{rubygems neo4j}</span><span class="o">.</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">r</span><span class="o">|</span> <span class="nb">require</span> <span class="n">r</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Person</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Neo4j</span><span class="o">::</span><span class="no">NodeMixin</span>
-</span><span class='line'>  <span class="n">property</span> <span class="ss">:name</span>
-</span><span class='line'>  <span class="n">index</span> <span class="ss">:name</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">get_or_create_node</span><span class="p">(</span><span class="n">inserter</span><span class="p">,</span> <span class="nb">name</span><span class="p">,</span> <span class="n">clazz</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">n</span> <span class="o">=</span> <span class="n">inserter</span><span class="o">.</span><span class="n">index_get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nb">name</span><span class="p">,</span> <span class="ss">:exact</span><span class="p">,</span> <span class="n">clazz</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">first</span> <span class="k">if</span> <span class="n">n</span>
-</span><span class='line'>  <span class="k">unless</span> <span class="n">n</span>
-</span><span class='line'>    <span class="n">n</span> <span class="o">=</span> <span class="n">inserter</span><span class="o">.</span><span class="n">create_node</span><span class="p">({</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="nb">name</span><span class="p">},</span> <span class="n">clazz</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">inserter</span><span class="o">.</span><span class="n">index_flush</span><span class="p">(</span><span class="n">clazz</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>  <span class="n">n</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">family</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>  <span class="s1">&#39;Alice&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:sibbling_of</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:married_to</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Walter&#39;</span><span class="o">]</span><span class="p">,</span><span class="ss">:child_of</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Trent&#39;</span><span class="p">,</span> <span class="s1">&#39;Peggy&#39;</span><span class="o">]</span> <span class="p">},</span>
-</span><span class='line'>  <span class="s1">&#39;Bob&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:sibbling_of</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:married_to</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Eve&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:child_of</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Trent&#39;</span><span class="p">,</span> <span class="s1">&#39;Peggy&#39;</span><span class="o">]</span><span class="p">},</span>
-</span><span class='line'>  <span class="s1">&#39;Carol&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:sibbling_of</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:child_od</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Trent&#39;</span><span class="p">,</span> <span class="s1">&#39;Peggy&#39;</span><span class="o">]</span> <span class="p">},</span>
-</span><span class='line'>  <span class="s1">&#39;Trent&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:married_to</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Peggy&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:parent_of</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="o">]</span><span class="p">},</span>
-</span><span class='line'>  <span class="s1">&#39;Peggy&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:married_to</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Trent&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:parent_of</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="o">]</span><span class="p">},</span>
-</span><span class='line'>  <span class="s1">&#39;Eve&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:married_to</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Bob&#39;</span><span class="o">]</span><span class="p">},</span>
-</span><span class='line'>  <span class="s1">&#39;Walter&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:married_to</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Alice&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:sibling_of</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Dave&#39;</span><span class="o">]</span><span class="p">},</span>
-</span><span class='line'>  <span class="s1">&#39;Dave&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:sibling_of</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;Walter&#39;</span><span class="o">]</span><span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;begin processing...&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Neo4j</span><span class="o">::</span><span class="no">Config</span><span class="o">[</span><span class="ss">:storage_path</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;NEO4J_HOME&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">/data/graph.db&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">inserter</span> <span class="o">=</span> <span class="no">Neo4j</span><span class="o">::</span><span class="no">Batch</span><span class="o">::</span><span class="no">Inserter</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">family</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">_</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">inserter</span><span class="o">.</span><span class="n">create_node</span><span class="p">({</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="n">k</span><span class="p">},</span> <span class="no">Person</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">inserter</span><span class="o">.</span><span class="n">index_flush</span><span class="p">(</span><span class="no">Person</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">family</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">v</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">r</span><span class="p">,</span> <span class="n">os</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">os</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">o</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">inserter</span><span class="o">.</span><span class="n">create_rel</span><span class="p">(</span><span class="n">r</span><span class="p">,</span>
-</span><span class='line'>                          <span class="n">inserter</span><span class="o">.</span><span class="n">index_get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="ss">:exact</span><span class="p">,</span> <span class="no">Person</span><span class="p">)</span><span class="o">.</span><span class="n">next</span><span class="p">,</span>
-</span><span class='line'>                          <span class="n">inserter</span><span class="o">.</span><span class="n">index_get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="ss">:exact</span><span class="p">,</span> <span class="no">Person</span><span class="p">)</span><span class="o">.</span><span class="n">next</span>
-</span><span class='line'>                          <span class="p">)</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;done!&quot;</span>
-</span><span class='line'><span class="n">inserter</span><span class="o">.</span><span class="n">shutdown</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h3>Run a JUNG algorithm</h3>
-
-<p>I tried to run a simple Dijkstra shortest path algorithm in Gremlin, but
-eventually had to give up as the shell kept giving me weird exceptions
-when I tried to load the required class. Furthermore, the graph being
-directed from the actor nodes to the movie nodes, there is not path
-between anything but an actor and one of its movies (and the JUNG
-class to transform a directed graph to an undirected one seems to
-convert the whole graph eagerly).</p>
-
-<p>Eventually I gave up, dumped the movie database, and used the family
-graph instead.</p>
-
-<p>The code is in Java, the language I used after Groovy scared me with
-these weird exceptions (Java is boring but predictable).</p>
-
-<p>The hardest perhaps was to figure out the dependencies for the
-<code>pom.xml</code>:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/neo4j/graph_algo/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'>	<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;artifactId&gt;</span>graph-algo<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;properties&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;neo4j.version&gt;</span>1.5<span class="nt">&lt;/neo4j.version&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/properties&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;build&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/build&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;repositories&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;repository&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;id&gt;</span>tinkerpop-repository<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;name&gt;</span>TinkerPop Maven2 Repository<span class="nt">&lt;/name&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;url&gt;</span>http://tinkerpop.com/maven2<span class="nt">&lt;/url&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/repository&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/repositories&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>org.neo4j<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>neo4j<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>${neo4j.version}<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>net.sf.jung<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>jung-graph-impl<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>2.0.1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>com.tinkerpop.gremlin<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>gremlin-java<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>1.4<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>com.tinkerpop.blueprints<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>blueprints-neo4j-graph<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>1.1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>com.tinkerpop.blueprints<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>blueprints-core<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>1.1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>com.tinkerpop.blueprints<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>blueprints-graph-jung<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>1.1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/dependencies&gt;</span>
-</span><span class='line'><span class="nt">&lt;/project&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The code in Java is verbose; especially I could not find a simple way
-to look up nodes in the BluePrints graph, nor could I use the
-properties of the Neo4j nodes from the BluePrints vertices...</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (GraphAlgorithm.java)</span> <a href='/downloads/code/7d7w/neo4j/graph_algo/GraphAlgorithm.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.graphdb.GraphDatabaseService</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.graphdb.Node</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">org.neo4j.kernel.EmbeddedGraphDatabase</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">com.tinkerpop.blueprints.pgm.Edge</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">com.tinkerpop.blueprints.pgm.Vertex</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">com.tinkerpop.blueprints.pgm.impls.neo4j.Neo4jGraph</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">com.tinkerpop.blueprints.pgm.oupls.jung.GraphJung</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">edu.uci.ics.jung.graph.Graph</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">GraphAlgorithm</span> <span class="o">{</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>		<span class="n">String</span> <span class="n">neo4jHome</span> <span class="o">=</span> <span class="s">&quot;/users/x/neo4j-test&quot;</span><span class="o">;</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>			<span class="n">neo4jHome</span> <span class="o">=</span> <span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">GraphDatabaseService</span> <span class="n">graphDb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EmbeddedGraphDatabase</span><span class="o">(</span><span class="n">neo4jHome</span> <span class="o">+</span> <span class="s">&quot;/data/graph.db/&quot;</span><span class="o">);</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">com</span><span class="o">.</span><span class="na">tinkerpop</span><span class="o">.</span><span class="na">blueprints</span><span class="o">.</span><span class="na">pgm</span><span class="o">.</span><span class="na">Graph</span> <span class="n">g</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Neo4jGraph</span><span class="o">(</span><span class="n">graphDb</span><span class="o">);</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">Graph</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">,</span> <span class="n">Edge</span><span class="o">&gt;</span> <span class="n">j</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GraphJung</span><span class="o">(</span><span class="n">g</span><span class="o">);</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">DijkstraShortestPath</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">,</span> <span class="n">Edge</span><span class="o">&gt;</span> <span class="n">dijkstra</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DijkstraShortestPath</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">,</span> <span class="n">Edge</span><span class="o">&gt;(</span><span class="n">j</span><span class="o">);</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">Node</span> <span class="n">trent</span> <span class="o">=</span> <span class="n">graphDb</span><span class="o">.</span><span class="na">index</span><span class="o">().</span><span class="na">forNodes</span><span class="o">(</span><span class="s">&quot;Person_exact&quot;</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;Trent&quot;</span><span class="o">).</span><span class="na">next</span><span class="o">();</span>
-</span><span class='line'>		<span class="n">Node</span> <span class="n">dave</span> <span class="o">=</span> <span class="n">graphDb</span><span class="o">.</span><span class="na">index</span><span class="o">().</span><span class="na">forNodes</span><span class="o">(</span><span class="s">&quot;Person_exact&quot;</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;Dave&quot;</span><span class="o">).</span><span class="na">next</span><span class="o">();</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Distance between Trent and Dave:&quot;</span> <span class="o">+</span> <span class="n">dijkstra</span><span class="o">.</span><span class="na">getDistance</span><span class="o">(</span><span class="n">g</span><span class="o">.</span><span class="na">getVertex</span><span class="o">(</span><span class="n">trent</span><span class="o">.</span><span class="na">getId</span><span class="o">()),</span> <span class="n">g</span><span class="o">.</span><span class="na">getVertex</span><span class="o">(</span><span class="n">dave</span><span class="o">.</span><span class="na">getId</span><span class="o">())));</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Distance between Trent and everybody:&quot;</span><span class="o">);</span>
-</span><span class='line'>		<span class="k">for</span> <span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">,</span> <span class="n">Number</span><span class="o">&gt;</span> <span class="nl">kv:</span> <span class="n">dijkstra</span><span class="o">.</span><span class="na">getDistanceMap</span><span class="o">(</span><span class="n">g</span><span class="o">.</span><span class="na">getVertex</span><span class="o">(</span><span class="n">trent</span><span class="o">.</span><span class="na">getId</span><span class="o">())).</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">graphDb</span><span class="o">.</span><span class="na">getNodeById</span><span class="o">((</span><span class="n">Long</span><span class="o">)</span> <span class="n">kv</span><span class="o">.</span><span class="na">getKey</span><span class="o">().</span><span class="na">getId</span><span class="o">()).</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot; =&gt; &quot;</span> <span class="o">+</span> <span class="n">kv</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
-</span><span class='line'>		<span class="o">}</span>
-</span><span class='line'>		<span class="n">g</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
-</span><span class='line'>		<span class="n">graphDb</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
-</span><span class='line'>	<span class="o">}</span>	
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Running it produces</p>
-
-<p><code>
-Distance between Trent and Dave:3.0
-Distance between Trent and everybody:
-Trent =&gt; 0.0
-Carol =&gt; 1.0
-Peggy =&gt; 1.0
-Alice =&gt; 1.0
-Bob =&gt; 1.0
-Walter =&gt; 2.0
-Eve =&gt; 2.0
-Dave =&gt; 3.0
-</code></p>
-
-<h2>Wrapping Up Day 2</h2>
-
-<p>I must say that today was a rather frustrating experience. Neo4j
-ecosystem is still evolving, but this means that most of the
-documentation I came upon was already obsolete. The navigation on the
-data was at time very hard to figure out, and the error messages
-(really, the underlying Java exception) not helpful.</p>
 ]]></content>
   </entry>
   

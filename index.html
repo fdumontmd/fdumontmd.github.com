@@ -9,8 +9,9 @@
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="I am working my way through the homework exercises, and so far I have
-had more success than with the warmups. Here&#8217;s what I have solved so far. ">
+  <meta name="description" content="The repertoire method is never really explained in the book, or
+anywhere else I could find on the Internet. There are a couple of
+posts on this &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +78,146 @@ had more success than with the warmups. Here&#8217;s what I have solved so far. 
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Concrete Mathematics Repertoire Method</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-14T13:33:00+09:00" pubdate data-updated="true">Jan 14<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The repertoire method is never really explained in the book, or
+anywhere else I could find on the Internet. There are a couple of
+posts on this subject, so I though I should add mine.</p>
+
+<p>The repertoire method is really a tool to help with the intuitive step
+of figuring out a closed formula for a recurrence equation. It does so
+by breaking the original problem into smaller parts, with the hope
+they might be easier to solve.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/">Concrete Mathematics Chapter 1 Homework Exercises Part 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-14T12:14:00+09:00" pubdate data-updated="true">Jan 14<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I finally finished the homework exercises.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/">ANTLR3 Maven Plugin - Eclipse Setup</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-14T11:25:00+09:00" pubdate data-updated="true">Jan 14<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Setting up Eclipse and Maven is getting easier, but some cases
+require a bit more search and work. As I was experimenting with the
+<a href="http://www.antlr.org/">ANTLR</a>
+<a href="http://antlr.org/antlr3-maven-plugin/index.html">Maven plugin</a>, I
+found the default behaviour to be pretty much useless: Eclipse knew
+nothing about the grammar files or the generated classes, so the rest
+would not compile; even after adding the relevant source folders I
+still had to run explicit Maven commands after modifying the grammar
+files and refresh the workspace&#8230;</p>
+
+<p>I eventually found a better way, which I document here.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -413,145 +554,6 @@ pieces of data, Neo4j treats this as the main semantic mechanism</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">Seven Databases in Seven Weeks MongoDB Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-25T17:18:00+09:00" pubdate data-updated="true">Dec 25<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Final day with MongoDB. First to cover geospatial indexing; then to
-explore MongoDB&#8217;s approach to the CAP theorem.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Seven Databases in Seven Weeks MongoDB Day 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-24T14:49:00+09:00" pubdate data-updated="true">Dec 24<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today the book covers all kinds of queries goodness in MongoDB:
-indexing, advanced group queries, and MapReduce.</p>
-
-<p>Once again, the contrast with Riak is stark. MongoDB is able to
-optimize queries on its JSON documents because it understand the
-format directly (whereas it is stored as an opaque block in Riak).
-Using JavaScript is also simpler: no need to quote the function codes;
-just pass a function object to the commands that need one.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks MongoDB Day 1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-23T08:19:00+09:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>It has been &#8230; a little over a week since I closed with HBase so it
-is time to move to the next database in the program:
-<a href="http://www.mongodb.org/">MongoDB</a>. It is a so-called
-<a href="http://en.wikipedia.org/wiki/Document-oriented_database">document oriented database</a>,
-relying on Javascript and JSON like Riak but, MongoDB, unlike Riak,
-has a built-in support for querying, and can also perform partial
-updates.</p>
-
-<p>Fittingly, this first day is about CRUD and queries.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -573,23 +575,23 @@ updates.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Concrete Mathematics Repertoire Method</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/">Concrete Mathematics Chapter 1 Homework Exercises Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/">ANTLR3 Maven Plugin - Eclipse setup</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/">Concrete Mathematics Chapter 1 Homework Exercises Part 1</a>
       </li>
     
       <li class="post">
         <a href="/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/">Concrete Mathematics Chapter 1 Warmups</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Concrete Mathematics Chapter 1 Notes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/06/concrete-mathematics/">Concrete Mathematics</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a>
       </li>
     
   </ul>

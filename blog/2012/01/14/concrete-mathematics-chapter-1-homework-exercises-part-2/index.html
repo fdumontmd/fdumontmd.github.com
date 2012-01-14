@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Concrete Mathematics Chapter 1 Homework Exercises Part 2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="I finally finished the homework exercises. Homework Exercises Part 2 Generalized Tower of Hanoi To solve this, I first observed that for $n=1$, we &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>  
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Concrete Mathematics Chapter 1 Homework Exercises Part 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-14T12:14:00+09:00" pubdate data-updated="true">Jan 14<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I finally finished the homework exercises.</p>
+
+<!-- more -->
+
+
+<h2>Homework Exercises Part 2</h2>
+
+<h3>Generalized Tower of Hanoi</h3>
+
+<p>To solve this, I first observed that for $n=1$, we need $m_1$ moves,
+and for $n \gt 1$, we need
+$A(m_1, \cdots, m_{n-1}) + m_n + A(m_1, \cdots, m_{n-1})$ or
+$2A(m_1, \cdots, m_{n-1}) + m_n$ moves.</p>
+
+<p>This leads to the solution,</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1, \cdots, m_n) &amp;= \sum_{i=1}^n m_i 2^{n-i}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>which is trivially shown by induction. The base case:</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1) &amp; = \sum_{i=1}^1 m_i 2^{1-i}&#92;&#92;
+&amp; = m_1 2^0&#92;&#92;
+&amp; = m_1
+\end{align}
+</div>
+
+
+<p>And for larger $n$, assuming
+$A(m_1, \cdots, m_n) = \sum_{i=1}^n m_i 2^{n-i}$,</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1, \cdots, m_{n+1}) &amp; = 2A(m_1, \cdots, m_n) +
+m_{n+1}&amp;&amp;\text{by definition}&#92;&#92;
+&amp; = 2\sum_{i=1}^n m_i 2^{n-i} + m_{n+1}&amp;&amp;\text{induction hypothesis}&#92;&#92;
+&amp; = \sum_{i=1}^{n} m_i 2^{n+1-i} + m_{n+1} 2^{0}&#92;&#92;
+&amp; = \sum_{i=1}^{n+1} m_i 2^{n+1-i}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>Zig-zag lines</h3>
+
+<p>A geometric problem, but very similar to the previous intersecting
+lines. A zig-zag is made of 3 segments, so a pair of zig-zag lines can
+intersect at 9 different points. The first zig-zag line defines two
+regions; each new zig-zag adds a new region, plus one more for each
+intersection point.</p>
+
+<p>This gives the following recurrence equations:</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_1 &amp; = 2&#92;&#92;
+ZZ_n &amp; = ZZ_{n-1} + 9(n-1) + 1&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Using the linearity of the recurrence equation, it is easy to see that</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_n &amp; = ZZ_1 + 9S_{n-1} + (n-1)
+\end{align}
+</div>
+
+
+<p>Here I used the linearity to compute solutions to both
+$ZZ_n = ZZ_{n-1} + 9(n-1)$ and $ZZ_n = ZZ_{n-1} + 1$, which are
+equally trivial. Then I combined the solutions into one.</p>
+
+<p>I use (again) induction to confirm the solution. The base case is
+$ZZ_1 = ZZ_1 + 9S_0 + 0$. And for other $n$, assuming
+$ZZ_n = ZZ_1 + 9S_{n-1} + (n-1)$</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_{n+1} &amp; = ZZ_{n} + 9n + 1&amp;&amp;\text{by definition}&#92;&#92;
+&amp; = ZZ_1 + 9S_{n-1} + (n-1) + 9n + 1&amp;&amp;\text{induction hypothesis}&#92;&#92;
+&amp; = ZZ_1 + 9(S_{n-1} + n) + (n-1+1)&#92;&#92;
+&amp; = ZZ_1 + 9S_n + n
+\end{align}
+</div>
+
+
+<p>The formula can also be written as</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_n &amp; = \frac{9n^2-7n+2}{2}
+\end{align}
+</div>
+
+
+<h3>Planes cutting cheese</h3>
+
+<p>Again, a geometric problem. This one gave me more trouble. It
+took me a while before finally seeing that a new plane intersection
+with the previous ones will be a set of intersecting lines which
+defines the regions the new plan will divide in two.</p>
+
+<p>The number of regions formed by intersecting lines was solved in the
+book, and defined as $L_n = S_n + 1$</p>
+
+<p>So a plane cutting $n$ existing planes will define
+$P_{n+1} = P_n + L_n$
+new regions. This recurrence gives $P_5 = 26$ regions.</p>
+
+<p>The book did not expect a closed formula for this exercise, as the
+necessary techniques are only covered in chapter 5.</p>
+
+<h3>Josephus co-conspirator</h3>
+
+<p>The recurrence equation for $I(n)$ follow the structure of $J(n)$, but
+with different base cases:</p>
+
+<div markdown="0">
+\begin{align}
+I(2) &amp; = 2&amp;&amp;\text{\(I(1)\) is not defined}&#92;&#92;
+I(2n) &amp; = 2I(n) - 1&#92;&#92;
+I(2n+1) &amp; = 2I(n) + 1
+\end{align}
+</div>
+
+
+<p>Here I generated the first few values to get inspired. I noticed that
+$I(n)$ had increasing odd values for batches that were longer than for
+$J(n)$: $3, 6, 12, 24, \cdots$.</p>
+
+<p>These numbers are from the series $3\cdot 2^m$, so using the same
+&#8220;intuitive&#8221; step as in the book, I tried to show that
+$I(3\cdot 2^m + l) = 2l + 1$ with $0 \le l \lt 3\cdot 2^m$
+(the formula does not work for $I(2)$, which has to be defined separately).</p>
+
+<p>By induction on $m$: the base case is $I(3) = I(3\cdot 2^0 + l) = 1$.</p>
+
+<p>Assuming $I(3\cdot 2^m + l) = 2l+1$, we have</p>
+
+<div markdown="0">
+\begin{align}
+I(3\cdot2^{m+1} + 2l) &amp; = 2I(3\cdot 2^m + l) -1&amp;&amp;\text{by definition}&#92;&#92;
+&amp;= 2(2l+1) -1&amp;&amp;\text{induction hypothesis}&#92;&#92;
+&amp;= 4l+2-1&#92;&#92;
+&amp;= 2(2l)+1&#92;&#92;
+I(3\cdot 2^{m+1} + (2l+ 1)) &amp; = 2I(3\cdot 2^m + l) + 1&amp;&amp;\text{by definition}&#92;&#92;
+&amp; = 2(2l+1) + 1&amp;&amp;\text{induction hypothesis}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The book solution is defined in terms of $2^m+2^{m-1}+k$, which is
+same:</p>
+
+<div markdown="0">
+\begin{align}
+2^m+2^{m-1}+k &amp; = 2\cdot 2^{m-1} + 2^{m-1} + k&#92;&#92;
+&amp; = 3\cdot 2^{m-1} + k
+\end{align}
+</div>
+
+
+<p>with $1 \le m$, while I have $0 \le m$.</p>
+
+<h3>Repertoire method</h3>
+
+<p>I put the repertoire method in its own
+<a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">post</a> as it
+was both the most difficult exercise and the one where I learned the most.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-14T12:14:00+09:00" pubdate data-updated="true">Jan 14<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>, <a class='category' href='/blog/categories/mathematics/'>Mathematics</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/" title="Previous Post: ANTLR3 Maven Plugin - Eclipse setup">&laquo; ANTLR3 Maven Plugin - Eclipse setup</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/01/14/concrete-mathematics-repertoire-method/" title="next Post: Concrete Mathematics Repertoire Method">Concrete Mathematics Repertoire Method &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Concrete Mathematics Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2012/01/06/concrete-mathematics/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Chapter 1 Notes</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/">Chapter 1 Warmups</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/">Chapter 1 Homework Exercises Part 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/">Chapter 1 Homework Exercises Part 2</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Repertoire Method</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Concrete Mathematics Repertoire Method</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/">Concrete Mathematics Chapter 1 Homework Exercises Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/">ANTLR3 Maven Plugin - Eclipse setup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/">Concrete Mathematics Chapter 1 Homework Exercises Part 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/">Concrete Mathematics Chapter 1 Warmups</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

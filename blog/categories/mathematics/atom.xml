@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-09T19:30:18+09:00</updated>
+  <updated>2012-01-14T15:50:18+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,437 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Repertoire Method]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method/"/>
+    <updated>2012-01-14T13:33:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method</id>
+    <content type="html"><![CDATA[<p>The repertoire method is never really explained in the book, or
+anywhere else I could find on the Internet. There are a couple of
+posts on this subject, so I though I should add mine.</p>
+
+<p>The repertoire method is really a tool to help with the intuitive step
+of figuring out a closed formula for a recurrence equation. It does so
+by breaking the original problem into smaller parts, with the hope
+they might be easier to solve.</p>
+
+<!-- more -->
+
+
+<h3>Why it works</h3>
+
+<p>Let's assume we have a system of recurrence equations with parameters,
+so that the unknown function can be expressed as a linear combination
+of other (unknown) functions where the coefficients are the parameters:</p>
+
+<div markdown="0">
+\begin{align}
+g(1) &amp; = b(0, \alpha_1, \cdots, \alpha_m)\\\\
+g(n) &amp; = r_n(g_1, \cdots, g_{n-1}, \alpha_1, \cdots, \alpha_m)\\\\
+&amp; = \sum_{i=1}^m A_i(n)\alpha_i,
+\end{align}
+</div>
+
+
+<p>We can consider $g$ as a specific point in a $m$-dimensional function
+space (determined by both the recurrence equations, and the
+parameters), and because $g$ is a linear combination, we can try to
+find $m$ base functions (hopefully known or easy to compute)
+$f_k(n) = \sum_{i=1}^m A_i(n)\alpha_{i_k}$ with $1 \le k \le m$, expressed in
+terms of $m$ linearly independent vectors
+$(\alpha_{1_k},\cdots,\alpha_{m_k})$.</p>
+
+<p>In other words, if we can find $m$ linearly independent parameter
+vectors such that, for each, we have a known solution $f_k(n)$, then
+we can express the function $g$ as a linear combination of $f_k(n)$
+for any parameters (because the $m$ $f_k(n)$ form a base for the
+$m$-dimensional function space defined by the recurrence equations).</p>
+
+<h3>How it works</h3>
+
+<p>First, we need to check that the recurrence equations accept a
+solution expressed as</p>
+
+<div markdown="0">
+\begin{align}
+g(n) &amp; = \sum_{i=1}^m A_i(n)\alpha_i
+\end{align}
+</div>
+
+
+<p>It is enough to plug this definition into the recurrence equations,
+and make sure the different parameters always remain in different
+terms.</p>
+
+<p>Then we can either solve $f(n) = \sum_{i=1}^m A_i(n)\alpha_i$ for
+known $f(n)$, or for known $\alpha_i$
+parameters, as long as we end up with $m$ linearly independent
+parameter vectors (or, as it is equivalent, $m$ linearly independent
+known functions for specific parameters).</p>
+
+<p>It is important to keep in mind that a solution can be searched from
+both direction: either set a function and try to solve for the
+parameters, or set the parameters and solve for the function.</p>
+
+<h3>Homework exercise</h3>
+
+<p>Given</p>
+
+<div markdown="0">
+\begin{align}
+g(1) &amp; = \alpha\\\\
+g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j&amp;&amp;\text{for \(j=0, 1\) and \(n \gt 1 \)}\\\\
+\end{align}
+</div>
+
+
+<p>We need to check that $g$ can be written as</p>
+
+<div markdown="0">
+\begin{align}
+g(n) &amp; = \alpha A(n) + \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)\\\\
+\end{align}
+</div>
+
+
+<p>The base case is trivial. The recurrence case is</p>
+
+<div markdown="0">
+\begin{align}
+g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
+&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + \gamma n \beta_0\\\\
+&amp; = \alpha 3A(n) + \beta_0 (3 B_0(n) + 1) + \beta_1 3B_1(n) + \gamma (3C(n) + n)\\\\
+g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
+&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + + \gamma n\beta_1\\\\
+&amp; = \alpha 3A(n) + \beta_0 3 B_0(n)+ \beta_1 (3B_1(n) + 1) + \gamma (3C(n) + n)\\\\
+\end{align}
+</div>
+
+
+<p>so $g$ can be expressed as a linear combination of other functions,
+with the parameters as the coefficients.</p>
+
+<p>Now, when I tried to solve this problem, I didn't know I could set the
+parameters to values that would lead to an easy solution ($\gamma = 0$
+turns the problem into an easy to solve generalised radix-based
+Josephus problem); instead I wasted a lot of time trying to find known
+functions and solve for the parameters, which is why I have four steps
+below instead of just two as in the book.</p>
+
+<h4>$g(n) = n$</h4>
+
+<p>As the book suggests, I tried to solve for $g(n) = n$:</p>
+
+<div markdown="0">
+\begin{align}
+1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
+2n = g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
+&amp; = 3n + \gamma n + \beta_0&amp;&amp;\gamma = -1, \beta_0 = 0\\\\
+2n+1 = g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
+&amp; = 3n - n + \beta_1&amp;&amp; \beta_1 = 1\\\\
+\end{align}
+</div>
+
+
+<h4>$g(2^m+l) = 3^m$</h4>
+
+<p>As the recurrence equation looks like the generalised radix-based
+Josephus equation, I tried to solve for $g(2^m+1) = 3^m$:</p>
+
+<div markdown="0">
+\begin{align}
+1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
+3^m = g(2^m+2l) &amp; = 3g(2^{m-1}+l) + \gamma (2^{m-1} + l) + \beta_0\\\\
+&amp; = 3\cdot 3^{m-1} + \gamma (2^{m-1} + l) + \beta_0&amp;&amp; \beta_0, \gamma = 0\\\\
+3^m = g(2^m+2l+1) &amp; = 3g(2^{m^1}+l) + \gamma (2^{m-1} + l) + \beta_1\\\\
+&amp; = 3\cdot 3^{m-1}&amp;&amp;\beta_1 = 0\\\\
+\end{align}
+</div>
+
+
+<h4>$g(n) = 1$</h4>
+
+<p>I tried to solve for $g(n) = 1$, as it seemed useful to solve for a
+constant (no linear combination of linearly independent non-constant
+functions can produce a constant function).</p>
+
+<div markdown="0">
+\begin{align}
+1 = g(1) &amp; = \alpha&amp;&amp; \alpha = 1\\\\
+1 = g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j\\\\
+&amp; = 3 + \gamma n + \beta_j&amp;&amp; \gamma = 0, \beta_j = -2\\\\
+\end{align}
+</div>
+
+
+<h4>$\alpha, \beta_1 = 1, \beta_0,  \gamma = 0$</h4>
+
+<p>This is the step that took me the longest, and when I finally
+understood I could fix the parameters, I was able to use the
+radix-based Josephus solution.</p>
+
+<p>The recurrence equations</p>
+
+<div markdown="0">
+\begin{align}
+g(1) &amp; = 1\\\\
+g(2n) &amp; = 3g(n)\\\\
+g(2n+1) &amp; = 3g(n) + 1\\\\
+\end{align}
+</div>
+
+
+<p>have as solution $g(2^m + (b_m\cdots b_0)) = 3^m + (b_m\cdots b_0)_3$.</p>
+
+<h4>Solving for $g(n)$</h4>
+
+<p>We have the equations</p>
+
+<div markdown="0">
+\begin{align}
+A(n) - C(n) &amp; = n\\\\
+A(2^m + l) &amp; = 3^m\\\\
+A(n) -2(B_0(n) + B_1(n)) &amp; = 1\\\\
+B_1(2^m+l) &amp; = h_3(l)&amp;&amp;\text{where \(h_3(b_m\cdots b_0) = (b_m\cdots b_0)_3\)}\\\\
+\end{align}
+</div>
+
+
+<p>We have two functions already defined ($A(n)$ and $B_1(n)$), and the
+other two equations give us the remaining function.</p>
+
+<p>Now we can solve for $g(n)$:</p>
+
+<div markdown="0">
+\begin{align}
+g(2^m+l) &amp; = \alpha 3^m + \beta_0 (\frac{3^m - 1}{2} - h_3(l)) + \beta_1 h_3(l) + \gamma (3^m + h_3(l) - 2^m - l)
+\end{align}
+</div>
+
+
+<p>The $\gamma$ term is really $h_3(n) - n$.</p>
+
+<p>The $\beta_0$ term is the same as $h_3(2^m-1-l)$, as can be seen by
+observing that in base $3$, $3^m$ is $1$ followed by $m$ zeroes, so
+$3^m-1$ is $m$ twos, and $\frac{3^m-1}{2}$ is $m$ ones, in other words
+the same representation as the binary representation of $2^m-1$.</p>
+
+<p>Now, the binary representation of $l$ is the same as the
+representation in base $3$ of $h_3(l)$ (by definition of $h_3$), so
+the binary representation of $2^m-1-l$ is the same as the
+representation in base $3$ of $\frac{3^m-1}{2} - h_3(l)$.</p>
+
+<p>With these two observations, it is possible to rewrite $g$ as</p>
+
+<div markdown="0">
+\begin{align}
+g(1b_m\cdots b_0) &amp; = (\alpha\beta_{b_m}\cdots\beta_{b_0})_3 + \gamma ((1b_m\cdots b_0)_3 - (1b_m\cdots b_0)_2)
+\end{align}
+</div>
+
+
+<p>which is the book solution.</p>
+
+<h3>Faster solution</h3>
+
+<p>It is enough to solve for
+$\alpha, \beta_0, \beta_1 \ne 0, \gamma = 0$,
+and to find the parameters for $g(n) = n$. The first gives $A$,
+$B_0$ and $B_1$ directly by the generalised radix-based Josephus
+solution, and the second one adds a constraint to solve for $C$ as well.</p>
+
+<h3>Wrapping up</h3>
+
+<p>As can be seen above, approaching the problem from both directions
+(solving for known functions and solving for known parameters) can
+result in time saved, and simplified expression of the solution.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/"/>
+    <updated>2012-01-14T12:14:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2</id>
+    <content type="html"><![CDATA[<p>I finally finished the homework exercises.</p>
+
+<!-- more -->
+
+
+<h2>Homework Exercises Part 2</h2>
+
+<h3>Generalized Tower of Hanoi</h3>
+
+<p>To solve this, I first observed that for $n=1$, we need $m_1$ moves,
+and for $n \gt 1$, we need
+$A(m_1, \cdots, m_{n-1}) + m_n + A(m_1, \cdots, m_{n-1})$ or
+$2A(m_1, \cdots, m_{n-1}) + m_n$ moves.</p>
+
+<p>This leads to the solution,</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1, \cdots, m_n) &amp;= \sum_{i=1}^n m_i 2^{n-i}\\\\
+\end{align}
+</div>
+
+
+<p>which is trivially shown by induction. The base case:</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1) &amp; = \sum_{i=1}^1 m_i 2^{1-i}\\\\
+&amp; = m_1 2^0\\\\
+&amp; = m_1
+\end{align}
+</div>
+
+
+<p>And for larger $n$, assuming
+$A(m_1, \cdots, m_n) = \sum_{i=1}^n m_i 2^{n-i}$,</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1, \cdots, m_{n+1}) &amp; = 2A(m_1, \cdots, m_n) +
+m_{n+1}&amp;&amp;\text{by definition}\\\\
+&amp; = 2\sum_{i=1}^n m_i 2^{n-i} + m_{n+1}&amp;&amp;\text{induction hypothesis}\\\\
+&amp; = \sum_{i=1}^{n} m_i 2^{n+1-i} + m_{n+1} 2^{0}\\\\
+&amp; = \sum_{i=1}^{n+1} m_i 2^{n+1-i}\\\\
+\end{align}
+</div>
+
+
+<h3>Zig-zag lines</h3>
+
+<p>A geometric problem, but very similar to the previous intersecting
+lines. A zig-zag is made of 3 segments, so a pair of zig-zag lines can
+intersect at 9 different points. The first zig-zag line defines two
+regions; each new zig-zag adds a new region, plus one more for each
+intersection point.</p>
+
+<p>This gives the following recurrence equations:</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_1 &amp; = 2\\\\
+ZZ_n &amp; = ZZ_{n-1} + 9(n-1) + 1\\\\
+\end{align}
+</div>
+
+
+<p>Using the linearity of the recurrence equation, it is easy to see that</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_n &amp; = ZZ_1 + 9S_{n-1} + (n-1)
+\end{align}
+</div>
+
+
+<p>Here I used the linearity to compute solutions to both
+$ZZ_n = ZZ_{n-1} + 9(n-1)$ and $ZZ_n = ZZ_{n-1} + 1$, which are
+equally trivial. Then I combined the solutions into one.</p>
+
+<p>I use (again) induction to confirm the solution. The base case is
+$ZZ_1 = ZZ_1 + 9S_0 + 0$. And for other $n$, assuming
+$ZZ_n = ZZ_1 + 9S_{n-1} + (n-1)$</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_{n+1} &amp; = ZZ_{n} + 9n + 1&amp;&amp;\text{by definition}\\\\
+&amp; = ZZ_1 + 9S_{n-1} + (n-1) + 9n + 1&amp;&amp;\text{induction hypothesis}\\\\
+&amp; = ZZ_1 + 9(S_{n-1} + n) + (n-1+1)\\\\
+&amp; = ZZ_1 + 9S_n + n
+\end{align}
+</div>
+
+
+<p>The formula can also be written as</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_n &amp; = \frac{9n^2-7n+2}{2}
+\end{align}
+</div>
+
+
+<h3>Planes cutting cheese</h3>
+
+<p>Again, a geometric problem. This one gave me more trouble. It
+took me a while before finally seeing that a new plane intersection
+with the previous ones will be a set of intersecting lines which
+defines the regions the new plan will divide in two.</p>
+
+<p>The number of regions formed by intersecting lines was solved in the
+book, and defined as $L_n = S_n + 1$</p>
+
+<p>So a plane cutting $n$ existing planes will define
+$P_{n+1} = P_n + L_n$
+new regions. This recurrence gives $P_5 = 26$ regions.</p>
+
+<p>The book did not expect a closed formula for this exercise, as the
+necessary techniques are only covered in chapter 5.</p>
+
+<h3>Josephus co-conspirator</h3>
+
+<p>The recurrence equation for $I(n)$ follow the structure of $J(n)$, but
+with different base cases:</p>
+
+<div markdown="0">
+\begin{align}
+I(2) &amp; = 2&amp;&amp;\text{\(I(1)\) is not defined}\\\\
+I(2n) &amp; = 2I(n) - 1\\\\
+I(2n+1) &amp; = 2I(n) + 1
+\end{align}
+</div>
+
+
+<p>Here I generated the first few values to get inspired. I noticed that
+$I(n)$ had increasing odd values for batches that were longer than for
+$J(n)$: $3, 6, 12, 24, \cdots$.</p>
+
+<p>These numbers are from the series $3\cdot 2^m$, so using the same
+"intuitive" step as in the book, I tried to show that
+$I(3\cdot 2^m + l) = 2l + 1$ with $0 \le l \lt 3\cdot 2^m$
+(the formula does not work for $I(2)$, which has to be defined separately).</p>
+
+<p>By induction on $m$: the base case is $I(3) = I(3\cdot 2^0 + l) = 1$.</p>
+
+<p>Assuming $I(3\cdot 2^m + l) = 2l+1$, we have</p>
+
+<div markdown="0">
+\begin{align}
+I(3\cdot2^{m+1} + 2l) &amp; = 2I(3\cdot 2^m + l) -1&amp;&amp;\text{by definition}\\\\
+&amp;= 2(2l+1) -1&amp;&amp;\text{induction hypothesis}\\\\
+&amp;= 4l+2-1\\\\
+&amp;= 2(2l)+1\\\\
+I(3\cdot 2^{m+1} + (2l+ 1)) &amp; = 2I(3\cdot 2^m + l) + 1&amp;&amp;\text{by definition}\\\\
+&amp; = 2(2l+1) + 1&amp;&amp;\text{induction hypothesis}\\\\
+\end{align}
+</div>
+
+
+<p>The book solution is defined in terms of $2^m+2^{m-1}+k$, which is
+same:</p>
+
+<div markdown="0">
+\begin{align}
+2^m+2^{m-1}+k &amp; = 2\cdot 2^{m-1} + 2^{m-1} + k\\\\
+&amp; = 3\cdot 2^{m-1} + k
+\end{align}
+</div>
+
+
+<p>with $1 \le m$, while I have $0 \le m$.</p>
+
+<h3>Repertoire method</h3>
+
+<p>I put the repertoire method in its own
+<a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">post</a> as it
+was both the most difficult exercise and the one where I learned the most.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 1]]></title>
@@ -627,69 +1058,6 @@ recurrence over $m$ (with $m$ the number of digits or the argument in
 base $d$).</p>
 
 <p>In the next post in this series, I will start the exercises.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics/"/>
-    <updated>2012-01-06T13:16:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics</id>
-    <content type="html"><![CDATA[<p>Stephen Hawking once said that his editor had warned him that each
-equation in his book would halve the readership.</p>
-
-<p>With that in mind, and taking into account the number of readers of
-this blog (or lack thereof), would I dare put any equations?</p>
-
-<p>You better believe it!</p>
-
-<!--more-->
-
-
-<p>I just picked up my old copy of
-<a href="http://en.wikipedia.org/wiki/Concrete_Mathematics">Concrete Mathematics</a>,
-a book I have too long neglected. The ultimate goal, of course, is
-slaying the
-<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming">Beast</a>,
-which I should try to complete before Donald E. Knuth passes away.
-While I wish him a very long life, long enough at least to complete
-<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming#Volumes">Volume 5</a>,
-and better yet 6 and 7, I should not take his remarkable health as an
-excuse to dither.</p>
-
-<p>For the math notation, I use <a href="http://www.mathjax.org/">MathJax</a>, a
-JavaScript library that can parse either
-<a href="http://www.w3.org/Math/">MathMl</a>, or much better
-<a href="http://www.latex-project.org/">LaTeX</a> (which is based on
-<a href="http://www.math.upenn.edu/TeX.html">TeX</a>, another gift of Donald
-E. Knuth to the world).</p>
-
-<p>The setup for this blog is based on this
-<a href="http://greglus.com/blog/2011/11/29/integrate-MathJax-LaTeX-and-MathML-Markup-in-Octopress/">post</a>.</p>
-
-<p>The quality of rendering is variable: pretty good in Firefox, OK in
-Safari or Chrome, and no idea in IE or Opera. Of course, it is not as
-good as the output of LaTeX, but for the Web it is acceptable.</p>
-
-<p>For instance, given the recurrence</p>
-
-<div markdown="0">
-$$
-\begin{align}
-f(j) &amp; = \alpha_j, &amp;&amp;\text{for $1 \\leq j \\lt  d$}\\\\
-f(dn + j) &amp; = cf(n) + \beta_j, &amp;&amp;\text{for $0 \\leq j \\lt d$ and $n \\geq 1$}
-\end{align}
-$$
-</div>
-
-
-<p>then the solution is</p>
-
-<p>$$f \left( ( b_m b_{m-1} \cdots b_1 b_0)_d \right) = \left( \alpha_{b_m} \beta_{b_{m-1}} \beta_{b_{m-2}} \cdots \beta_{b_1} \beta_{b_0} \right)_c$$</p>
-
-<p>(refer to the book for explanations).</p>
-
-<p>Isn't this lovely?</p>
 ]]></content>
   </entry>
   

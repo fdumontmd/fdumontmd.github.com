@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-09T19:30:18+09:00</updated>
+  <updated>2012-01-14T15:50:18+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,760 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Repertoire Method]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method/"/>
+    <updated>2012-01-14T13:33:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method</id>
+    <content type="html"><![CDATA[<p>The repertoire method is never really explained in the book, or
+anywhere else I could find on the Internet. There are a couple of
+posts on this subject, so I though I should add mine.</p>
+
+<p>The repertoire method is really a tool to help with the intuitive step
+of figuring out a closed formula for a recurrence equation. It does so
+by breaking the original problem into smaller parts, with the hope
+they might be easier to solve.</p>
+
+<!-- more -->
+
+
+<h3>Why it works</h3>
+
+<p>Let&#8217;s assume we have a system of recurrence equations with parameters,
+so that the unknown function can be expressed as a linear combination
+of other (unknown) functions where the coefficients are the parameters:</p>
+
+<div markdown="0">
+\begin{align}
+g(1) &amp; = b(0, \alpha_1, \cdots, \alpha_m)&#92;&#92;
+g(n) &amp; = r_n(g_1, \cdots, g_{n-1}, \alpha_1, \cdots, \alpha_m)&#92;&#92;
+&amp; = \sum_{i=1}^m A_i(n)\alpha_i,
+\end{align}
+</div>
+
+
+<p>We can consider $g$ as a specific point in a $m$-dimensional function
+space (determined by both the recurrence equations, and the
+parameters), and because $g$ is a linear combination, we can try to
+find $m$ base functions (hopefully known or easy to compute)
+$f_k(n) = \sum_{i=1}^m A_i(n)\alpha_{i_k}$ with $1 \le k \le m$, expressed in
+terms of $m$ linearly independent vectors
+$(\alpha_{1_k},\cdots,\alpha_{m_k})$.</p>
+
+<p>In other words, if we can find $m$ linearly independent parameter
+vectors such that, for each, we have a known solution $f_k(n)$, then
+we can express the function $g$ as a linear combination of $f_k(n)$
+for any parameters (because the $m$ $f_k(n)$ form a base for the
+$m$-dimensional function space defined by the recurrence equations).</p>
+
+<h3>How it works</h3>
+
+<p>First, we need to check that the recurrence equations accept a
+solution expressed as</p>
+
+<div markdown="0">
+\begin{align}
+g(n) &amp; = \sum_{i=1}^m A_i(n)\alpha_i
+\end{align}
+</div>
+
+
+<p>It is enough to plug this definition into the recurrence equations,
+and make sure the different parameters always remain in different
+terms.</p>
+
+<p>Then we can either solve $f(n) = \sum_{i=1}^m A_i(n)\alpha_i$ for
+known $f(n)$, or for known $\alpha_i$
+parameters, as long as we end up with $m$ linearly independent
+parameter vectors (or, as it is equivalent, $m$ linearly independent
+known functions for specific parameters).</p>
+
+<p>It is important to keep in mind that a solution can be searched from
+both direction: either set a function and try to solve for the
+parameters, or set the parameters and solve for the function.</p>
+
+<h3>Homework exercise</h3>
+
+<p>Given</p>
+
+<div markdown="0">
+\begin{align}
+g(1) &amp; = \alpha&#92;&#92;
+g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j&amp;&amp;\text{for \(j=0, 1\) and \(n \gt 1 \)}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>We need to check that $g$ can be written as</p>
+
+<div markdown="0">
+\begin{align}
+g(n) &amp; = \alpha A(n) + \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The base case is trivial. The recurrence case is</p>
+
+<div markdown="0">
+\begin{align}
+g(2n) &amp; = 3g(n) + \gamma n + \beta_0&#92;&#92;
+&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + \gamma n \beta_0&#92;&#92;
+&amp; = \alpha 3A(n) + \beta_0 (3 B_0(n) + 1) + \beta_1 3B_1(n) + \gamma (3C(n) + n)&#92;&#92;
+g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1&#92;&#92;
+&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + + \gamma n\beta_1&#92;&#92;
+&amp; = \alpha 3A(n) + \beta_0 3 B_0(n)+ \beta_1 (3B_1(n) + 1) + \gamma (3C(n) + n)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>so $g$ can be expressed as a linear combination of other functions,
+with the parameters as the coefficients.</p>
+
+<p>Now, when I tried to solve this problem, I didn&#8217;t know I could set the
+parameters to values that would lead to an easy solution ($\gamma = 0$
+turns the problem into an easy to solve generalised radix-based
+Josephus problem); instead I wasted a lot of time trying to find known
+functions and solve for the parameters, which is why I have four steps
+below instead of just two as in the book.</p>
+
+<h4>$g(n) = n$</h4>
+
+<p>As the book suggests, I tried to solve for $g(n) = n$:</p>
+
+<div markdown="0">
+\begin{align}
+1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1&#92;&#92;
+2n = g(2n) &amp; = 3g(n) + \gamma n + \beta_0&#92;&#92;
+&amp; = 3n + \gamma n + \beta_0&amp;&amp;\gamma = -1, \beta_0 = 0&#92;&#92;
+2n+1 = g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1&#92;&#92;
+&amp; = 3n - n + \beta_1&amp;&amp; \beta_1 = 1&#92;&#92;
+\end{align}
+</div>
+
+
+<h4>$g(2^m+l) = 3^m$</h4>
+
+<p>As the recurrence equation looks like the generalised radix-based
+Josephus equation, I tried to solve for $g(2^m+1) = 3^m$:</p>
+
+<div markdown="0">
+\begin{align}
+1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1&#92;&#92;
+3^m = g(2^m+2l) &amp; = 3g(2^{m-1}+l) + \gamma (2^{m-1} + l) + \beta_0&#92;&#92;
+&amp; = 3\cdot 3^{m-1} + \gamma (2^{m-1} + l) + \beta_0&amp;&amp; \beta_0, \gamma = 0&#92;&#92;
+3^m = g(2^m+2l+1) &amp; = 3g(2^{m^1}+l) + \gamma (2^{m-1} + l) + \beta_1&#92;&#92;
+&amp; = 3\cdot 3^{m-1}&amp;&amp;\beta_1 = 0&#92;&#92;
+\end{align}
+</div>
+
+
+<h4>$g(n) = 1$</h4>
+
+<p>I tried to solve for $g(n) = 1$, as it seemed useful to solve for a
+constant (no linear combination of linearly independent non-constant
+functions can produce a constant function).</p>
+
+<div markdown="0">
+\begin{align}
+1 = g(1) &amp; = \alpha&amp;&amp; \alpha = 1&#92;&#92;
+1 = g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j&#92;&#92;
+&amp; = 3 + \gamma n + \beta_j&amp;&amp; \gamma = 0, \beta_j = -2&#92;&#92;
+\end{align}
+</div>
+
+
+<h4>$\alpha, \beta_1 = 1, \beta_0,  \gamma = 0$</h4>
+
+<p>This is the step that took me the longest, and when I finally
+understood I could fix the parameters, I was able to use the
+radix-based Josephus solution.</p>
+
+<p>The recurrence equations</p>
+
+<div markdown="0">
+\begin{align}
+g(1) &amp; = 1&#92;&#92;
+g(2n) &amp; = 3g(n)&#92;&#92;
+g(2n+1) &amp; = 3g(n) + 1&#92;&#92;
+\end{align}
+</div>
+
+
+<p>have as solution $g(2^m + (b_m\cdots b_0)) = 3^m + (b_m\cdots b_0)_3$.</p>
+
+<h4>Solving for $g(n)$</h4>
+
+<p>We have the equations</p>
+
+<div markdown="0">
+\begin{align}
+A(n) - C(n) &amp; = n&#92;&#92;
+A(2^m + l) &amp; = 3^m&#92;&#92;
+A(n) -2(B_0(n) + B_1(n)) &amp; = 1&#92;&#92;
+B_1(2^m+l) &amp; = h_3(l)&amp;&amp;\text{where \(h_3(b_m\cdots b_0) = (b_m\cdots b_0)_3\)}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>We have two functions already defined ($A(n)$ and $B_1(n)$), and the
+other two equations give us the remaining function.</p>
+
+<p>Now we can solve for $g(n)$:</p>
+
+<div markdown="0">
+\begin{align}
+g(2^m+l) &amp; = \alpha 3^m + \beta_0 (\frac{3^m - 1}{2} - h_3(l)) + \beta_1 h_3(l) + \gamma (3^m + h_3(l) - 2^m - l)
+\end{align}
+</div>
+
+
+<p>The $\gamma$ term is really $h_3(n) - n$.</p>
+
+<p>The $\beta_0$ term is the same as $h_3(2^m-1-l)$, as can be seen by
+observing that in base $3$, $3^m$ is $1$ followed by $m$ zeroes, so
+$3^m-1$ is $m$ twos, and $\frac{3^m-1}{2}$ is $m$ ones, in other words
+the same representation as the binary representation of $2^m-1$.</p>
+
+<p>Now, the binary representation of $l$ is the same as the
+representation in base $3$ of $h_3(l)$ (by definition of $h_3$), so
+the binary representation of $2^m-1-l$ is the same as the
+representation in base $3$ of $\frac{3^m-1}{2} - h_3(l)$.</p>
+
+<p>With these two observations, it is possible to rewrite $g$ as</p>
+
+<div markdown="0">
+\begin{align}
+g(1b_m\cdots b_0) &amp; = (\alpha\beta_{b_m}\cdots\beta_{b_0})_3 + \gamma ((1b_m\cdots b_0)_3 - (1b_m\cdots b_0)_2)
+\end{align}
+</div>
+
+
+<p>which is the book solution.</p>
+
+<h3>Faster solution</h3>
+
+<p>It is enough to solve for
+$\alpha, \beta_0, \beta_1 \ne 0, \gamma = 0$,
+and to find the parameters for $g(n) = n$. The first gives $A$,
+$B_0$ and $B_1$ directly by the generalised radix-based Josephus
+solution, and the second one adds a constraint to solve for $C$ as well.</p>
+
+<h3>Wrapping up</h3>
+
+<p>As can be seen above, approaching the problem from both directions
+(solving for known functions and solving for known parameters) can
+result in time saved, and simplified expression of the solution.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/"/>
+    <updated>2012-01-14T12:14:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2</id>
+    <content type="html"><![CDATA[<p>I finally finished the homework exercises.</p>
+
+<!-- more -->
+
+
+<h2>Homework Exercises Part 2</h2>
+
+<h3>Generalized Tower of Hanoi</h3>
+
+<p>To solve this, I first observed that for $n=1$, we need $m_1$ moves,
+and for $n \gt 1$, we need
+$A(m_1, \cdots, m_{n-1}) + m_n + A(m_1, \cdots, m_{n-1})$ or
+$2A(m_1, \cdots, m_{n-1}) + m_n$ moves.</p>
+
+<p>This leads to the solution,</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1, \cdots, m_n) &amp;= \sum_{i=1}^n m_i 2^{n-i}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>which is trivially shown by induction. The base case:</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1) &amp; = \sum_{i=1}^1 m_i 2^{1-i}&#92;&#92;
+&amp; = m_1 2^0&#92;&#92;
+&amp; = m_1
+\end{align}
+</div>
+
+
+<p>And for larger $n$, assuming
+$A(m_1, \cdots, m_n) = \sum_{i=1}^n m_i 2^{n-i}$,</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1, \cdots, m_{n+1}) &amp; = 2A(m_1, \cdots, m_n) +
+m_{n+1}&amp;&amp;\text{by definition}&#92;&#92;
+&amp; = 2\sum_{i=1}^n m_i 2^{n-i} + m_{n+1}&amp;&amp;\text{induction hypothesis}&#92;&#92;
+&amp; = \sum_{i=1}^{n} m_i 2^{n+1-i} + m_{n+1} 2^{0}&#92;&#92;
+&amp; = \sum_{i=1}^{n+1} m_i 2^{n+1-i}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>Zig-zag lines</h3>
+
+<p>A geometric problem, but very similar to the previous intersecting
+lines. A zig-zag is made of 3 segments, so a pair of zig-zag lines can
+intersect at 9 different points. The first zig-zag line defines two
+regions; each new zig-zag adds a new region, plus one more for each
+intersection point.</p>
+
+<p>This gives the following recurrence equations:</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_1 &amp; = 2&#92;&#92;
+ZZ_n &amp; = ZZ_{n-1} + 9(n-1) + 1&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Using the linearity of the recurrence equation, it is easy to see that</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_n &amp; = ZZ_1 + 9S_{n-1} + (n-1)
+\end{align}
+</div>
+
+
+<p>Here I used the linearity to compute solutions to both
+$ZZ_n = ZZ_{n-1} + 9(n-1)$ and $ZZ_n = ZZ_{n-1} + 1$, which are
+equally trivial. Then I combined the solutions into one.</p>
+
+<p>I use (again) induction to confirm the solution. The base case is
+$ZZ_1 = ZZ_1 + 9S_0 + 0$. And for other $n$, assuming
+$ZZ_n = ZZ_1 + 9S_{n-1} + (n-1)$</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_{n+1} &amp; = ZZ_{n} + 9n + 1&amp;&amp;\text{by definition}&#92;&#92;
+&amp; = ZZ_1 + 9S_{n-1} + (n-1) + 9n + 1&amp;&amp;\text{induction hypothesis}&#92;&#92;
+&amp; = ZZ_1 + 9(S_{n-1} + n) + (n-1+1)&#92;&#92;
+&amp; = ZZ_1 + 9S_n + n
+\end{align}
+</div>
+
+
+<p>The formula can also be written as</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_n &amp; = \frac{9n^2-7n+2}{2}
+\end{align}
+</div>
+
+
+<h3>Planes cutting cheese</h3>
+
+<p>Again, a geometric problem. This one gave me more trouble. It
+took me a while before finally seeing that a new plane intersection
+with the previous ones will be a set of intersecting lines which
+defines the regions the new plan will divide in two.</p>
+
+<p>The number of regions formed by intersecting lines was solved in the
+book, and defined as $L_n = S_n + 1$</p>
+
+<p>So a plane cutting $n$ existing planes will define
+$P_{n+1} = P_n + L_n$
+new regions. This recurrence gives $P_5 = 26$ regions.</p>
+
+<p>The book did not expect a closed formula for this exercise, as the
+necessary techniques are only covered in chapter 5.</p>
+
+<h3>Josephus co-conspirator</h3>
+
+<p>The recurrence equation for $I(n)$ follow the structure of $J(n)$, but
+with different base cases:</p>
+
+<div markdown="0">
+\begin{align}
+I(2) &amp; = 2&amp;&amp;\text{\(I(1)\) is not defined}&#92;&#92;
+I(2n) &amp; = 2I(n) - 1&#92;&#92;
+I(2n+1) &amp; = 2I(n) + 1
+\end{align}
+</div>
+
+
+<p>Here I generated the first few values to get inspired. I noticed that
+$I(n)$ had increasing odd values for batches that were longer than for
+$J(n)$: $3, 6, 12, 24, \cdots$.</p>
+
+<p>These numbers are from the series $3\cdot 2^m$, so using the same
+&#8220;intuitive&#8221; step as in the book, I tried to show that
+$I(3\cdot 2^m + l) = 2l + 1$ with $0 \le l \lt 3\cdot 2^m$
+(the formula does not work for $I(2)$, which has to be defined separately).</p>
+
+<p>By induction on $m$: the base case is $I(3) = I(3\cdot 2^0 + l) = 1$.</p>
+
+<p>Assuming $I(3\cdot 2^m + l) = 2l+1$, we have</p>
+
+<div markdown="0">
+\begin{align}
+I(3\cdot2^{m+1} + 2l) &amp; = 2I(3\cdot 2^m + l) -1&amp;&amp;\text{by definition}&#92;&#92;
+&amp;= 2(2l+1) -1&amp;&amp;\text{induction hypothesis}&#92;&#92;
+&amp;= 4l+2-1&#92;&#92;
+&amp;= 2(2l)+1&#92;&#92;
+I(3\cdot 2^{m+1} + (2l+ 1)) &amp; = 2I(3\cdot 2^m + l) + 1&amp;&amp;\text{by definition}&#92;&#92;
+&amp; = 2(2l+1) + 1&amp;&amp;\text{induction hypothesis}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The book solution is defined in terms of $2^m+2^{m-1}+k$, which is
+same:</p>
+
+<div markdown="0">
+\begin{align}
+2^m+2^{m-1}+k &amp; = 2\cdot 2^{m-1} + 2^{m-1} + k&#92;&#92;
+&amp; = 3\cdot 2^{m-1} + k
+\end{align}
+</div>
+
+
+<p>with $1 \le m$, while I have $0 \le m$.</p>
+
+<h3>Repertoire method</h3>
+
+<p>I put the repertoire method in its own
+<a href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method/">post</a> as it
+was both the most difficult exercise and the one where I learned the most.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ANTLR3 Maven Plugin - Eclipse setup]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/"/>
+    <updated>2012-01-14T11:25:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup</id>
+    <content type="html"><![CDATA[<p>Setting up Eclipse and Maven is getting easier, but some cases
+require a bit more search and work. As I was experimenting with the
+<a href="http://www.antlr.org/">ANTLR</a>
+<a href="http://antlr.org/antlr3-maven-plugin/index.html">Maven plugin</a>, I
+found the default behaviour to be pretty much useless: Eclipse knew
+nothing about the grammar files or the generated classes, so the rest
+would not compile; even after adding the relevant source folders I
+still had to run explicit Maven commands after modifying the grammar
+files and refresh the workspace&#8230;</p>
+
+<p>I eventually found a better way, which I document here.</p>
+
+<!-- more -->
+
+
+<p>There is an
+<a href="http://www.antlr.org/wiki/display/ANTLR3/Building+ANTLR+Projects+with+Maven">antlr3-maven-archetype</a>,
+which I started from. However, for the purpose of clarity, I will
+start from scratch here.</p>
+
+<h3>Installing m2e</h3>
+
+<p>The Maven plugin for Eclipse is called m2e (m2eclipse is an obsolete
+version), and is available in the default Eclipse
+Marketplace. However, the current version (1.0 at the time of writing)
+does not handle the life cycle of some common Maven plugins very
+well. In particular, it does not know where to put the generation of
+classes from grammar files into the Eclipse life cycle.</p>
+
+<p>The 1.1 milestone does it much better, so I suggest to install it. The
+location is
+<a href="http://download.eclipse.org/technology/m2e/milestones/1.1">http://download.eclipse.org/technology/m2e/milestones/1.1</a>,
+which can be used for the &#8220;Install New Software&#8221; function.</p>
+
+<h3>Creating a project with ANTLR</h3>
+
+<p>Create a new Maven Project, and skip the archetype selection (i.e. use
+simple project). As I said above, I could use the ANTLR v3 archetype,
+but chose not to.</p>
+
+<h4>Optional: set the target option</h4>
+
+<p>By default Maven uses compiler source and target version 1.5. On Mac
+OS X Lion, there is no JDK 1.5 (only 1.6), so I always update pom.xml
+to set the <code>source</code> and <code>target</code> configuration options to something
+meaningful:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;build&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'><span class="nt">&lt;/build&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Add ANTLR plugin</h4>
+
+<p>I create a property for the ANTLR version, as I will need for both the
+ANTLR plugin and the jar:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;antlr.version&gt;</span>3.4<span class="nt">&lt;/antlr.version&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/properties&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I add the plugin declaration</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.antlr<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>antlr3-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>${antlr.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>antlr<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally I add the dependency to the ANTLR runtime:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;groupId&gt;</span>org.antlr<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>antlr-runtime<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;version&gt;</span>${antlr.version}<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependencies&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this stage, Eclipse is upset because the lifecycle configuration
+<code>org.antlr:antlr3-maven-plugin:3.4:antlr</code> is not covered. But as we&#8217;re
+using m2e 1.1, we can look for the appropriate connector in the m2e
+Marketplace. There should be only one: antlr by Sonatype, which should
+be installed.</p>
+
+<h4>Packaging the ANTLR runtime with the code</h4>
+
+<p>This is something that the original ANTLR v3 Maven archetype suggests:
+to include the ANTLR runtime into the generated jar.</p>
+
+<p>Using the
+<a href="http://maven.apache.org/plugins/maven-assembly-plugin/">Maven Assembly Plugin</a>,
+it is possible to declare what goes into the generated jar. As it is
+self-contained, it is also possible to declare a main class (not done
+below as I did not have a main class yet):</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;descriptorRefs&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;descriptorRef&gt;</span>jar-with-dependencies<span class="nt">&lt;/descriptorRef&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/descriptorRefs&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;id&gt;</span>make-assembly<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>attached<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Tuning the Eclipse project</h4>
+
+<p>Now, the ANTLR plugin can process code under
+<code>src/main/antlr3</code>, so we can create this folder, and add it as source
+folder in the Eclipse project properties. Creating or updating a
+grammar file in Eclipse will also create or update</p>
+
+<p>The ANTLR connector also added the <code>target/generated-sources/antlr3</code>
+directory as another source folder, but it will disappear when
+executing the Maven/Update Project Configuration action, so it is best
+to add it manually. You can then change the properties for this folder
+to check &#8216;Locked&#8217; (to avoid accidental edition) and &#8216;Derived&#8217; (to hide
+the content from the &#8220;Open Resource&#8221; command).</p>
+
+<p>Note that the plugin is unable to follow the <code>@header</code> directive
+properly (that is, it will copy the directory structure of the grammar
+file, instead of following the directory structure implied by the
+<code>@header</code> directive), so the grammar files must use the same directory
+structure as the Java package intended for the generated classes. In
+other words, if you want your generated classes to have the package
+<code>org.something</code>, you both need to put the grammar files under
+<code>src/main/antlr3/org/something</code>, and use the <code>@header package</code>
+directive to set the package of the generated classes.</p>
+
+<p>It is also unable to handle grammar files directly under
+<code>src/main/antlr3</code>. If you try, it will generate this error: &#8220;error(7):
+cannot find or open file: null/NestedNameList.g&#8221; when running the
+<code>process-sources</code> goal. Running this goal is also the only way to get
+the error message if something is wrong with the grammar file (unless
+you install an ANTLR Eclipse plugin, which I didn&#8217;t try).</p>
+
+<p>Small gotcha: I found that with the current version of plugins,
+connectors and so on, Eclipse does not detect changes to generated
+classes directly: it is always one change behind, especially when
+there are errors.</p>
+
+<p>If you made a mistake in the grammar file that
+causes the generated classes not to compile anymore, you would have to
+change the grammar file twice for the error markers to go away; the
+first time, Eclipse will correctly report that the errors in the
+classes are gone, but the project error markers will stay; the second
+change (even if you changed nothing, just add a character, delete it,
+and save), and the error markers will finally disappear.</p>
+
+<p>This is more annoying than really a serious problem, and in any case
+the files are always properly generated, so if there is no error, all files
+are kept up-to-date.</p>
+
+<h5>Automating the above steps</h5>
+
+<p>If you include the <code>build-helper-maven-plugin</code> plugin in your
+<code>pom.xml</code>, then it is possible to automatically add the relevant
+source folders to Eclipse:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.codehaus.mojo<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>build-helper-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>1.7<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;id&gt;</span>add-antlr-source<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;phase&gt;</span>generate-sources<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>add-source<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sources&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;source&gt;</span>src/main/antlr3<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;source&gt;</span>target/generated-sources/antlr3<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sources&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To use it, another connector is necessary, but it is found directly in
+the m2e Marketplace.</p>
+
+<p>Once in the <code>pom.xml</code>, just importing the project into Eclipse will
+create the relevant source folders automatically. However the &#8216;Locked&#8217;
+and &#8216;Derived&#8217; flags on the <code>target/generated-sources/antlr3</code> folder
+are stored in the workspace <code>.metadata</code>, so these flags have to be set
+manually for each workspace.</p>
+
+<h3>The easier way</h3>
+
+<p>If all the above seems tedious, it is because it is. The
+<code>antlr3-maven-archetype</code> will generate much of it, but not for
+instance the additional source folders.</p>
+
+<p>I have the kind of laziness that causes me to spend hours trying to
+save a few minutes later on, so I created my own archetype, a trivial
+little thing whose only purpose is to get the basic setup in place
+quickly.</p>
+
+<p>It does not really do much, and perhaps should best seen as a
+template, which is why the best use is to
+<a href="https://github.com/fdumontmd/antlr3-simple-archetype">download</a> it,
+adjust it to your own need, then install it locally.</p>
+
+<p>Hope this helps.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 1]]></title>
@@ -6348,1152 +7102,6 @@ But that is probably getting a bit ahead of myself; right now I&#8217;d be happy
 <p>And this completes Day 1. The basic REST API is not complex, but its simplicity cuts both ways. There is a lot of typing required; I expect client libraries to be much easier to use, at the cost of having to write an application or script to do anything.</p>
 
 <p>Tomorrow will cover MapReduce in the context of Riak.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks PostgreSQL Day 3]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/"/>
-    <updated>2011-12-04T20:19:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3</id>
-    <content type="html"><![CDATA[<p>Third and final day with PostgreSQL. Today all kind of text and other fancy searches are looked at. Here the SQL standard is resolutely left behind, as pretty much everything is PostgreSQL specific.</p>
-
-<p>PostgreSQL manages advanced index data structures that allow it to efficiently query data using something better than basic comparisons. It especially shines in its handling of geospatial data (searching by distance is a non-trivial problem), but has many options for text searches as well.</p>
-
-<!--more-->
-
-
-<p>Now, it can be easy to get carried away and try to use PostgreSQL for everything, even when a superior alternative option exists. If I had any need for a full text search, I would also look at <a href="http://lucene.apache.org/java/docs/index.html">Lucene</a> and related options. But PostgreSQL can still provide an easy, integrated solution for many situations.</p>
-
-<h3>On indexes</h3>
-
-<p>Indexes are not like pixie dust: you cannot just add some and hope all your performance problems will go away (as I learned the hard way). Benchmarks and the <a href="http://www.postgresql.org/docs/current/static/sql-explain.html"><code>EXPLAIN</code></a> command must be used to confirm the improvements brought by any index.</p>
-
-<p>This section is based on the first beta version of the book. I hope they fill clarify this part in the final version.</p>
-
-<p>First, let&#8217;s look a bit more at the fist index introduced today:</p>
-
-<figure class='code'><figcaption><span>Text Pattern index  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span> <span class="k">ON</span> <span class="n">movies</span> <span class="p">(</span><span class="n">title</span> <span class="n">text_pattern_ops</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The book states that is creates an index for pattern matching. Think about it for a few seconds, try to imagine what it would look like&#8230; Yes, the solution is not trivial, so being able to index for pattern matching sounds like magic. Or pixie dust. But does it work?</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# EXPLAIN SELECT title FROM movies WHERE title ILIKE 'stardust_%';
-</span><span class='line'>                       QUERY PLAN                        
-</span><span class='line'>---------------------------------------------------------
-</span><span class='line'> Seq Scan on movies  (cost=0.00..160.76 rows=1 width=15)
-</span><span class='line'>   Filter: (title ~~* 'stardust_%'::text)
-</span><span class='line'>(2 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It seems that no, it does not work. The optimizer proposes to use a sequential scan, not an index.</p>
-
-<p>The problem here is that <code>ILIKE</code> is not really supported by the optimizer. It is a PostgreSQL extension which, while useful, is not that well integrated. The standard (and SQL compliant) way to do a case insensitive search is:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# EXPLAIN SELECT title FROM movies WHERE lower(title) LIKE 'stardust_%';
-</span><span class='line'>                        QUERY PLAN                        
-</span><span class='line'>----------------------------------------------------------
-</span><span class='line'> Seq Scan on movies  (cost=0.00..167.91 rows=14 width=15)
-</span><span class='line'>   Filter: (lower(title) ~~ 'stardust_%'::text)
-</span><span class='line'>(2 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok, not quite there yet. But that&#8217;s normal. We are not using the column directly, so an index on the original values is not going to work. However PostgreSQL has a very nice feature called functional index: it is possible to create an index on the result of a function. Let&#8217;s drop the original index and create one with <code>lower(title)</code> as the indexed value:</p>
-
-<figure class='code'><figcaption><span>Case insensitive Pattern index  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">DROP</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span> <span class="k">ON</span> <span class="n">movies</span> <span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> <span class="n">text_pattern_ops</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Does it look better now?</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# EXPLAIN SELECT title FROM movies WHERE lower(title) LIKE 'stardust_%';
-</span><span class='line'>                                             QUERY PLAN                                             
-</span><span class='line'>----------------------------------------------------------------------------------------------------
-</span><span class='line'> Bitmap Heap Scan on movies  (cost=4.40..46.55 rows=14 width=15)
-</span><span class='line'>   Filter: (lower(title) ~~ 'stardust_%'::text)
-</span><span class='line'>   -&gt;  Bitmap Index Scan on movies_title_pattern  (cost=0.00..4.40 rows=14 width=0)
-</span><span class='line'>         Index Cond: ((lower(title) ~&gt;=~ 'stardust'::text) AND (lower(title) ~&lt;~ 'stardusu'::text))
-</span><span class='line'>(4 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yes, that&#8217;s better. What about <code>ILIKE</code>?</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# EXPLAIN SELECT title FROM movies WHERE title ILIKE 'stardust_%';
-</span><span class='line'>                       QUERY PLAN                        
-</span><span class='line'>---------------------------------------------------------
-</span><span class='line'> Seq Scan on movies  (cost=0.00..160.76 rows=1 width=15)
-</span><span class='line'>   Filter: (title ~~* 'stardust_%'::text)
-</span><span class='line'>(2 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No, it still cannot use the index.</p>
-
-<p>What about the regular expression query?</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# EXPLAIN SELECT COUNT(*) FROM movies WHERE title !~* '^the.*';
-</span><span class='line'>                           QUERY PLAN                            
-</span><span class='line'>-----------------------------------------------------------------
-</span><span class='line'> Aggregate  (cost=166.32..166.33 rows=1 width=0)
-</span><span class='line'>   -&gt;  Seq Scan on movies  (cost=0.00..160.76 rows=2225 width=0)
-</span><span class='line'>         Filter: (title !~* '^the.*'::text)
-</span><span class='line'>(3 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>No, it does not like the case insensitive operator. Would a <code>lower(title)</code> conversion work?</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# EXPLAIN SELECT COUNT(*) FROM movies WHERE lower(title) !~ '^the.*';
-</span><span class='line'>                           QUERY PLAN                            
-</span><span class='line'>-----------------------------------------------------------------
-</span><span class='line'> Aggregate  (cost=175.03..175.04 rows=1 width=0)
-</span><span class='line'>   -&gt;  Seq Scan on movies  (cost=0.00..167.91 rows=2847 width=0)
-</span><span class='line'>         Filter: (lower(title) !~ '^the.*'::text)
-</span><span class='line'>(3 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Still not. Well, we&#8217;re not looking for a particular pattern, but for everything else. A negation is not easy to propagate through the optimizer logic, so it should not be surprising that it still cannot use the index. But this (almost) similar query does:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# EXPLAIN SELECT COUNT(*) FROM movies WHERE lower(title) ~ '^the.*';
-</span><span class='line'>                                           QUERY PLAN                                           
-</span><span class='line'>------------------------------------------------------------------------------------------------
-</span><span class='line'> Aggregate  (cost=46.59..46.60 rows=1 width=0)
-</span><span class='line'>   -&gt;  Bitmap Heap Scan on movies  (cost=4.40..46.55 rows=14 width=0)
-</span><span class='line'>         Filter: (lower(title) ~ '^the.*'::text)
-</span><span class='line'>         -&gt;  Bitmap Index Scan on movies_title_pattern  (cost=0.00..4.40 rows=14 width=0)
-</span><span class='line'>               Index Cond: ((lower(title) ~&gt;=~ 'the'::text) AND (lower(title) ~&lt;~ 'thf'::text))
-</span><span class='line'>(5 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Interestingly, the trigram based index can help <code>ILIKE</code> queries as explained <a href="http://www.postgresonline.com/journal/archives/212-PostgreSQL-9.1-Trigrams-teaching-LIKE-and-ILIKE-new-tricks.html">here</a> (in general, the <a href="http://www.postgresonline.com/">Postgres OnLine Journal</a> is a very good resource on PostgreSQL more advanced features).</p>
-
-<p>But the general conclusion and take-home lesson is that adding indexes without checking their impact on queries is more than useless: it adds cost on data creation and update, with no compensation at query time.</p>
-
-<h2>Exercises</h2>
-
-<h3>Contributed Packages</h3>
-
-<p>The contributed packages shipped with PostgreSQL are documented <a href="http://www.postgresql.org/docs/current/static/contrib.html">here</a>.</p>
-
-<h3>POSIX Regex</h3>
-
-<p>The Wikipedia <a href="http://en.wikipedia.org/wiki/Regular_expression#Syntax">page</a> on the topic is already very good.</p>
-
-<h3>Stored Procedure based movie recommendation</h3>
-
-<p>I&#8217;m assuming the name of an actor or movie can have errors (after all, end users are known to make and cause errors). The first step will be to identify whether the name is closer to an actor&#8217;s name or a movie&#8217;s name. The second step will use existing queries to either propose 5 movies from the same actor if the name was closer to an actor&#8217;s name or 5 similar movies (using the cube bounding technique) if the name was closer to a movie&#8217;s.</p>
-
-<p>The use of <code>UNION</code> over several strategies to identify either movies or actors gives a lot of freedom. I use the <code>levenshtein</code> function to select the best match identified by each strategy.</p>
-
-<p>Also, because the full text search query must have a specific format (for instance, each search term must be separated by <code>&amp;</code>), I use a few text replacement functions to clean up the input search.</p>
-
-<p>Finally, the return value is a <code>setof</code> <code>movies</code>. The meaning is that I will return rows that have the same type as rows from the <code>movies</code> table. If the query was simple, I could just use the <code>SELECT</code> statement as the body for the function, but as I have to chose between queries, I use the <a href=""><code>RETURN NEXT</code></a> command instead. Explanations can be found in the fine PostgreSQL <a href="http://www.postgresql.org/docs/current/static/plpgsql-control-structures.html">manual</a>.</p>
-
-<figure class='code'><figcaption><span>suggestMovies function  (suggest_movies.sql)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/postgresql/suggest_movies.sql'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">FUNCTION</span> <span class="n">suggest_movies</span><span class="p">(</span><span class="k">search</span> <span class="nb">text</span><span class="p">)</span>
-</span><span class='line'><span class="k">RETURNS</span> <span class="k">SETOF</span> <span class="n">movies</span> <span class="k">AS</span> <span class="err">$$</span>
-</span><span class='line'><span class="k">DECLARE</span>
-</span><span class='line'>  <span class="n">found_name</span> <span class="nb">text</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">found_type</span> <span class="nb">char</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">tempmovie</span> <span class="n">movies</span><span class="o">%</span><span class="n">rowtype</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">movie_query</span> <span class="n">tsquery</span><span class="p">;</span>
-</span><span class='line'><span class="k">BEGIN</span>
-</span><span class='line'>  <span class="n">movie_query</span> <span class="p">:</span><span class="o">=</span> <span class="n">to_tsquery</span><span class="p">(</span><span class="k">replace</span><span class="p">(</span><span class="n">regexp_replace</span><span class="p">(</span><span class="k">trim</span><span class="p">(</span><span class="k">search</span><span class="p">),</span> <span class="s1">&#39; +&#39;</span> <span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">),</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&amp;&#39;</span><span class="p">));</span>
-</span><span class='line'>  <span class="k">SELECT</span> <span class="k">INTO</span> <span class="n">found_name</span><span class="p">,</span> <span class="n">found_type</span>
-</span><span class='line'>              <span class="n">name</span><span class="p">,</span> <span class="k">type</span>
-</span><span class='line'>  <span class="k">FROM</span> <span class="p">(</span>
-</span><span class='line'>    <span class="k">SELECT</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span> <span class="k">AS</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span> <span class="k">AS</span> <span class="k">type</span><span class="p">,</span> <span class="n">levenshtein</span><span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="k">search</span><span class="p">),</span> <span class="k">lower</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">))</span> <span class="k">AS</span> <span class="n">dist</span>
-</span><span class='line'>      <span class="k">FROM</span> <span class="n">actors</span> <span class="n">a</span> <span class="k">WHERE</span> <span class="k">search</span> <span class="o">%</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span>
-</span><span class='line'>    <span class="k">UNION</span>
-</span><span class='line'>  <span class="k">SELECT</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span> <span class="k">AS</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span> <span class="k">AS</span> <span class="k">type</span><span class="p">,</span> <span class="n">levenshtein</span><span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="k">search</span><span class="p">),</span> <span class="k">lower</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">))</span> <span class="k">AS</span> <span class="n">dist</span>
-</span><span class='line'>        <span class="k">FROM</span> <span class="n">actors</span> <span class="n">a</span> <span class="k">WHERE</span> <span class="n">metaphone</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">=</span> <span class="n">metaphone</span><span class="p">(</span><span class="k">search</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">UNION</span>
-</span><span class='line'>  <span class="k">SELECT</span> <span class="n">m</span><span class="p">.</span><span class="n">title</span> <span class="k">AS</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span> <span class="k">AS</span> <span class="k">type</span><span class="p">,</span> <span class="n">levenshtein</span><span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="k">search</span><span class="p">),</span> <span class="k">lower</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">title</span><span class="p">))</span> <span class="k">AS</span> <span class="n">dist</span>
-</span><span class='line'>      <span class="k">FROM</span> <span class="n">movies</span> <span class="n">m</span> <span class="k">WHERE</span> <span class="n">to_tsvector</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">title</span><span class="p">)</span> <span class="o">@@</span> <span class="n">movie_query</span>
-</span><span class='line'>       <span class="p">)</span> <span class="n">t</span>
-</span><span class='line'>  <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">dist</span> <span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">IF</span> <span class="n">found_type</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span> <span class="k">THEN</span>
-</span><span class='line'>    <span class="k">FOR</span> <span class="n">tempmovie</span> <span class="k">IN</span> <span class="k">SELECT</span> <span class="n">m</span><span class="p">.</span><span class="o">*</span> <span class="k">FROM</span> <span class="n">movies</span> <span class="n">m</span> <span class="k">NATURAL</span> <span class="k">JOIN</span> <span class="n">movies_actors</span> <span class="k">NATURAL</span> <span class="k">JOIN</span> <span class="n">actors</span>
-</span><span class='line'>                     <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="n">found_name</span> <span class="k">LIMIT</span> <span class="mi">5</span> <span class="n">LOOP</span>
-</span><span class='line'>      <span class="k">RETURN</span> <span class="k">NEXT</span> <span class="n">tempmovie</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">END</span> <span class="n">LOOP</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">ELSE</span>
-</span><span class='line'>    <span class="k">FOR</span> <span class="n">tempmovie</span> <span class="k">IN</span> <span class="k">SELECT</span> <span class="n">m</span><span class="p">.</span><span class="o">*</span> <span class="k">FROM</span> <span class="n">movies</span> <span class="n">m</span><span class="p">,</span>
-</span><span class='line'>                       <span class="p">(</span><span class="k">SELECT</span> <span class="n">genre</span><span class="p">,</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">movies</span> <span class="k">WHERE</span> <span class="n">title</span> <span class="o">=</span> <span class="n">found_name</span><span class="p">)</span> <span class="n">s</span>
-</span><span class='line'>                       <span class="k">WHERE</span> <span class="n">cube_enlarge</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">genre</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span> <span class="o">@&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">genre</span> <span class="k">AND</span> <span class="n">s</span><span class="p">.</span><span class="n">title</span> <span class="o">&lt;&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">title</span>
-</span><span class='line'>                       <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">cube_distance</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">genre</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">genre</span><span class="p">)</span> <span class="k">LIMIT</span> <span class="mi">5</span> <span class="n">LOOP</span>
-</span><span class='line'>      <span class="k">RETURN</span> <span class="k">NEXT</span> <span class="n">tempmovie</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">END</span> <span class="n">LOOP</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">END</span> <span class="n">IF</span><span class="p">;</span>
-</span><span class='line'><span class="k">END</span><span class="p">;</span>
-</span><span class='line'><span class="err">$$</span> <span class="k">LANGUAGE</span> <span class="n">plpgsql</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Some testing:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# select * from suggest_movies('Ben Aflk');
-</span><span class='line'> movie_id |       title       |                          genre                          
-</span><span class='line'>----------+-------------------+---------------------------------------------------------
-</span><span class='line'>       22 | Armageddon        | (5, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-</span><span class='line'>      146 | Good Will Hunting | (0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-</span><span class='line'>      476 | Forces of Nature  | (0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-</span><span class='line'>      514 | Dogma             | (0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0)
-</span><span class='line'>      609 | Chasing Amy       | (0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-</span><span class='line'>(5 rows)
-</span><span class='line'>
-</span><span class='line'>book=# select * from suggest_movies('Broos Weells');
-</span><span class='line'> movie_id |       title       |                          genre                           
-</span><span class='line'>----------+-------------------+----------------------------------------------------------
-</span><span class='line'>        6 | The Fifth Element | (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0)
-</span><span class='line'>        9 | Twelve Monkeys    | (0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0)
-</span><span class='line'>       22 | Armageddon        | (5, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-</span><span class='line'>      171 | Die Hard          | (7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-</span><span class='line'>      230 | Pulp Fiction      | (0, 0, 0, 12, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0)
-</span><span class='line'>(5 rows)
-</span><span class='line'>
-</span><span class='line'>book=# select * from suggest_movies('war star');
-</span><span class='line'> movie_id |                     title                      |                          genre                          
-</span><span class='line'>----------+------------------------------------------------+---------------------------------------------------------
-</span><span class='line'>      532 | Star Wars: Episode V - The Empire Strikes Back | (0, 7, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 2, 10, 0, 0, 0)
-</span><span class='line'>     2862 | Avatar                                         | (0, 7, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 5, 10, 0, 0, 0)
-</span><span class='line'>     1357 | Explorers                                      | (0, 5, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0)
-</span><span class='line'>      325 | Krull                                          | (0, 5, 0, 0, 0, 0, 0, 5, 0, 5, 0, 0, 0, 0, 7, 0, 0, 0)
-</span><span class='line'>      193 | E.T. The Extra-Terrestrial                     | (0, 5, 0, 0, 0, 0, 0, 5, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0)
-</span><span class='line'>(5 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Groovy.</p>
-
-<h2>Wrapping Up PostgreSQL</h2>
-
-<p>Well, not really wrapping it up. I&#8217;ll keep using it, if only for fun. This database is powerful, mature, well documented, and extremely flexible over the domain of relational modeling. It is possible to define user defined types with arbitrary content, and fancy indexing. If you find an obscure academic paper describing a exotic indexing for a new datatype, chances are that PostgreSQL will support it, given enough C programming.</p>
-
-<p>The comments from the book on this database are very fair, and I would strongly recommend anyone to give it a good and honest evaluation.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks PostgreSQL Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/"/>
-    <updated>2011-12-03T14:54:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2</id>
-    <content type="html"><![CDATA[<p>Second day with PostgreSQL, this time to discuss advanced queries, stored procedures, and rewriting rules.</p>
-
-<p>The relational model was designed to make it easy to extract meaningful information from the database (although here the operative word is meaningful rather than easy). Aggregations pretty much require a schema to return anything worth the effort (and if you don&#8217;t believe it, what exactly is the average value of 1, blue and 3?).</p>
-
-<p>Stored procedures can help to move some business intelligence from the main application to the database. Whether it is a good idea is an open question (and I think the knee-jerk negative answer is too often guided by ignorance rather than experience), but the idea of having enough rules in the database that multiple applications can connect to it safely (or safely enough) is worth considering: it enables other applications, some of which might be incompatible with the main business application, to use the business data (many reporting and ETL solutions might fall into this category). The choice is between control and openness (and which one is correct depends on the situation).</p>
-
-<p>Finally, rewriting rules is a less common feature of SQL databases, but essentially it allows the database designer to create updatable views, implement versioning on specific tables, and so on.</p>
-
-<!--more-->
-
-
-<p>I have a small peeve with the book so far: all too often the authors rely on implicit column ordering when manipulating data. I happen to have a different order for the columns of <code>events</code> (which was created as an exercise <a href="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">yesterday</a>), so many <code>INSERT</code> examples no longer work.</p>
-
-<p>But in general, it is good to specify the columns in an <code>INSERT</code>, as in:</p>
-
-<figure class='code'><figcaption><span>INSERT with explicit columns  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Your Favorite Band&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 21:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 23:00&#39;</span><span class="p">,</span> <span class="p">(</span>
-</span><span class='line'>      <span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Crystal Ballroom&#39;</span> <span class="p">)</span>
-</span><span class='line'>  <span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And to create &#8216;My Place&#8217;:</p>
-
-<figure class='code'><figcaption><span>INSERT My Place  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">countries</span> <span class="p">(</span><span class="n">country_code</span><span class="p">,</span> <span class="n">country_name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;jp&#39;</span><span class="p">,</span> <span class="s1">&#39;Japan&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">cities</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Shinjuku&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">venues</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;My Place&#39;</span><span class="p">,</span> <span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally, to add the new events:</p>
-
-<figure class='code'><figcaption><span>INSERT new events  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span> <span class="k">VALUES</span>
-</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Steven King&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 21:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 23:00:00&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Powell&#39;&#39;s Books&#39;</span><span class="p">)),</span>
-</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Dinner with Mom&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 18:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 20:30:00&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;My Place&#39;</span><span class="p">)),</span>
-</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Valentine&#39;&#39;s Day&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This way, there is never any ambiguity as to what is inserted.</p>
-
-<h3>Window functions</h3>
-
-<p>The book covers window functions, but in this first beta version of the book at least, the explanation is not very illuminating.</p>
-
-<p>Basically, <a href="http://www.postgresql.org/docs/current/static/functions-window.html">window functions</a> are a generalization of aggregate functions. Aggregate functions operates on a range of rows selected by a <code>GROUP BY</code> clause. For each group, there will be only one row, where columns are either grouped by columns, or aggregates.</p>
-
-<p>Window functions also operate on a range of rows, but there is one range for each row in the filtered table. The range can be created in a way similar to <code>GROUP BY</code> (using the <code>PARTITION OVER</code> clause), but can also be created by taking all the rows up to the current one, or 2 rows before, 2 rows after, and the current one, &#8230; Such a range is called a window. There are <a href="http://www.postgresql.org/docs/current/static/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS">many ways</a> to define them.</p>
-
-<p>For instance, say we want to know, for each events, how many events have happened (including the current one), we can try:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# SELECT title, starts, COUNT(*) OVER (ORDER BY starts) FROM events;
-</span><span class='line'>       title        |       starts        | count 
-</span><span class='line'>--------------------+---------------------+-------
-</span><span class='line'> Your Favorite Band | 2012-02-06 21:00:00 |     1
-</span><span class='line'> Valentine's Day    | 2012-02-14 00:00:00 |     2
-</span><span class='line'> My Book Signing    | 2012-02-15 17:30:00 |     3
-</span><span class='line'> Dinner with Mom    | 2012-02-26 18:00:00 |     4
-</span><span class='line'> Steven King        | 2012-02-26 21:00:00 |     5
-</span><span class='line'> April Fools Day    | 2012-04-01 00:00:00 |     6
-</span><span class='line'> House Party        | 2012-05-03 23:00:00 |     7
-</span><span class='line'> Christmas Day      | 2012-12-25 00:00:00 |     8
-</span><span class='line'> Valentine's Day    | 2013-02-14 00:00:00 |     9
-</span><span class='line'>(9 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>OVER</code> does not specify a <code>PARTITION</code>, but an <code>ORDER</code>, which means that the <code>COUNT(*)</code> function operates on all the rows from first one to current one (ordered by the <code>starts</code> column). Actually, the <code>COUNT(*)</code> function is the same as the (proper) window function <code>RANK</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# SELECT title, starts, RANK() OVER (ORDER BY starts) FROM events;
-</span><span class='line'>       title        |       starts        | rank 
-</span><span class='line'>--------------------+---------------------+------
-</span><span class='line'> Your Favorite Band | 2012-02-06 21:00:00 |    1
-</span><span class='line'> Valentine's Day    | 2012-02-14 00:00:00 |    2
-</span><span class='line'> My Book Signing    | 2012-02-15 17:30:00 |    3
-</span><span class='line'> Dinner with Mom    | 2012-02-26 18:00:00 |    4
-</span><span class='line'> Steven King        | 2012-02-26 21:00:00 |    5
-</span><span class='line'> April Fools Day    | 2012-04-01 00:00:00 |    6
-</span><span class='line'> House Party        | 2012-05-03 23:00:00 |    7
-</span><span class='line'> Christmas Day      | 2012-12-25 00:00:00 |    8
-</span><span class='line'> Valentine's Day    | 2013-02-14 00:00:00 |    9
-</span><span class='line'>(9 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>What about computing the order of each events, but by year? Nothing easier:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# SELECT title, starts, RANK() OVER (PARTITION BY extract(year from starts) ORDER BY starts) FROM events;
-</span><span class='line'>       title        |       starts        | rank 
-</span><span class='line'>--------------------+---------------------+------
-</span><span class='line'> Your Favorite Band | 2012-02-06 21:00:00 |    1
-</span><span class='line'> Valentine's Day    | 2012-02-14 00:00:00 |    2
-</span><span class='line'> My Book Signing    | 2012-02-15 17:30:00 |    3
-</span><span class='line'> Dinner with Mom    | 2012-02-26 18:00:00 |    4
-</span><span class='line'> Steven King        | 2012-02-26 21:00:00 |    5
-</span><span class='line'> April Fools Day    | 2012-04-01 00:00:00 |    6
-</span><span class='line'> House Party        | 2012-05-03 23:00:00 |    7
-</span><span class='line'> Christmas Day      | 2012-12-25 00:00:00 |    8
-</span><span class='line'> Valentine's Day    | 2013-02-14 00:00:00 |    1
-</span><span class='line'>(9 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok, this is not very fancy. But with numeric data, window functions are more powerful. Lets say we collect daily measures into a new table:</p>
-
-<figure class='code'><figcaption><span>Window function example  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">observation</span> <span class="p">(</span>
-</span><span class='line'>   <span class="k">day</span> <span class="k">timestamp</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-</span><span class='line'>   <span class="n">measure</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">observation</span> <span class="p">(</span><span class="k">day</span><span class="p">,</span> <span class="n">measure</span><span class="p">)</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="nb">date</span> <span class="s1">&#39;2011-12-01&#39;</span> <span class="k">AS</span> <span class="k">day</span><span class="p">,</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)::</span><span class="nb">int</span> <span class="k">as</span> <span class="n">measure</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We could use the usual aggregate functions, for instance <code>AVG</code> and <code>SUM</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# SELECT AVG(measure), SUM(measure) FROM observation;
-</span><span class='line'>         avg         | sum  
-</span><span class='line'>---------------------+------
-</span><span class='line'> 54.9600000000000000 | 5496
-</span><span class='line'>(1 row)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We have pretty much all the details. If there&#8217;s any trend, we would not see it. But with window functions, it is possible to compute running averages (and actually, two different ones):</p>
-
-<figure class='code'><figcaption><span>Window function example  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="k">day</span><span class="p">,</span> <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">2</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">2</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">short_avg</span><span class="p">,</span>
-</span><span class='line'>  <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">5</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">5</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">long_avg</span><span class="p">,</span>
-</span><span class='line'>  <span class="k">SUM</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="k">day</span><span class="p">)</span> <span class="k">as</span> <span class="n">running_sum</span> <span class="k">FROM</span> <span class="n">observation</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(results omitted because they are too long). Here, the <code>AVG(measure)</code> is applied to a window of either 5 rows for <code>short_avg</code> or 11 rows for <code>long_avg</code>, and there&#8217;s a running sum in <code>running_sum</code>.</p>
-
-<p>Pretty cool, I&#8217;d say.</p>
-
-<h3>Rules</h3>
-
-<p><a href="http://www.postgresql.org/docs/current/static/sql-createrule.html">Rules</a> are very useful as well. Here&#8217;s how I&#8217;d implement the <code>INSERT</code> on <code>holidays</code>:</p>
-
-<figure class='code'><figcaption><span>INSERT on holidays  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">insert_holidays</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">INSERT</span> <span class="k">TO</span> <span class="n">holidays</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
-</span><span class='line'>  <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">values</span> <span class="p">(</span><span class="k">NEW</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="o">+</span><span class="nb">interval</span> <span class="s1">&#39;23 hour 59 minutes&#39;</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="n">colors</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note the syntax to manipulate dates and timestamp. It is fairly readable and compact enough.</p>
-
-<h2>Exercises</h2>
-
-<h3>Aggregate Functions</h3>
-
-<p>The aggregate functions are documented <a href="http://www.postgresql.org/docs/current/static/functions-aggregate.html">here</a>, while the window functions are <a href="http://www.postgresql.org/docs/current/static/functions-window.html">here</a>.</p>
-
-<h3>GUI</h3>
-
-<p>Honestly, I don&#8217;t really use any. <code>psql</code> is really powerful. For those of the GUI persuasion, there are a few <a href="http://wiki.postgresql.org/wiki/Community_Guide_to_PostgreSQL_GUI_Tools">options</a>.</p>
-
-<h3>DELETE Rule</h3>
-
-<figure class='code'><figcaption><span>DELETE rule on venues  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">delete_venue</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">TO</span> <span class="n">venues</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
-</span><span class='line'>  <span class="k">UPDATE</span> <span class="n">venues</span> <span class="k">SET</span> <span class="n">active</span> <span class="o">=</span> <span class="k">false</span> <span class="k">WHERE</span> <span class="n">venue_id</span> <span class="o">=</span> <span class="k">OLD</span><span class="p">.</span><span class="n">venue_id</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>With this rule in place, deleting from <code>venues</code> now set the <code>active</code> flag to false:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# DELETE FROM venues WHERE name = 'My Place';
-</span><span class='line'>DELETE 0
-</span><span class='line'>book=# SELECT * FROM venues;
-</span><span class='line'> venue_id |       name       | street_address |  type   | postal_code | country_code | active 
-</span><span class='line'>----------+------------------+----------------+---------+-------------+--------------+--------
-</span><span class='line'>        1 | Crystal Ballroom |                | public  | 97205       | us           | t
-</span><span class='line'>        2 | Powell's Books   |                | public  | 97205       | us           | t
-</span><span class='line'>        5 | Run's House      |                | public  | 97205       | us           | t
-</span><span class='line'>        4 | My Place         |                | private | 160-0022    | jp           | f
-</span><span class='line'>(4 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>generate_series in crosstab</h3>
-
-<p>The documentation for <a href="http://www.postgresql.org/docs/current/static/tablefunc.html"><code>crosstab</code></a> has already an example for using <a href="http://www.postgresql.org/docs/current/static/functions-srf.html"><code>generate_series</code></a>:</p>
-
-<figure class='code'><figcaption><span>generate_series in crosstab  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
-</span><span class='line'><span class="s1">&#39;SELECT extract(year from starts) as year,</span>
-</span><span class='line'><span class="s1">extract(month from starts) as month, count(*) FROM events</span>
-</span><span class='line'><span class="s1">GROUP BY year, month&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 12) m&#39;</span>
-</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
-</span><span class='line'><span class="k">year</span> <span class="nb">int</span><span class="p">,</span>
-</span><span class='line'><span class="n">jan</span> <span class="nb">int</span><span class="p">,</span> <span class="n">feb</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mar</span> <span class="nb">int</span><span class="p">,</span> <span class="n">apr</span> <span class="nb">int</span><span class="p">,</span> <span class="n">may</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jun</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jul</span> <span class="nb">int</span><span class="p">,</span> <span class="n">aug</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sep</span> <span class="nb">int</span><span class="p">,</span> <span class="n">oct</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nov</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dec</span> <span class="nb">int</span>
-</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">YEAR</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The output remains the same:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> year | jan | feb | mar | apr | may | jun | jul | aug | sep | oct | nov | dec 
-</span><span class='line'>------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----
-</span><span class='line'> 2012 |     |   5 |     |   1 |   1 |     |     |     |     |     |     |   1
-</span><span class='line'> 2013 |     |   1 |     |     |     |     |     |     |     |     |     |    
-</span><span class='line'>(2 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Weekly pivot</h3>
-
-<p>The hardest, perhaps, is to find how to convince PostgreSQL to apply <a href="http://www.postgresql.org/docs/current/static/functions-math.html#FUNCTIONS-MATH-FUNC-TABLE"><code>div</code></a> to the passed arguments, but a bit of type declaration using <code>::</code> does the trick. Also, <code>crosstab</code> is not overly smart, so the <code>month</code> and <code>week</code> columns must be in order, otherwise the counts for the two February (one in 2012 and one in 2013) are different:</p>
-
-<figure class='code'><figcaption><span>Weekly pivot  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
-</span><span class='line'><span class="s1">&#39;SELECT extract(month from starts) as month, </span>
-</span><span class='line'><span class="s1"> div(extract (day from starts)::int, 7) + 1 as week, count(*) FROM events</span>
-</span><span class='line'><span class="s1">GROUP BY month, week ORDER BY month, week&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 5) m&#39;</span>
-</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
-</span><span class='line'><span class="k">month</span> <span class="nb">int</span><span class="p">,</span>
-</span><span class='line'><span class="n">week_1</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_2</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_3</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_4</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_5</span> <span class="nb">int</span>
-</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">MONTH</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The query produces:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> month | week_1 | week_2 | week_3 | week_4 | week_5 
-</span><span class='line'>-------+--------+--------+--------+--------+--------
-</span><span class='line'>     2 |      1 |        |      3 |      2 |       
-</span><span class='line'>     4 |      1 |        |        |        |       
-</span><span class='line'>     5 |      1 |        |        |        |       
-</span><span class='line'>    12 |        |        |        |      1 |       
-</span><span class='line'>(4 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And this completes Day 2.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks PostgreSQL Day 1]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/"/>
-    <updated>2011-12-03T12:22:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1</id>
-    <content type="html"><![CDATA[<p>The first database in the series is a relational database, and what better choice than <a href="http://www.postgresql.org">PostgreSQL</a>?</p>
-
-<!--more-->
-
-
-<p>Of course, <a href="http://www.mysql.com/">MySQL</a> is more popular, but if we are going to talk about SQL and the relational model, it is better to pick a database that actually takes these concepts seriously.</p>
-
-<p>The idea to start with a relational database is a good one. I feel that many who embrace NoSQL do so because they do not understand either SQL or the relational model. I was surprised to discover that some of my college educated colleagues did not know SQL at all. They were taught mostly about Java and object oriented design (I would ask for a refund). SQL databases have been developed, refined, and used in production for about 40 years. That&#8217;s more than half the history of computers, they&#8217;re likely to be part of the landscape for a few more decades, so ignoring them may be trendy but it is not wise.</p>
-
-<p>About the PostgreSQL version: the book appears to have been long in the making, as it still refers the reader to the version 9.0, while <a href="http://www.postgresql.org/docs/9.1/static/release-9-1-1.html">9.1</a> has been out for a few months.</p>
-
-<p>Installing then extensions that are needed for this book is easier with 9.1. Just using <a href="http://www.postgresql.org/docs/current/static/sql-createextension.html"><code>CREATE EXTENSION</code></a>:</p>
-
-<figure class='code'><figcaption><span>Installing Extensions  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">tablefunc</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">dict_xsyn</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">fuzzystrmatch</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">pg_trgm</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="k">cube</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Removing them is done with the command <a href="http://www.postgresql.org/docs/current/static/sql-dropextension.html"><code>DROP EXTENSION</code></a>.</p>
-
-<h3>The events table</h3>
-
-<p>The code to create and fills the <code>events</code> table:</p>
-
-<figure class='code'><figcaption><span>Creating and filling the events table  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">events</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">event_id</span> <span class="nb">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">title</span> <span class="nb">text</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">starts</span> <span class="k">timestamp</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">ends</span> <span class="k">timestamp</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">venue_id</span> <span class="nb">integer</span><span class="p">,</span>
-</span><span class='line'>  <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">REFERENCES</span> <span class="n">venues</span> <span class="p">(</span><span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'><span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;My Book Signing&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-15 17:30:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-15 19:30:00&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-</span><span class='line'>       <span class="p">(</span><span class="s1">&#39;April Fools Day&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-04-01 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-04-01 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">),</span>
-</span><span class='line'>       <span class="p">(</span><span class="s1">&#39;Christmas Day&#39;</span><span class="p">,</span>   <span class="s1">&#39;2012-12-25 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-12-25 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>On indexes</h3>
-
-<p>I don&#8217;t have a PostgreSQL 9.0 instance to check, but with 9.1 at least, <code>UNIQUE</code> constraints are implemented through a <code>btree</code> index, not a <code>hash</code> one. The difference is that a <code>btree</code> index is sorted and so supports range searches.</p>
-
-<p>This can be checked by querying the console about the table:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# \d events
-</span><span class='line'>                                       Table "public.events"
-</span><span class='line'>  Column  |            Type             |                         Modifiers                         
-</span><span class='line'>----------+-----------------------------+-----------------------------------------------------------
-</span><span class='line'> event_id | integer                     | not null default nextval('events_event_id_seq'::regclass)
-</span><span class='line'> title    | text                        | 
-</span><span class='line'> starts   | timestamp without time zone | 
-</span><span class='line'> ends     | timestamp without time zone | 
-</span><span class='line'> venue_id | integer                     | 
-</span><span class='line'>Indexes:
-</span><span class='line'>    "events_pkey" PRIMARY KEY, btree (event_id)
-</span><span class='line'>    "events_starts" btree (starts)
-</span><span class='line'>Foreign-key constraints:
-</span><span class='line'>    "events_venue_id_fkey" FOREIGN KEY (venue_id) REFERENCES venues(venue_id)</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Exercises</h2>
-
-<h3>The PostgreSQL FAQ</h3>
-
-<p>The FAQ is <a href="http://wiki.postgresql.org/wiki/FAQ">here</a>.</p>
-
-<h3>The PostgreSQL Documentation</h3>
-
-<p>The documentation for version 9.1 is <a href="http://www.postgresql.org/docs/9.1/static/index.html">here</a> (and <a href="http://www.postgresql.org/docs/manuals/">there</a> for all the versions).</p>
-
-<h3>About <code>MATCH FULL</code></h3>
-
-<p>This one was already explained in the book, and confirmed by the <a href="http://www.postgresql.org/docs/current/static/sql-createtable.html">documentation</a>: when a foreign key is composed of more than one column, they must all match a row in the referenced table, or be all null.</p>
-
-<h3>Selecting user table from <code>pg_class</code></h3>
-
-<p>Interestingly, the first time I tried to solve this exercise, I used <a href="http://www.postgresql.org/docs/current/static/view-pg-tables.html"><code>pg_tables</code></a> by mistake (<code>pg_tables</code> has a <code>tableowner</code> column which makes it easy to identify user tables).</p>
-
-<p><a href="http://www.postgresql.org/docs/current/static/catalog-pg-class.html"><code>pg_class</code></a> stores the type of object in <code>relkind</code>: &#8216;r&#8217; for tables. Restricting for just tables, and working on the table name:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=#  select relname from pg_class where relkind = 'r';
-</span><span class='line'>         relname         
-</span><span class='line'>-------------------------
-</span><span class='line'> pg_statistic
-</span><span class='line'> pg_type
-</span><span class='line'> pg_attribute
-</span><span class='line'> pg_authid
-</span><span class='line'> pg_proc
-</span><span class='line'> pg_class
-</span><span class='line'> pg_database
-</span><span class='line'> pg_user_mapping
-</span><span class='line'> pg_constraint
-</span><span class='line'> pg_inherits
-</span><span class='line'> pg_index
-</span><span class='line'> pg_operator
-</span><span class='line'> pg_opfamily
-</span><span class='line'> pg_opclass
-</span><span class='line'> pg_amop
-</span><span class='line'> pg_amproc
-</span><span class='line'> pg_language
-</span><span class='line'> pg_largeobject_metadata
-</span><span class='line'>...</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok, that&#8217;s a bit long. Removing these <code>pg_</code> named tables:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# select relname from pg_class where relkind = 'r' and relname not like 'pg_%';
-</span><span class='line'>         relname         
-</span><span class='line'>-------------------------
-</span><span class='line'> sql_implementation_info
-</span><span class='line'> sql_languages
-</span><span class='line'> sql_packages
-</span><span class='line'> sql_parts
-</span><span class='line'> sql_sizing
-</span><span class='line'> sql_sizing_profiles
-</span><span class='line'> sql_features
-</span><span class='line'> countries
-</span><span class='line'> events
-</span><span class='line'> cities
-</span><span class='line'> venues
-</span><span class='line'>(11 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Interestingly, only the tables that are visible in the current database are listed (I have other databases, with more user created tables).</p>
-
-<p>Still I need to remove the <code>sql_</code> named tables. Using PostgreSQL <a href="http://www.postgresql.org/docs/current/static/functions-matching.html#FUNCTIONS-POSIX-REGEXP">regular expression operators</a>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# select relname from pg_class where relkind = 'r' and relname !~ '^(pg_|sql_)';
-</span><span class='line'>  relname  
-</span><span class='line'>-----------
-</span><span class='line'> countries
-</span><span class='line'> events
-</span><span class='line'> cities
-</span><span class='line'> venues
-</span><span class='line'>(4 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This is one approach. Another would be to try to mimic the behaviour of the <code>\d</code> console command. The <a href="http://www.postgresql.org/docs/current/static/app-psql.html"><code>psql</code></a> option <code>-E</code> can be used to check what queries are used to implement specific console commands:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ psql -E book
-</span><span class='line'>psql (9.1.1)
-</span><span class='line'>Type "help" for help.
-</span><span class='line'>
-</span><span class='line'>book=# \d
-</span><span class='line'>********* QUERY **********
-</span><span class='line'>SELECT n.nspname as "Schema",
-</span><span class='line'>  c.relname as "Name",
-</span><span class='line'>  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' WHEN 'f' THEN 'foreign table' END as "Type",
-</span><span class='line'>  pg_catalog.pg_get_userbyid(c.relowner) as "Owner"
-</span><span class='line'>FROM pg_catalog.pg_class c
-</span><span class='line'>     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-</span><span class='line'>WHERE c.relkind IN ('r','v','S','f','')
-</span><span class='line'>      AND n.nspname &lt;&gt; 'pg_catalog'
-</span><span class='line'>      AND n.nspname &lt;&gt; 'information_schema'
-</span><span class='line'>      AND n.nspname !~ '^pg_toast'
-</span><span class='line'>  AND pg_catalog.pg_table_is_visible(c.oid)
-</span><span class='line'>ORDER BY 1,2;
-</span><span class='line'>**************************
-</span><span class='line'>
-</span><span class='line'>                  List of relations
-</span><span class='line'> Schema |        Name         |   Type   |   Owner   
-</span><span class='line'>--------+---------------------+----------+-----------
-</span><span class='line'> public | cities              | table    | fdumontmd
-</span><span class='line'> public | countries           | table    | fdumontmd
-</span><span class='line'> public | events              | table    | fdumontmd
-</span><span class='line'> public | events_event_id_seq | sequence | fdumontmd
-</span><span class='line'> public | venues              | table    | fdumontmd
-</span><span class='line'> public | venues_venue_id_seq | sequence | fdumontmd
-</span><span class='line'>(6 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The minimal query that lists the user created tables in the current database seems to be:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace where c.relkind = 'r' and pg_catalog.pg_table_is_visible(c.oid) and n.nspname &lt;&gt; 'pg_catalog';
-</span><span class='line'>  relname  
-</span><span class='line'>-----------
-</span><span class='line'> countries
-</span><span class='line'> events
-</span><span class='line'> cities
-</span><span class='line'> venues
-</span><span class='line'>(4 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But given that <code>pg_class</code> only lists the tables in the current database, and assuming you don&#8217;t use <code>pg_</code> or <code>sql_</code> prefixes, the first query is clearly easier.</p>
-
-<h3>Country name for the event &#8216;My Book Signing&#8217;</h3>
-
-<p>Based on the content of the book so far, a possible solution uses <code>INNER JOIN</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# select c.country_name from events e inner join venues v on e.venue_id = v.venue_id inner join countries c on v.country_code = c.country_code where title = 'My Book Signing';
-</span><span class='line'> country_name  
-</span><span class='line'>---------------
-</span><span class='line'> United States
-</span><span class='line'>(1 row)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But this is a bit verbose. The structure of the tables makes it possible to use <a href="http://www.postgresql.org/docs/current/static/queries-table-expressions.html"><code>NATURAL JOIN</code></a>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# select country_name from events natural join venues natural join countries where title = 'My Book Signing';
-</span><span class='line'> country_name  
-</span><span class='line'>---------------
-</span><span class='line'> United States
-</span><span class='line'>(1 row)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>When using <code>NATURAL JOIN</code>, PostgreSQL will join on all the columns that are found in both tables (based on their names). For instance, both <code>events</code> and <code>venues</code> have a <code>venue_id</code> column (and no other column with the same name), so the join is on this column.</p>
-
-<p>And other interesting difference is that <code>NATURAL JOIN</code> removes the duplicate columns:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# select * from events natural join venues natural join countries where title = 'My Book Signing';
-</span><span class='line'> country_code | venue_id | event_id |      title      |       starts        |        ends         |     name      | street_address |  type   | postal_code | active | country_name  
-</span><span class='line'>--------------+----------+----------+-----------------+---------------------+---------------------+---------------+----------------+---------+-------------+--------+---------------
-</span><span class='line'> us           |        2 |        1 | My Book Signing | 2012-02-15 17:30:00 | 2012-02-15 19:30:00 | Powel's Books |                | public  | 97205       | t      | United States
-</span><span class='line'>(1 row)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>whereas <code>INNER JOIN</code> does not:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# select * from events e inner join venues v on e.venue_id = v.venue_id inner join countries c on v.country_code = c.country_code where title = 'My Book Signing';
-</span><span class='line'> event_id |      title      |       starts        |        ends         | venue_id | venue_id |     name      | street_address |  type   | postal_code | country_code | active | country_code | country_name  
-</span><span class='line'>----------+-----------------+---------------------+---------------------+----------+----------+---------------+----------------+---------+-------------+--------------+--------+--------------+---------------
-</span><span class='line'>        1 | My Book Signing | 2012-02-15 17:30:00 | 2012-02-15 19:30:00 |        2 |        2 | Powel's Books |                | public  | 97205       | us           | t      | us           | United States
-</span><span class='line'>(1 row)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Add a new column</h3>
-
-<figure class='code'><figcaption><span>Add a new column to `venues`  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">venues</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">active</span> <span class="nb">boolean</span> <span class="k">DEFAULT</span> <span class="k">TRUE</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Checking that is is now there:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# \d venues
-</span><span class='line'>                                        Table "public.venues"
-</span><span class='line'>     Column     |          Type          |                         Modifiers                         
-</span><span class='line'>----------------+------------------------+-----------------------------------------------------------
-</span><span class='line'> venue_id       | integer                | not null default nextval('venues_venue_id_seq'::regclass)
-</span><span class='line'> name           | character varying(255) | 
-</span><span class='line'> street_address | text                   | 
-</span><span class='line'> type           | character(7)           | default 'public'::bpchar
-</span><span class='line'> postal_code    | character varying(9)   | 
-</span><span class='line'> country_code   | character(2)           | 
-</span><span class='line'> active         | boolean                | default true
-</span><span class='line'>Indexes:
-</span><span class='line'>    "venues_pkey" PRIMARY KEY, btree (venue_id)
-</span><span class='line'>Check constraints:
-</span><span class='line'>    "venues_type_check" CHECK (type = ANY (ARRAY['public'::bpchar, 'private'::bpchar]))
-</span><span class='line'>Foreign-key constraints:
-</span><span class='line'>    "venues_country_code_fkey" FOREIGN KEY (country_code, postal_code) REFERENCES cities(country_code, postal_code) MATCH FULL
-</span><span class='line'>Referenced by:
-</span><span class='line'>    TABLE "events" CONSTRAINT "events_venue_id_fkey" FOREIGN KEY (venue_id) REFERENCES venues(venue_id)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>or directly by <code>select</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>book=# select * from venues;
-</span><span class='line'> venue_id |       name       | street_address |  type   | postal_code | country_code | active 
-</span><span class='line'>----------+------------------+----------------+---------+-------------+--------------+--------
-</span><span class='line'>        1 | Crystal Ballroom |                | public  | 97205       | us           | t
-</span><span class='line'>        2 | Powel's Books    |                | public  | 97205       | us           | t
-</span><span class='line'>(2 rows)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And this completes Day 1. Tomorrow, stored procedures, triggers, views, rules, and other goodies are on the menu.</p>
 ]]></content>
   </entry>
   

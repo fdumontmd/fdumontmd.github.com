@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-09T19:30:18+09:00</updated>
+  <updated>2012-01-14T15:50:18+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,437 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Repertoire Method]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method/"/>
+    <updated>2012-01-14T13:33:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method</id>
+    <content type="html"><![CDATA[<p>The repertoire method is never really explained in the book, or
+anywhere else I could find on the Internet. There are a couple of
+posts on this subject, so I though I should add mine.</p>
+
+<p>The repertoire method is really a tool to help with the intuitive step
+of figuring out a closed formula for a recurrence equation. It does so
+by breaking the original problem into smaller parts, with the hope
+they might be easier to solve.</p>
+
+<!-- more -->
+
+
+<h3>Why it works</h3>
+
+<p>Let's assume we have a system of recurrence equations with parameters,
+so that the unknown function can be expressed as a linear combination
+of other (unknown) functions where the coefficients are the parameters:</p>
+
+<div markdown="0">
+\begin{align}
+g(1) &amp; = b(0, \alpha_1, \cdots, \alpha_m)\\\\
+g(n) &amp; = r_n(g_1, \cdots, g_{n-1}, \alpha_1, \cdots, \alpha_m)\\\\
+&amp; = \sum_{i=1}^m A_i(n)\alpha_i,
+\end{align}
+</div>
+
+
+<p>We can consider $g$ as a specific point in a $m$-dimensional function
+space (determined by both the recurrence equations, and the
+parameters), and because $g$ is a linear combination, we can try to
+find $m$ base functions (hopefully known or easy to compute)
+$f_k(n) = \sum_{i=1}^m A_i(n)\alpha_{i_k}$ with $1 \le k \le m$, expressed in
+terms of $m$ linearly independent vectors
+$(\alpha_{1_k},\cdots,\alpha_{m_k})$.</p>
+
+<p>In other words, if we can find $m$ linearly independent parameter
+vectors such that, for each, we have a known solution $f_k(n)$, then
+we can express the function $g$ as a linear combination of $f_k(n)$
+for any parameters (because the $m$ $f_k(n)$ form a base for the
+$m$-dimensional function space defined by the recurrence equations).</p>
+
+<h3>How it works</h3>
+
+<p>First, we need to check that the recurrence equations accept a
+solution expressed as</p>
+
+<div markdown="0">
+\begin{align}
+g(n) &amp; = \sum_{i=1}^m A_i(n)\alpha_i
+\end{align}
+</div>
+
+
+<p>It is enough to plug this definition into the recurrence equations,
+and make sure the different parameters always remain in different
+terms.</p>
+
+<p>Then we can either solve $f(n) = \sum_{i=1}^m A_i(n)\alpha_i$ for
+known $f(n)$, or for known $\alpha_i$
+parameters, as long as we end up with $m$ linearly independent
+parameter vectors (or, as it is equivalent, $m$ linearly independent
+known functions for specific parameters).</p>
+
+<p>It is important to keep in mind that a solution can be searched from
+both direction: either set a function and try to solve for the
+parameters, or set the parameters and solve for the function.</p>
+
+<h3>Homework exercise</h3>
+
+<p>Given</p>
+
+<div markdown="0">
+\begin{align}
+g(1) &amp; = \alpha\\\\
+g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j&amp;&amp;\text{for \(j=0, 1\) and \(n \gt 1 \)}\\\\
+\end{align}
+</div>
+
+
+<p>We need to check that $g$ can be written as</p>
+
+<div markdown="0">
+\begin{align}
+g(n) &amp; = \alpha A(n) + \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)\\\\
+\end{align}
+</div>
+
+
+<p>The base case is trivial. The recurrence case is</p>
+
+<div markdown="0">
+\begin{align}
+g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
+&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + \gamma n \beta_0\\\\
+&amp; = \alpha 3A(n) + \beta_0 (3 B_0(n) + 1) + \beta_1 3B_1(n) + \gamma (3C(n) + n)\\\\
+g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
+&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + + \gamma n\beta_1\\\\
+&amp; = \alpha 3A(n) + \beta_0 3 B_0(n)+ \beta_1 (3B_1(n) + 1) + \gamma (3C(n) + n)\\\\
+\end{align}
+</div>
+
+
+<p>so $g$ can be expressed as a linear combination of other functions,
+with the parameters as the coefficients.</p>
+
+<p>Now, when I tried to solve this problem, I didn't know I could set the
+parameters to values that would lead to an easy solution ($\gamma = 0$
+turns the problem into an easy to solve generalised radix-based
+Josephus problem); instead I wasted a lot of time trying to find known
+functions and solve for the parameters, which is why I have four steps
+below instead of just two as in the book.</p>
+
+<h4>$g(n) = n$</h4>
+
+<p>As the book suggests, I tried to solve for $g(n) = n$:</p>
+
+<div markdown="0">
+\begin{align}
+1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
+2n = g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
+&amp; = 3n + \gamma n + \beta_0&amp;&amp;\gamma = -1, \beta_0 = 0\\\\
+2n+1 = g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
+&amp; = 3n - n + \beta_1&amp;&amp; \beta_1 = 1\\\\
+\end{align}
+</div>
+
+
+<h4>$g(2^m+l) = 3^m$</h4>
+
+<p>As the recurrence equation looks like the generalised radix-based
+Josephus equation, I tried to solve for $g(2^m+1) = 3^m$:</p>
+
+<div markdown="0">
+\begin{align}
+1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
+3^m = g(2^m+2l) &amp; = 3g(2^{m-1}+l) + \gamma (2^{m-1} + l) + \beta_0\\\\
+&amp; = 3\cdot 3^{m-1} + \gamma (2^{m-1} + l) + \beta_0&amp;&amp; \beta_0, \gamma = 0\\\\
+3^m = g(2^m+2l+1) &amp; = 3g(2^{m^1}+l) + \gamma (2^{m-1} + l) + \beta_1\\\\
+&amp; = 3\cdot 3^{m-1}&amp;&amp;\beta_1 = 0\\\\
+\end{align}
+</div>
+
+
+<h4>$g(n) = 1$</h4>
+
+<p>I tried to solve for $g(n) = 1$, as it seemed useful to solve for a
+constant (no linear combination of linearly independent non-constant
+functions can produce a constant function).</p>
+
+<div markdown="0">
+\begin{align}
+1 = g(1) &amp; = \alpha&amp;&amp; \alpha = 1\\\\
+1 = g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j\\\\
+&amp; = 3 + \gamma n + \beta_j&amp;&amp; \gamma = 0, \beta_j = -2\\\\
+\end{align}
+</div>
+
+
+<h4>$\alpha, \beta_1 = 1, \beta_0,  \gamma = 0$</h4>
+
+<p>This is the step that took me the longest, and when I finally
+understood I could fix the parameters, I was able to use the
+radix-based Josephus solution.</p>
+
+<p>The recurrence equations</p>
+
+<div markdown="0">
+\begin{align}
+g(1) &amp; = 1\\\\
+g(2n) &amp; = 3g(n)\\\\
+g(2n+1) &amp; = 3g(n) + 1\\\\
+\end{align}
+</div>
+
+
+<p>have as solution $g(2^m + (b_m\cdots b_0)) = 3^m + (b_m\cdots b_0)_3$.</p>
+
+<h4>Solving for $g(n)$</h4>
+
+<p>We have the equations</p>
+
+<div markdown="0">
+\begin{align}
+A(n) - C(n) &amp; = n\\\\
+A(2^m + l) &amp; = 3^m\\\\
+A(n) -2(B_0(n) + B_1(n)) &amp; = 1\\\\
+B_1(2^m+l) &amp; = h_3(l)&amp;&amp;\text{where \(h_3(b_m\cdots b_0) = (b_m\cdots b_0)_3\)}\\\\
+\end{align}
+</div>
+
+
+<p>We have two functions already defined ($A(n)$ and $B_1(n)$), and the
+other two equations give us the remaining function.</p>
+
+<p>Now we can solve for $g(n)$:</p>
+
+<div markdown="0">
+\begin{align}
+g(2^m+l) &amp; = \alpha 3^m + \beta_0 (\frac{3^m - 1}{2} - h_3(l)) + \beta_1 h_3(l) + \gamma (3^m + h_3(l) - 2^m - l)
+\end{align}
+</div>
+
+
+<p>The $\gamma$ term is really $h_3(n) - n$.</p>
+
+<p>The $\beta_0$ term is the same as $h_3(2^m-1-l)$, as can be seen by
+observing that in base $3$, $3^m$ is $1$ followed by $m$ zeroes, so
+$3^m-1$ is $m$ twos, and $\frac{3^m-1}{2}$ is $m$ ones, in other words
+the same representation as the binary representation of $2^m-1$.</p>
+
+<p>Now, the binary representation of $l$ is the same as the
+representation in base $3$ of $h_3(l)$ (by definition of $h_3$), so
+the binary representation of $2^m-1-l$ is the same as the
+representation in base $3$ of $\frac{3^m-1}{2} - h_3(l)$.</p>
+
+<p>With these two observations, it is possible to rewrite $g$ as</p>
+
+<div markdown="0">
+\begin{align}
+g(1b_m\cdots b_0) &amp; = (\alpha\beta_{b_m}\cdots\beta_{b_0})_3 + \gamma ((1b_m\cdots b_0)_3 - (1b_m\cdots b_0)_2)
+\end{align}
+</div>
+
+
+<p>which is the book solution.</p>
+
+<h3>Faster solution</h3>
+
+<p>It is enough to solve for
+$\alpha, \beta_0, \beta_1 \ne 0, \gamma = 0$,
+and to find the parameters for $g(n) = n$. The first gives $A$,
+$B_0$ and $B_1$ directly by the generalised radix-based Josephus
+solution, and the second one adds a constraint to solve for $C$ as well.</p>
+
+<h3>Wrapping up</h3>
+
+<p>As can be seen above, approaching the problem from both directions
+(solving for known functions and solving for known parameters) can
+result in time saved, and simplified expression of the solution.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/"/>
+    <updated>2012-01-14T12:14:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2</id>
+    <content type="html"><![CDATA[<p>I finally finished the homework exercises.</p>
+
+<!-- more -->
+
+
+<h2>Homework Exercises Part 2</h2>
+
+<h3>Generalized Tower of Hanoi</h3>
+
+<p>To solve this, I first observed that for $n=1$, we need $m_1$ moves,
+and for $n \gt 1$, we need
+$A(m_1, \cdots, m_{n-1}) + m_n + A(m_1, \cdots, m_{n-1})$ or
+$2A(m_1, \cdots, m_{n-1}) + m_n$ moves.</p>
+
+<p>This leads to the solution,</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1, \cdots, m_n) &amp;= \sum_{i=1}^n m_i 2^{n-i}\\\\
+\end{align}
+</div>
+
+
+<p>which is trivially shown by induction. The base case:</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1) &amp; = \sum_{i=1}^1 m_i 2^{1-i}\\\\
+&amp; = m_1 2^0\\\\
+&amp; = m_1
+\end{align}
+</div>
+
+
+<p>And for larger $n$, assuming
+$A(m_1, \cdots, m_n) = \sum_{i=1}^n m_i 2^{n-i}$,</p>
+
+<div markdown="0">
+\begin{align}
+A(m_1, \cdots, m_{n+1}) &amp; = 2A(m_1, \cdots, m_n) +
+m_{n+1}&amp;&amp;\text{by definition}\\\\
+&amp; = 2\sum_{i=1}^n m_i 2^{n-i} + m_{n+1}&amp;&amp;\text{induction hypothesis}\\\\
+&amp; = \sum_{i=1}^{n} m_i 2^{n+1-i} + m_{n+1} 2^{0}\\\\
+&amp; = \sum_{i=1}^{n+1} m_i 2^{n+1-i}\\\\
+\end{align}
+</div>
+
+
+<h3>Zig-zag lines</h3>
+
+<p>A geometric problem, but very similar to the previous intersecting
+lines. A zig-zag is made of 3 segments, so a pair of zig-zag lines can
+intersect at 9 different points. The first zig-zag line defines two
+regions; each new zig-zag adds a new region, plus one more for each
+intersection point.</p>
+
+<p>This gives the following recurrence equations:</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_1 &amp; = 2\\\\
+ZZ_n &amp; = ZZ_{n-1} + 9(n-1) + 1\\\\
+\end{align}
+</div>
+
+
+<p>Using the linearity of the recurrence equation, it is easy to see that</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_n &amp; = ZZ_1 + 9S_{n-1} + (n-1)
+\end{align}
+</div>
+
+
+<p>Here I used the linearity to compute solutions to both
+$ZZ_n = ZZ_{n-1} + 9(n-1)$ and $ZZ_n = ZZ_{n-1} + 1$, which are
+equally trivial. Then I combined the solutions into one.</p>
+
+<p>I use (again) induction to confirm the solution. The base case is
+$ZZ_1 = ZZ_1 + 9S_0 + 0$. And for other $n$, assuming
+$ZZ_n = ZZ_1 + 9S_{n-1} + (n-1)$</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_{n+1} &amp; = ZZ_{n} + 9n + 1&amp;&amp;\text{by definition}\\\\
+&amp; = ZZ_1 + 9S_{n-1} + (n-1) + 9n + 1&amp;&amp;\text{induction hypothesis}\\\\
+&amp; = ZZ_1 + 9(S_{n-1} + n) + (n-1+1)\\\\
+&amp; = ZZ_1 + 9S_n + n
+\end{align}
+</div>
+
+
+<p>The formula can also be written as</p>
+
+<div markdown="0">
+\begin{align}
+ZZ_n &amp; = \frac{9n^2-7n+2}{2}
+\end{align}
+</div>
+
+
+<h3>Planes cutting cheese</h3>
+
+<p>Again, a geometric problem. This one gave me more trouble. It
+took me a while before finally seeing that a new plane intersection
+with the previous ones will be a set of intersecting lines which
+defines the regions the new plan will divide in two.</p>
+
+<p>The number of regions formed by intersecting lines was solved in the
+book, and defined as $L_n = S_n + 1$</p>
+
+<p>So a plane cutting $n$ existing planes will define
+$P_{n+1} = P_n + L_n$
+new regions. This recurrence gives $P_5 = 26$ regions.</p>
+
+<p>The book did not expect a closed formula for this exercise, as the
+necessary techniques are only covered in chapter 5.</p>
+
+<h3>Josephus co-conspirator</h3>
+
+<p>The recurrence equation for $I(n)$ follow the structure of $J(n)$, but
+with different base cases:</p>
+
+<div markdown="0">
+\begin{align}
+I(2) &amp; = 2&amp;&amp;\text{\(I(1)\) is not defined}\\\\
+I(2n) &amp; = 2I(n) - 1\\\\
+I(2n+1) &amp; = 2I(n) + 1
+\end{align}
+</div>
+
+
+<p>Here I generated the first few values to get inspired. I noticed that
+$I(n)$ had increasing odd values for batches that were longer than for
+$J(n)$: $3, 6, 12, 24, \cdots$.</p>
+
+<p>These numbers are from the series $3\cdot 2^m$, so using the same
+"intuitive" step as in the book, I tried to show that
+$I(3\cdot 2^m + l) = 2l + 1$ with $0 \le l \lt 3\cdot 2^m$
+(the formula does not work for $I(2)$, which has to be defined separately).</p>
+
+<p>By induction on $m$: the base case is $I(3) = I(3\cdot 2^0 + l) = 1$.</p>
+
+<p>Assuming $I(3\cdot 2^m + l) = 2l+1$, we have</p>
+
+<div markdown="0">
+\begin{align}
+I(3\cdot2^{m+1} + 2l) &amp; = 2I(3\cdot 2^m + l) -1&amp;&amp;\text{by definition}\\\\
+&amp;= 2(2l+1) -1&amp;&amp;\text{induction hypothesis}\\\\
+&amp;= 4l+2-1\\\\
+&amp;= 2(2l)+1\\\\
+I(3\cdot 2^{m+1} + (2l+ 1)) &amp; = 2I(3\cdot 2^m + l) + 1&amp;&amp;\text{by definition}\\\\
+&amp; = 2(2l+1) + 1&amp;&amp;\text{induction hypothesis}\\\\
+\end{align}
+</div>
+
+
+<p>The book solution is defined in terms of $2^m+2^{m-1}+k$, which is
+same:</p>
+
+<div markdown="0">
+\begin{align}
+2^m+2^{m-1}+k &amp; = 2\cdot 2^{m-1} + 2^{m-1} + k\\\\
+&amp; = 3\cdot 2^{m-1} + k
+\end{align}
+</div>
+
+
+<p>with $1 \le m$, while I have $0 \le m$.</p>
+
+<h3>Repertoire method</h3>
+
+<p>I put the repertoire method in its own
+<a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">post</a> as it
+was both the most difficult exercise and the one where I learned the most.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 1]]></title>
@@ -627,536 +1058,6 @@ recurrence over $m$ (with $m$ the number of digits or the argument in
 base $d$).</p>
 
 <p>In the next post in this series, I will start the exercises.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics/"/>
-    <updated>2012-01-06T13:16:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics</id>
-    <content type="html"><![CDATA[<p>Stephen Hawking once said that his editor had warned him that each
-equation in his book would halve the readership.</p>
-
-<p>With that in mind, and taking into account the number of readers of
-this blog (or lack thereof), would I dare put any equations?</p>
-
-<p>You better believe it!</p>
-
-<!--more-->
-
-
-<p>I just picked up my old copy of
-<a href="http://en.wikipedia.org/wiki/Concrete_Mathematics">Concrete Mathematics</a>,
-a book I have too long neglected. The ultimate goal, of course, is
-slaying the
-<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming">Beast</a>,
-which I should try to complete before Donald E. Knuth passes away.
-While I wish him a very long life, long enough at least to complete
-<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming#Volumes">Volume 5</a>,
-and better yet 6 and 7, I should not take his remarkable health as an
-excuse to dither.</p>
-
-<p>For the math notation, I use <a href="http://www.mathjax.org/">MathJax</a>, a
-JavaScript library that can parse either
-<a href="http://www.w3.org/Math/">MathMl</a>, or much better
-<a href="http://www.latex-project.org/">LaTeX</a> (which is based on
-<a href="http://www.math.upenn.edu/TeX.html">TeX</a>, another gift of Donald
-E. Knuth to the world).</p>
-
-<p>The setup for this blog is based on this
-<a href="http://greglus.com/blog/2011/11/29/integrate-MathJax-LaTeX-and-MathML-Markup-in-Octopress/">post</a>.</p>
-
-<p>The quality of rendering is variable: pretty good in Firefox, OK in
-Safari or Chrome, and no idea in IE or Opera. Of course, it is not as
-good as the output of LaTeX, but for the Web it is acceptable.</p>
-
-<p>For instance, given the recurrence</p>
-
-<div markdown="0">
-$$
-\begin{align}
-f(j) &amp; = \alpha_j, &amp;&amp;\text{for $1 \\leq j \\lt  d$}\\\\
-f(dn + j) &amp; = cf(n) + \beta_j, &amp;&amp;\text{for $0 \\leq j \\lt d$ and $n \\geq 1$}
-\end{align}
-$$
-</div>
-
-
-<p>then the solution is</p>
-
-<p>$$f \left( ( b_m b_{m-1} \cdots b_1 b_0)_d \right) = \left( \alpha_{b_m} \beta_{b_{m-1}} \beta_{b_{m-2}} \cdots \beta_{b_1} \beta_{b_0} \right)_c$$</p>
-
-<p>(refer to the book for explanations).</p>
-
-<p>Isn't this lovely?</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks Neo4j Day 3]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/"/>
-    <updated>2011-12-30T21:15:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3</id>
-    <content type="html"><![CDATA[<p>Third, last and quite short day with Neo4j. Today on the menu:
-transactions, replication, and backups.</p>
-
-<p>Transactions are a standard feature of relational databases, but NOSQL
-databases seem to consider them too costly (of the other databases in
-the book, only HBase and Redis also support transactions, as far as I
-can tell). Neo4j does support them, along with rollbacks.</p>
-
-<p>Replication is Neo4j's answer for High Availability and, to some
-extent, Scaling. The latter is limited as Neo4j does not partition the
-data, so everything has to fit in each computer in the cluster.</p>
-
-<p>Finally, backups are exactly what you would expect them to be. Neo4J
-offers both full and incremental backups, which update a previous
-backup.</p>
-
-<!--more-->
-
-
-<h3>Transactions</h3>
-
-<p>I cannot comment much on transactions, as I could not use them: the
-Gremlin shell from the Web Admin console could not find the required
-enumeration (which I imported, though), while the Gremlin standalone
-shell was giving me strange errors when I tried to import the relevant
-classes.</p>
-
-<p>I suppose pure Java would be more reliable, either as standalone code
-or plugin, but I did not explore that possibility.</p>
-
-<h3>High-Availability</h3>
-
-<p>High-availability is achieved by deploying and linking together
-several instances of Neo4j. The setup is somewhat tedious, as there
-are additional processes to configure and run (the coordinators), and
-four different configuration files to edit. Really, this is the kind
-of things you'd wish <a href="http://whirr.apache.org/">Apache Whirr</a> would do
-for you.</p>
-
-<p>But if you want to do it manually, you should follow the
-<a href="http://docs.neo4j.org/chunked/stable/ha-setup-tutorial.HTML">online documentation</a>
-rather than the book version (at least in beta version 2.0): the book
-use the property <code>ha.zoo_keeper_servers</code> in the <code>neo4j.properties</code>
-configuration file, when the correct property is
-<code>ha.coordinators</code>. What is worse is that it will look like it works,
-until you try to write to a slave over the ReST API, which will fail
-with an exception. Writes to the master would also not be pulled by
-the slaves. Using the right property name fixes these problems.</p>
-
-<p>Once set up, the cluster will have one master and several slaves. The
-master contains the authoritative version of the data. The book
-recommends to always write to slaves, as they have to push any update
-to the master before completing the update, meaning you have a
-guaranteed replication of your data. However, what the book does not
-explain is how to figure out which server is slave, or even whether
-the list of servers in the cluster can be discovered....</p>
-
-<p>Actually, it is possible to have some idea of which server is the
-master by querying any server with</p>
-
-<p><code>
-curl -H "Content-Type:application/json" -d '["org.neo4j:*"]' http://localhost:7471/db/managerver/jmx/query
-</code></p>
-
-<p>(assuming one of the server is listening to port <code>7471</code>). A sample
-reply is shown (only partially, as it is very long) one the
-<a href="http://docs.neo4j.org/chunked/snapshot/ha-setup-tutorial.html">HA setup tutorial</a>. But
-the actual address of each server is not shown, and I could not find
-any way to get the address property to be properly filled.</p>
-
-<p>So the proper way to use such a cluster is probably to use the
-<a href="http://haproxy.1wt.eu/">HAProxy</a>, as explained in
-<a href="http://docs.neo4j.org/chunked/snapshot/ha-haproxy.html">Neo4j HA documentation</a>. It
-can be configured to differentiate between master and slaves, and to
-restrict connections to slaves (keeping the list updated with a
-check). It can also split the requests by some specific parameter (for
-instance, the user id), and direct the requests the same server for a
-given value of the parameter. While Neo4j does not shard the data
-itself, this mechanism can be used to shard the data cache (what must
-be loaded in memory).</p>
-
-<h3>Backups</h3>
-
-<p>Neo4j support remote, full or incremental backups. Incremental backups
-are properly understood as update to the previous backup (either full
-or incremental), and are therefore much faster.</p>
-
-<p>This is a good feature, and should be used often. But as I'm just
-playing, and the notion of backup does not lend itself to exploration,
-I just looked at them briefly.</p>
-
-<h2>Exercises</h2>
-
-<h3>Neo4j licensing guide</h3>
-
-<p>The <a href="http://neo4j.org/licensing-guide/">guide</a> is fortunately quite
-short.</p>
-
-<h3>Read-only slaves</h3>
-
-<p>This seems to be a description of the original HA feature in Neo4j,
-but as far as I can tell it does not exist anymore. In fact, there is
-an
-<a href="https://github.com/neo4j/enterprise/commit/480256bfff036784dc82897d2348a16e3fbf6c03#ha/src/docs/dev/operation.txt">update</a>
-to the official documentation to remove the mention of read-only
-slave.</p>
-
-<p>There used to be a Java class to create a server as read-only slave,
-as documented
-<a href="http://wiki.neo4j.org/index.php?title=Online_Backup_HA&amp;redirect=no#Starting_a_read-only_slave">here</a>,
-but it no longer exists either.</p>
-
-<h3>Maximum number of nodes supported</h3>
-
-<p><a href="http://docs.neo4j.org/chunked/stable/questions.html#id474370">34.4 billion nodes</a>.</p>
-
-<h3>Replication across three physical servers</h3>
-
-<p>As I already <a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">explained</a> how to setup a cluster of EC2 virtual machines
-for Riak, I will go skip all the details.</p>
-
-<p>I launched four instances: one will be the HAProxy server, the
-remaining three the Neo4j servers.</p>
-
-<h4>Security Setup</h4>
-
-<p>All the rules but the first one are internal (i.e. the source is the
-name of the security group, which should be specific to the cluster).</p>
-
-<ul>
-<li>22 (SSH) - source <code>0.0.0.0/0</code></li>
-<li>2181: coordinator client port</li>
-<li>2888: quorum election port</li>
-<li>3888: leader election port</li>
-<li>6001: inter cluster communication port</li>
-<li>7474: web interface for the Neo4j servers</li>
-<li>8080: admin interface for HAProxy</li>
-<li>80: web interface for the proxy</li>
-</ul>
-
-
-<p>Neo4j does not need ranges, unlike Riak.</p>
-
-<h4>Instance setups</h4>
-
-<p>I connect to each of the Neo4j server, and download the Enterprise
-edition:</p>
-
-<p><code>
-wget http://dist.neo4j.org/neo4j-enterprise-1.5-unix.tar.gz
-</code></p>
-
-<p>First step is to configure the coordinators. I edit the
-<code>conf/coord.cfg</code> file and replace the server.1 property with the block</p>
-
-<p><code>
-server.1=10.202.90.131:2888:3888    
-server.2=10.202.81.171:2888:3888    
-server.3=10.195.78.222:2888:3888
-</code></p>
-
-<p>(I got the IP addresses by using the <code>ifconfig</code> command on each
-instance). I also update the <code>data/coordinator/myid</code> of each instance
-with own number (1 to 3).</p>
-
-<p>I then modified each <code>conf/neo4j.properties</code>, setting each to its own
-<code>ha.server_id</code>, and setting the <code>ha.coordinators</code> to
-<code>10.202.90.131:2181,10.202.81.171:2181,10.195.78.222:2181</code>. I also
-changed the <code>ha.server</code> to use the <code>eth0</code> IP address rather than <code>localhost</code>.</p>
-
-<p>Finally, I modified each <code>conf/neo4j-server.properties</code>:</p>
-
-<ul>
-<li>the web server needs to listen to the <code>eth0</code> IP address rather than
-<code>localhost</code> (for instance, <code>org.neo4j.server.webserver.address=10.202.90.131</code>);</li>
-<li>the server needs to be set to HA mode:
-<code>org.neo4j.server.database.mode=HA</code></li>
-</ul>
-
-
-<p>Surprisingly enough, the three servers did start and were configured properly...</p>
-
-<p>I checked the setup with</p>
-
-<p><code>
-curl -H "Content-Type:application/json" -d '["org.neo4j:*"]'
-http://10.202.90.131:7474/db/manage/server/jmx/query
-</code></p>
-
-<p>I looked for the string <code>InstancesInCluster</code>, and made sure there were
-three known servers.</p>
-
-<p>Finally I pushed something into the second (slave) server using</p>
-
-<p><code>
-curl -i -X POST http://10.202.81.171:7474/db/data/node \
--H "Content-Type: appliction/json" \
--d '{"name": "P.G. Wodehouse", "genre": "British Humour"}'
-</code></p>
-
-<p>then tried to retrieve it from the third (slave) server with</p>
-
-<p>```
-$ curl http://10.195.78.222:7474/db/data/node/1
-{
-  "outgoing_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/out",
-  "data" : {</p>
-
-<pre><code>"genre" : "British Humour",
-"name" : "P.G. Wodehouse"
-</code></pre>
-
-<p>  },
-  "traverse" : "http://10.195.78.222:7474/db/data/node/1/traverse/{returnType}",
-  "all_typed_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/all/{-list|&amp;|types}",
-  "property" : "http://10.195.78.222:7474/db/data/node/1/properties/{key}",
-  "self" : "http://10.195.78.222:7474/db/data/node/1",
-  "properties" : "http://10.195.78.222:7474/db/data/node/1/properties",
-  "outgoing_typed_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/out/{-list|&amp;|types}",
-  "incoming_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/in",
-  "extensions" : {
-  },
-  "create_relationship" : "http://10.195.78.222:7474/db/data/node/1/relationships",
-  "paged_traverse" : "http://10.195.78.222:7474/db/data/node/1/paged/traverse/{returnType}{?pageSize,leaseTime}",
-  "all_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/all",
-  "incoming_typed_relationships" : "http://10.195.78.222:7474/db/data/node/1/relationships/in/{-list|&amp;|types}"
-```</p>
-
-<p>So far so good...</p>
-
-<h3>Load-balancer</h3>
-
-<p>Well, <a href="http://haproxy.1wt.eu">HAproxy</a> seems a good choice, so I'll go with that.</p>
-
-<p>The
-<a href="http://docs.neo4j.org/chunked/snapshot/ha-haproxy.html">documentation</a>
-proposes to restrict access to slaves using a "small extension". This
-is in fact a piece of Java code that can be downloaded from
-<a href="https://github.com/dmontag/neo4j-hastatus-extension">Github</a>.</p>
-
-<p>The compiled jar should be copied to the <code>lib</code> directory of each
-instance, and the <code>conf/neo4j-server.properties</code> configuration file
-updated to contain the line</p>
-
-<p><code>
-org.neo4j.server.thirdparty_jaxrs_classes=org.neo4j.server.hastatus=/hastatus
-</code></p>
-
-<p>as documented on the page above.</p>
-
-<h4>Testing Locally</h4>
-
-<p>As a first test, I deployed HAProxy on my own machine, using this
-configuration file:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (haproxy_local.cfg)</span> <a href='/downloads/code/7d7w/neo4j/haproxy_local.cfg'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='raw'><span class='line'><span class="err">global</span>
-</span><span class='line'><span class="err">    daemon</span>
-</span><span class='line'><span class="err">    maxconn 256</span>
-</span><span class='line'><span class="err"> </span>
-</span><span class='line'><span class="err">defaults</span>
-</span><span class='line'><span class="err">    mode http</span>
-</span><span class='line'><span class="err">    timeout connect 5000ms</span>
-</span><span class='line'><span class="err">    timeout client 50000ms</span>
-</span><span class='line'><span class="err">    timeout server 50000ms</span>
-</span><span class='line'><span class="err"> </span>
-</span><span class='line'><span class="err">frontend http-in</span>
-</span><span class='line'><span class="err">    bind *:7000</span>
-</span><span class='line'><span class="err">    default_backend neo4j-slaves</span>
-</span><span class='line'><span class="err"> </span>
-</span><span class='line'><span class="err">backend neo4j-slaves</span>
-</span><span class='line'><span class="err">    option httpchk GET /hastatus/slave</span>
-</span><span class='line'><span class="err">    server s1 localhost:7471 maxconn 32 check</span>
-</span><span class='line'><span class="err">    server s2 localhost:7472 maxconn 32 check</span>
-</span><span class='line'><span class="err">    server s3 localhost:7473 maxconn 32 check</span>
-</span><span class='line'><span class="err"> </span>
-</span><span class='line'><span class="err">listen admin</span>
-</span><span class='line'><span class="err">    bind *:8080</span>
-</span><span class='line'><span class="err">    stats enable</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>I had installed HAProxy with
-<a href="http://mxcl.github.com/homebrew/">Homebrew</a>. The config above does
-not bind to port <code>*:80</code>, so I can run it without root privileges:</p>
-
-<p><code>
-/usr/local/sbin/haproxy -f haproxy_local.cfg
-</code></p>
-
-<p>Once up, I opened a browser on
-<a href="http://localhost:8080/haproxy?stats">HAProxy stat page</a> (it is not
-JSON, you really need a browser), to check that two instances of Neo4j
-were configured as slaves and available.</p>
-
-<p>Finally, I checked a Gremlin script with:</p>
-
-<p><code>
-$ curl -X POST
-http://localhost:7000/db/data/ext/GremlinPlugin/graphdb/execute_script
--H "content-type:application/json" -d '{"script":"g.V.name"}'
-[ "null", "null", "null", "null", "P.G. Wodehouse", "null", "P.G. Wodehouse", "P.G. Wodehouse" ]
-</code></p>
-
-<p>(the <code>7000</code> is the HAProxy port, not any of the Neo4j ports). I had a
-few P.G. Wodehouse nodes I inserted when I was testing writes to slaves.</p>
-
-<p>Ok, this is ready to be tested on the AWS cluster.</p>
-
-<h4>Deploying on the cloud</h4>
-
-<p>I used the small cluster deployed in the previous exercise. I just
-copied the Neo4j HAStatus extension jar to each machine (in the <code>lib</code>
-directory), and changed the <code>conf/neo4j-server.properties</code> exactly as
-above.</p>
-
-<p>I quickly checked that the extension was installed with:</p>
-
-<p><code>
-curl http://10.202.90.131:7474/hastatus/master
-curl http://10.202.81.171:7474/hastatus/slave
-curl http://10.195.78.222:7474/hastatus/slave
-</code></p>
-
-<p>(each is supposed to return nothing. If there's a problem, these
-commands will return an error page).</p>
-
-<p>Everything looks fine. Time to set up the HAProxy machine.</p>
-
-<p>Once again, I followed the instructions from the
-<a href="http://docs.neo4j.org/chunked/stable/ha-haproxy.html">Neo4j documentation</a>:
-first I installed the "Development Tools":</p>
-
-<p><code>
-yum -y groupinstall 'Development Tools'
-</code></p>
-
-<p>This step is very fast because they all are stored in the Amazon
-Cloud.</p>
-
-<p>I retrieved the HAProxy code:</p>
-
-<p><code>
-wget http://haproxy.1wt.eu/download/1.4/src/haproxy-1.4.18.tar.gz
-</code></p>
-
-<p>To build it, I used the command <code>make TARGET=26</code> (which means build
-for a recent version of Linux).</p>
-
-<p>I did not copy the executable, as I will run it without root
-privileges anyway.</p>
-
-<p>I created a file <code>haproxy.cfg</code> that contains:</p>
-
-<p>```
-global</p>
-
-<pre><code>daemon
-maxconn 256
-</code></pre>
-
-<p>defaults</p>
-
-<pre><code>mode http
-timeout connect 5000ms
-timeout client 50000ms
-timeout server 50000ms
-</code></pre>
-
-<p>frontend http-in</p>
-
-<pre><code>bind *:7000
-default_backend neo4j-slaves
-</code></pre>
-
-<p>backend neo4j-slaves</p>
-
-<pre><code>option httpchk GET /hastatus/slave
-server s1 10.202.90.131:7474 maxconn 32 check
-server s2 10.202.81.171:7474 maxconn 32 check
-server s3 10.195.78.222:7474 maxconn 32 check
-</code></pre>
-
-<p>listen admin</p>
-
-<pre><code>bind *:8080
-stats enable
-</code></pre>
-
-<p>```</p>
-
-<p>which is essentially the same file as the file <code>haproxy_local.cfg</code>
-above.</p>
-
-<p>I established SSH tunnels to ports <code>7000</code> and <code>8080</code>, checked the
-status of the proxy on <code>http://localhost:8080/haproxy?stats</code> (I had
-made a mistake to one of the IP address, so I fixed it and restarted
-the proxy).</p>
-
-<p>Finally, I was able to run</p>
-
-<p><code>
-$ curl -X POST http://localhost:7000/db/data/ext/GremlinPlugin/graphdb/execute_script \
--H "content-type:application/json" -d '{"script":"g.V.name"}'
-[ "null", "P.G. Wodehouse" ]
-</code></p>
-
-<p>And all was good.</p>
-
-<h2>Wrapping up Neo4j</h2>
-
-<p>This is another database I had to fight all along the way. The
-book, the available documentation, and the actual behaviour of the
-database overlap only partially. Figuring out what is actually
-possible and how to achieve it was harder than for any other databases
-in the book.</p>
-
-<p>One thing that was especially irritating is the error handling of the
-Gremlin shell: a syntax error such as a missing closing quote renders
-the shell unusable: it keeps complaining about the syntax error, but
-offers no way to actually correct it. And I could find no way to
-reset the shell, except by restarting the whole server...</p>
-
-<p>This, and the fact that both the embedded interpreter or the
-standalone shell are unstable in their own different ways (not to
-mention slightly incompatible) makes Gremlin useless. But the
-alternatives, Cipher or Java, are not really usable either: Cipher is
-too limited, Java too verbose and its syntax ill suited.</p>
-
-<p>This said, Neo4j occupies a fairly specific niche which does not have
-many alternatives. Let's hope the ecosystem stabilises into
-something more coherent and stable.</p>
-
-<h2>The other databases</h2>
-
-<p>It seems the Redis might be available soon, but CouchDB is not there
-yet. So I will probably switch to a different book for the time being.</p>
 ]]></content>
   </entry>
   

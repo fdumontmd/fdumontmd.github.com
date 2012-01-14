@@ -9,9 +9,8 @@
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="The third day with Riak had proposed to deploy Riak on a
-EC2 cluster as an exercise. I could not
-do it then due to poor network connectivity and lack &hellip;">
+  <meta name="description" content="Final day with MongoDB. First to cover geospatial indexing; then to
+explore MongoDB&#8217;s approach to the CAP theorem. ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +77,145 @@ do it then due to poor network connectivity and lack &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">Seven Databases in Seven Weeks MongoDB Day 3</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-25T17:18:00+09:00" pubdate data-updated="true">Dec 25<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Final day with MongoDB. First to cover geospatial indexing; then to
+explore MongoDB&#8217;s approach to the CAP theorem.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Seven Databases in Seven Weeks MongoDB Day 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-24T14:49:00+09:00" pubdate data-updated="true">Dec 24<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today the book covers all kinds of queries goodness in MongoDB:
+indexing, advanced group queries, and MapReduce.</p>
+
+<p>Once again, the contrast with Riak is stark. MongoDB is able to
+optimize queries on its JSON documents because it understand the
+format directly (whereas it is stored as an opaque block in Riak).
+Using JavaScript is also simpler: no need to quote the function codes;
+just pass a function object to the commands that need one.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Seven Databases in Seven Weeks MongoDB Day 1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-23T08:19:00+09:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It has been &#8230; a little over a week since I closed with HBase so it
+is time to move to the next database in the program:
+<a href="http://www.mongodb.org/">MongoDB</a>. It is a so-called
+<a href="http://en.wikipedia.org/wiki/Document-oriented_database">document oriented database</a>,
+relying on Javascript and JSON like Riak but, MongoDB, unlike Riak,
+has a built-in support for querying, and can also perform partial
+updates.</p>
+
+<p>Fittingly, this first day is about CRUD and queries.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -391,137 +529,6 @@ compatible interface.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">Seven Databases in Seven Weeks PostgreSQL Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-04T20:19:00+09:00" pubdate data-updated="true">Dec 4<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Third and final day with PostgreSQL. Today all kind of text and other fancy searches are looked at. Here the SQL standard is resolutely left behind, as pretty much everything is PostgreSQL specific.</p>
-
-<p>PostgreSQL manages advanced index data structures that allow it to efficiently query data using something better than basic comparisons. It especially shines in its handling of geospatial data (searching by distance is a non-trivial problem), but has many options for text searches as well.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">Seven Databases in Seven Weeks PostgreSQL Day 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-03T14:54:00+09:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Second day with PostgreSQL, this time to discuss advanced queries, stored procedures, and rewriting rules.</p>
-
-<p>The relational model was designed to make it easy to extract meaningful information from the database (although here the operative word is meaningful rather than easy). Aggregations pretty much require a schema to return anything worth the effort (and if you don&#8217;t believe it, what exactly is the average value of 1, blue and 3?).</p>
-
-<p>Stored procedures can help to move some business intelligence from the main application to the database. Whether it is a good idea is an open question (and I think the knee-jerk negative answer is too often guided by ignorance rather than experience), but the idea of having enough rules in the database that multiple applications can connect to it safely (or safely enough) is worth considering: it enables other applications, some of which might be incompatible with the main business application, to use the business data (many reporting and ETL solutions might fall into this category). The choice is between control and openness (and which one is correct depends on the situation).</p>
-
-<p>Finally, rewriting rules is a less common feature of SQL databases, but essentially it allows the database designer to create updatable views, implement versioning on specific tables, and so on.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">Seven Databases in Seven Weeks PostgreSQL Day 1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-03T12:22:00+09:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>The first database in the series is a relational database, and what better choice than <a href="http://www.postgresql.org">PostgreSQL</a>?</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -545,23 +552,23 @@ compatible interface.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Concrete Mathematics Repertoire Method</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/">Concrete Mathematics Chapter 1 Homework Exercises Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/">ANTLR3 Maven Plugin - Eclipse setup</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/">Concrete Mathematics Chapter 1 Homework Exercises Part 1</a>
       </li>
     
       <li class="post">
         <a href="/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/">Concrete Mathematics Chapter 1 Warmups</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Concrete Mathematics Chapter 1 Notes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/06/concrete-mathematics/">Concrete Mathematics</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a>
       </li>
     
   </ul>

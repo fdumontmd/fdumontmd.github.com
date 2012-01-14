@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-14T15:50:18+09:00</updated>
+  <updated>2012-01-14T23:13:36+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -216,7 +216,9 @@ other two equations give us the remaining function.</p>
 
 <div markdown="0">
 \begin{align}
-g(2^m+l) &amp; = \alpha 3^m + \beta_0 (\frac{3^m - 1}{2} - h_3(l)) + \beta_1 h_3(l) + \gamma (3^m + h_3(l) - 2^m - l)
+g(2^m+l) = \alpha 3^m &amp; + \beta_0 (\frac{3^m - 1}{2} - h_3(l))\\\\
+&amp; + \beta_1 h_3(l) \\\\
+&amp;+ \gamma (3^m + h_3(l) - 2^m - l)
 \end{align}
 </div>
 

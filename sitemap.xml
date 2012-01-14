@@ -112,7 +112,7 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/</loc>
-        <lastmod>2012-01-07T14:39:02+09:00</lastmod>
+        <lastmod>2012-01-14T16:09:39+09:00</lastmod>
     </url>
     <url>
         <loc>
@@ -122,7 +122,7 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/11/11/haskell-foldr-as-foldl/</loc>
-        <lastmod>2011-11-20T12:35:41+09:00</lastmod>
+        <lastmod>2012-01-14T16:09:44+09:00</lastmod>
     </url>
     <url>
         <loc>
@@ -298,7 +298,7 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method/</loc>
-        <lastmod>2012-01-14T15:47:11+09:00</lastmod>
+        <lastmod>2012-01-14T23:11:05+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/about/</loc>
@@ -306,7 +306,7 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2012-01-14T15:47:11+09:00</lastmod>
+        <lastmod>2012-01-14T23:11:05+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
@@ -318,6 +318,6 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2012-01-14T15:47:11+09:00</lastmod>
+        <lastmod>2012-01-14T23:11:05+09:00</lastmod>
     </url>
 </urlset>

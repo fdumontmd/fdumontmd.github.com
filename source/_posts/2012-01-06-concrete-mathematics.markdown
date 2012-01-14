@@ -4,7 +4,7 @@ title: "Concrete Mathematics"
 date: 2012-01-06 13:16
 comments: true
 categories: [Books, Mathematics]
-tags: [concMath, math]
+tags: [Concrete Mathematics, math]
 series: "Concrete Mathematics"
 short_title: "Intro"
 js: [math]

@@ -4,7 +4,7 @@ title: "Concrete Mathematics Chapter 1 Warmups"
 date: 2012-01-07 19:09
 comments: true
 categories: [Books, Mathematics]
-tags: [concMath, math]
+tags: [Concrete Mathematics, math]
 series: "Concrete Mathematics"
 js: [math]
 ---

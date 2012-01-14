@@ -4,7 +4,7 @@ title: "Concrete Mathematics Chapter 1 Notes"
 date: 2012-01-06 13:52
 comments: true
 categories: [Books, Mathematics]
-tags: [concMath, math]
+tags: [Concrete Mathematics, math]
 series: "Concrete Mathematics"
 js: [math]
 ---

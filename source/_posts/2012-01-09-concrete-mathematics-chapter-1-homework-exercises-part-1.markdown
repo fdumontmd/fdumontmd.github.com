@@ -4,7 +4,7 @@ title: "Concrete Mathematics Chapter 1 Homework Exercises Part 1"
 date: 2012-01-09 20:23
 comments: true
 categories: [Books, Mathematics]
-tags: [concMath, math]
+tags: [Concrete Mathematics, math]
 series: "Concrete Mathematics"
 js: [math]
 ---

@@ -3,7 +3,7 @@ layout: post
 title: "Haskell: foldl as foldr"
 date: 2011-11-09 19:05
 comments: true
-categories: [Haskell, Tutorial]
+categories: [Haskell, Article]
 tags: [haskell]
 ---
 A beginner with Haskell is bound to be exposed, usually too early, to some fancy code illustrating either a cool feature of the language, or of its underlying theoretical foundations.

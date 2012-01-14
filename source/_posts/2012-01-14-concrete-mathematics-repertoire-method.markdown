@@ -194,7 +194,9 @@ Now we can solve for $g(n)$:
 
 <div markdown="0">
 \begin{align}
-g(2^m+l) &amp; = \alpha 3^m + \beta_0 (\frac{3^m - 1}{2} - h_3(l)) + \beta_1 h_3(l) + \gamma (3^m + h_3(l) - 2^m - l)
+g(2^m+l) = \alpha 3^m &amp; + \beta_0 (\frac{3^m - 1}{2} - h_3(l))\\\\
+&amp; + \beta_1 h_3(l) \\\\
+&amp;+ \gamma (3^m + h_3(l) - 2^m - l)
 \end{align}
 </div>
 

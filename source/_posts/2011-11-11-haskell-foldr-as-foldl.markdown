@@ -3,7 +3,7 @@ layout: post
 title: "Haskell: foldr as foldl"
 date: 2011-11-11 08:03
 comments: true
-categories: [Haskell, Tutorial]
+categories: [Haskell, Article]
 tags: [haskell]
 ---
 In a previous [post](/blog/2011/11/09/haskell-foldl-as-foldr/), I tried to show how to derive the formula expression `foldl` in terms of `foldr`. Unsurprisingly, there is a way to express `foldr` in terms `foldl`: `foldr f a bs = foldl (\g b x -> g (f b x)) id bs a`. Today I'll try to derive this definition.

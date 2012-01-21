@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-14T23:13:36+09:00</updated>
+  <updated>2012-01-22T00:14:05+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,581 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks Redis Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/"/>
+    <updated>2012-01-20T16:52:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1</id>
+    <content type="html"><![CDATA[<p>After a long winter hiatus, the elves at
+<a href="http://pragprog.com/">Pragmatic Bookshelf</a> delivered a late but
+welcome present: the third beta of
+<a href="http://pragprog.com/book/rwdata/seven-databases-in-seven-weeks">Seven Databases in Seven Weeks</a>. The
+book is not complete yet (the chapter on
+<a href="http://couchdb.apache.org/">CouchDB</a> is still missing), but it now
+covers <a href="http://redis.io/">Redis</a>.</p>
+
+<p>Redis is basically a key-value store, like
+<a href="http://wiki.basho.com/">Riak</a>, but while Riak is agnostic about the
+values, Redis values can be data structures (lists, queues,
+dictonaries, ..., or even messaging queues). This allows Redis to act
+as a synchronized shared memory for cooperating applications.</p>
+
+<!-- more -->
+
+
+<h3>Complex Datatypes</h3>
+
+<p>Redis values can have structure, and specific commands manipulate
+these values in appropriate ways. Redis supports
+<a href="http://redis.io/commands/#string">strings</a>, which can also behave
+as numbers if they have the right format,
+<a href="http://redis.io/commands#list">lists</a> which can also be seen as
+queues, and support blocking reads,
+<a href="http://redis.io/commands#set">sets</a>,
+<a href="http://redis.io/commands#hash">hashes</a> (that is, dictionaries), and
+<a href="http://redis.io/commands#sorted_set">sorted sets</a>.</p>
+
+<h3>Transactions</h3>
+
+<p>All Redis commands are atomic, and it is possible to group a sequence
+of commands into a transaction for an all or nothing execution with
+the command <a href="http://redis.io/commands/multi"><code>MULTI</code></a>. But a
+Redis transaction is not similar to a transaction in relational
+databases: it just queues all the commands and executes them when it
+receives the <a href="http://redis.io/commands/exec"><code>EXEC</code></a> command. This
+means it is not possible to read any data while in a transaction.</p>
+
+<h3>Expiry</h3>
+
+<p>Perhaps nothing labels Redis as a datastore for transient data more
+than expiry: keys can be marked for expiration (either relative from
+the current time, or absolute).</p>
+
+<h3>Messaging</h3>
+
+<p>Redis also supports messaging but this is a topic for
+Day 2.</p>
+
+<p>This
+<a href="http://blog.mjrusso.com/2010/10/17/redis-from-the-ground-up.html">post</a>
+has a more detailed but still balanced coverage of Redis.</p>
+
+<h2>Exercises</h2>
+
+<h3>Redis command documentation</h3>
+
+<p>The <a href="http://redis.io/commands">documentation</a> is well done and easy to
+navigate. Of all the databases I have seen so far, this is probably
+the base
+(<a href="http://www.postgresql.org/docs/current/static/index.html">PostgreSQL</a>
+being a strong second).</p>
+
+<h3>Create a Redis client</h3>
+
+<p>I'm using Java and the <a href="https://github.com/xetorthio/jedis">Jedis</a>
+client library.</p>
+
+<p>The code is simple enough:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>simple redis client (RedisFirst.java)</span> <a href='/downloads/code/7d7w/redis/first/RedisFirst.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Transaction</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisFirst</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>		<span class="c1">// connect</span>
+</span><span class='line'>		<span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">);</span>
+</span><span class='line'>		<span class="c1">// set the key first to 5</span>
+</span><span class='line'>		<span class="n">jedis</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="s">&quot;first&quot;</span><span class="o">,</span> <span class="s">&quot;5&quot;</span><span class="o">);</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="c1">// start a transaction</span>
+</span><span class='line'>		<span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">multi</span><span class="o">();</span>
+</span><span class='line'>		<span class="c1">// increase by 4</span>
+</span><span class='line'>		<span class="n">trans</span><span class="o">.</span><span class="na">incrBy</span><span class="o">(</span><span class="s">&quot;first&quot;</span><span class="o">,</span> <span class="mi">4</span><span class="o">);</span>
+</span><span class='line'>		<span class="n">trans</span><span class="o">.</span><span class="na">exec</span><span class="o">();</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="c1">// retrieve the value</span>
+</span><span class='line'>		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Value is now: &quot;</span> <span class="o">+</span> <span class="n">jedis</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;first&quot;</span><span class="o">));</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The <code>pom.xml</code> file:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/redis/first/pom.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>	<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;artifactId&gt;</span>redis-first<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;/properties&gt;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nt">&lt;build&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;/build&gt;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>redis.clients<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>jedis<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Create a pair of Redis clients</h3>
+
+<p>This one is simple as well, but having a reader and a writer allowed
+me to try one writer and two readers.</p>
+
+<p>First the writer program:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Redis Push (RedisPush.java)</span> <a href='/downloads/code/7d7w/redis/push/RedisPush.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisPush</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">);</span>
+</span><span class='line'>		<span class="n">jedis</span><span class="o">.</span><span class="na">lpush</span><span class="o">(</span><span class="s">&quot;msg:queue&quot;</span><span class="o">,</span> <span class="s">&quot;A new message&quot;</span><span class="o">);</span>
+</span><span class='line'>		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Message inserted&quot;</span><span class="o">);</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The <code>poml.xml</code> is a bit more complex, as it creates a self-contained
+jar with <code>MANIFEST.MF</code> (so I can run it from the command line easily):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/redis/push/pom.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>	<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;artifactId&gt;</span>redis-push<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;/properties&gt;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nt">&lt;build&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.2.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;descriptorRefs&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;descriptorRef&gt;</span>jar-with-dependencies<span class="nt">&lt;/descriptorRef&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;/descriptorRefs&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;archive&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;manifest&gt;</span>
+</span><span class='line'>							<span class="nt">&lt;mainClass&gt;</span>jp.wakatta.RedisPush<span class="nt">&lt;/mainClass&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;/manifest&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;/archive&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;id&gt;</span>make-assembly<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>							<span class="nt">&lt;goal&gt;</span>attached<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;/build&gt;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>redis.clients<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>jedis<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The reader program:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Redis Pop (RedisPop.java)</span> <a href='/downloads/code/7d7w/redis/pop/RedisPop.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisPop</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>		<span class="kt">boolean</span> <span class="n">again</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>		<span class="k">while</span> <span class="o">(</span><span class="n">again</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Waiting for messages&quot;</span><span class="o">);</span>
+</span><span class='line'>			<span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">);</span>
+</span><span class='line'>			<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">msgs</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">blpop</span><span class="o">(</span><span class="mi">300</span><span class="o">,</span> <span class="s">&quot;msg:queue&quot;</span><span class="o">);</span>
+</span><span class='line'>			
+</span><span class='line'>			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Messages received:&quot;</span><span class="o">);</span>
+</span><span class='line'>			
+</span><span class='line'>			<span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="nl">msg:</span> <span class="n">msgs</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>				<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>				<span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;finish&quot;</span><span class="o">))</span>
+</span><span class='line'>					<span class="n">again</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>			<span class="o">}</span>
+</span><span class='line'>		<span class="o">}</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;No more messages&quot;</span><span class="o">);</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>with its <code>pom.xml</code>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/redis/pop/pom.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>	<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;artifactId&gt;</span>redis-pop<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;/properties&gt;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nt">&lt;build&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.2.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;descriptorRefs&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;descriptorRef&gt;</span>jar-with-dependencies<span class="nt">&lt;/descriptorRef&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;/descriptorRefs&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;archive&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;manifest&gt;</span>
+</span><span class='line'>							<span class="nt">&lt;mainClass&gt;</span>jp.wakatta.RedisPop<span class="nt">&lt;/mainClass&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;/manifest&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;/archive&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;id&gt;</span>make-assembly<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>							<span class="nt">&lt;goal&gt;</span>attached<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>						<span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>					<span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>				<span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;/build&gt;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>redis.clients<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>jedis<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>			<span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>	<span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The <code>blpop</code> command can block on several lists, so when it receives
+something it is always at least a pair: the list key, and the value.</p>
+
+<p>Now, I can open three terminals to test the code: two with readers:</p>
+
+<p><code>
+java -jar target/redis-pop-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+</code></p>
+
+<p>and one with the writer (which must be started last):</p>
+
+<p><code>
+java -jar target/redis-push-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+</code></p>
+
+<p>The writer will simply state</p>
+
+<p><code>
+Message inserted
+</code></p>
+
+<p>One of the readers will get the message:
+<code>
+Waiting for messages
+Messages received:
+msg:queue
+A new message
+Waiting for messages
+</code></p>
+
+<p>but the other one will just keep waiting:
+<code>
+Waiting for messages
+</code></p>
+
+<p>So Redis blocking queues can only server one blocking reader at a time
+(as it should).</p>
+
+<p>The reader programs can be stopped with <code>Ctrl-c</code>, or by pushing
+<code>finish</code> into <code>msg:queue</code> from a Redis client (twice, once for each
+client):</p>
+
+<p><code>
+redis 127.0.0.1:6379&gt; lpush "msg:queue" "finish"
+(integer) 1
+redis 127.0.0.1:6379&gt; lpush "msg:queue" "finish"
+(integer) 1
+</code></p>
+
+<p>And that's all for today.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Repertoire Method]]></title>
@@ -960,106 +1535,6 @@ treatment this chapter is about. But once I had the equations, I was
 able to solve the problems without trouble.</p>
 
 <p>Next, the homework exercises.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Notes]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes/"/>
-    <updated>2012-01-06T13:52:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes</id>
-    <content type="html"><![CDATA[<p>For the first post of this hopefully long series, I have a few notes I
-wrote down as I was reading Chapter 1. Nothing revolutionary, but it
-gives me a chance to play with math notation.</p>
-
-<!--more-->
-
-
-<h1>Lines in the Plane</h1>
-
-<p>I must admit that my memories of Geometry are far, far away (the
-subject was not addressed at all when I studied Mathematics at
-university, and I had no need for Geometry in my work since), so I
-spent perhaps an unreasonable amount of time to check the validity of
-the most elementary steps.</p>
-
-<p>It goes without saying that the exercises of a Geometric nature are
-particularly challenging (as if I needed the extra difficulty).</p>
-
-<h2>Intersecting lines</h2>
-
-<p>The notion that one line will add $k$ new regions if it intersects
-other lines at $k-1$ points is due to the fact that $k-1$ distinct
-lines define at least $k$ regions (more if they are not all parallel),
-and one more line that intersects them all will divide these $k$
-regions in two.</p>
-
-<h1>Josephus Problem</h1>
-
-<h2>$J(5 \cdot 2^m) = 2^{m+1} + 1$</h2>
-
-<p>This is based on the fact that $J(10) = 5$ and $J(2n) = 2J(n) -1$.</p>
-
-<p>By induction:</p>
-
-<p><em>Base case</em>: it is true for $m = 1$: $J(5\cdot 2) = J(10) = 5 =
-2^{1+1} + 1$</p>
-
-<p><em>Recurrence</em>: assuming it is true for $m$,</p>
-
-<div markdown="0">
-$$
-\begin{align}
-J(5\cdot 2^{m+1}) &amp;= J(2(5\cdot 2^m))\\\\
-&amp;= 2J(5\cdot 2^m) - 1&amp;&amp;\text{as $J(2n) = 2J(n) -1$}\\\\
-&amp;= 2(2^{m+1}+1) - 1&amp;&amp;\text{induction hypothesis}\\\\
-&amp;= 2\cdot 2^{m+1} + 2 - 1\\\\
-&amp;= 2^{m+2} + 1
-\end{align}
-$$
-</div>
-
-
-<h2>$A(2^{m}+l) = 2^{m}$</h2>
-
-<p>It took me a while to convince myself that the $l$ was not a problem
-here. This can be seen by considering $l$ in binary notation, and
-using $A(2n) = 2A(n)$ and $A(2n+1) = 2A(n)$ to remove the rightmost
-bit.</p>
-
-<p>That is, with $2^m > l = (b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2$,we have:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-A(2^{m}+l) &amp;= A(2^{m}+(b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2)\\\\
-&amp;= 2A(2^{m-1}+(b_{m-1}b_{m-2}\cdots b_{1})_2)\\\\
-&amp;= 2^{2}A(2^{m-2}+(b_{m-1}b_{m-2}\cdots b_{2})_2)\\\\
-&amp;= 2^{3}A(2^{m-3}+(b_{m-1}b_{m-2}\cdots b_{3})_2)\\\\
-&amp;= \cdots
-\end{align}
-$$
-</div>
-
-
-<p>At each iteration, whether $b_i$ is $0$ or $1$, we can ignore it when
-dividing by $2$. And as $2^m &lt; l$, it takes no more than $m$ steps
-(removing the $m$ bits $b_0$ to $b_{m-1}$) to reduce $A(2^m+l)$ to
-$2^mA(1) = 2^m$</p>
-
-<h2>Radix-based Generalised Josephus Solution</h2>
-
-<p>The equation 1.18:</p>
-
-<p>$$f \left( ( b_m b_{m-1} \cdots b_1 b_0)_d \right) = \left( \alpha_{b_m} \beta_{b_{m-1}} \beta_{b_{m-2}} \cdots \beta_{b_1} \beta_{b_0} \right)_c$$</p>
-
-<p>is so unnaturally smart and simple that I thought the proof must be
-missing. But in fact it is indeed trivial, and just as the book
-states, follows from the rewriting of the argument in base $d$, then
-recurrence over $m$ (with $m$ the number of digits or the argument in
-base $d$).</p>
-
-<p>In the next post in this series, I will start the exercises.</p>
 ]]></content>
   </entry>
   

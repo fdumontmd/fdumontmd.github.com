@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-14T23:13:36+09:00</updated>
+  <updated>2012-01-22T00:14:05+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,596 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks Redis Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/"/>
+    <updated>2012-01-20T16:52:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1</id>
+    <content type="html"><![CDATA[<p>After a long winter hiatus, the elves at
+<a href="http://pragprog.com/">Pragmatic Bookshelf</a> delivered a late but
+welcome present: the third beta of
+<a href="http://pragprog.com/book/rwdata/seven-databases-in-seven-weeks">Seven Databases in Seven Weeks</a>. The
+book is not complete yet (the chapter on
+<a href="http://couchdb.apache.org/">CouchDB</a> is still missing), but it now
+covers <a href="http://redis.io/">Redis</a>.</p>
+
+<p>Redis is basically a key-value store, like
+<a href="http://wiki.basho.com/">Riak</a>, but while Riak is agnostic about the
+values, Redis values can be data structures (lists, queues,
+dictonaries, &#8230;, or even messaging queues). This allows Redis to act
+as a synchronized shared memory for cooperating applications.</p>
+
+<!-- more -->
+
+
+<h3>Complex Datatypes</h3>
+
+<p>Redis values can have structure, and specific commands manipulate
+these values in appropriate ways. Redis supports
+<a href="http://redis.io/commands/#string">strings</a>, which can also behave
+as numbers if they have the right format,
+<a href="http://redis.io/commands#list">lists</a> which can also be seen as
+queues, and support blocking reads,
+<a href="http://redis.io/commands#set">sets</a>,
+<a href="http://redis.io/commands#hash">hashes</a> (that is, dictionaries), and
+<a href="http://redis.io/commands#sorted_set">sorted sets</a>.</p>
+
+<h3>Transactions</h3>
+
+<p>All Redis commands are atomic, and it is possible to group a sequence
+of commands into a transaction for an all or nothing execution with
+the command <a href="http://redis.io/commands/multi"><code>MULTI</code></a>. But a
+Redis transaction is not similar to a transaction in relational
+databases: it just queues all the commands and executes them when it
+receives the <a href="http://redis.io/commands/exec"><code>EXEC</code></a> command. This
+means it is not possible to read any data while in a transaction.</p>
+
+<h3>Expiry</h3>
+
+<p>Perhaps nothing labels Redis as a datastore for transient data more
+than expiry: keys can be marked for expiration (either relative from
+the current time, or absolute).</p>
+
+<h3>Messaging</h3>
+
+<p>Redis also supports messaging but this is a topic for
+Day 2.</p>
+
+<p>This
+<a href="http://blog.mjrusso.com/2010/10/17/redis-from-the-ground-up.html">post</a>
+has a more detailed but still balanced coverage of Redis.</p>
+
+<h2>Exercises</h2>
+
+<h3>Redis command documentation</h3>
+
+<p>The <a href="http://redis.io/commands">documentation</a> is well done and easy to
+navigate. Of all the databases I have seen so far, this is probably
+the base
+(<a href="http://www.postgresql.org/docs/current/static/index.html">PostgreSQL</a>
+being a strong second).</p>
+
+<h3>Create a Redis client</h3>
+
+<p>I&#8217;m using Java and the <a href="https://github.com/xetorthio/jedis">Jedis</a>
+client library.</p>
+
+<p>The code is simple enough:</p>
+
+<figure class='code'><figcaption><span>simple redis client (RedisFirst.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/first/RedisFirst.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Transaction</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisFirst</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// connect</span>
+</span><span class='line'>      <span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="c1">// set the key first to 5</span>
+</span><span class='line'>      <span class="n">jedis</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="s">&quot;first&quot;</span><span class="o">,</span> <span class="s">&quot;5&quot;</span><span class="o">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="c1">// start a transaction</span>
+</span><span class='line'>      <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">multi</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// increase by 4</span>
+</span><span class='line'>      <span class="n">trans</span><span class="o">.</span><span class="na">incrBy</span><span class="o">(</span><span class="s">&quot;first&quot;</span><span class="o">,</span> <span class="mi">4</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">trans</span><span class="o">.</span><span class="na">exec</span><span class="o">();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="c1">// retrieve the value</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Value is now: &quot;</span> <span class="o">+</span> <span class="n">jedis</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;first&quot;</span><span class="o">));</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>pom.xml</code> file:</p>
+
+<figure class='code'><figcaption><span> (pom.xml)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/first/pom.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>redis-first<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/properties&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/build&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>redis.clients<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>jedis<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Create a pair of Redis clients</h3>
+
+<p>This one is simple as well, but having a reader and a writer allowed
+me to try one writer and two readers.</p>
+
+<p>First the writer program:</p>
+
+<figure class='code'><figcaption><span>Redis Push (RedisPush.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/push/RedisPush.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisPush</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">jedis</span><span class="o">.</span><span class="na">lpush</span><span class="o">(</span><span class="s">&quot;msg:queue&quot;</span><span class="o">,</span> <span class="s">&quot;A new message&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Message inserted&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>poml.xml</code> is a bit more complex, as it creates a self-contained
+jar with <code>MANIFEST.MF</code> (so I can run it from the command line easily):</p>
+
+<figure class='code'><figcaption><span> (pom.xml)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/push/pom.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>redis-push<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/properties&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;version&gt;</span>2.2.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;descriptorRefs&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;descriptorRef&gt;</span>jar-with-dependencies<span class="nt">&lt;/descriptorRef&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/descriptorRefs&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;archive&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;manifest&gt;</span>
+</span><span class='line'>                          <span class="nt">&lt;mainClass&gt;</span>jp.wakatta.RedisPush<span class="nt">&lt;/mainClass&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;/manifest&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/archive&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;id&gt;</span>make-assembly<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>                          <span class="nt">&lt;goal&gt;</span>attached<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/build&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>redis.clients<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>jedis<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The reader program:</p>
+
+<figure class='code'><figcaption><span>Redis Pop (RedisPop.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/pop/RedisPop.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisPop</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kt">boolean</span> <span class="n">again</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">again</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Waiting for messages&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">msgs</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">blpop</span><span class="o">(</span><span class="mi">300</span><span class="o">,</span> <span class="s">&quot;msg:queue&quot;</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Messages received:&quot;</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="nl">msg:</span> <span class="n">msgs</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;finish&quot;</span><span class="o">))</span>
+</span><span class='line'>                  <span class="n">again</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;No more messages&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>with its <code>pom.xml</code>:</p>
+
+<figure class='code'><figcaption><span> (pom.xml)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/pop/pom.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>redis-pop<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;properties&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/properties&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;version&gt;</span>2.2.2<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;descriptorRefs&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;descriptorRef&gt;</span>jar-with-dependencies<span class="nt">&lt;/descriptorRef&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/descriptorRefs&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;archive&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;manifest&gt;</span>
+</span><span class='line'>                          <span class="nt">&lt;mainClass&gt;</span>jp.wakatta.RedisPop<span class="nt">&lt;/mainClass&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;/manifest&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/archive&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;id&gt;</span>make-assembly<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>                          <span class="nt">&lt;goal&gt;</span>attached<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/build&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;groupId&gt;</span>redis.clients<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;artifactId&gt;</span>jedis<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>blpop</code> command can block on several lists, so when it receives
+something it is always at least a pair: the list key, and the value.</p>
+
+<p>Now, I can open three terminals to test the code: two with readers:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>java -jar target/redis-pop-0.0.1-SNAPSHOT-jar-with-dependencies.jar</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and one with the writer (which must be started last):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>java -jar target/redis-push-0.0.1-SNAPSHOT-jar-with-dependencies.jar</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The writer will simply state</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Message inserted</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One of the readers will get the message:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Waiting for messages
+</span><span class='line'>Messages received:
+</span><span class='line'>msg:queue
+</span><span class='line'>A new message
+</span><span class='line'>Waiting for messages</span></code></pre></td></tr></table></div></figure>
+
+
+<p>but the other one will just keep waiting:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Waiting for messages</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So Redis blocking queues can only server one blocking reader at a time
+(as it should).</p>
+
+<p>The reader programs can be stopped with <code>Ctrl-c</code>, or by pushing
+<code>finish</code> into <code>msg:queue</code> from a Redis client (twice, once for each
+client):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>redis 127.0.0.1:6379&gt; lpush "msg:queue" "finish"
+</span><span class='line'>(integer) 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; lpush "msg:queue" "finish"
+</span><span class='line'>(integer) 1</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that&#8217;s all for today.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Repertoire Method]]></title>
@@ -6833,277 +7423,6 @@ reasonable understanding of all this.</p>
 <p>And this completes Day 2. I must admit I have so far mixed feelings: I understand better what Riak tries to achieve, but the example is just not the kind of things Riak should be used for, and the Mapreduce syntax is a bit heavy (although, fortunately, very regular).</p>
 
 <p>Tomorrow will cover Vector Clocks, the mechanism that Riak exposes both to move conflicts resolution to the client side, and to help the client to implement a decent resolution.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks Riak Day 1]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/"/>
-    <updated>2011-12-08T10:22:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1</id>
-    <content type="html"><![CDATA[<p>The second database is <a href="http://basho.com/products/riak-overview/">Riak</a>, a key-value distributed store. Key-value stores a not really new (many property or configuration files are really basic key-value stores, and <a href="http://en.wikipedia.org/wiki/Berkeley_DB">Berkeley DB</a> has long been a good choice for those who needed something a little bit more robust than simple files but not as complex as a relational database).</p>
-
-<p>Still, going from this simple concept to a distributed store that can execute data processing on each of its nodes requires more than simply scaling things up, and I hope that this book will give me some idea of how such a store (and the other NoSQL) might fit in the solution landscape.</p>
-
-<!--more-->
-
-
-<p>
-But that is probably getting a bit ahead of myself; right now I&#8217;d be happy just to know how to use Riak.</p>
-
-<p>The client can be the simple <a href="http://curl.haxx.se/"><code>cURL</code></a> command, as Riak&#8217;s interface is based on HTTP. This simplifies the technical stack, but pushes some of the complexity on the client. It is clear that Riak will not provide anything as easy and convenient as PostgreSQL&#8217;s <code>psql</code>.</p>
-
-<p>Riak&#8217;s basic API is a REST based CRUD (with Create being pretty much the same as Update). Additional attributes, such as meta-data or the more important links are passed as headers in the HTTP request.</p>
-
-<p>It is simple, but somewhat inconvenient: there is no concept of partial update. When you want to update an object, you need to pass all the relevant data: meta-data, links, and content. Forget to mention one, and Riak will forget it too.</p>
-
-<h3>When was this book written?</h3>
-
-<p>I had <a href="">noticed</a> that the book refers to PostgreSQL 9.0 when <a href="http://www.postgresql.org/docs/9.1/static/release-9-1-2.html">9.1</a> has been out for a while. In this chapter on Riak, the author uses an apparently old format for the URLs, <code>/riak/bucket/key</code>, whereas the <a href="http://wiki.basho.com/HTTP-Store-Object.html">official documentation</a> recommends <code>/buckets/bucket/keys/key</code> (for instance, <code>/buckets/animals/keys/polly</code>). Both formats can be used and are interoperable, but there is no need to teach already deprecated formats.</p>
-
-<p>Of course, I found out about this new format after I completed all the exercises for today. So I will still use the old format for today.</p>
-
-<p>Presumably this will be fixed by the time the book gets published.</p>
-
-<h3>Simple but useful trick</h3>
-
-<p>Reading unformatted JSON data can be difficult. I found that Python provides a simple way to pretty print JSON output:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>python -mjson.tool</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(there are certainly other tools. Python is just the first one I came upon). To turn this into a simple, easy to use command, I added this to my <code>.profile</code> file:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>alias ppjs='python -mjson.tool'
-</span><span class='line'>alias ppjsless='python -mjson.tool | less'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That way, I can just pipe the output of <code>curl</code> into <code>ppjsless</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8091/stats | ppjsless</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>This unfortunately does not work with <code>curl</code> additional output (such as HTTP headers).</p>
-
-<h2>Exercises</h2>
-
-<h3>Online documentation</h3>
-
-<p>The root of the wiki is <a href="http://wiki.basho.com/">here</a>, and the HTTP (not just REST) API is <a href="http://wiki.basho.com/HTTP-API.html">here</a>.</p>
-
-<h3>Mime types</h3>
-
-<p>As always, <a href="http://en.wikipedia.org/wiki/Internet_media_type">Wikipedia</a> is very useful.</p>
-
-<h3>Differences between the dev1, dev2 and dev3 servers</h3>
-
-<p>The only difference is the port number. But there is some intelligence in the startup script to map each server to its own directory for permanent storage.</p>
-
-<h3>Link from Polly to her picture</h3>
-
-<p>This creates the link. Note, as I mentioned above, that the content needs to be repeated. Putting no body would cause a <code>curl</code> error (as an HTTP <code>PUT</code> request must have a body):</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X PUT http://localhost:8091/riak/animals/polly \
-</span><span class='line'>-H "Content-type: application/json" \
-</span><span class='line'>-H "Link: &lt;/riak/photo/polly.jpg&gt;; riaktag=\"photo\"" \
-</span><span class='line'>-d '{"nickname" : "Sweet Polly Purebred", "breed" : "Purebred"}'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The image can be retrived from Polly by following the link:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8091/riak/animals/polly/_,photo,_</span></code></pre></td></tr></table></div></figure>
-
-
-<p>or, using the new format:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8091/buckets/animals/keys/polly/_,photo,_</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>POST</code> a new type of document</h3>
-
-<p>Here I upload the Seven Databases in Seven Weeks (legal) PDF:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -i -X POST http://localhost:8091/riak/documents \
-</span><span class='line'>-H "Content-type: application/pdf" \
-</span><span class='line'>--data-binary @seven-databases-in-seven-weeks_b1_0.pdf </span></code></pre></td></tr></table></div></figure>
-
-
-<p>I use the <code>-i</code> option to retrieve the HTTP headers of the response and get the generated key. The command above has this output:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>HTTP/1.1 100 Continue
-</span><span class='line'>
-</span><span class='line'>HTTP/1.1 201 Created
-</span><span class='line'>Vary: Accept-Encoding
-</span><span class='line'>Server: MochiWeb/1.1 WebMachine/1.9.0 (someone had painted it blue)
-</span><span class='line'>Location: /riak/documents/6WCpgTjMpvHiojiHeH7vsGBXdHC
-</span><span class='line'>Date: Thu, 08 Dec 2011 09:16:18 GMT
-</span><span class='line'>Content-Type: application/pdf
-</span><span class='line'>Content-Length: 0</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Otherwise, I could list the keys for this bucket:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8091/riak/documents?keys=true | ppjs
-</span><span class='line'>
-</span><span class='line'>{
-</span><span class='line'>    "keys": [
-</span><span class='line'>        "6WCpgTjMpvHiojiHeH7vsGBXdHC"
-</span><span class='line'>    ], 
-</span><span class='line'>    "props": {
-</span><span class='line'>        "allow_mult": false, 
-</span><span class='line'>        "basic_quorum": false, 
-</span><span class='line'>        "big_vclock": 50, 
-</span><span class='line'>        "chash_keyfun": {
-</span><span class='line'>            "fun": "chash_std_keyfun", 
-</span><span class='line'>            "mod": "riak_core_util"
-</span><span class='line'>        }, 
-</span><span class='line'>        "dw": "quorum", 
-</span><span class='line'>        "last_write_wins": false, 
-</span><span class='line'>        "linkfun": {
-</span><span class='line'>            "fun": "mapreduce_linkfun", 
-</span><span class='line'>            "mod": "riak_kv_wm_link_walker"
-</span><span class='line'>        }, 
-</span><span class='line'>        "n_val": 3, 
-</span><span class='line'>        "name": "documents", 
-</span><span class='line'>        "notfound_ok": true, 
-</span><span class='line'>        "old_vclock": 86400, 
-</span><span class='line'>        "postcommit": [], 
-</span><span class='line'>        "pr": 0, 
-</span><span class='line'>        "precommit": [], 
-</span><span class='line'>        "pw": 0, 
-</span><span class='line'>        "r": "quorum", 
-</span><span class='line'>        "rw": "quorum", 
-</span><span class='line'>        "small_vclock": 10, 
-</span><span class='line'>        "w": "quorum", 
-</span><span class='line'>        "young_vclock": 20
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I can use the URL below to retrieve the document in a browser:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8091/riak/documents/6WCpgTjMpvHiojiHeH7vsGBXdHC</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>PUT</code> a medecine image and link to Ace</h3>
-
-<p>Once again, nothing too complex, but everything has to be done at the same time, as partial updates are not possible:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X PUT http://localhost:8091/riak/medecine/antibiotics \
-</span><span class='line'>-H "Content-type: image/jpeg" -H "Link: &lt;/riak/animals/ace&gt;; riaktag=\"for\"" \
-</span><span class='line'>--data-binary @medecine.jpg </span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then the image itself can be retrieve at:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8091/riak/medecine/antibiotics</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally, I can get the poor patient by following links:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:8091/riak/medecine/antibiotics/animals,for,_
-</span><span class='line'>
-</span><span class='line'>--ZhESIca7K0r54xNT0w737ZZDbvl
-</span><span class='line'>Content-Type: multipart/mixed; boundary=WZgHw2YUOMNtda2iM46bNdvXxt7
-</span><span class='line'>
-</span><span class='line'>--WZgHw2YUOMNtda2iM46bNdvXxt7
-</span><span class='line'>X-Riak-Vclock: a85hYGBgzGDKBVIcR4M2cvvdjT+YwZTImsfKUDcx5ARfFgA=
-</span><span class='line'>Location: /riak/animals/ace
-</span><span class='line'>Content-Type: application/json
-</span><span class='line'>Link: &lt;/riak/animals&gt;; rel="up"
-</span><span class='line'>Etag: 6egZ1heUAPW7DEy0HjO7K0
-</span><span class='line'>Last-Modified: Thu, 08 Dec 2011 01:40:14 GMT
-</span><span class='line'>
-</span><span class='line'>{"nickname" : "The Wonder Dog", "breed" : "German Shepherd"}
-</span><span class='line'>--WZgHw2YUOMNtda2iM46bNdvXxt7--
-</span><span class='line'>
-</span><span class='line'>--ZhESIca7K0r54xNT0w737ZZDbvl--</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And this completes Day 1. The basic REST API is not complex, but its simplicity cuts both ways. There is a lot of typing required; I expect client libraries to be much easier to use, at the cost of having to write an application or script to do anything.</p>
-
-<p>Tomorrow will cover MapReduce in the context of Riak.</p>
 ]]></content>
   </entry>
   

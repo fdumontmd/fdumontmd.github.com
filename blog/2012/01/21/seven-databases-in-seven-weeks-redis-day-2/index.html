@@ -1,0 +1,775 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks Redis Day 2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Performance tuning with Redis can be achieved in different ways, as we
+see today. First there are basic changes in the client side (such as
+pipelines &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks Redis Day 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-21T13:30:00+09:00" pubdate data-updated="true">Jan 21<span>st</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Performance tuning with Redis can be achieved in different ways, as we
+see today. First there are basic changes in the client side (such as
+pipelines), then configurations options (frequency of saves, &#8230;), and
+finally distribution of load.</p>
+
+<!-- more -->
+
+
+<h3>Pipeline</h3>
+
+<p>Redis low level protocol supports the notion of pipelines: sending
+commands in batch, and collect all the results at the end, instead of
+waiting for results between each command. This should save a round
+trip delay for each command, so there can be huge performance boosts
+for specific usages, as the informal benchmarks below show.</p>
+
+<h3>Distributed Redis</h3>
+
+<p>Redis servers can be distributed for performance or memory concern,
+but much of the work falls on the client side.</p>
+
+<h4>Slaves</h4>
+
+<p>Slaves in Redis are just the opposite of
+<a href="http://www.mongodb.org/">MongoDB</a>&#8217;s. Whereas MongoDB&#8217;s slaves are
+meant to be written to, so that updates are automatically pushed to
+the master, Redis slaves are, or should be, read-only. Updates are
+only propagated from master to slaves.</p>
+
+<p>There is no integrated support for failover; it has to be implemented
+in client code.</p>
+
+<p>So slaves are mainly a mechanism to distribute reads; combined with
+monitoring client code, they can also be used to data replication and
+failover.</p>
+
+<p>Note that each slave needs as much memory as the master, as it
+contains the same data.</p>
+
+<h4>Sharding</h4>
+
+<p>By itself, Redis does not support sharding, and relies on the client
+library to spread accesses over several instances. There is a
+ongoing development to have real Redis Clusters, but for the time
+being it has to be simulated.</p>
+
+<p>One issue not mentioned in the book is that sharding breaks
+transactions and pipelines: there is no guarantees that the relevant
+keys are all in the same instance, so the Redis Ruby client, for
+instance, will raise an exception when invoking <code>MULTI</code>.</p>
+
+<p>The Java client, Jedis, has a mechanism to &#8220;tag&#8221; a key such that keys
+with the same tag are guaranteed to be on the Redis server. This makes
+the distribution of keys predictable, and allows the use of
+transactions (provided all the involved keys have the same tag).</p>
+
+<p>This shows that not only this is a client side feature, but the actual
+extent of the feature may vary widely. And of course, there is no
+reason to think that different clients will shard keys the same way.</p>
+
+<p>Properly setup, sharding will distribute the data over each
+node, reducing the memory load of each node.</p>
+
+<h2>Exercises</h2>
+
+<h3>Performance tests</h3>
+
+<p>I first tried to rewrite the code in Java, to measure the cost of Ruby&#8217;s
+convenience. The code in Java is clumsier than in Ruby, but it ran
+a bit faster (105 seconds instead of 155 seconds for the Ruby version
+using <code>hiredis</code>).</p>
+
+<figure class='code'><figcaption><span>Simple ISBN Loader (ISBNLoader.java)</span> <a href='/downloads/code/7d7w/redis/isbn/ISBNLoader.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ISBNLoader</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">REDIS_HOST</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">REDIS_PORT</span> <span class="o">=</span> <span class="mi">6379</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5000</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="n">REDIS_HOST</span><span class="o">,</span> <span class="n">REDIS_PORT</span><span class="o">,</span> <span class="n">TIMEOUT</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">jedis</span><span class="o">.</span><span class="na">flushAll</span><span class="o">();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">String</span> <span class="n">line</span><span class="o">;</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">String</span><span class="o">[]</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">tokens</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">isbn</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">isbn</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">||</span> <span class="n">title</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">jedis</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">isbn</span><span class="o">,</span> <span class="n">title</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">jedis</span><span class="o">.</span><span class="na">disconnect</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using pipelines, the difference was 11 seconds against 26 seconds
+(again, the Ruby version is using <code>hiredis</code>).</p>
+
+<figure class='code'><figcaption><span>Pipelined ISBN Loader (ISBNLoader.java)</span> <a href='/downloads/code/7d7w/redis/isbn-pipeline/ISBNLoader.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.LinkedList</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Pipeline</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ISBNLoader</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">REDIS_HOST</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">REDIS_PORT</span> <span class="o">=</span> <span class="mi">6379</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5000</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Jedis</span> <span class="n">client</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">protected</span> <span class="nf">ISBNLoader</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="n">REDIS_HOST</span><span class="o">,</span> <span class="n">REDIS_PORT</span><span class="o">,</span> <span class="n">TIMEOUT</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">client</span><span class="o">.</span><span class="na">flushAll</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">ISBNLoader</span><span class="o">().</span><span class="na">load</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">load</span><span class="o">(</span><span class="n">String</span> <span class="n">fileName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">fileName</span><span class="o">));</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">String</span> <span class="n">line</span><span class="o">;</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">List</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;</span> <span class="n">batch</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">String</span><span class="o">[]</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">tokens</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">isbn</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">isbn</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">||</span> <span class="n">title</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">batch</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Pair</span><span class="o">(</span><span class="n">isbn</span><span class="o">,</span> <span class="n">title</span><span class="o">));</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">batch</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="n">BATCH_SIZE</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">flush</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">flush</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">client</span><span class="o">.</span><span class="na">disconnect</span><span class="o">();</span>       
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">flush</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;</span> <span class="n">batch</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Pipeline</span> <span class="n">pipe</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">pipelined</span><span class="o">();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="n">Pair</span> <span class="n">p</span> <span class="o">:</span> <span class="n">batch</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">pipe</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">key</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">pipe</span><span class="o">.</span><span class="na">sync</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">batch</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Pair</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">Pair</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Disabling snapshots and append only file did not improve the time
+significantly compared to the default (snapshots but no append only file).</p>
+
+<p>Enabling the append only file and setting it to <code>always</code> was almost 3
+times as slow for the pipelined Java version (27 seconds). For the
+original Ruby version (with <code>hiredis</code>), it was even worse (1101
+seconds). This means the overhead of writing to file can be mitigated
+with pipelines.</p>
+
+<p>To recap: disabling snapshots did not improve performance measurably,
+but enabling append only file <code>always</code> degrades the performance
+significantly; using pipelines makes it a bit better, but it is still
+much slower.</p>
+
+<h3>URL Shortening Service</h3>
+
+<p>The exact setup to implement is not described, so what I did is to
+distribute data between two shards of one master and two slaves.</p>
+
+<p>There is no direct support for such a layout in Jedis (nor, as far as I
+can tell, in the Ruby library), so I had to write some of it myself.</p>
+
+<p>As always with Redis, the writes are restricted to the masters, and
+the reads are distributed over the slaves (and the masters as well, if
+needed).</p>
+
+<h4>Distribution over slaves</h4>
+
+<p>Jedis does not support slaves directly. What the documentation
+proposes is to have a dedicated client to the master to write on, and
+a sharded pool to the slaves. However, such an approach would be
+difficult, as I need to shard the writes to the masters as well (I
+would have to use a different sharding algorithm, and manage the
+routing of commands through the tree of Redis instances).</p>
+
+<p>Fortunately, Redis user Ingvar Bogdahn had posted an implementation of
+a
+<a href="http://groups.google.com/group/jedis_redis/msg/c8c76371cf543e36">Round Robin pool of slaves</a>. This
+implementation manages a connection pool to a master, and another
+connection pool to a set of slaves. The commands are properly
+distributed: all the write commands are sent to the master, and the
+reads commands are distributed over the slaves.</p>
+
+<p>I had to fix the code in some places: a command implementation was
+missing, another was incorrect, and finally the password was never
+sent to the master, causing authentication errors. But the bulk of the
+code is Ingvar&#8217;s, and I was glad to use it.</p>
+
+<p>The classes are</p>
+
+<ul>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/UniJedis.java"><code>UniJedis</code></a>: provides pools for both master and a set of slaves, and dispatches commands to the correct pool.</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/RoundRobinPool.java"><code>RoundRobinPool</code></a>: implements a pool with Round Robin access</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ChainableTransaction.java"><code>ChainableTransaction</code></a>: (not used in this project) provides a fluent interface for Redis transactions.</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/DBKeys.java"><code>DBKeys</code></a>: (not used in this project) abstracts database and keys.</li>
+</ul>
+
+
+<h4>Sharding</h4>
+
+<p>Sharding is directly supported by Jedis, but as organized the code is
+restricted to a set of clients to specific instances.</p>
+
+<p>There are basic, generic classes
+(<a href="https://github.com/xetorthio/jedis/blob/master/src/main/java/redis/clients/util/Sharded.java"><code>Sharded</code></a>,
+<a href="https://github.com/xetorthio/jedis/blob/master/src/main/java/redis/clients/util/ShardInfo.java"><code>ShardInfo</code></a>,
+&#8230;) that can be used to implement sharding of arbitrary clients (such
+as the Round Robin pool above), but it requires a lot of tedious code
+to map each command to a method on the right shard. Worse, such code
+would be the same for every kind of shard.</p>
+
+<p>So I first wrote generic classes that implement sharding in terms of
+generic Jedis client; the actual implementation is then much simpler
+(just the constructors, and the few commands that cannot be sharded,
+such as <code>disconnect</code> or <code>flushAll</code>).</p>
+
+<ul>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/BinaryShardedGJedis.java"><code>BinaryShardedGJedis</code></a>: first level of Jedis commands implementation (binary commands)</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ShardedGJedis.java"><code>ShardedGJedis</code></a>: second level of Jedis commands implementation (<code>String</code> based commands)</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/UniJedisShardInfo.java"><code>UniJedisShardInfo</code></a>: descriptor class to use with <code>Sharded</code></li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ShardedUniJedis.java"><code>ShardedUniJedis</code></a>: actual implementation of sharded <code>UniJedis</code>. As promised, the class has hardly any code.</li>
+</ul>
+
+
+<h4>Service</h4>
+
+<p>The code for the service itself is now fairly
+small. <a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/client/JedisClient.java"><code>JedisClient</code></a>
+is the class that builds the tree of sharded master/slaves pools. It
+is loaded and initialized as a <a href="http://www.springsource.org/">Spring</a>
+bean. The web services are <a href="http://jsr311.java.net/">JSR 311</a>
+services, running over <a href="http://jersey.java.net/">Jersey</a>, and loaded
+and initialized by Spring.</p>
+
+<p><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/web/Admin.java"><code>Admin</code></a>
+let the user defines a keyword for a specific URL, and
+<a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/web/Client.java"><code>Client</code></a>
+extracts a keyword from the request URL, retrieves the URL for the
+this keyword, and returns a request to redirect to this URL.</p>
+
+<p>Once deployed (on <a href="http://tomcat.apache.org/">Apache Tomcat</a>), it can be used in a browser or on the command line:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -X POST http://localhost:8080/url-shortener/u/admin --data "url=http://slashdot.org&shorter=slash"
+</span><span class='line'>Key[slash] mapped to URL[http://slashdot.org]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and for clients:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -I http://localhost:8080/url-shortener/u/s/slash
+</span><span class='line'>HTTP/1.1 303 See Other
+</span><span class='line'>Server: Apache-Coyote/1.1
+</span><span class='line'>Location: http://slashdot.org
+</span><span class='line'>Content-Length: 0
+</span><span class='line'>Date: Mon, 23 Jan 2012 06:13:29 GMT</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code for the whole project can be found on <a href="https://github.com/fdumontmd/url-shortener">Github</a>.</p>
+
+<p>And this completes Day 2.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-21T13:30:00+09:00" pubdate data-updated="true">Jan 21<span>st</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/" title="Previous Post: Seven Databases in Seven Weeks Redis Day 1">&laquo; Seven Databases in Seven Weeks Redis Day 1</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">MongoDB Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Neo4j Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Neo4j Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Neo4j Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/">Redis Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Redis Day 2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Seven Databases in Seven Weeks Redis Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/">Seven Databases in Seven Weeks Redis Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Concrete Mathematics Repertoire Method</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/">Concrete Mathematics Chapter 1 Homework Exercises Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/">ANTLR3 Maven Plugin - Eclipse setup</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

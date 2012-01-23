@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-22T00:14:05+09:00</updated>
+  <updated>2012-01-23T16:21:38+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,448 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks Redis Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/"/>
+    <updated>2012-01-21T13:30:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2</id>
+    <content type="html"><![CDATA[<p>Performance tuning with Redis can be achieved in different ways, as we
+see today. First there are basic changes in the client side (such as
+pipelines), then configurations options (frequency of saves, ...), and
+finally distribution of load.</p>
+
+<!-- more -->
+
+
+<h3>Pipeline</h3>
+
+<p>Redis low level protocol supports the notion of pipelines: sending
+commands in batch, and collect all the results at the end, instead of
+waiting for results between each command. This should save a round
+trip delay for each command, so there can be huge performance boosts
+for specific usages, as the informal benchmarks below show.</p>
+
+<h3>Distributed Redis</h3>
+
+<p>Redis servers can be distributed for performance or memory concern,
+but much of the work falls on the client side.</p>
+
+<h4>Slaves</h4>
+
+<p>Slaves in Redis are just the opposite of
+<a href="http://www.mongodb.org/">MongoDB</a>'s. Whereas MongoDB's slaves are
+meant to be written to, so that updates are automatically pushed to
+the master, Redis slaves are, or should be, read-only. Updates are
+only propagated from master to slaves.</p>
+
+<p>There is no integrated support for failover; it has to be implemented
+in client code.</p>
+
+<p>So slaves are mainly a mechanism to distribute reads; combined with
+monitoring client code, they can also be used to data replication and
+failover.</p>
+
+<p>Note that each slave needs as much memory as the master, as it
+contains the same data.</p>
+
+<h4>Sharding</h4>
+
+<p>By itself, Redis does not support sharding, and relies on the client
+library to spread accesses over several instances. There is a
+ongoing development to have real Redis Clusters, but for the time
+being it has to be simulated.</p>
+
+<p>One issue not mentioned in the book is that sharding breaks
+transactions and pipelines: there is no guarantees that the relevant
+keys are all in the same instance, so the Redis Ruby client, for
+instance, will raise an exception when invoking <code>MULTI</code>.</p>
+
+<p>The Java client, Jedis, has a mechanism to "tag" a key such that keys
+with the same tag are guaranteed to be on the Redis server. This makes
+the distribution of keys predictable, and allows the use of
+transactions (provided all the involved keys have the same tag).</p>
+
+<p>This shows that not only this is a client side feature, but the actual
+extent of the feature may vary widely. And of course, there is no
+reason to think that different clients will shard keys the same way.</p>
+
+<p>Properly setup, sharding will distribute the data over each
+node, reducing the memory load of each node.</p>
+
+<h2>Exercises</h2>
+
+<h3>Performance tests</h3>
+
+<p>I first tried to rewrite the code in Java, to measure the cost of Ruby's
+convenience. The code in Java is clumsier than in Ruby, but it ran
+a bit faster (105 seconds instead of 155 seconds for the Ruby version
+using <code>hiredis</code>).</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Simple ISBN Loader (ISBNLoader.java)</span> <a href='/downloads/code/7d7w/redis/isbn/ISBNLoader.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ISBNLoader</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">REDIS_HOST</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">REDIS_PORT</span> <span class="o">=</span> <span class="mi">6379</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5000</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="n">REDIS_HOST</span><span class="o">,</span> <span class="n">REDIS_PORT</span><span class="o">,</span> <span class="n">TIMEOUT</span><span class="o">);</span>
+</span><span class='line'>		<span class="n">jedis</span><span class="o">.</span><span class="na">flushAll</span><span class="o">();</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="n">String</span> <span class="n">line</span><span class="o">;</span>
+</span><span class='line'>		<span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>		
+</span><span class='line'>		
+</span><span class='line'>		<span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>			<span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>			<span class="n">String</span><span class="o">[]</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
+</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">tokens</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">)</span>
+</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>			<span class="n">String</span> <span class="n">isbn</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+</span><span class='line'>			<span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
+</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">isbn</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">||</span> <span class="n">title</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
+</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>			<span class="n">jedis</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">isbn</span><span class="o">,</span> <span class="n">title</span><span class="o">);</span>
+</span><span class='line'>		<span class="o">}</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="n">jedis</span><span class="o">.</span><span class="na">disconnect</span><span class="o">();</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Using pipelines, the difference was 11 seconds against 26 seconds
+(again, the Ruby version is using <code>hiredis</code>).</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Pipelined ISBN Loader (ISBNLoader.java)</span> <a href='/downloads/code/7d7w/redis/isbn-pipeline/ISBNLoader.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.LinkedList</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Pipeline</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ISBNLoader</span> <span class="o">{</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">REDIS_HOST</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">REDIS_PORT</span> <span class="o">=</span> <span class="mi">6379</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5000</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
+</span><span class='line'>	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Jedis</span> <span class="n">client</span><span class="o">;</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">protected</span> <span class="nf">ISBNLoader</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="n">REDIS_HOST</span><span class="o">,</span> <span class="n">REDIS_PORT</span><span class="o">,</span> <span class="n">TIMEOUT</span><span class="o">);</span>
+</span><span class='line'>		<span class="n">client</span><span class="o">.</span><span class="na">flushAll</span><span class="o">();</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>		<span class="k">new</span> <span class="nf">ISBNLoader</span><span class="o">().</span><span class="na">load</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">load</span><span class="o">(</span><span class="n">String</span> <span class="n">fileName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">fileName</span><span class="o">));</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="n">String</span> <span class="n">line</span><span class="o">;</span>
+</span><span class='line'>		<span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="n">List</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;</span> <span class="n">batch</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;();</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>			<span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>			<span class="n">String</span><span class="o">[]</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
+</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">tokens</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">)</span>
+</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>			<span class="n">String</span> <span class="n">isbn</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+</span><span class='line'>			<span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
+</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">isbn</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">||</span> <span class="n">title</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
+</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>			<span class="n">batch</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Pair</span><span class="o">(</span><span class="n">isbn</span><span class="o">,</span> <span class="n">title</span><span class="o">));</span>
+</span><span class='line'>			
+</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">batch</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="n">BATCH_SIZE</span><span class="o">)</span>
+</span><span class='line'>				<span class="n">flush</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
+</span><span class='line'>		<span class="o">}</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="n">flush</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="n">client</span><span class="o">.</span><span class="na">disconnect</span><span class="o">();</span>		
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">flush</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;</span> <span class="n">batch</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">Pipeline</span> <span class="n">pipe</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">pipelined</span><span class="o">();</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="k">for</span> <span class="o">(</span><span class="n">Pair</span> <span class="n">p</span> <span class="o">:</span> <span class="n">batch</span><span class="o">)</span>
+</span><span class='line'>			<span class="n">pipe</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">key</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
+</span><span class='line'>		<span class="n">pipe</span><span class="o">.</span><span class="na">sync</span><span class="o">();</span>
+</span><span class='line'>		<span class="n">batch</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'>	
+</span><span class='line'>	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Pair</span> <span class="o">{</span>
+</span><span class='line'>		<span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+</span><span class='line'>		<span class="n">String</span> <span class="n">value</span><span class="o">;</span>
+</span><span class='line'>		
+</span><span class='line'>		<span class="n">Pair</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>			<span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
+</span><span class='line'>			<span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+</span><span class='line'>		<span class="o">}</span>
+</span><span class='line'>	<span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Disabling snapshots and append only file did not improve the time
+significantly compared to the default (snapshots but no append only file).</p>
+
+<p>Enabling the append only file and setting it to <code>always</code> was almost 3
+times as slow for the pipelined Java version (27 seconds). For the
+original Ruby version (with <code>hiredis</code>), it was even worse (1101
+seconds). This means the overhead of writing to file can be mitigated
+with pipelines.</p>
+
+<p>To recap: disabling snapshots did not improve performance measurably,
+but enabling append only file <code>always</code> degrades the performance
+significantly; using pipelines makes it a bit better, but it is still
+much slower.</p>
+
+<h3>URL Shortening Service</h3>
+
+<p>The exact setup to implement is not described, so what I did is to
+distribute data between two shards of one master and two slaves.</p>
+
+<p>There is no direct support for such a layout in Jedis (nor, as far as I
+can tell, in the Ruby library), so I had to write some of it myself.</p>
+
+<p>As always with Redis, the writes are restricted to the masters, and
+the reads are distributed over the slaves (and the masters as well, if
+needed).</p>
+
+<h4>Distribution over slaves</h4>
+
+<p>Jedis does not support slaves directly. What the documentation
+proposes is to have a dedicated client to the master to write on, and
+a sharded pool to the slaves. However, such an approach would be
+difficult, as I need to shard the writes to the masters as well (I
+would have to use a different sharding algorithm, and manage the
+routing of commands through the tree of Redis instances).</p>
+
+<p>Fortunately, Redis user Ingvar Bogdahn had posted an implementation of
+a
+<a href="http://groups.google.com/group/jedis_redis/msg/c8c76371cf543e36">Round Robin pool of slaves</a>. This
+implementation manages a connection pool to a master, and another
+connection pool to a set of slaves. The commands are properly
+distributed: all the write commands are sent to the master, and the
+reads commands are distributed over the slaves.</p>
+
+<p>I had to fix the code in some places: a command implementation was
+missing, another was incorrect, and finally the password was never
+sent to the master, causing authentication errors. But the bulk of the
+code is Ingvar's, and I was glad to use it.</p>
+
+<p>The classes are</p>
+
+<ul>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/UniJedis.java"><code>UniJedis</code></a>: provides pools for both master and a set of slaves, and dispatches commands to the correct pool.</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/RoundRobinPool.java"><code>RoundRobinPool</code></a>: implements a pool with Round Robin access</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ChainableTransaction.java"><code>ChainableTransaction</code></a>: (not used in this project) provides a fluent interface for Redis transactions.</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/DBKeys.java"><code>DBKeys</code></a>: (not used in this project) abstracts database and keys.</li>
+</ul>
+
+
+<h4>Sharding</h4>
+
+<p>Sharding is directly supported by Jedis, but as organized the code is
+restricted to a set of clients to specific instances.</p>
+
+<p>There are basic, generic classes
+(<a href="https://github.com/xetorthio/jedis/blob/master/src/main/java/redis/clients/util/Sharded.java"><code>Sharded</code></a>,
+<a href="https://github.com/xetorthio/jedis/blob/master/src/main/java/redis/clients/util/ShardInfo.java"><code>ShardInfo</code></a>,
+...) that can be used to implement sharding of arbitrary clients (such
+as the Round Robin pool above), but it requires a lot of tedious code
+to map each command to a method on the right shard. Worse, such code
+would be the same for every kind of shard.</p>
+
+<p>So I first wrote generic classes that implement sharding in terms of
+generic Jedis client; the actual implementation is then much simpler
+(just the constructors, and the few commands that cannot be sharded,
+such as <code>disconnect</code> or <code>flushAll</code>).</p>
+
+<ul>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/BinaryShardedGJedis.java"><code>BinaryShardedGJedis</code></a>: first level of Jedis commands implementation (binary commands)</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ShardedGJedis.java"><code>ShardedGJedis</code></a>: second level of Jedis commands implementation (<code>String</code> based commands)</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/UniJedisShardInfo.java"><code>UniJedisShardInfo</code></a>: descriptor class to use with <code>Sharded</code></li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ShardedUniJedis.java"><code>ShardedUniJedis</code></a>: actual implementation of sharded <code>UniJedis</code>. As promised, the class has hardly any code.</li>
+</ul>
+
+
+<h4>Service</h4>
+
+<p>The code for the service itself is now fairly
+small. <a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/client/JedisClient.java"><code>JedisClient</code></a>
+is the class that builds the tree of sharded master/slaves pools. It
+is loaded and initialized as a <a href="http://www.springsource.org/">Spring</a>
+bean. The web services are <a href="http://jsr311.java.net/">JSR 311</a>
+services, running over <a href="http://jersey.java.net/">Jersey</a>, and loaded
+and initialized by Spring.</p>
+
+<p><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/web/Admin.java"><code>Admin</code></a>
+let the user defines a keyword for a specific URL, and
+<a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/web/Client.java"><code>Client</code></a>
+extracts a keyword from the request URL, retrieves the URL for the
+this keyword, and returns a request to redirect to this URL.</p>
+
+<p>Once deployed (on <a href="http://tomcat.apache.org/">Apache Tomcat</a>), it can be used in a browser or on the command line:</p>
+
+<p><code>
+$ curl -X POST http://localhost:8080/url-shortener/u/admin --data "url=http://slashdot.org&amp;shorter=slash"
+Key[slash] mapped to URL[http://slashdot.org]
+</code></p>
+
+<p>and for clients:</p>
+
+<p><code>
+$ curl -I http://localhost:8080/url-shortener/u/s/slash
+HTTP/1.1 303 See Other
+Server: Apache-Coyote/1.1
+Location: http://slashdot.org
+Content-Length: 0
+Date: Mon, 23 Jan 2012 06:13:29 GMT
+</code></p>
+
+<p>The code for the whole project can be found on <a href="https://github.com/fdumontmd/url-shortener">Github</a>.</p>
+
+<p>And this completes Day 2.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks Redis Day 1]]></title>
@@ -1304,237 +1746,6 @@ B(n) &amp; = 4(2^{n-1} -1) + 4 + B(n-1)\\\\
 pointless, sense of pride and achievement.</p>
 
 <p>No doubt the other exercises will cut me down to size.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Warmups]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/"/>
-    <updated>2012-01-07T19:09:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups</id>
-    <content type="html"><![CDATA[<p>It took me far longer than it should have, and I had a very partial
-success; I guess my excuse is that my brain was still cold...</p>
-
-<p>At least I can claim I did try to solve all the exercises; I really
-spent hours on this.</p>
-
-<!--more-->
-
-
-<h2>Warmups</h2>
-
-<h3>Horse colour</h3>
-
-<p>I kind of botched this one, as I tried to answer it even before
-reading the chapter... and my first instinct was that such a use of
-induction (taking numbered subsets) was invalid.</p>
-
-<p>Of course it is not. This is a perfectly valid approach, but, as the
-book states, in the present case it breaks down for $n=2$.</p>
-
-<p>Properly expressed with math notation, it becomes clear that the
-``same colour'' concept is a binary relation (a reflexive, symmetric
-and transitive one). The key is <em>binary</em>: if every pair of horses were
-the same colour, then induction could be used.</p>
-
-<h3>Tower of Hanoi Variation</h3>
-
-<p>The description in the book is somewhat confusing, as it states the
-restriction in terms of absolute positions (that is, no direct move
-between left peg and right peg), rather than relative (if you want to
-move a disc between peg $A$ and peg $B$, you must first move it to peg $C$,
-then to peg $B$).</p>
-
-<p>The first approach does not work (that is, it is impossible to solve
-the problem under these conditions), but obviously the authors meant
-the second approach.</p>
-
-<h4>Number of moves</h4>
-
-<p>This variation can be solved using the exact same tools as the
-original problem.</p>
-
-<p>Assuming we want to move a stack from $A$ to $B$, using $C$ as
-transfer peg: a single disc can be moved in $2$ steps ($A$ to $C$, $C$
-to $B$); to move more than $1$, you first need to move the $n-1$ from
-$A$ to $B$, then move $1$ disk from $A$ to $C$, move the $n-1$ discs
-from $B$ back to $A$, move the one disc from $C$ to $B$, and finally
-move the $n-1$ discs from $A$ to $B$.</p>
-
-<p>More concisely:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-T_1 &amp;= 2&amp;&amp;\text{base case}\\\\
-T_n &amp;= T_{n-1} + 1 + T_{n-1} + 1 + T_{n-1}\\\\
-&amp; = 3T_{n-1} + 2&amp;&amp;\text{recurrence equation}
-\end{align}
-$$
-</div>
-
-
-<p>Using the exact same method as in the book, let's define
-$T_n + 1= U_n$:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-U_1 &amp;= T_1 + 1\\\\
-&amp; = 3\\\\
-U_n &amp;= T_n + 1\\\\
-&amp; = 3(U_{n-1} -1) + 3\\\\
-&amp; = 3U_{n-1} - 3 + 3\\\\
-&amp; = 3U_{n-1}
-\end{align}
-$$
-</div>
-
-
-<p>Then, $U_n = 3^n$, and $T_n = 3^n-1$.</p>
-
-<h4>Arrangements</h4>
-
-<p>As discs must be sorted, to describe an arrangement it is enough to
-list the peg for each disc. As there are $3$ pegs, this means
-there are $3^n$ different arrangements.</p>
-
-<p>The variation takes $3^n-1$ moves, but counting the starting position
-as well, this means $3^n$ different positions, which is the same as
-the total number of arrangements.</p>
-
-<h3>Tower of Hanoi, Initial Setup Variation</h3>
-
-<p>Once again, by induction: to move a disk to peg $B$:</p>
-
-<p><em>Base case</em>: moving the smallest disc takes at most $1$ move ($0$ if
-it is already on peg $B$), so $T_1 \le 1$;
-<em>Recurrence</em>: to move the disc of size $n$, assuming it is on $A$, we
-need to move all the smaller discs to $C$ (to clear both $A$ and $B$),
-then move the disc of size $n$, and finally move all the smaller discs
-to $B$. Calling the clearing operation $Cl_n$, we have
-$T_n \le Cl_{n-1} + 1 + T_{n-1}$.</p>
-
-<p>A moment of thought is enough to realise that $Cl_n$ amounts to the
-same operation as $T_n$ (that is, move each disc to a specific peg,
-no matter where it currently is), so we have $Cl_n = T_n$, and
-therefore $T_n \le 2T_{n-1} + 1$, which is the same recurrence equation
-as the original problem.</p>
-
-<p>Therefore there is no position that is more that $2^n-1$ moves from
-the target position.</p>
-
-<h3>Venn Diagram with 4 circles</h3>
-
-<p>I completely failed to solve this one, even though I spent most of the
-time on this problem alone. I had the intuition that it could not be
-done; I also found that the maximum number of regions would be 14, but
-not matter what I tried, I could not prove it.</p>
-
-<p>I tried to use Geometry, hoping that a minimal list of constraints on
-the circles would prove that some of the regions that should be
-restricted to two circles were in fact always covered by three or
-more.</p>
-
-<p>Eventually, when I gave up and looked at the solution, I still could not
-understand it. So a circle can only intersect another one in at most 2
-points. OK, so what?</p>
-
-<p>After more research (the Google kind, this time), I found
-<a href="http://www.brynmawr.edu/math/people/anmyers/PAPERS/Venn.pdf">this paper</a>
-which explains why. Each intersection point creates a single new
-region. Although once again I have no intuition I can trust in this
-domain, in this case the reasoning seems similar enough to
-intersecting lines that I feel somewhat confident.</p>
-
-<p>So the above observation gives a recurrence equation:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-C_1 &amp;= 2\\\\
-C_n &amp;= C_{n-1} + 2(n-1)
-\end{align}
-$$
-</div>
-
-
-<p>Already, we have that $C_4 = 14$, which is less than the required
-$16$ for a Venn diagram (and according to this
-<a href="http://www.combinatorics.org/Surveys/ds5/VennEJC.html">document</a>),
-four circles form a <em>Euler diagram</em>, not a Venn diagram.</p>
-
-<p>Clearly a triangular number sequence is hiding in there. The
-recurrence equations above can be rewritten as</p>
-
-<div markdown="0">
-$$
-\begin{align}
-C_n &amp;= 2+\sum_{i=1}^{n}2(i-1)\\\\
-&amp;= 2+2\sum_{i=0}^{n-1}i\\\\
-&amp;= 2+2\frac{n(n-1)}{2}\\\\
-&amp;= n^2-n+2
-\end{align}
-$$
-</div>
-
-
-<h3>Bounded Regions in the Plane</h3>
-
-<p>Another one where my intuition for Geometry completely failed me. I
-had a correct start, identifying that each new line intersecting the
-existing ones at $k$ points could at best create $k-1$ new bounded
-regions, but when I try to check this I fumbled.</p>
-
-<p>Yet the reason it simple: a line intersecting 2 others will either
-define a bounded triangle, or cut an existing bounded region in two.</p>
-
-<p>The new bounded regions are not made of arbitrary triple of lines, but
-are next to each others in the plane; really this is similar to the
-fence problem. So a line cutting $k$ other lines will create at best
-$k-1$ new bounded region. The equality is achieved if there are no
-parallel lines, and all the intersection points are distinct.</p>
-
-<p>As the book observes, each new line will also add two new unbounded
-regions (the original problem had that a new line would create
-$k+1$ new regions).</p>
-
-<p>Once again, the triangular number sequence is not far:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-B_i &amp; = 0 &amp;&amp\text{for $1 \\le i \\lt 3$}\\\\
-B_3 &amp; = 1\\\\
-B_n &amp; = B_{n-1} + n - 2\\\\
-&amp; = \sum_{i=2}^{n} i-2\\\\
-&amp; = \sum_{i=0}^{n-2} i\\\\
-&amp; = \frac{(n-1)(n-2)}{2}\\\\
-&amp; = S_{n-2}
-\end{align}
-$$
-</div>
-
-
-<h3>Invalid Recurrence</h3>
-
-<p>The recurrence for $H$ has a number of problems. The one I found is
-that it only establishes the induction hypothesis for going from an
-even number to an odd one; nothing can be said for going from an odd
-number to an even one (and indeed, the hypothesis breaks then).</p>
-
-<p>As the book mentions, another problem is the base case, which is
-incompatible with the induction hypothesis.</p>
-
-<h3>Wrapping up</h3>
-
-<p>I spent way too much time on these exercises, but most of it was on
-exercises with a geometric nature: I could not find an algebraic
-description of these problems that would be suitable for the kind of
-treatment this chapter is about. But once I had the equations, I was
-able to solve the problems without trouble.</p>
-
-<p>Next, the homework exercises.</p>
 ]]></content>
   </entry>
   

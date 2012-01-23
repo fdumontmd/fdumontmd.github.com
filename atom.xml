@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-22T00:14:05+09:00</updated>
+  <updated>2012-01-23T16:21:38+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,456 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks Redis Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/"/>
+    <updated>2012-01-21T13:30:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2</id>
+    <content type="html"><![CDATA[<p>Performance tuning with Redis can be achieved in different ways, as we
+see today. First there are basic changes in the client side (such as
+pipelines), then configurations options (frequency of saves, &#8230;), and
+finally distribution of load.</p>
+
+<!-- more -->
+
+
+<h3>Pipeline</h3>
+
+<p>Redis low level protocol supports the notion of pipelines: sending
+commands in batch, and collect all the results at the end, instead of
+waiting for results between each command. This should save a round
+trip delay for each command, so there can be huge performance boosts
+for specific usages, as the informal benchmarks below show.</p>
+
+<h3>Distributed Redis</h3>
+
+<p>Redis servers can be distributed for performance or memory concern,
+but much of the work falls on the client side.</p>
+
+<h4>Slaves</h4>
+
+<p>Slaves in Redis are just the opposite of
+<a href="http://www.mongodb.org/">MongoDB</a>&#8217;s. Whereas MongoDB&#8217;s slaves are
+meant to be written to, so that updates are automatically pushed to
+the master, Redis slaves are, or should be, read-only. Updates are
+only propagated from master to slaves.</p>
+
+<p>There is no integrated support for failover; it has to be implemented
+in client code.</p>
+
+<p>So slaves are mainly a mechanism to distribute reads; combined with
+monitoring client code, they can also be used to data replication and
+failover.</p>
+
+<p>Note that each slave needs as much memory as the master, as it
+contains the same data.</p>
+
+<h4>Sharding</h4>
+
+<p>By itself, Redis does not support sharding, and relies on the client
+library to spread accesses over several instances. There is a
+ongoing development to have real Redis Clusters, but for the time
+being it has to be simulated.</p>
+
+<p>One issue not mentioned in the book is that sharding breaks
+transactions and pipelines: there is no guarantees that the relevant
+keys are all in the same instance, so the Redis Ruby client, for
+instance, will raise an exception when invoking <code>MULTI</code>.</p>
+
+<p>The Java client, Jedis, has a mechanism to &#8220;tag&#8221; a key such that keys
+with the same tag are guaranteed to be on the Redis server. This makes
+the distribution of keys predictable, and allows the use of
+transactions (provided all the involved keys have the same tag).</p>
+
+<p>This shows that not only this is a client side feature, but the actual
+extent of the feature may vary widely. And of course, there is no
+reason to think that different clients will shard keys the same way.</p>
+
+<p>Properly setup, sharding will distribute the data over each
+node, reducing the memory load of each node.</p>
+
+<h2>Exercises</h2>
+
+<h3>Performance tests</h3>
+
+<p>I first tried to rewrite the code in Java, to measure the cost of Ruby&#8217;s
+convenience. The code in Java is clumsier than in Ruby, but it ran
+a bit faster (105 seconds instead of 155 seconds for the Ruby version
+using <code>hiredis</code>).</p>
+
+<figure class='code'><figcaption><span>Simple ISBN Loader (ISBNLoader.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/isbn/ISBNLoader.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ISBNLoader</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">REDIS_HOST</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">REDIS_PORT</span> <span class="o">=</span> <span class="mi">6379</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5000</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="n">REDIS_HOST</span><span class="o">,</span> <span class="n">REDIS_PORT</span><span class="o">,</span> <span class="n">TIMEOUT</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">jedis</span><span class="o">.</span><span class="na">flushAll</span><span class="o">();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">String</span> <span class="n">line</span><span class="o">;</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">String</span><span class="o">[]</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">tokens</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">isbn</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">isbn</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">||</span> <span class="n">title</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">jedis</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">isbn</span><span class="o">,</span> <span class="n">title</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">jedis</span><span class="o">.</span><span class="na">disconnect</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using pipelines, the difference was 11 seconds against 26 seconds
+(again, the Ruby version is using <code>hiredis</code>).</p>
+
+<figure class='code'><figcaption><span>Pipelined ISBN Loader (ISBNLoader.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/isbn-pipeline/ISBNLoader.java'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.LinkedList</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Pipeline</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ISBNLoader</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">REDIS_HOST</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">REDIS_PORT</span> <span class="o">=</span> <span class="mi">6379</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5000</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Jedis</span> <span class="n">client</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">protected</span> <span class="nf">ISBNLoader</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="n">REDIS_HOST</span><span class="o">,</span> <span class="n">REDIS_PORT</span><span class="o">,</span> <span class="n">TIMEOUT</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">client</span><span class="o">.</span><span class="na">flushAll</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">ISBNLoader</span><span class="o">().</span><span class="na">load</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">load</span><span class="o">(</span><span class="n">String</span> <span class="n">fileName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">fileName</span><span class="o">));</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">String</span> <span class="n">line</span><span class="o">;</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">List</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;</span> <span class="n">batch</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">String</span><span class="o">[]</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">tokens</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">isbn</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">isbn</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">||</span> <span class="n">title</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
+</span><span class='line'>              <span class="k">continue</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">batch</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Pair</span><span class="o">(</span><span class="n">isbn</span><span class="o">,</span> <span class="n">title</span><span class="o">));</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">batch</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="n">BATCH_SIZE</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">flush</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">flush</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">client</span><span class="o">.</span><span class="na">disconnect</span><span class="o">();</span>       
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">flush</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;</span> <span class="n">batch</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Pipeline</span> <span class="n">pipe</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">pipelined</span><span class="o">();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="n">Pair</span> <span class="n">p</span> <span class="o">:</span> <span class="n">batch</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">pipe</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">key</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">pipe</span><span class="o">.</span><span class="na">sync</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">batch</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Pair</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">Pair</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Disabling snapshots and append only file did not improve the time
+significantly compared to the default (snapshots but no append only file).</p>
+
+<p>Enabling the append only file and setting it to <code>always</code> was almost 3
+times as slow for the pipelined Java version (27 seconds). For the
+original Ruby version (with <code>hiredis</code>), it was even worse (1101
+seconds). This means the overhead of writing to file can be mitigated
+with pipelines.</p>
+
+<p>To recap: disabling snapshots did not improve performance measurably,
+but enabling append only file <code>always</code> degrades the performance
+significantly; using pipelines makes it a bit better, but it is still
+much slower.</p>
+
+<h3>URL Shortening Service</h3>
+
+<p>The exact setup to implement is not described, so what I did is to
+distribute data between two shards of one master and two slaves.</p>
+
+<p>There is no direct support for such a layout in Jedis (nor, as far as I
+can tell, in the Ruby library), so I had to write some of it myself.</p>
+
+<p>As always with Redis, the writes are restricted to the masters, and
+the reads are distributed over the slaves (and the masters as well, if
+needed).</p>
+
+<h4>Distribution over slaves</h4>
+
+<p>Jedis does not support slaves directly. What the documentation
+proposes is to have a dedicated client to the master to write on, and
+a sharded pool to the slaves. However, such an approach would be
+difficult, as I need to shard the writes to the masters as well (I
+would have to use a different sharding algorithm, and manage the
+routing of commands through the tree of Redis instances).</p>
+
+<p>Fortunately, Redis user Ingvar Bogdahn had posted an implementation of
+a
+<a href="http://groups.google.com/group/jedis_redis/msg/c8c76371cf543e36">Round Robin pool of slaves</a>. This
+implementation manages a connection pool to a master, and another
+connection pool to a set of slaves. The commands are properly
+distributed: all the write commands are sent to the master, and the
+reads commands are distributed over the slaves.</p>
+
+<p>I had to fix the code in some places: a command implementation was
+missing, another was incorrect, and finally the password was never
+sent to the master, causing authentication errors. But the bulk of the
+code is Ingvar&#8217;s, and I was glad to use it.</p>
+
+<p>The classes are</p>
+
+<ul>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/UniJedis.java"><code>UniJedis</code></a>: provides pools for both master and a set of slaves, and dispatches commands to the correct pool.</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/RoundRobinPool.java"><code>RoundRobinPool</code></a>: implements a pool with Round Robin access</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ChainableTransaction.java"><code>ChainableTransaction</code></a>: (not used in this project) provides a fluent interface for Redis transactions.</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/DBKeys.java"><code>DBKeys</code></a>: (not used in this project) abstracts database and keys.</li>
+</ul>
+
+
+<h4>Sharding</h4>
+
+<p>Sharding is directly supported by Jedis, but as organized the code is
+restricted to a set of clients to specific instances.</p>
+
+<p>There are basic, generic classes
+(<a href="https://github.com/xetorthio/jedis/blob/master/src/main/java/redis/clients/util/Sharded.java"><code>Sharded</code></a>,
+<a href="https://github.com/xetorthio/jedis/blob/master/src/main/java/redis/clients/util/ShardInfo.java"><code>ShardInfo</code></a>,
+&#8230;) that can be used to implement sharding of arbitrary clients (such
+as the Round Robin pool above), but it requires a lot of tedious code
+to map each command to a method on the right shard. Worse, such code
+would be the same for every kind of shard.</p>
+
+<p>So I first wrote generic classes that implement sharding in terms of
+generic Jedis client; the actual implementation is then much simpler
+(just the constructors, and the few commands that cannot be sharded,
+such as <code>disconnect</code> or <code>flushAll</code>).</p>
+
+<ul>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/BinaryShardedGJedis.java"><code>BinaryShardedGJedis</code></a>: first level of Jedis commands implementation (binary commands)</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ShardedGJedis.java"><code>ShardedGJedis</code></a>: second level of Jedis commands implementation (<code>String</code> based commands)</li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/UniJedisShardInfo.java"><code>UniJedisShardInfo</code></a>: descriptor class to use with <code>Sharded</code></li>
+<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ShardedUniJedis.java"><code>ShardedUniJedis</code></a>: actual implementation of sharded <code>UniJedis</code>. As promised, the class has hardly any code.</li>
+</ul>
+
+
+<h4>Service</h4>
+
+<p>The code for the service itself is now fairly
+small. <a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/client/JedisClient.java"><code>JedisClient</code></a>
+is the class that builds the tree of sharded master/slaves pools. It
+is loaded and initialized as a <a href="http://www.springsource.org/">Spring</a>
+bean. The web services are <a href="http://jsr311.java.net/">JSR 311</a>
+services, running over <a href="http://jersey.java.net/">Jersey</a>, and loaded
+and initialized by Spring.</p>
+
+<p><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/web/Admin.java"><code>Admin</code></a>
+let the user defines a keyword for a specific URL, and
+<a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/web/Client.java"><code>Client</code></a>
+extracts a keyword from the request URL, retrieves the URL for the
+this keyword, and returns a request to redirect to this URL.</p>
+
+<p>Once deployed (on <a href="http://tomcat.apache.org/">Apache Tomcat</a>), it can be used in a browser or on the command line:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -X POST http://localhost:8080/url-shortener/u/admin --data "url=http://slashdot.org&shorter=slash"
+</span><span class='line'>Key[slash] mapped to URL[http://slashdot.org]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and for clients:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -I http://localhost:8080/url-shortener/u/s/slash
+</span><span class='line'>HTTP/1.1 303 See Other
+</span><span class='line'>Server: Apache-Coyote/1.1
+</span><span class='line'>Location: http://slashdot.org
+</span><span class='line'>Content-Length: 0
+</span><span class='line'>Date: Mon, 23 Jan 2012 06:13:29 GMT</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The code for the whole project can be found on <a href="https://github.com/fdumontmd/url-shortener">Github</a>.</p>
+
+<p>And this completes Day 2.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks Redis Day 1]]></title>
@@ -6679,750 +7129,6 @@ design of a solution built on Riak.</p>
 <a href="http://www.allthingsdistributed.com/2007/10/amazons_dynamo.html">Amazon Dynamo Paper</a>
 and the other relevant literature, so I have hope yet I will come up with a
 reasonable understanding of all this.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks Riak Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/"/>
-    <updated>2011-12-08T22:59:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2</id>
-    <content type="html"><![CDATA[<p>Day 2 with Riak, to cover Mapreduce, distribution, rings and consistency.</p>
-
-<p>Mapreduce will be familiar to anyone who has been paying attention to Google. The basic idea comes from functional programming, but Google showed how it could be used to distribute the load over many machines (this in turn spawned two distinct recent developments in software: one is the range of databases explicitly built around the concept of Mapreduce; the other is the idea that functional languages are better suited to do concurrent and parallel programming).</p>
-
-<!--more-->
-
-
-<h3>A followup to yesterday simple trick</h3>
-
-<p>There is an alternative, maybe even simpler than yesterday&#8217;s use of <code>python -mjson.tool</code>. It is shown (maybe a bit late) in the book: using an <code>Accept: text/plain</code> header in the HTTP request, as in:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -H "Accept: text/plain" http://localhost:8091/stats</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This asks Riak to return plain text instead of json data; Riak helpfully interprets that as meaning the same data, but formatted for people. The advantage of this approach is that is still works even when <code>curl</code> generates extra output:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -v -H "Accept: text/plain" http//localhost:8091/stats</span></code></pre></td></tr></table></div></figure>
-
-
-<p>will both generate verbose debugging output, and get the data in human format.</p>
-
-<h3>Nothing wrong with Mapreduce per se, but&#8230;</h3>
-
-<p>I understand that the examples have to remain simple enough to be implementable on a (possible shared) single personal computer, but I still think that the authors are being dishonest when they contrast Mapreduce to an &#8220;SQL&#8221; based solution.</p>
-
-<p>The problem with this solution is that it is just what a self-taught coder with no understanding of SQL might produced (ok, I&#8217;m being unfair. Some college educated programmer I have known actually write code like that as well). But this idea of pushing the code to the data instead of pulling the data to the code is exactly what a database like PostgreSQL does.</p>
-
-<p>An actual SQL solution would be much simpler, would run fully in the database (no need for a script to create the initial data), and would deliver the data long before you&#8217;d be done coding and debugging the Javascript Mapreduce code.</p>
-
-<figure class='code'><figcaption><span>A real SQL solution  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="c1">-- SQL supports composite primary key, which this problem maps well to</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">hotel</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">floor</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">room</span>  <span class="nb">int</span>  <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">capacity</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">style</span> <span class="nb">char</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="k">CHECK</span> <span class="p">(</span><span class="n">style</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;queen&#39;</span><span class="p">,</span> <span class="s1">&#39;king&#39;</span><span class="p">,</span> <span class="s1">&#39;suite&#39;</span><span class="p">)</span> <span class="p">),</span>
-</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">floor</span><span class="p">,</span> <span class="n">room</span><span class="p">)</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- a simple function to provide a easy to use random range</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">FUNCTION</span> <span class="n">random</span><span class="p">(</span><span class="nb">numeric</span><span class="p">,</span> <span class="nb">numeric</span><span class="p">)</span>
-</span><span class='line'><span class="k">RETURNS</span> <span class="nb">numeric</span> <span class="k">AS</span>
-</span><span class='line'><span class="err">$$</span>
-</span><span class='line'>   <span class="k">SELECT</span> <span class="p">(</span><span class="err">$</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="err">$</span><span class="mi">2</span> <span class="o">-</span> <span class="err">$</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">random</span><span class="p">())::</span><span class="nb">numeric</span><span class="p">;</span>
-</span><span class='line'><span class="err">$$</span> <span class="k">LANGUAGE</span> <span class="s1">&#39;sql&#39;</span> <span class="k">VOLATILE</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- using generate_series and the random function above</span>
-</span><span class='line'><span class="c1">-- to fill all the rooms, in pure PostgreSQL </span>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">hotel</span> <span class="p">(</span><span class="n">floor</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">capacity</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">SELECT</span> <span class="n">f</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="p">(</span><span class="nb">ARRAY</span><span class="p">[</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;queen&#39;</span><span class="p">,</span> <span class="s1">&#39;king&#39;</span><span class="p">,</span> <span class="s1">&#39;suite&#39;</span><span class="p">])[</span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)],</span> <span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span> <span class="k">FROM</span>
-</span><span class='line'>    <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span> <span class="k">AS</span> <span class="n">f</span><span class="p">,</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span> <span class="k">AS</span> <span class="n">r</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- the basic query</span>
-</span><span class='line'><span class="k">SELECT</span> <span class="n">style</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">capacity</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">hotel</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">style</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- same query with filter</span>
-</span><span class='line'><span class="k">SELECT</span> <span class="n">style</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">capacity</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">hotel</span> <span class="k">WHERE</span> <span class="n">floor</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">style</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It does not help that actually testing the code on Riak, I had to wait about 10 seconds while PostgreSQL answer was immediate. Of course, I have 3 instances of Riak on a single machine, which is certainly not a typical setup.</p>
-
-<p>Riak is on a specific point among the trade off line to which data stores are constrained by the <a href="http://en.wikipedia.org/wiki/CAP_theorem">CAP theorem</a>. It would have been better to work on an example (maybe using more complex data, loaded from a file, like the movie database in PostgreSQL Day 3) that plays into Riak strengths rather showing how badly it performs compared to a much easier and more natural solution in SQL.</p>
-
-<p>It might have been enough to ask the reader to imagine the dataset to be so large that it could not fit in a single server (for instance, a simulation of the <a href="http://en.wikipedia.org/wiki/Hilbert's_paradox_of_the_Grand_Hotel">Hilbert&#8217;s Hotel</a>), or to simulate a rocky network by shutting down some nodes at awkward moments, and show how Riak still delivers the goods. In such conditions most SQL databases would start to show their limits, and these would be legitimate.</p>
-
-<h3>Another comment on the example</h3>
-
-<p>If you run all the examples and the exercises, you will notice something interesting: there is a floor 101. That&#8217;s actually a bug in the initial seeding script: the room number should range over 0 to 99, not 1 to 100. Mapping composite keys to a single value is not always safe. Oh well&#8230;</p>
-
-<p>I&#8217;ve changed my script after I went through everything, rebuild the data, and ran everything again.</p>
-
-<figure class='code'><figcaption><span>Updated seeding script  (hotel.rb)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/riak/hotel.rb'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># generate loads and loads of rooms with random styles and capacities</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;ripple&#39;</span>
-</span><span class='line'><span class="no">STYLES</span> <span class="o">=</span> <span class="sx">%w{single double queen king suite}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">Riak</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:http_port</span> <span class="o">=&gt;</span> <span class="mi">8091</span><span class="p">)</span>
-</span><span class='line'><span class="n">bucket</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">bucket</span><span class="p">(</span><span class="s1">&#39;rooms&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="c1"># Create 100 floors to the building</span>
-</span><span class='line'><span class="k">for</span> <span class="n">floor</span> <span class="k">in</span> <span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">100</span>
-</span><span class='line'>  <span class="n">current_rooms_block</span> <span class="o">=</span> <span class="n">floor</span> <span class="o">*</span> <span class="mi">100</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Making rooms </span><span class="si">#{</span><span class="n">current_rooms_block</span><span class="si">}</span><span class="s2"> - </span><span class="si">#{</span><span class="n">current_rooms_block</span> <span class="o">+</span> <span class="mi">99</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="c1"># Put 100 rooms on each floor (huge hotel!)</span>
-</span><span class='line'>  <span class="k">for</span> <span class="n">room</span> <span class="k">in</span> <span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">99</span>
-</span><span class='line'>    <span class="c1"># Create a unique room number as the key</span>
-</span><span class='line'>    <span class="n">ro</span> <span class="o">=</span> <span class="no">Riak</span><span class="o">::</span><span class="no">RObject</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="p">(</span><span class="n">current_rooms_block</span> <span class="o">+</span> <span class="n">room</span><span class="p">))</span>
-</span><span class='line'>    <span class="c1"># Randomly grab a room style, and make up a capacity</span>
-</span><span class='line'>    <span class="n">style</span> <span class="o">=</span> <span class="no">STYLES</span><span class="o">[</span><span class="nb">rand</span><span class="p">(</span><span class="no">STYLES</span><span class="o">.</span><span class="n">length</span><span class="p">)</span><span class="o">]</span>
-</span><span class='line'>    <span class="n">capacity</span> <span class="o">=</span> <span class="nb">rand</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="c1"># Store the room information as a JSON value </span>
-</span><span class='line'>    <span class="n">ro</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
-</span><span class='line'>    <span class="n">ro</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;style&#39;</span> <span class="o">=&gt;</span> <span class="n">style</span><span class="p">,</span> <span class="s1">&#39;capacity&#39;</span> <span class="o">=&gt;</span> <span class="n">capacity</span><span class="p">}</span>
-</span><span class='line'>    <span class="n">ro</span><span class="o">.</span><span class="n">store</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Partial updates are not supported, unless they are</h3>
-
-<p>So I said yesterday that partial updates are not supported. And if they are, I really have not found a way to get them to work.</p>
-
-<p>Except for buckets. You can update properties of a bucket without having to specify every one of them. Which is good. But still, it might have been good for the rest of the data to have this feature.</p>
-
-<p>The fact that the properties of buckets are probably fixed, meaning you can&#8217;t remove any, makes a partial update non ambiguous. Supporting partial updates on generic data would require a way to specify whether the update was complete or partial, and a way to remove properties. I can see why Riak designers chose not to go that way, but it still feels a bit ad hoc overall.</p>
-
-<h3>CAP choices</h3>
-
-<p>The section called &#8220;On Consistency and Durability&#8221; is more interesting, and better shows which features Riak attempts to provide.</p>
-
-<p>The ability to choose from various strategies to implement consistency and durability certainly introduces additional ways to make a mistake, but it also offers flexibility where the relational databases typically offer little.</p>
-
-<h2>Exercises</h2>
-
-<h3>Online Riak Mapreduce documentation</h3>
-
-<p>The documentation is <a href="http://wiki.basho.com/MapReduce.html">http://wiki.basho.com/MapReduce.html</a>.</p>
-
-<h3>Riak contrib functions</h3>
-
-<p>Google is a good friend. The central <a href="http://contrib.basho.com/">site</a> and the <a href="https://github.com/basho/riak_function_contrib">repository</a>.</p>
-
-<h3>Keys filter documentation</h3>
-
-<p><a href="http://wiki.basho.com/Key-Filters.html">http://wiki.basho.com/Key-Filters.html</a></p>
-
-<h3>Total capacity by floor</h3>
-
-<p>The first step is to map the original data to an array of capacity indexed by floor. What has not been seen so far is how to get the <code>key</code> of an object, but it is just another property (directly in <code>v</code>, not in the <code>values</code> array):</p>
-
-<figure class='code'><figcaption><span>Mapping data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">parsed_data</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">values</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">floor</span> <span class="o">=</span> <span class="o">~~</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">);</span>
-</span><span class='line'>  <span class="nx">data</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">=</span> <span class="nx">parsed_data</span><span class="p">.</span><span class="nx">capacity</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">data</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>A quick test:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
-</span><span class='line'>{
-</span><span class='line'>  "inputs":[
-</span><span class='line'>    ["rooms","101"],["rooms","102"],["rooms","103"]],
-</span><span class='line'>  "query":[
-</span><span class='line'>    {"map":{
-</span><span class='line'>      "language":"javascript",
-</span><span class='line'>      "source":
-</span><span class='line'>      "function(v) {
-</span><span class='line'>        var parsed_data = JSON.parse(v.values[0].data); 
-</span><span class='line'>        var data = {};
-</span><span class='line'>        var floor = ~~(parseInt(v.key) / 100);
-</span><span class='line'>        data[floor] = parsed_data.capacity; 
-</span><span class='line'>        return [data];
-</span><span class='line'>      }"}
-</span><span class='line'>  } ]
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>Ctrl-D
-</span><span class='line'>
-</span><span class='line'>[{"1":3},{"1":2},{"1":2}]</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok, looking good. Now the <code>reduce</code> part. It is strictly identical to the book&#8217;s <code>reduce</code> function, but I just renamed some variables to make it clear what is being iterated over:</p>
-
-<figure class='code'><figcaption><span>Reducing data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">totals</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">floor</span> <span class="k">in</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span> <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="p">)</span>
-</span><span class='line'>        <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">floor</span><span class="p">];</span>
-</span><span class='line'>      <span class="k">else</span>
-</span><span class='line'>        <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">floor</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">totals</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Testing:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
-</span><span class='line'>{
-</span><span class='line'>  "inputs":[
-</span><span class='line'>    ["rooms","101"],["rooms","102"],["rooms","103"]],
-</span><span class='line'>  "query":[
-</span><span class='line'>    {"map":{
-</span><span class='line'>      "language":"javascript",
-</span><span class='line'>      "source":
-</span><span class='line'>      "function(v) {
-</span><span class='line'>        var parsed_data = JSON.parse(v.values[0].data); 
-</span><span class='line'>        var data = {};
-</span><span class='line'>        var floor = ~~(parseInt(v.key) / 100);
-</span><span class='line'>        data[floor] = parsed_data.capacity; 
-</span><span class='line'>        return [data];
-</span><span class='line'>      }"}
-</span><span class='line'>  },
-</span><span class='line'>  {"reduce": {
-</span><span class='line'>      "language": "javascript",
-</span><span class='line'>      "source":
-</span><span class='line'>        "function(v) {
-</span><span class='line'>            var totals = {};
-</span><span class='line'>            for (var i in v) {
-</span><span class='line'>              for(var floor in v[i]) {
-</span><span class='line'>                if( totals[floor] ) 
-</span><span class='line'>                  totals[floor] += v[i][floor];
-</span><span class='line'>                else
-</span><span class='line'>                  totals[floor] = v[i][floor];
-</span><span class='line'>              } 
-</span><span class='line'>            }
-</span><span class='line'>
-</span><span class='line'>            return [totals];
-</span><span class='line'>          }"}
-</span><span class='line'>  } ]
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>Ctrl-D
-</span><span class='line'>
-</span><span class='line'>[{"1":7}]</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok, still looking good. Let&#8217;s run it on the whole set:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
-</span><span class='line'>{
-</span><span class='line'>  "inputs":"rooms",
-</span><span class='line'>  "query":[
-</span><span class='line'>    {"map":{
-</span><span class='line'>      "language":"javascript",
-</span><span class='line'>      "source":
-</span><span class='line'>      "function(v) {
-</span><span class='line'>        var parsed_data = JSON.parse(v.values[0].data); 
-</span><span class='line'>        var data = {};
-</span><span class='line'>        var floor = ~~(parseInt(v.key) / 100);
-</span><span class='line'>        data[floor] = parsed_data.capacity; 
-</span><span class='line'>        return [data];
-</span><span class='line'>      }"}
-</span><span class='line'>  },
-</span><span class='line'>  {"reduce": {
-</span><span class='line'>      "language": "javascript",
-</span><span class='line'>      "source":
-</span><span class='line'>        "function(v) {
-</span><span class='line'>            var totals = {};
-</span><span class='line'>            for (var i in v) {
-</span><span class='line'>              for(var floor in v[i]) {
-</span><span class='line'>                if( totals[floor] ) 
-</span><span class='line'>                  totals[floor] += v[i][floor];
-</span><span class='line'>                else
-</span><span class='line'>                  totals[floor] = v[i][floor];
-</span><span class='line'>              } 
-</span><span class='line'>            }
-</span><span class='line'>
-</span><span class='line'>            return [totals];
-</span><span class='line'>          }"}
-</span><span class='line'>  } ]
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>Ctrl-D
-</span><span class='line'>
-</span><span class='line'>[
-</span><span class='line'>    {
-</span><span class='line'>        "1": 456, 
-</span><span class='line'>        "10": 445, 
-</span><span class='line'>        "100": 452, 
-</span><span class='line'>        "11": 448, 
-</span><span class='line'>        "12": 482, 
-</span><span class='line'>        "13": 452, 
-</span><span class='line'>        "14": 489, 
-</span><span class='line'>        "15": 467, 
-</span><span class='line'>        "16": 461, 
-</span><span class='line'>        "17": 471, 
-</span><span class='line'>        "18": 426, 
-</span><span class='line'>        "19": 426, 
-</span><span class='line'>        "2": 394, 
-</span><span class='line'>        "20": 413, 
-</span><span class='line'>        "21": 428, 
-</span><span class='line'>        "22": 460, 
-</span><span class='line'>        "23": 447, 
-</span><span class='line'>        "24": 443, 
-</span><span class='line'>        "25": 430, 
-</span><span class='line'>        "26": 430, 
-</span><span class='line'>        "27": 447, 
-</span><span class='line'>        "28": 486, 
-</span><span class='line'>        "29": 429, 
-</span><span class='line'>        "3": 437, 
-</span><span class='line'>        "30": 434, 
-</span><span class='line'>        "31": 415, 
-</span><span class='line'>        "32": 483, 
-</span><span class='line'>        "33": 460, 
-</span><span class='line'>        "34": 440, 
-</span><span class='line'>        "35": 519, 
-</span><span class='line'>        "36": 492, 
-</span><span class='line'>        "37": 422, 
-</span><span class='line'>        "38": 413, 
-</span><span class='line'>        "39": 439, 
-</span><span class='line'>        "4": 451, 
-</span><span class='line'>        "40": 440, 
-</span><span class='line'>        "41": 458, 
-</span><span class='line'>        "42": 386, 
-</span><span class='line'>        "43": 488, 
-</span><span class='line'>        "44": 428, 
-</span><span class='line'>        "45": 423, 
-</span><span class='line'>        "46": 487, 
-</span><span class='line'>        "47": 463, 
-</span><span class='line'>        "48": 408, 
-</span><span class='line'>        "49": 422, 
-</span><span class='line'>        "5": 417, 
-</span><span class='line'>        "50": 464, 
-</span><span class='line'>        "51": 434, 
-</span><span class='line'>        "52": 429, 
-</span><span class='line'>        "53": 468, 
-</span><span class='line'>        "54": 412, 
-</span><span class='line'>        "55": 440, 
-</span><span class='line'>        "56": 427, 
-</span><span class='line'>        "57": 458, 
-</span><span class='line'>        "58": 420, 
-</span><span class='line'>        "59": 438, 
-</span><span class='line'>        "6": 426, 
-</span><span class='line'>        "60": 464, 
-</span><span class='line'>        "61": 446, 
-</span><span class='line'>        "62": 412, 
-</span><span class='line'>        "63": 431, 
-</span><span class='line'>        "64": 445, 
-</span><span class='line'>        "65": 435, 
-</span><span class='line'>        "66": 444, 
-</span><span class='line'>        "67": 449, 
-</span><span class='line'>        "68": 460, 
-</span><span class='line'>        "69": 474, 
-</span><span class='line'>        "7": 436, 
-</span><span class='line'>        "70": 473, 
-</span><span class='line'>        "71": 431, 
-</span><span class='line'>        "72": 457, 
-</span><span class='line'>        "73": 426, 
-</span><span class='line'>        "74": 454, 
-</span><span class='line'>        "75": 463, 
-</span><span class='line'>        "76": 406, 
-</span><span class='line'>        "77": 464, 
-</span><span class='line'>        "78": 441, 
-</span><span class='line'>        "79": 502, 
-</span><span class='line'>        "8": 421, 
-</span><span class='line'>        "80": 477, 
-</span><span class='line'>        "81": 422, 
-</span><span class='line'>        "82": 441, 
-</span><span class='line'>        "83": 466, 
-</span><span class='line'>        "84": 447, 
-</span><span class='line'>        "85": 488, 
-</span><span class='line'>        "86": 486, 
-</span><span class='line'>        "87": 414, 
-</span><span class='line'>        "88": 463, 
-</span><span class='line'>        "89": 494, 
-</span><span class='line'>        "9": 446, 
-</span><span class='line'>        "90": 441, 
-</span><span class='line'>        "91": 459, 
-</span><span class='line'>        "92": 433, 
-</span><span class='line'>        "93": 488, 
-</span><span class='line'>        "94": 450, 
-</span><span class='line'>        "95": 442, 
-</span><span class='line'>        "96": 479, 
-</span><span class='line'>        "97": 460, 
-</span><span class='line'>        "98": 429, 
-</span><span class='line'>        "99": 445
-</span><span class='line'>    }
-</span><span class='line'>]</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Restrict the capacity count to floors 42 and 43</h3>
-
-<p>It should be enough that the key be between 4200 and 4390:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X POST -H "content-type:application/json" http://localhost:8091/mapred --data @-
-</span><span class='line'>{
-</span><span class='line'>  "inputs":{
-</span><span class='line'>  "bucket": "rooms",
-</span><span class='line'>  "key_filters": [["string_to_int"], ["between", 4200, 4399]]
-</span><span class='line'>  },
-</span><span class='line'>  "query":[
-</span><span class='line'>    {"map":{
-</span><span class='line'>      "language":"javascript",
-</span><span class='line'>      "source":
-</span><span class='line'>      "function(v) {
-</span><span class='line'>        var parsed_data = JSON.parse(v.values[0].data); 
-</span><span class='line'>        var data = {};
-</span><span class='line'>        var floor = ~~(parseInt(v.key) / 100);
-</span><span class='line'>        data[floor] = parsed_data.capacity; 
-</span><span class='line'>        return [data];
-</span><span class='line'>      }"}
-</span><span class='line'>  },
-</span><span class='line'>  {"reduce": {
-</span><span class='line'>      "language": "javascript",
-</span><span class='line'>      "source":
-</span><span class='line'>        "function(v) {
-</span><span class='line'>            var totals = {};
-</span><span class='line'>            for (var i in v) {
-</span><span class='line'>              for(var floor in v[i]) {
-</span><span class='line'>                if( totals[floor] ) 
-</span><span class='line'>                  totals[floor] += v[i][floor];
-</span><span class='line'>                else
-</span><span class='line'>                  totals[floor] = v[i][floor];
-</span><span class='line'>              } 
-</span><span class='line'>            }
-</span><span class='line'>
-</span><span class='line'>            return [totals];
-</span><span class='line'>          }"}
-</span><span class='line'>  } ]
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>Ctrl-D
-</span><span class='line'>
-</span><span class='line'>[{"42":386,"43":488}]</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The output matches what was computed for the whole set of rooms, which is always a good thing.</p>
-
-<p>And this completes Day 2. I must admit I have so far mixed feelings: I understand better what Riak tries to achieve, but the example is just not the kind of things Riak should be used for, and the Mapreduce syntax is a bit heavy (although, fortunately, very regular).</p>
-
-<p>Tomorrow will cover Vector Clocks, the mechanism that Riak exposes both to move conflicts resolution to the client side, and to help the client to implement a decent resolution.</p>
 ]]></content>
   </entry>
   

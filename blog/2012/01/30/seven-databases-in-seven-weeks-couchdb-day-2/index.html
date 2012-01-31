@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks CouchDB Day 2 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Day 2 is about Views in CouchDB, which serve as an introduction to the
+more general MapReduce support. It is another fairly short day, as much of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks CouchDB Day 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T18:58:00+09:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Day 2 is about Views in CouchDB, which serve as an introduction to the
+more general MapReduce support.</p>
+
+<p>It is another fairly short day, as much of this section is actually
+about the complexities of XML parsing&#8230;</p>
+
+<!-- more -->
+
+
+<p>Like Riak and MongoDB, CouchDB is scripted with JavaScript, so today has
+a feeling of déjà vu.</p>
+
+<h3>View concept</h3>
+
+<p>A View is just a mapping of a key to a value. Keys and values are
+extracted from documents; there can be more than one key for each
+document, as in MongoDB.</p>
+
+<p>Once the view has been built and updated for the documents it applies
+to, it can be accessed by key using optimized methods (all based on
+some form of lexicographical order).</p>
+
+<h3>View performance</h3>
+
+<p>A View in CouchDB is essentially the equivalent of a
+<a href="http://en.wikipedia.org/wiki/Materialized_view">materialized view</a>
+in relational databases.</p>
+
+<p>Access to the view causes it to be updated (i.e. recomputed) if
+necessary, which can be a painfully slow experience. I had imported
+the whole content of the music database (26990 records), and each time
+I tested a Temporary View or saved a Permanent one, I had to wait for
+CouchDB to finish the refresh (fortunately not too long on this
+dataset).</p>
+
+<p>It interesting to note that while relational databases require the
+schema to be designed ahead of time, but support arbitrary queries,
+CouchDB let you ignore the schema, but need you to design the
+queries ahead of time.</p>
+
+<h2>Exercises</h2>
+
+<h3><code>emit</code> function</h3>
+
+<p>The key can be
+<a href="http://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Complex_Keys">any JSON object</a>,
+although I would say that only strings and arrays of strings have
+sensible semantics.</p>
+
+<p>Arrays can be used with reduce functions to provide query time custom
+grouping, as explained
+<a href="http://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Grouping">here</a>.</p>
+
+<p>For instance, to compute the number of records by date, I used the
+<code>releasedate</code> of each album to create a key array
+<code>[year, month, date]</code>, and a value of <code>1</code> (1 for each album):</p>
+
+<figure class='code'><figcaption><span>Album by Date  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;releasedate&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">album</span><span class="p">.</span><span class="nx">releasedate</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="p">[</span><span class="nx">d</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">(),</span>
+</span><span class='line'>                               <span class="nx">d</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">(),</span>
+</span><span class='line'>                               <span class="nx">d</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()];</span>
+</span><span class='line'>                    <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As I intend to use grouping, I also need a reduce function:</p>
+
+<figure class='code'><figcaption><span>Reduce Function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Each document in the view is now a date as an array, with a single
+number for the record made that date (there are as many identical keys
+as there were records for a given day).</p>
+
+<p>When querying, by default, the reduce function will be called on
+identical keys to get a single value:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music/_design/count/_view/album_by_date?limit=5\&group=true
+</span><span class='line'>{"rows":[
+</span><span class='line'>{"key":[2004,11,18],"value":2},
+</span><span class='line'>{"key":[2004,11,21],"value":1},
+</span><span class='line'>{"key":[2004,11,22],"value":1},
+</span><span class='line'>{"key":[2004,11,28],"value":1},
+</span><span class='line'>{"key":[2004,11,29],"value":2}
+</span><span class='line'>]}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(month is 0 based&#8230;)</p>
+
+<p>With the <code>group_level</code> parameter, I can control whether I want to
+group by day (<code>group=true</code> or <code>group_level=3</code>, as above), by month
+(<code>group_level=2</code>), or year (<code>group_level=1</code>):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music/_design/count/_view/album_by_date?limit=5\&group_level=2
+</span><span class='line'>{"rows":[
+</span><span class='line'>{"key":[2004,11],"value":7},
+</span><span class='line'>{"key":[2005,0],"value":3},
+</span><span class='line'>{"key":[2005,1],"value":3},
+</span><span class='line'>{"key":[2005,2],"value":5},
+</span><span class='line'>{"key":[2005,3],"value":15}
+</span><span class='line'>]}</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music/_design/count/_view/album_by_date?limit=5\&group_level=1
+</span><span class='line'>{"rows":[
+</span><span class='line'>{"key":[2004],"value":7},
+</span><span class='line'>{"key":[2005],"value":306},
+</span><span class='line'>{"key":[2006],"value":1277},
+</span><span class='line'>{"key":[2007],"value":3454},
+</span><span class='line'>{"key":[2008],"value":7330}
+</span><span class='line'>]}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>View request parameters</h3>
+
+<p>There are quite a few of them listed
+<a href="http://wiki.apache.org/couchdb/HTTP_view_API?action=show&amp;redirect=HttpViewApi">here</a>.</p>
+
+<h3>Random artist script</h3>
+
+<p>The code is essentially the same as the one mapping names to ids, but
+here it associates <code>random</code> to <code>name</code>.</p>
+
+<figure class='code'><figcaption><span>Random Artist  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Random artist URL</h3>
+
+<p>The URL below returns the first artist whose random number is greater
+than the random one generated by Ruby.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music/_design/random/_view/artist?limit=1\&startkey=`ruby -e 'p rand'`
+</span><span class='line'>{"total_rows":26987,"offset":23180,"rows":[
+</span><span class='line'>{"id":"364215","key":0.8581072409917536,"value":"rakombiacje"}
+</span><span class='line'>]}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As expected, if given a value too large (for instance, 1), the query
+returns nothing:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music/_design/random/_view/artist?limit=1\&startkey=1
+</span><span class='line'>{"total_rows":26987,"offset":26987,"rows":[]}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Random everything</h3>
+
+<p>The code of each script is similar, in a way Russian Dolls are
+similar: each one is an extension of the previous, digging deeper into
+the nested structure of the original document.</p>
+
+<h4>Random Album</h4>
+
+<figure class='code'><figcaption><span>Random Album  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">album</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
+</span><span class='line'>                <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
+</span><span class='line'>                <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music/_design/random/_view/album?limit=1\&startkey=`ruby -e 'p rand'` | python -mjson.tool
+</span><span class='line'>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+</span><span class='line'>                                 Dload  Upload   Total   Spent    Left  Speed
+</span><span class='line'>100   142    0   142    0     0  36419      0 --:--:-- --:--:-- --:--:-- 71000
+</span><span class='line'>{
+</span><span class='line'>    "offset": 19416, 
+</span><span class='line'>    "rows": [
+</span><span class='line'>        {
+</span><span class='line'>            "id": "357995", 
+</span><span class='line'>            "key": 0.35656765622628905, 
+</span><span class='line'>            "value": {
+</span><span class='line'>                "album": "Demo Releses", 
+</span><span class='line'>                "by": "SilvanestY"
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>    ], 
+</span><span class='line'>    "total_rows": 54669
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Random Track</h4>
+
+<figure class='code'><figcaption><span>Random Track  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">track</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
+</span><span class='line'>                        <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                                  <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                                  <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
+</span><span class='line'>                        <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">});</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music/_design/random/_view/track?limit=1\&startkey=`ruby -e 'p rand'` | python -mjson.tool
+</span><span class='line'>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+</span><span class='line'>                                 Dload  Upload   Total   Spent    Left  Speed
+</span><span class='line'>100   163    0   163    0     0  10294      0 --:--:-- --:--:-- --:--:-- 11642
+</span><span class='line'>{
+</span><span class='line'>    "offset": 118485, 
+</span><span class='line'>    "rows": [
+</span><span class='line'>        {
+</span><span class='line'>            "id": "370935", 
+</span><span class='line'>            "key": 0.3460755726665503, 
+</span><span class='line'>            "value": {
+</span><span class='line'>                "album": "Mako Yama", 
+</span><span class='line'>                "by": "Mako Yama", 
+</span><span class='line'>                "track": "Kinu No Tsuki"
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>    ], 
+</span><span class='line'>    "total_rows": 342013
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Random Tag</h4>
+
+<figure class='code'><figcaption><span>Random Tag  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;tags&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="nx">track</span><span class="p">.</span><span class="nx">tags</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;idstr&#39;</span> <span class="k">in</span> <span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                                <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
+</span><span class='line'>                                <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                                          <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                                          <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                                          <span class="nx">tag</span><span class="o">:</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">idstr</span> <span class="p">};</span>
+</span><span class='line'>                                <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>                            <span class="p">}</span>
+</span><span class='line'>                        <span class="p">});</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">});</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music/_design/random/_view/tag?limit=1\&startkey=`ruby -e 'p rand'` | python -mjson.tool
+</span><span class='line'>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+</span><span class='line'>                                 Dload  Upload   Total   Spent    Left  Speed
+</span><span class='line'>100   218    0   218    0     0   9717      0 --:--:-- --:--:-- --:--:-- 10380
+</span><span class='line'>{
+</span><span class='line'>    "offset": 151963, 
+</span><span class='line'>    "rows": [
+</span><span class='line'>        {
+</span><span class='line'>            "id": "340779", 
+</span><span class='line'>            "key": 0.2788540070246309, 
+</span><span class='line'>            "value": {
+</span><span class='line'>                "album": "CABACA-5", 
+</span><span class='line'>                "by": "CC Asia Band", 
+</span><span class='line'>                "tag": "electricguitar", 
+</span><span class='line'>                "track": "CC Asia Band - CABACA - 35 CCilly Love Song"
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>    ], 
+</span><span class='line'>    "total_rows": 545892
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that&#8217;s it for Day 2.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T18:58:00+09:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/" title="Previous Post: Seven Databases in Seven Weeks CouchDB Day 1">&laquo; Seven Databases in Seven Weeks CouchDB Day 1</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">MongoDB Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Neo4j Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Neo4j Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Neo4j Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/">Redis Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Redis Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">CouchDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">CouchDB Day 2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">Seven Databases in Seven Weeks CouchDB Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">Seven Databases in Seven Weeks CouchDB Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Seven Databases in Seven Weeks Redis Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/">Seven Databases in Seven Weeks Redis Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Concrete Mathematics Repertoire Method</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

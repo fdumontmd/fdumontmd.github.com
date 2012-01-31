@@ -9,9 +9,8 @@
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="Performance tuning with Redis can be achieved in different ways, as we
-see today. First there are basic changes in the client side (such as
-pipelines &hellip;">
+  <meta name="description" content="Day 2 is about Views in CouchDB, which serve as an introduction to the
+more general MapReduce support. It is another fairly short day, as much of &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +77,96 @@ pipelines &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">Seven Databases in Seven Weeks CouchDB Day 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T18:58:00+09:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Day 2 is about Views in CouchDB, which serve as an introduction to the
+more general MapReduce support.</p>
+
+<p>It is another fairly short day, as much of this section is actually
+about the complexities of XML parsing&#8230;</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">Seven Databases in Seven Weeks CouchDB Day 1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T13:57:00+09:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Another beta version of the book, finally with the chapter on
+<a href="http://couchdb.apache.org/">CouchDB</a>. I was going through
+the Redis chapter, but the third day uses other databases, in
+particular CouchDB. So I&#8217;ll get back to Redis after I&#8217;m done with
+CouchDB.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -446,108 +535,6 @@ gives me a chance to play with math notation.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/01/06/concrete-mathematics/">Concrete Mathematics</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-06T13:16:00+09:00" pubdate data-updated="true">Jan 6<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Stephen Hawking once said that his editor had warned him that each
-equation in his book would halve the readership.</p>
-
-<p>With that in mind, and taking into account the number of readers of
-this blog (or lack thereof), would I dare put any equations?</p>
-
-<p>You better believe it!</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/01/06/concrete-mathematics/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-30T21:15:00+09:00" pubdate data-updated="true">Dec 30<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Third, last and quite short day with Neo4j. Today on the menu:
-transactions, replication, and backups.</p>
-
-<p>Transactions are a standard feature of relational databases, but NOSQL
-databases seem to consider them too costly (of the other databases in
-the book, only HBase and Redis also support transactions, as far as I
-can tell). Neo4j does support them, along with rollbacks.</p>
-
-<p>Replication is Neo4j&#8217;s answer for High Availability and, to some
-extent, Scaling. The latter is limited as Neo4j does not partition the
-data, so everything has to fit in each computer in the cluster.</p>
-
-<p>Finally, backups are exactly what you would expect them to be. Neo4J
-offers both full and incremental backups, which update a previous
-backup.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -569,6 +556,14 @@ backup.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">Seven Databases in Seven Weeks CouchDB Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">Seven Databases in Seven Weeks CouchDB Day 1</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Seven Databases in Seven Weeks Redis Day 2</a>
       </li>
     
@@ -578,14 +573,6 @@ backup.</p>
     
       <li class="post">
         <a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Concrete Mathematics Repertoire Method</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/">Concrete Mathematics Chapter 1 Homework Exercises Part 2</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/">ANTLR3 Maven Plugin - Eclipse setup</a>
       </li>
     
   </ul>

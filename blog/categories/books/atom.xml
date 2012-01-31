@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-23T16:21:38+09:00</updated>
+  <updated>2012-01-31T13:49:06+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,624 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks CouchDB Day 2]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/"/>
+    <updated>2012-01-30T18:58:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2</id>
+    <content type="html"><![CDATA[<p>Day 2 is about Views in CouchDB, which serve as an introduction to the
+more general MapReduce support.</p>
+
+<p>It is another fairly short day, as much of this section is actually
+about the complexities of XML parsing...</p>
+
+<!-- more -->
+
+
+<p>Like Riak and MongoDB, CouchDB is scripted with JavaScript, so today has
+a feeling of déjà vu.</p>
+
+<h3>View concept</h3>
+
+<p>A View is just a mapping of a key to a value. Keys and values are
+extracted from documents; there can be more than one key for each
+document, as in MongoDB.</p>
+
+<p>Once the view has been built and updated for the documents it applies
+to, it can be accessed by key using optimized methods (all based on
+some form of lexicographical order).</p>
+
+<h3>View performance</h3>
+
+<p>A View in CouchDB is essentially the equivalent of a
+<a href="http://en.wikipedia.org/wiki/Materialized_view">materialized view</a>
+in relational databases.</p>
+
+<p>Access to the view causes it to be updated (i.e. recomputed) if
+necessary, which can be a painfully slow experience. I had imported
+the whole content of the music database (26990 records), and each time
+I tested a Temporary View or saved a Permanent one, I had to wait for
+CouchDB to finish the refresh (fortunately not too long on this
+dataset).</p>
+
+<p>It interesting to note that while relational databases require the
+schema to be designed ahead of time, but support arbitrary queries,
+CouchDB let you ignore the schema, but need you to design the
+queries ahead of time.</p>
+
+<h2>Exercises</h2>
+
+<h3><code>emit</code> function</h3>
+
+<p>The key can be
+<a href="http://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Complex_Keys">any JSON object</a>,
+although I would say that only strings and arrays of strings have
+sensible semantics.</p>
+
+<p>Arrays can be used with reduce functions to provide query time custom
+grouping, as explained
+<a href="http://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Grouping">here</a>.</p>
+
+<p>For instance, to compute the number of records by date, I used the
+<code>releasedate</code> of each album to create a key array
+<code>[year, month, date]</code>, and a value of <code>1</code> (1 for each album):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Album by Date  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;releasedate&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">album</span><span class="p">.</span><span class="nx">releasedate</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="p">[</span><span class="nx">d</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">(),</span>
+</span><span class='line'>                           <span class="nx">d</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">(),</span>
+</span><span class='line'>                           <span class="nx">d</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()];</span>
+</span><span class='line'>                <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>As I intend to use grouping, I also need a reduce function:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Reduce Function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Each document in the view is now a date as an array, with a single
+number for the record made that date (there are as many identical keys
+as there were records for a given day).</p>
+
+<p>When querying, by default, the reduce function will be called on
+identical keys to get a single value:</p>
+
+<p><code>
+$ curl http://localhost:5984/music/_design/count/_view/album_by_date?limit=5\&amp;group=true
+{"rows":[
+{"key":[2004,11,18],"value":2},
+{"key":[2004,11,21],"value":1},
+{"key":[2004,11,22],"value":1},
+{"key":[2004,11,28],"value":1},
+{"key":[2004,11,29],"value":2}
+]}
+</code></p>
+
+<p>(month is 0 based...)</p>
+
+<p>With the <code>group_level</code> parameter, I can control whether I want to
+group by day (<code>group=true</code> or <code>group_level=3</code>, as above), by month
+(<code>group_level=2</code>), or year (<code>group_level=1</code>):</p>
+
+<p><code>
+$ curl http://localhost:5984/music/_design/count/_view/album_by_date?limit=5\&amp;group_level=2
+{"rows":[
+{"key":[2004,11],"value":7},
+{"key":[2005,0],"value":3},
+{"key":[2005,1],"value":3},
+{"key":[2005,2],"value":5},
+{"key":[2005,3],"value":15}
+]}
+</code></p>
+
+<p><code>
+$ curl http://localhost:5984/music/_design/count/_view/album_by_date?limit=5\&amp;group_level=1
+{"rows":[
+{"key":[2004],"value":7},
+{"key":[2005],"value":306},
+{"key":[2006],"value":1277},
+{"key":[2007],"value":3454},
+{"key":[2008],"value":7330}
+]}
+</code></p>
+
+<h3>View request parameters</h3>
+
+<p>There are quite a few of them listed
+<a href="http://wiki.apache.org/couchdb/HTTP_view_API?action=show&amp;redirect=HttpViewApi">here</a>.</p>
+
+<h3>Random artist script</h3>
+
+<p>The code is essentially the same as the one mapping names to ids, but
+here it associates <code>random</code> to <code>name</code>.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Artist  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Random artist URL</h3>
+
+<p>The URL below returns the first artist whose random number is greater
+than the random one generated by Ruby.</p>
+
+<p><code>
+$ curl http://localhost:5984/music/_design/random/_view/artist?limit=1\&amp;startkey=`ruby -e 'p rand'`
+{"total_rows":26987,"offset":23180,"rows":[
+{"id":"364215","key":0.8581072409917536,"value":"rakombiacje"}
+]}
+</code></p>
+
+<p>As expected, if given a value too large (for instance, 1), the query
+returns nothing:</p>
+
+<p><code>
+$ curl http://localhost:5984/music/_design/random/_view/artist?limit=1\&amp;startkey=1
+{"total_rows":26987,"offset":26987,"rows":[]}
+</code></p>
+
+<h3>Random everything</h3>
+
+<p>The code of each script is similar, in a way Russian Dolls are
+similar: each one is an extension of the previous, digging deeper into
+the nested structure of the original document.</p>
+
+<h4>Random Album</h4>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Album  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">album</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
+</span><span class='line'>            <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Testing:</p>
+
+<p><code>``
+$ curl http://localhost:5984/music/_design/random/_view/album?limit=1\&amp;startkey=</code>ruby -e 'p rand'` | python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</p>
+
+<pre><code>                             Dload  Upload   Total   Spent    Left  Speed
+</code></pre>
+
+<p>100   142    0   142    0     0  36419      0 --:--:-- --:--:-- --:--:-- 71000
+{</p>
+
+<pre><code>"offset": 19416, 
+"rows": [
+    {
+        "id": "357995", 
+        "key": 0.35656765622628905, 
+        "value": {
+            "album": "Demo Releses", 
+            "by": "SilvanestY"
+        }
+    }
+], 
+"total_rows": 54669
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>Random Track</h4>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Track  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">track</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                              <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                              <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
+</span><span class='line'>                    <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">});</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Testing:</p>
+
+<p><code>``
+$ curl http://localhost:5984/music/_design/random/_view/track?limit=1\&amp;startkey=</code>ruby -e 'p rand'` | python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</p>
+
+<pre><code>                             Dload  Upload   Total   Spent    Left  Speed
+</code></pre>
+
+<p>100   163    0   163    0     0  10294      0 --:--:-- --:--:-- --:--:-- 11642
+{</p>
+
+<pre><code>"offset": 118485, 
+"rows": [
+    {
+        "id": "370935", 
+        "key": 0.3460755726665503, 
+        "value": {
+            "album": "Mako Yama", 
+            "by": "Mako Yama", 
+            "track": "Kinu No Tsuki"
+        }
+    }
+], 
+"total_rows": 342013
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>Random Tag</h4>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Tag  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;tags&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nx">track</span><span class="p">.</span><span class="nx">tags</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;idstr&#39;</span> <span class="k">in</span> <span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                                      <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                                      <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span><span class='line'>                                      <span class="nx">tag</span><span class="o">:</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">idstr</span> <span class="p">};</span>
+</span><span class='line'>                            <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">});</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">});</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Testing:</p>
+
+<p><code>``
+$ curl http://localhost:5984/music/_design/random/_view/tag?limit=1\&amp;startkey=</code>ruby -e 'p rand'` | python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</p>
+
+<pre><code>                             Dload  Upload   Total   Spent    Left  Speed
+</code></pre>
+
+<p>100   218    0   218    0     0   9717      0 --:--:-- --:--:-- --:--:-- 10380
+{</p>
+
+<pre><code>"offset": 151963, 
+"rows": [
+    {
+        "id": "340779", 
+        "key": 0.2788540070246309, 
+        "value": {
+            "album": "CABACA-5", 
+            "by": "CC Asia Band", 
+            "tag": "electricguitar", 
+            "track": "CC Asia Band - CABACA - 35 CCilly Love Song"
+        }
+    }
+], 
+"total_rows": 545892
+</code></pre>
+
+<p>}
+```</p>
+
+<p>And that's it for Day 2.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks CouchDB Day 1]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/"/>
+    <updated>2012-01-30T13:57:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1</id>
+    <content type="html"><![CDATA[<p>Another beta version of the book, finally with the chapter on
+<a href="http://couchdb.apache.org/">CouchDB</a>. I was going through
+the Redis chapter, but the third day uses other databases, in
+particular CouchDB. So I'll get back to Redis after I'm done with
+CouchDB.</p>
+
+<!--more-->
+
+
+<p>Today is just a short introduction: CouchDB is (yet another) key-value
+store; it has a ReST API, stores JSON data, and, like Riak, only
+supports full updates. Unlike Riak, however, it does not support
+concurrent updates; instead it requires the client to only update from
+the latest version of the data.</p>
+
+<p>I thought at first that the data was versioned, like in HBase, but
+this is not the case: the version id (<code>_rev</code>) is there to ensure that
+updates occur sequentially, not concurrently. CouchDB can keep
+previous versions of documents, but the retention is unreliable as
+explained <a href="http://wiki.apache.org/couchdb/Document_revisions">here</a>.</p>
+
+<p>Besides the HTTP based ReST API, CouchDB also provides a web
+interface; among other tools, there is a complete test suite, which is
+always nice to check the installation.</p>
+
+<h2>Exercises</h2>
+
+<h3>CouchDB HTTP Document API documentation</h3>
+
+<p>The documentation is
+<a href="http://wiki.apache.org/couchdb/HTTP_Document_API">here</a>; there is
+also a <a href="http://wiki.apache.org/couchdb/Complete_HTTP_API_Reference">reference</a></p>
+
+<h3>HTTP commands</h3>
+
+<p>Besides the basic CRUD <code>POST</code> <code>GET</code> <code>PUT</code> and <code>DELETE</code>, there is also
+<code>HEAD</code> (for basic information on a document):</p>
+
+<p><code>
+$ curl -I -X HEAD http://localhost:5984/music/ee6637073ab24aaeeda094dcb3749a22
+HTTP/1.1 200 OK
+Server: CouchDB/1.1.1 (Erlang OTP/R15B)
+Etag: "4-e70582ded641cebc5b259da96805344b"
+Date: Mon, 30 Jan 2012 09:18:44 GMT
+Content-Type: text/plain;charset=utf-8
+Content-Length: 246
+Cache-Control: must-revalidate
+</code></p>
+
+<p>When using <code>cURL</code>, the command <code>HEAD</code> must be used with the flag <code>-I</code>,
+otherwise <code>cURL</code> will wait (endlessly) for data after the headers.</p>
+
+<p>Finally, there is a <code>COPY</code> command, which as expected copies a
+document (without having to retrieve it first):</p>
+
+<p>```
+$ curl -X COPY  http://localhost:5984/music/ee6637073ab24aaeeda094dcb3749a22 \
+-H 'Destination: beatles'
+{"id":"beatles","rev":"1-6ea1608de6609c9985ff06aa9bc23a16"}
+$ curl http://localhost:5984/music/beatles | python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</p>
+
+<pre><code>                             Dload  Upload   Total   Spent    Left  Speed
+</code></pre>
+
+<p>100   221  100   221    0     0  78396      0 --:--:-- --:--:-- --:--:--  215k
+{</p>
+
+<pre><code>"_id": "beatles", 
+"_rev": "1-6ea1608de6609c9985ff06aa9bc23a16", 
+"albums": [
+    {
+        "title": "Help!", 
+        "year": 1965
+    }, 
+    {
+        "title": "Sgt. Pepper's Lonely Hearts Club Band", 
+        "year": 1967
+    }, 
+    {
+        "title": "Abbey Road", 
+        "year": 1969
+    }
+], 
+"name": "The Beatles"
+</code></pre>
+
+<p>}
+```</p>
+
+<h3><code>PUT</code> a new document with a specific <code>_id</code></h3>
+
+<p>It is just a matter of specifying an id when creating the document:</p>
+
+<p>```
+$ curl -i -X PUT http://localhost:5984/music/sonic_youth \
+-H "Content-Type: application/json" --data @-
+{</p>
+
+<pre><code>    "name": "Sonic Youth",
+    "albums": [
+            { "title": "Bad Moon Rising", "year": 1985
+            },
+            { "title": "Daydream Nation", "year": 1988
+            },
+            { "title": "Goo", "year": 1990
+            }
+</code></pre>
+
+<p>]             <br/>
+}     <br/>
+HTTP/1.1 201 Created
+Server: CouchDB/1.1.1 (Erlang OTP/R15B)
+Location: http://localhost:5984/music/sonic_youth
+Etag: "1-69886eb003b1f007cabaac678d5edc16"
+Date: Mon, 30 Jan 2012 09:35:37 GMT
+Content-Type: text/plain;charset=utf-8
+Content-Length: 74
+Cache-Control: must-revalidate</p>
+
+<p>{"ok":true,"id":"sonic_youth","rev":"1-69886eb003b1f007cabaac678d5edc16"}
+```</p>
+
+<h3>Document with a text attachment</h3>
+
+<p>To create an attachment, it is necessary to know the version of the
+document, as it is considered an update. The URL for the attachment is
+just the URL for its document, with any suffix (the suffix naming the
+attachment). The <code>_rev</code> is specified by passing a <code>rev</code> parameter.</p>
+
+<p>Using the document with <code>_id</code> 'beatles' created above, the attachment
+is uploaded with:</p>
+
+<p>```
+$ curl -i -X PUT http://localhost:5984/music/beatles/lyrics?rev=1-6ea1608de6609c9985ff06aa9bc23a16 \
+-H "Content-type: text/plain" --data @-
+It was twenty years ago today
+Sgt. Pepper taught the band to play...
+Ctrl-D</p>
+
+<p>HTTP/1.1 201 Created
+Server: CouchDB/1.1.1 (Erlang OTP/R15B)
+Location: http://localhost:5984/music/beatles/attachment
+Etag: "2-2b22345fd492f31e3061e23a2b79fc08"
+Date: Mon, 30 Jan 2012 09:41:51 GMT
+Content-Type: text/plain;charset=utf-8
+Content-Length: 70
+Cache-Control: must-revalidate</p>
+
+<p>{"ok":true,"id":"beatles","rev":"2-2b22345fd492f31e3061e23a2b79fc08"}
+```</p>
+
+<p>The document now has a new <code>_rev</code>.</p>
+
+<p>To retrieve the attachment, just use its URL:</p>
+
+<p><code>
+$ curl http://localhost:5984/music/beatles/lyrics
+It was twenty years ago todaySgt. Pepper taught the band to play...
+</code></p>
+
+<p>(the line breaks have been lost...)</p>
+
+<p>Onward to Day 2!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks Redis Day 2]]></title>
@@ -1276,476 +1894,6 @@ solution, and the second one adds a constraint to solve for $C$ as well.</p>
 <p>As can be seen above, approaching the problem from both directions
 (solving for known functions and solving for known parameters) can
 result in time saved, and simplified expression of the solution.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/"/>
-    <updated>2012-01-14T12:14:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2</id>
-    <content type="html"><![CDATA[<p>I finally finished the homework exercises.</p>
-
-<!-- more -->
-
-
-<h2>Homework Exercises Part 2</h2>
-
-<h3>Generalized Tower of Hanoi</h3>
-
-<p>To solve this, I first observed that for $n=1$, we need $m_1$ moves,
-and for $n \gt 1$, we need
-$A(m_1, \cdots, m_{n-1}) + m_n + A(m_1, \cdots, m_{n-1})$ or
-$2A(m_1, \cdots, m_{n-1}) + m_n$ moves.</p>
-
-<p>This leads to the solution,</p>
-
-<div markdown="0">
-\begin{align}
-A(m_1, \cdots, m_n) &amp;= \sum_{i=1}^n m_i 2^{n-i}\\\\
-\end{align}
-</div>
-
-
-<p>which is trivially shown by induction. The base case:</p>
-
-<div markdown="0">
-\begin{align}
-A(m_1) &amp; = \sum_{i=1}^1 m_i 2^{1-i}\\\\
-&amp; = m_1 2^0\\\\
-&amp; = m_1
-\end{align}
-</div>
-
-
-<p>And for larger $n$, assuming
-$A(m_1, \cdots, m_n) = \sum_{i=1}^n m_i 2^{n-i}$,</p>
-
-<div markdown="0">
-\begin{align}
-A(m_1, \cdots, m_{n+1}) &amp; = 2A(m_1, \cdots, m_n) +
-m_{n+1}&amp;&amp;\text{by definition}\\\\
-&amp; = 2\sum_{i=1}^n m_i 2^{n-i} + m_{n+1}&amp;&amp;\text{induction hypothesis}\\\\
-&amp; = \sum_{i=1}^{n} m_i 2^{n+1-i} + m_{n+1} 2^{0}\\\\
-&amp; = \sum_{i=1}^{n+1} m_i 2^{n+1-i}\\\\
-\end{align}
-</div>
-
-
-<h3>Zig-zag lines</h3>
-
-<p>A geometric problem, but very similar to the previous intersecting
-lines. A zig-zag is made of 3 segments, so a pair of zig-zag lines can
-intersect at 9 different points. The first zig-zag line defines two
-regions; each new zig-zag adds a new region, plus one more for each
-intersection point.</p>
-
-<p>This gives the following recurrence equations:</p>
-
-<div markdown="0">
-\begin{align}
-ZZ_1 &amp; = 2\\\\
-ZZ_n &amp; = ZZ_{n-1} + 9(n-1) + 1\\\\
-\end{align}
-</div>
-
-
-<p>Using the linearity of the recurrence equation, it is easy to see that</p>
-
-<div markdown="0">
-\begin{align}
-ZZ_n &amp; = ZZ_1 + 9S_{n-1} + (n-1)
-\end{align}
-</div>
-
-
-<p>Here I used the linearity to compute solutions to both
-$ZZ_n = ZZ_{n-1} + 9(n-1)$ and $ZZ_n = ZZ_{n-1} + 1$, which are
-equally trivial. Then I combined the solutions into one.</p>
-
-<p>I use (again) induction to confirm the solution. The base case is
-$ZZ_1 = ZZ_1 + 9S_0 + 0$. And for other $n$, assuming
-$ZZ_n = ZZ_1 + 9S_{n-1} + (n-1)$</p>
-
-<div markdown="0">
-\begin{align}
-ZZ_{n+1} &amp; = ZZ_{n} + 9n + 1&amp;&amp;\text{by definition}\\\\
-&amp; = ZZ_1 + 9S_{n-1} + (n-1) + 9n + 1&amp;&amp;\text{induction hypothesis}\\\\
-&amp; = ZZ_1 + 9(S_{n-1} + n) + (n-1+1)\\\\
-&amp; = ZZ_1 + 9S_n + n
-\end{align}
-</div>
-
-
-<p>The formula can also be written as</p>
-
-<div markdown="0">
-\begin{align}
-ZZ_n &amp; = \frac{9n^2-7n+2}{2}
-\end{align}
-</div>
-
-
-<h3>Planes cutting cheese</h3>
-
-<p>Again, a geometric problem. This one gave me more trouble. It
-took me a while before finally seeing that a new plane intersection
-with the previous ones will be a set of intersecting lines which
-defines the regions the new plan will divide in two.</p>
-
-<p>The number of regions formed by intersecting lines was solved in the
-book, and defined as $L_n = S_n + 1$</p>
-
-<p>So a plane cutting $n$ existing planes will define
-$P_{n+1} = P_n + L_n$
-new regions. This recurrence gives $P_5 = 26$ regions.</p>
-
-<p>The book did not expect a closed formula for this exercise, as the
-necessary techniques are only covered in chapter 5.</p>
-
-<h3>Josephus co-conspirator</h3>
-
-<p>The recurrence equation for $I(n)$ follow the structure of $J(n)$, but
-with different base cases:</p>
-
-<div markdown="0">
-\begin{align}
-I(2) &amp; = 2&amp;&amp;\text{\(I(1)\) is not defined}\\\\
-I(2n) &amp; = 2I(n) - 1\\\\
-I(2n+1) &amp; = 2I(n) + 1
-\end{align}
-</div>
-
-
-<p>Here I generated the first few values to get inspired. I noticed that
-$I(n)$ had increasing odd values for batches that were longer than for
-$J(n)$: $3, 6, 12, 24, \cdots$.</p>
-
-<p>These numbers are from the series $3\cdot 2^m$, so using the same
-"intuitive" step as in the book, I tried to show that
-$I(3\cdot 2^m + l) = 2l + 1$ with $0 \le l \lt 3\cdot 2^m$
-(the formula does not work for $I(2)$, which has to be defined separately).</p>
-
-<p>By induction on $m$: the base case is $I(3) = I(3\cdot 2^0 + l) = 1$.</p>
-
-<p>Assuming $I(3\cdot 2^m + l) = 2l+1$, we have</p>
-
-<div markdown="0">
-\begin{align}
-I(3\cdot2^{m+1} + 2l) &amp; = 2I(3\cdot 2^m + l) -1&amp;&amp;\text{by definition}\\\\
-&amp;= 2(2l+1) -1&amp;&amp;\text{induction hypothesis}\\\\
-&amp;= 4l+2-1\\\\
-&amp;= 2(2l)+1\\\\
-I(3\cdot 2^{m+1} + (2l+ 1)) &amp; = 2I(3\cdot 2^m + l) + 1&amp;&amp;\text{by definition}\\\\
-&amp; = 2(2l+1) + 1&amp;&amp;\text{induction hypothesis}\\\\
-\end{align}
-</div>
-
-
-<p>The book solution is defined in terms of $2^m+2^{m-1}+k$, which is
-same:</p>
-
-<div markdown="0">
-\begin{align}
-2^m+2^{m-1}+k &amp; = 2\cdot 2^{m-1} + 2^{m-1} + k\\\\
-&amp; = 3\cdot 2^{m-1} + k
-\end{align}
-</div>
-
-
-<p>with $1 \le m$, while I have $0 \le m$.</p>
-
-<h3>Repertoire method</h3>
-
-<p>I put the repertoire method in its own
-<a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">post</a> as it
-was both the most difficult exercise and the one where I learned the most.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 1]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/"/>
-    <updated>2012-01-09T20:23:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1</id>
-    <content type="html"><![CDATA[<p>I am working my way through the homework exercises, and so far I have
-had more success than with the warmups. Here's what I have solved so far.</p>
-
-<!--more-->
-
-
-<h2>Homework Exercises</h2>
-
-<h3>Basic recurrence</h3>
-
-<p>This one was fairly simple, so simple that I wasted one hour trying to
-improve the solution.</p>
-
-<p>Just computing the first few terms of the sequence:</p>
-
-<div markdown="0">
-\begin{align}
-Q_0 &amp; = \alpha \\\\
-Q_1 &amp; = \beta \\\\
-Q_2 &amp; = \frac{1+\beta}{\alpha}\\\\
-Q_3 &amp; = \frac{1+\alpha+\beta}{\alpha\beta}\\\\
-Q_4 &amp; = \frac{\alpha\left( 1 + \alpha + \alpha\beta + \beta\right)}{\alpha\beta(1+\beta)}\\\\
-&amp; = \frac{(1+\alpha)(1+\beta)}{\beta(1+\beta)}\\\\
-&amp; = \frac{1+\alpha}{\beta}\\\\
-Q_5 &amp; = \frac{\alpha\beta\left(1+\alpha+\beta \right)}{\beta \left( 1+\alpha+\beta \right)}\\\\
-&amp; = \alpha\\\\
-Q_6 &amp; = \frac{\beta\left( 1+\alpha \right)}{1+\alpha}\\\\
-&amp; = \beta
-\end{align}
-</div>
-
-
-<p>So the sequence is cyclic. I tried to find a closed formula, but the
-book does not go that far, and it is unlikely to be possible.</p>
-
-<h3>Product of averages</h3>
-
-<h4>$P(n)$ implies $P(n-1)$</h4>
-
-<p>First of all, I checked that nothing fishy was going on with the
-selection of a particular $x_n$, but if $P(n)$ is true, then it is
-true for every $x_1\cdots x_n$ set, and in particular for one with a
-specific $x_n$.</p>
-
-<p>So nothing fishy is going on.</p>
-
-<p>Assuming the given value for $x_n$, we have</p>
-
-<div markdown="0">
-\begin{align}
-\left( \frac{x_1 + \cdots + x_n}{n} \right)^n &amp; = \left( \frac{x_1 + \cdots + x_{n-1} + \frac{x_1+\cdots+x_{n-1}}{n-1}}{n}\right)^n\\\\
-&amp; = \left( \frac{(n-1)x_1 + \cdots + (n-1)x_{n-1}+x_1+\cdots + x_{n-1}}{n(n-1)}\right)^n\\\\
-&amp; = \left( \frac{n(x_1+\cdots+x_{n-1})}{n(n-1)}\right)^n\\\\
-&amp; = \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^n\\\\
-&amp; = x_n^n
-\end{align}
-</div>
-
-
-<p>So, assuming $P(n)$, we have</p>
-
-<div markdown="0">
-\begin{align}
-x_1\cdots x_{n-1}x_n &amp;\le x_n^n\\\\
-x_1\cdots x_{n-1} &amp;\le x_n^{n-1}\\\\
-x_1\cdots x_{n-1} &amp;\le \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^{n-1}&amp;&amp;\text{i.e. $P(n-1)$}
-\end{align}
-</div>
-
-
-<h4>$P(n)$ and $P(2)$ implies $P(2n)$</h4>
-
-<div markdown="0">
-\begin{align}
-x_1\cdots x_{2n} &amp; = x_1\cdots x_{n}x_{n+1}\cdots x_{2n}&amp;&amp;\text{associativity}\\\\
-&amp; \le \left(\frac{x_1+\cdots+x_n}{n}\right)^n \left(\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n&amp;&amp;\text{applying $P(n)$ twice}\\\\
-&amp; = \left( \frac{x_1+\cdots+x_n}{n}\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n\\\\
-&amp; \le \left( \left(\frac{\frac{x_1+\cdots+x_n}{n} + \frac{x_{n+1}+\cdots+x_{2n}}{n}}{2} \right)^2\right)^n&amp;&amp;\text{applying $P(2)$}\\\\
-&amp; = \left( \frac{x_1+\cdots+x_n+x_{n+1}+\cdots+x_{2n}}{2n}\right)^{2n}&amp;&amp;\text{i.e. $P(2n)$}\\\\
-\end{align}
-</div>
-
-
-<h4>$P(n) \forall n \ge 1$</h4>
-
-<p>The case for $P(1)$ is trivial, and $P(2)$ is already proven. We have
-$P(n)$ implies $P(n-1)$ and $P(n)$ implies $P(2n)$.</p>
-
-<p>One first approach is to use the basic induction step: we have $P(1)$,
-$P(2)$, and we need $P(n) \implies P(n+1)$.</p>
-
-<p>But $P(n) \implies P(2n) \implies P(2n-1) \implies \cdots \implies
-P(2n-(n-1))$. The last one is $P(n1+)$, so the induction step holds.</p>
-
-<p>Alternatively, we can show that to prove $P$ for a given $n$, we need
-to prove $P$ for a smaller value. As naturals have a minimum, we must
-eventually rely on $P(2)$, which would prove the whole chain.</p>
-
-<p>To see this, for $n \ge 3$, if $n = 2m$, we need to prove $P(m)$; if
-$n = 2m+1$, we need to prove $P(2m+2)$, which is implied by $P(m+1)$.</p>
-
-<p>So, $\forall n \ge 3, \exists m \lt n \mid P(m) \implies P(n)$. That
-with the base cases is enough to establish $P(n) \forall n$.</p>
-
-<h3>Clockwise Tower of Hanoi</h3>
-
-<p>First, both $Q_0$ and $R_0$ are trivial.</p>
-
-<p>Then, to move $n$ discs from $A$ to $B$, you need to move $n-1$ discs
-from $A$ to $C$ (counter-clockwise), then move one disc from $A$ to
-$B$, then move the $n-1$ discs from $C$ to $B$ (again,
-counter-clockwise).</p>
-
-<p>This means $Q_n = R_{n-1} + 1 + R_{n-1} = 2R_{n-1} + 1$.</p>
-
-<p>The case for $R_n$ is a bit more complex. My first (flawed) attempt
-was to observe that to move $n$ discs from $B$ to $A$, you could move
-them from $B$ to $C$, then $C$ to $A$. In other words,</p>
-
-<div markdown="0">
-\begin{align}
-R_n &amp; \ge 2Q_n\\\\
-&amp; = Q_n + 2R_{n-1} + 1&amp;&amp;\text{Replacing one \(Q_n\) by \(2R_{n-1}+1\)}\\\\
-&amp; = Q_n + 4Q_{n-1} + 1&amp;&amp;\text{Replacing \(R_{n-1}\) by \(2Q_{n-1}\)}\\\\
-\end{align}
-</div>
-
-
-<p>But the $4Q_{n-1}$ means moving the stack of $n-1$ discs $4$ times,
-which is the same as moving it just one time (as $3$ times bring it
-back to its original position).</p>
-
-<p>So we're left with just $Q_n + Q_{n-1} + 1$. But as I said, this
-reasoning is flawed, as it mixes the count of moves with the effect of
-moves (where $3$ moves are the same as $0$ move).</p>
-
-<p>While it is possible to repair this reasoning by introducing special
-operators that take two parameters (the number of discs, and the
-number of steps), it is simpler to try and express $R_n$ strictly in
-terms $n-1$ stacks and $1$ disc moves.</p>
-
-<p>So, to move $n$ discs from $B$ to $A$, you need to move $n-1$ discs
-from $B$ to $A$ (counter-clockwise), then one disc from $B$ to $C$
-(clockwise), then the $n-1$ discs from $A$ to $B$ (clockwise), then
-one disc from $C$ to $A$ (clockwise), then finally the $n-1$ discs
-from $B$ to $A$ (counter-clockwise).</p>
-
-<p>Or,</p>
-
-<div markdown="0">
-\begin{align}
-R_n &amp;= R_{n-1} + 1 + Q_{n-1} + 1 + R_{n-1}\\\\
-&amp; = 2R_{n-} + 1 + Q_{n-1} + 1\\\\
-&amp; = Q_n + Q_{n-1} + 1&amp;&amp;\text{definition of \(Q_n\)}\\\\
-\end{align}
-</div>
-
-
-<p>As the recurrence is expressed (initially) only in terms of necessary
-moves of strictly smaller stacks, there is no risk of hiding moves
-that are equivalent to no moves (as in my first attempt), so the
-equation is the minimum number of moves.</p>
-
-<h3>Double Tower of Hanoi</h3>
-
-<h4>Basic Problem</h4>
-
-<p>First, notice we should keep each pair together, because otherwise
-they would block larger discs from moving. So each pair of move should
-be used to relocate a pair of identical discs to another peg. So we
-should expect to need twice as many moves as the original tower.</p>
-
-<p>More precisely, with $A(n)$ the number of moves required to solve a
-$2n$ Double Tower of Hanoi, we have:</p>
-
-<div markdown="0">
-\begin{align}
-(1) &amp; = 2\\\\
-A(n) &amp; = A(n-1) + 2 + A(n-1)\\\\
-&amp; = 2A(n-1) + 2\\\\
-\end{align}
-</div>
-
-
-<p>Using $A(n) + 2= U(n)$, we get</p>
-
-<div markdown="0">
-\begin{align}
-U(1) &amp; = 4\\\\
-U(n) &amp; = 2U(n-1)\\\\
-&amp; 2^{n+1}\\\\
-A(n) &amp; = 2^{n+1} -2\\\\
-     &amp; = 2(T_n)\\\\
-\end{align}
-</div>
-
-
-<h4>Order Preserving</h4>
-
-<p>If we consider all the $2n$ discs as different, then in $T_{2n}=2^{2n}-1$
-moves, we can recreate the same order as the original.</p>
-
-<p>Of course, we can do better. It is enough to move each pair an even
-number of times: the first time will switch their order; the second
-one will restore it, ...</p>
-
-<p>This is similar to the warmup problem where we cannot move any disc
-directly between any two pegs, so using the same constraint to move
-any pair would get us to the target order in less than $2\cdot 3^n-1$.</p>
-
-<p>But there is still a better way.</p>
-
-<p>A $2$ discs problem needs exactly $3$ moves.  And the $4$ discs
-problem will require just $11$ moves, rather than the $18$ that the
-above formula predicts.</p>
-
-<p>A wild guess: the number of moves is $4(2^n-1)-1$.</p>
-
-<p>In trying to solve (or even write) the recurrence equation, it is
-important to keep in mind that several ways to move the discs, each
-with its own count, will be used.</p>
-
-<p>We know we need two pairs of moves to relocate the two bottom discs
-while keeping the order (assuming there are other discs). In doing so,
-we will move the next two discs an even number of times, requiring
-another 2 times to keep their order. So as long as we make sure the
-last operation has the right (even) number of moves, we do not need to
-keep this constraint on the other operations.</p>
-
-<p>To recap: we need to move the last pair of discs $2$ times. So we first move
-the $n-1$ pairs to a peg, then move the last pair to the other peg,
-then the $n-1$ pairs to the first peg, then the last pair to the last
-peg. At this stage, the $n-1$ discs have move an even number of times,
-so their in the right order, even if we used the non order preserving
-solution that was computed above (requiring $2T_{n-1}$ moves).</p>
-
-<p>At this stage, a bit of notation should clarify:</p>
-
-<div markdown="0">
-\begin{align}
-B(1) &amp; = 3\\\\
-B(n) &amp; = A(n-1) + 2 + A(n-1) + 2 + B(n-1)\\\\
-&amp; = 2T_{n-1} + 2 + 2T_{n-1} + 2 + B(n-1)\\\\
-&amp; = 4T_{n-1}+4+B(n-1)\\\\
-\end{align}
-</div>
-
-
-<p>Trying to prove the guess above:</p>
-
-<div markdown="0">
-\begin{align}
-B(1) &amp; = 4(2^1-1) - 1\\\\
-&amp; = 3\\\\
-B(n) &amp; = 4(2^{n-1} -1) + 4 + B(n-1)\\\\
-&amp; = 4\cdot 2^{n-1} + 4(2^{n-1} - 1) -1\\\\
-&amp; = 4\cdot 2^n -4 -1\\\\
-&amp; = 4(2^n-1)-1
-\end{align}
-</div>
-
-
-<p>So the guess was right. It can also be rewritten as</p>
-
-<div markdown="0">
-\begin{align}
-4(2^n-1)-1 &amp = 4\cdot 2^n - 4 -1\\\\
-&amp; = 2^{n+2} - 5\\\\
-\end{align}
-</div>
-
-
-<p>which is the book solution.</p>
-
-<p>This being a bonus exercise, I currently experience an intense, although
-pointless, sense of pride and achievement.</p>
-
-<p>No doubt the other exercises will cut me down to size.</p>
 ]]></content>
   </entry>
   

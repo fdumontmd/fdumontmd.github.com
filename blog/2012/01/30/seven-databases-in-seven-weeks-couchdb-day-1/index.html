@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks CouchDB Day 1 - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="Another beta version of the book, finally with the chapter on
+CouchDB. I was going through
+the Redis chapter, but the third day uses other databases &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks CouchDB Day 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T13:57:00+09:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Another beta version of the book, finally with the chapter on
+<a href="http://couchdb.apache.org/">CouchDB</a>. I was going through
+the Redis chapter, but the third day uses other databases, in
+particular CouchDB. So I&#8217;ll get back to Redis after I&#8217;m done with
+CouchDB.</p>
+
+<!--more-->
+
+
+<p>Today is just a short introduction: CouchDB is (yet another) key-value
+store; it has a ReST API, stores JSON data, and, like Riak, only
+supports full updates. Unlike Riak, however, it does not support
+concurrent updates; instead it requires the client to only update from
+the latest version of the data.</p>
+
+<p>I thought at first that the data was versioned, like in HBase, but
+this is not the case: the version id (<code>_rev</code>) is there to ensure that
+updates occur sequentially, not concurrently. CouchDB can keep
+previous versions of documents, but the retention is unreliable as
+explained <a href="http://wiki.apache.org/couchdb/Document_revisions">here</a>.</p>
+
+<p>Besides the HTTP based ReST API, CouchDB also provides a web
+interface; among other tools, there is a complete test suite, which is
+always nice to check the installation.</p>
+
+<h2>Exercises</h2>
+
+<h3>CouchDB HTTP Document API documentation</h3>
+
+<p>The documentation is
+<a href="http://wiki.apache.org/couchdb/HTTP_Document_API">here</a>; there is
+also a <a href="http://wiki.apache.org/couchdb/Complete_HTTP_API_Reference">reference</a></p>
+
+<h3>HTTP commands</h3>
+
+<p>Besides the basic CRUD <code>POST</code> <code>GET</code> <code>PUT</code> and <code>DELETE</code>, there is also
+<code>HEAD</code> (for basic information on a document):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -I -X HEAD http://localhost:5984/music/ee6637073ab24aaeeda094dcb3749a22 
+</span><span class='line'>HTTP/1.1 200 OK
+</span><span class='line'>Server: CouchDB/1.1.1 (Erlang OTP/R15B)
+</span><span class='line'>Etag: "4-e70582ded641cebc5b259da96805344b"
+</span><span class='line'>Date: Mon, 30 Jan 2012 09:18:44 GMT
+</span><span class='line'>Content-Type: text/plain;charset=utf-8
+</span><span class='line'>Content-Length: 246
+</span><span class='line'>Cache-Control: must-revalidate</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When using <code>cURL</code>, the command <code>HEAD</code> must be used with the flag <code>-I</code>,
+otherwise <code>cURL</code> will wait (endlessly) for data after the headers.</p>
+
+<p>Finally, there is a <code>COPY</code> command, which as expected copies a
+document (without having to retrieve it first):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -X COPY  http://localhost:5984/music/ee6637073ab24aaeeda094dcb3749a22 \
+</span><span class='line'>-H 'Destination: beatles'
+</span><span class='line'>{"id":"beatles","rev":"1-6ea1608de6609c9985ff06aa9bc23a16"}
+</span><span class='line'>$ curl http://localhost:5984/music/beatles | python -mjson.tool
+</span><span class='line'>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+</span><span class='line'>                                 Dload  Upload   Total   Spent    Left  Speed
+</span><span class='line'>100   221  100   221    0     0  78396      0 --:--:-- --:--:-- --:--:--  215k
+</span><span class='line'>{
+</span><span class='line'>    "_id": "beatles", 
+</span><span class='line'>    "_rev": "1-6ea1608de6609c9985ff06aa9bc23a16", 
+</span><span class='line'>    "albums": [
+</span><span class='line'>        {
+</span><span class='line'>            "title": "Help!", 
+</span><span class='line'>            "year": 1965
+</span><span class='line'>        }, 
+</span><span class='line'>        {
+</span><span class='line'>            "title": "Sgt. Pepper's Lonely Hearts Club Band", 
+</span><span class='line'>            "year": 1967
+</span><span class='line'>        }, 
+</span><span class='line'>        {
+</span><span class='line'>            "title": "Abbey Road", 
+</span><span class='line'>            "year": 1969
+</span><span class='line'>        }
+</span><span class='line'>    ], 
+</span><span class='line'>    "name": "The Beatles"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>PUT</code> a new document with a specific <code>_id</code></h3>
+
+<p>It is just a matter of specifying an id when creating the document:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -i -X PUT http://localhost:5984/music/sonic_youth \
+</span><span class='line'>-H "Content-Type: application/json" --data @-
+</span><span class='line'>{
+</span><span class='line'>        "name": "Sonic Youth",
+</span><span class='line'>        "albums": [
+</span><span class='line'>                { "title": "Bad Moon Rising", "year": 1985
+</span><span class='line'>                },
+</span><span class='line'>                { "title": "Daydream Nation", "year": 1988
+</span><span class='line'>                },
+</span><span class='line'>                { "title": "Goo", "year": 1990
+</span><span class='line'>                }
+</span><span class='line'>]               
+</span><span class='line'>}       
+</span><span class='line'>HTTP/1.1 201 Created
+</span><span class='line'>Server: CouchDB/1.1.1 (Erlang OTP/R15B)
+</span><span class='line'>Location: http://localhost:5984/music/sonic_youth
+</span><span class='line'>Etag: "1-69886eb003b1f007cabaac678d5edc16"
+</span><span class='line'>Date: Mon, 30 Jan 2012 09:35:37 GMT
+</span><span class='line'>Content-Type: text/plain;charset=utf-8
+</span><span class='line'>Content-Length: 74
+</span><span class='line'>Cache-Control: must-revalidate
+</span><span class='line'>
+</span><span class='line'>{"ok":true,"id":"sonic_youth","rev":"1-69886eb003b1f007cabaac678d5edc16"}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Document with a text attachment</h3>
+
+<p>To create an attachment, it is necessary to know the version of the
+document, as it is considered an update. The URL for the attachment is
+just the URL for its document, with any suffix (the suffix naming the
+attachment). The <code>_rev</code> is specified by passing a <code>rev</code> parameter.</p>
+
+<p>Using the document with <code>_id</code> &#8216;beatles&#8217; created above, the attachment
+is uploaded with:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -i -X PUT http://localhost:5984/music/beatles/lyrics?rev=1-6ea1608de6609c9985ff06aa9bc23a16 \
+</span><span class='line'>-H "Content-type: text/plain" --data @-
+</span><span class='line'>It was twenty years ago today
+</span><span class='line'>Sgt. Pepper taught the band to play...
+</span><span class='line'>Ctrl-D
+</span><span class='line'>
+</span><span class='line'>HTTP/1.1 201 Created
+</span><span class='line'>Server: CouchDB/1.1.1 (Erlang OTP/R15B)
+</span><span class='line'>Location: http://localhost:5984/music/beatles/attachment
+</span><span class='line'>Etag: "2-2b22345fd492f31e3061e23a2b79fc08"
+</span><span class='line'>Date: Mon, 30 Jan 2012 09:41:51 GMT
+</span><span class='line'>Content-Type: text/plain;charset=utf-8
+</span><span class='line'>Content-Length: 70
+</span><span class='line'>Cache-Control: must-revalidate
+</span><span class='line'>
+</span><span class='line'>{"ok":true,"id":"beatles","rev":"2-2b22345fd492f31e3061e23a2b79fc08"}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The document now has a new <code>_rev</code>.</p>
+
+<p>To retrieve the attachment, just use its URL:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music/beatles/lyrics
+</span><span class='line'>It was twenty years ago todaySgt. Pepper taught the band to play...</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(the line breaks have been lost&#8230;)</p>
+
+<p>Onward to Day 2!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T13:57:00+09:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/" title="Previous Post: Seven Databases in Seven Weeks Redis Day 2">&laquo; Seven Databases in Seven Weeks Redis Day 2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/" title="next Post: Seven Databases in Seven Weeks CouchDB Day 2">Seven Databases in Seven Weeks CouchDB Day 2 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">MongoDB Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Neo4j Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Neo4j Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Neo4j Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/">Redis Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Redis Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">CouchDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">CouchDB Day 2</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">Seven Databases in Seven Weeks CouchDB Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">Seven Databases in Seven Weeks CouchDB Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Seven Databases in Seven Weeks Redis Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/">Seven Databases in Seven Weeks Redis Day 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Concrete Mathematics Repertoire Method</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

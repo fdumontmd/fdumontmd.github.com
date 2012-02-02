@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-31T13:49:06+09:00</updated>
+  <updated>2012-02-02T13:26:16+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,507 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks CouchDB Day 3]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/"/>
+    <updated>2012-02-01T18:06:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3</id>
+    <content type="html"><![CDATA[<p>Today is a bit juicier than the previous days (together). On the menu,
+advanced views (full MapReduce), replication, conflict management, and
+change monitoring.</p>
+
+<!-- more -->
+
+
+<h3>Advanced views</h3>
+
+<p><a href="http://wiki.apache.org/couchdb/Introduction_to_CouchDB_views">Advanced views</a>
+in CouchDB are, as noted yesterday, materialized output of MapReduce
+computations.</p>
+
+<p>This has a cost: such computations are saved, so they take more time
+than with other implementations, the first time at least.</p>
+
+<p>Updating the views, on the other hand, is fairly fast (CouchDB
+recomputes only what is necessary). Views have to be planned, but
+once there they are fairly cheap. For exploratory queries, other databases
+might be more appropriate.</p>
+
+<p>CouchDB&#8217;s reduce functions distinguishes between the first invocation,
+and the following ones (on values that have already gone through the
+reduce function). This makes it possible to implement a <code>_count</code>
+function which counts the number of values (the first invocation
+transforms values into numbers, and the following ones add the numbers
+up).</p>
+
+<h3>Replication</h3>
+
+<p><a href="http://wiki.apache.org/couchdb/Replication">Replication</a> is the
+one-way process of replicating the changes of one database on
+another. Replication can be between any two databases, whether on the
+same server or on different ones. It can be one time, or
+continuous. The documents to replicate can be filtered, or selected by
+<code>_id</code>.</p>
+
+<p>Replication is a lower level mechanism than what MongoDB, for
+instance, proposes (where there is a strict hierarchy of masters and
+slaves), and closer to the flexible approach or Riak.</p>
+
+<p>Of course, when concurrent writes are permitted, conflicts can occur,
+and CouchDB handles them.</p>
+
+<h3>Conflicts</h3>
+
+<p><a href="http://wiki.apache.org/couchdb/Replication_and_conflicts">Concurrent updates</a>
+can cause conflicts, and CouchDB detects them so they can be dealt
+with.</p>
+
+<p>First, conflicts cannot happen on a single server: updates to a
+document must refer to the latest revision, otherwise the update
+fails. So clients are directly aware that they need to resubmit the
+(merged) document.</p>
+
+<p>When replication is enabled, conflicts result from concurrent updates
+in two replicated databases. At the next replication, one version will
+be selected as winning, and replicated to other databases. The other
+versions are still accessible from the <code>_conflicts</code> attribute
+(initially, only in the losing databases).</p>
+
+<p>If two ways replications are in place, eventually, all databases will
+have the <code>_conflicts</code> attribute populated (with all the losing
+revisions, if there are more than one).</p>
+
+<p>This makes it possible to implement a remedial action; it is possible
+to have views with only documents in conflicts, or to filter changes
+for conflicts, and implement merging actions in monitoring scripts.</p>
+
+<p>CouchDB documentation helpfully provides some
+<a href="http://wiki.apache.org/couchdb/How_to_design_for_replication">advice</a>
+for designing conflict-aware applications.</p>
+
+<h3>Changes</h3>
+
+<p>Changes are dedicated views that contains a list of updates for a
+specific database. The
+<a href="http://wiki.apache.org/couchdb/HTTP_database_API#Changes">parameters</a>
+support starting at a given revision (in this case, a database
+revision, not a document revision), filtering documents, and keeping
+the stream open in several ways.</p>
+
+<p>This makes it possible (easy, even) to monitor (interesting or
+relevant) changes, to synchronize with other systems, or to
+automatically resolve conflicts, for instance.</p>
+
+<p>When using Long-Polling, I found that one very large datasets, the
+<code>JSON.parse</code> invocation could take a long time, and would suggest to
+always use a <code>limit</code> parameter on the query, to cut the dataset down
+to manageable chunks.</p>
+
+<h2>Exercises</h2>
+
+<h3>Built-in Reduce Functions</h3>
+
+<p>There are three, documented on the
+<a href="http://wiki.apache.org/couchdb/Built-In_Reduce_Functions">Wiki</a>.</p>
+
+<p>They are implemented directly in Erlang, so they have a better
+performance than JavaScript functions.</p>
+
+<h4><code>_sum</code></h4>
+
+<p>This function behaves just as the reduce function from the book; it
+sums the values by key. It is useful when the map functions uses
+<code>emit(key, 1);</code> (or some other numeric value).</p>
+
+<h4><code>_count</code></h4>
+
+<p>It is similar to <code>_sum</code>, but it counts the number of values rather
+than merely summing them. It is useful when the value is not a number.</p>
+
+<h4><code>_stat</code></h4>
+
+<p>This is an extension of <code>_sum</code> which computes additional statistics
+(minimum, maximum, &#8230;) on the numeric values.</p>
+
+<h3>Filtering <code>_changes</code> output</h3>
+
+<p>Filters are nicely described in
+<a href="http://guide.couchdb.org/draft/notifications.html#filters">CouchDB The Definitive Guide</a>.</p>
+
+<p>To create a new filter, I first create a design document to store the function:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -X PUT http://localhost:5984/music/_design/filters \
+</span><span class='line'>-d '{ "filters": { "by_country": "function(doc, req) {
+</span><span class='line'>return doc.country == req.query.country; }" } }'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>by_country</code> function retrieves a <code>country</code> parameter from the
+request, and compares it against the record <code>country</code> attribute; only
+the matching records are returned.</p>
+
+<p>To monitor only updates to bands from Spain, for instance, I can use</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:5984/music/_changes?filter=filters/by_country\&country=ESP</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To monitor for conflicts, I have the following design document:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/filters&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;3-ec032384bf365d3caef0ed91185ae45a&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;filters&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>       <span class="s2">&quot;by_country&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc, req) { return doc.country == req.query.country; }&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;conflicts&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc, req) { return doc._conflicts; }&quot;</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With that, I can then listen for changes, keeping only the conflicts:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music-repl/_changes?filter=filters/conflicts\&since=26000
+</span><span class='line'>{"results":[
+</span><span class='line'>{"seq":26994,"id":"theconflicts","changes":[{"rev":"2-cab47bf4444a20d6a2d2204330fdce2a"}]}
+</span><span class='line'>],
+</span><span class='line'>"last_seq":27000}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because CouchDB only set the <code>_conflicts</code> attribute on the
+losing database; the winner database (the one in which the winning
+revision was initially created) does not know about conflicts. This
+means I must check against <code>music-repl</code> instead of <code>music</code>.</p>
+
+<h3>Replication HTTP API</h3>
+
+<p>The API is documented
+<a href="http://www.couchbase.org/sites/default/files/uploads/all/documentation/couchbase-api-misc.html#couchbase-api-misc_replicate_post">here</a>.</p>
+
+<p>To use it, simply pass the <code>source</code> and <code>target</code> databases to the
+<code>_replicate</code> URL:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -X POST http://localhost:5984/_replicate \
+</span><span class='line'>-H 'Content-Type: application/json' \
+</span><span class='line'>-H 'Accept: application/json' -d \
+</span><span class='line'>'{ "source" : "music", "target" : "music-repl" }'</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>_replicator</code> database</h3>
+
+<p>The
+<a href="http://docs.couchbase.org/couchdb-release-1.1/couchb-release-1.1-replicatordb.html"><code>_replicator</code> database</a>
+is an alternative to the use of the
+<code>_replicate</code> URL above: documents inserted in the <code>_replicator</code>
+database will, if properly formed, cause a replication job to be
+started (either one-off, or continuous).</p>
+
+<p>Deleting the document will cancel the replication job.</p>
+
+<p>Document describing replications are updated to reflect the progress
+of the job.</p>
+
+<p>The command below triggers a replication from <code>music</code> to <code>music-repl</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -X PUT http://localhost:5984/_replicator/music-rep \
+</span><span class='line'>-H 'Content-type: application/json' \
+</span><span class='line'>-d '{ "source" : "music", "target" : "music-repl" }'
+</span><span class='line'>{"ok":true,"id":"music-rep","rev":"1-ba761c16b5ca36848b2474758cbc4b22"}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using the <code>watch_changes_longpolling_impl.js</code> script on the <code>_replicator</code>
+database, it is possible to monitor the replication job:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ node watch_changes_longpolling_impl.js _replicator
+</span><span class='line'>... elided ...
+</span><span class='line'>{ seq: 2,
+</span><span class='line'>  id: 'music-rep',
+</span><span class='line'>  changes: [ { rev: '1-ba761c16b5ca36848b2474758cbc4b22' } ],
+</span><span class='line'>  doc: 
+</span><span class='line'>   { _id: 'music-rep',
+</span><span class='line'>     _rev: '1-ba761c16b5ca36848b2474758cbc4b22',
+</span><span class='line'>     source: 'music',
+</span><span class='line'>     target: 'music-repl' } }
+</span><span class='line'>{ seq: 3,
+</span><span class='line'>  id: 'music-rep',
+</span><span class='line'>  changes: [ { rev: '2-d1b4fc9da1ef17d43fa91dd7b345a9e6' } ],
+</span><span class='line'>  doc: 
+</span><span class='line'>   { _id: 'music-rep',
+</span><span class='line'>     _rev: '2-d1b4fc9da1ef17d43fa91dd7b345a9e6',
+</span><span class='line'>     source: 'music',
+</span><span class='line'>     target: 'music-repl',
+</span><span class='line'>     _replication_state: 'triggered',
+</span><span class='line'>     _replication_state_time: '2012-02-02T10:23:44+09:00',
+</span><span class='line'>     _replication_id: 'ab65eb4c4ca880bf65e02626573ef683' } }
+</span><span class='line'>{ seq: 4,
+</span><span class='line'>  id: 'music-rep',
+</span><span class='line'>  changes: [ { rev: '3-b6d32c3ce979af8dc2190735aa39d4f3' } ],
+</span><span class='line'>  doc: 
+</span><span class='line'>   { _id: 'music-rep',
+</span><span class='line'>     _rev: '3-b6d32c3ce979af8dc2190735aa39d4f3',
+</span><span class='line'>     source: 'music',
+</span><span class='line'>     target: 'music-repl',
+</span><span class='line'>     _replication_state: 'completed',
+</span><span class='line'>     _replication_state_time: '2012-02-02T10:23:46+09:00',
+</span><span class='line'>     _replication_id: 'ab65eb4c4ca880bf65e02626573ef683' } }
+</span><span class='line'>... elided ...</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first change is when the document is created; the second when the
+job starts, and the third when it successfully completes.</p>
+
+<p>Unlike the <code>_replicate</code> based API, continuous jobs stored in
+<code>_replicator</code> will resume when the database is restarted.</p>
+
+<h3>Continuous watcher skeleton</h3>
+
+<p>The approach is to keep input in a buffer, then extract as many line
+from the buffer as possible (if the last line is incomplete, it is put
+back into the buffer), and parse each line as a JSON object.</p>
+
+<p>The format of each parsed object is different: each change is in its
+own object, so there is no <code>results</code> attribute any more.</p>
+
+<figure class='code'><figcaption><span>watch_changes_continuous.js  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">http_options</span> <span class="o">=</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">host</span><span class="o">:</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">port</span><span class="o">:</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">db</span> <span class="o">+</span> <span class="s1">&#39;/_changes&#39;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s1">&#39;?feed=continuous&amp;include_docs=true&amp;since=&#39;</span> <span class="o">+</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">last_seq</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">processLine</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">line</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">line</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">line</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">output</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// don&#39;t emit last_seq</span>
+</span><span class='line'>            <span class="c1">// watcher.last_seq not used in this code</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">output</span><span class="p">.</span><span class="nx">last_seq</span><span class="p">)</span>
+</span><span class='line'>                <span class="nx">watcher</span><span class="p">.</span><span class="nx">last_seq</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">last_seq</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>                <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">output</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">line</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">checkForData</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">buffer</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">lines</span> <span class="o">=</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;\n&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// if the last character is line return</span>
+</span><span class='line'>    <span class="c1">// use the last line; otherwise put it back</span>
+</span><span class='line'>    <span class="c1">// into the buffer to be completed later</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;\n&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="nx">buffer</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>        <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">lines</span><span class="p">.</span><span class="nx">pop</span><span class="p">()</span>
+</span><span class='line'>    <span class="c1">// process the remaining lines one at a time</span>
+</span><span class='line'>    <span class="nx">lines</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">processLine</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">buffer</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">http_options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">res</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">chunk</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">buffer</span> <span class="o">+=</span> <span class="nx">chunk</span><span class="p">;</span>
+</span><span class='line'>        <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">checkForData</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="nx">res</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">checkForData</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Continuous watcher implementation</h3>
+
+<p>I just inserted the code block above in the original
+<code>watch_changes_skeleton.js</code>; no other modifications were required.</p>
+
+<p>With the code block above, both the long polling and the continuous
+outputs are identical.</p>
+
+<h3>Conflicts view</h3>
+
+<p>As I said above, conflicts are only created in the losing database, so
+to test this I must use the <code>music-repl</code> database.</p>
+
+<p>Otherwise, the code is simple: iterate on the <code>_conflicts</code> attribute,
+and for each revision it contains, emit that revision mapped to the
+document <code>_id</code>:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/conflicts&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;4-1f5c35d83a4cfc7783d60f665946dc6d&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="s2">&quot;javascript&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;views&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>       <span class="s2">&quot;conflicts&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>           <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc) { (doc._conflicts || []).forEach(function(rev) { emit(rev, doc._id); }); }&quot;</span>
+</span><span class='line'>       <span class="p">}</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Testing it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl http://localhost:5984/music-repl/_design/conflicts/_view/conflicts | python -mjson.tool
+</span><span class='line'>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+</span><span class='line'>                                 Dload  Upload   Total   Spent    Left  Speed
+</span><span class='line'>100   129    0   129    0     0  37478      0 --:--:-- --:--:-- --:--:-- 64500
+</span><span class='line'>{
+</span><span class='line'>    "offset": 0, 
+</span><span class='line'>    "rows": [
+</span><span class='line'>        {
+</span><span class='line'>            "id": "theconflicts", 
+</span><span class='line'>            "key": "2-0c969fbfa76eb7fcdf6412ef219fcac5", 
+</span><span class='line'>            "value": "theconflicts"
+</span><span class='line'>        }
+</span><span class='line'>    ], 
+</span><span class='line'>    "total_rows": 1
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And this completes Day 3 and this overview of CouchDB.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks CouchDB Day 2]]></title>
@@ -6854,175 +7355,6 @@ concept.</p>
 
 <p>This is really one tool I will have a closer look to in the near
 future.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks HBase Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/"/>
-    <updated>2011-12-12T23:46:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2</id>
-    <content type="html"><![CDATA[<p>And on the second day with HBase, we load it with <a href="http://www.wikipedia.org/">Wikipedia</a>. Actually I had to do it twice to get it to work: on my first attempt the process kind of froze at about 200,000 articles.</p>
-
-<!--more-->
-
-
-<p>After some digging (and finding this very helpful <a href="http://ofps.oreilly.com/titles/9781449396107/installation.html">page</a> from <a href="http://ofps.oreilly.com/titles/9781449396107/">HBase: The Definitive Guide</a>), I tried again with a different setting for the limit on open files:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ulimit -n 10240</span></code></pre></td></tr></table></div></figure>
-
-
-<p>With that, HBase was able to keep churning along (the limit is per session, so HBase had to be restarted). I started the import process in the morning, and when I finally stopped it it had passed 10,000,000 pages (not all of them actual articles). Parsing links was equally successful.</p>
-
-<h3>Consistency</h3>
-
-<p>Unlike Riak, which offers <a href="http://en.wikipedia.org/wiki/Eventual_consistency">eventual consistency</a>, HBase ensures row level consistency. This means that each row has only one value, and a write to the row is either entirely successful, or not performed at all (so an update will never be applied partially).</p>
-
-<p>This idea that each row is atomic is a simple yet effective mental model; I feel I should be able to use this model to design reliable solutions on HBase. To make them fast as well is a different matter entirely: I&#8217;d first need more experience with the concept of column families and their various options.</p>
-
-<h3>Logging</h3>
-
-<p>HBase uses <a href="http://en.wikipedia.org/wiki/Write-ahead_logging">Write-Ahead Logging</a>, exactly like PostgreSQL and many other databases (Riak too) and file systems. This is a low level mechanism designed to help with consistency: first a description of the updates is written into a log file (and flushed); then the update is performed. If there&#8217;s a problem during the update, it is always possible to compare the write-ahead log and execute again whatever updates are missing or partial.</p>
-
-<h3>Regions and servers</h3>
-
-<p>I must say I am still a bit unclear on this topic: I have a standalone instance of HBase, so naturally there is no distribution involved.</p>
-
-<p>HBase first keep the data sorted by key, and distributes contiguous chunks of data to each region (growing the number of regions if needed).</p>
-
-<h3>HBase and names</h3>
-
-<p>In a typical relational database, just as in a normal programming language, the name you give to things (tables, columns or variables) is a programmer oriented feature that has no impact on performance.</p>
-
-<p>The idea that you should use short variable names for &#8216;performance reason&#8217; is either a joke or a beginner&#8217;s mistake.</p>
-
-<p>Except in HBase, where the length of names can impact storage performance. See the <a href="http://hbase.apache.org/book.html#rowkey.design">HBase book, Try to minimize row and column sizes</a>.</p>
-
-<h2>Exercises</h2>
-
-<h3>Compression in HBase</h3>
-
-<p>I could not really find any article on the pros and cons of compression in either HBase or Hadoop. I guess the pros and cons here are the same as any other use of compression: trading IO for CPU. Smaller (because compressed) data can be saved to and read from the disk faster, but at the cost of higher CPU usage.</p>
-
-<h3>Bloom filters</h3>
-
-<p>Bloom filters are describe on the always helpful <a href="http://en.wikipedia.org/wiki/Bloom_filter">Wikipedia</a>. Such a filter is a tool to determine quickly if a piece of information in not in a specific storage, with a configurable probability for false positive.</p>
-
-<p>Say you have a key value distributed data store. For each store, you maintain a Bloom filter of the keys.</p>
-
-<p>Assuming you are looking for a key, you can use the Bloom filters to quickly determine where to look further.</p>
-
-<p>If a Bloom filter for a store states the key is not present, you know you can ignore the store. If it says the key is present, it could be wrong, so you have to look. How often it returns yes when it should say no is a trade-off between the size of the filter and the probability of error.</p>
-
-<p>With HBase being distributed by default, knowing where to look for a key or a key, column pair can increase performance.</p>
-
-<h3>Column family options for compression</h3>
-
-<p>There use to be <code>RECORD</code> and <code>BLOCK</code> options, but they appear deprecated. What is left is to specify the compression algorithm for either regular compression, or compacting compression (which happens when HBase reorganize the store). The compacting compression setting can use the same values (i.e. algorithm names) as the compression setting. In the shell, the option is <code>COMPRESSION_COMPACT</code>.</p>
-
-<p>The available algorithms are <code>NONE</code> (no encryption), <code>GZ</code>, <code>LZO</code> and <code>SNAPPY</code> (which is probably better still than LZO).</p>
-
-<h3>Column family compression design consideration</h3>
-
-<p>I could not find any definitive answer to this, but I would guess that:</p>
-
-<ul>
-<li>already compressed data (such as JPEG) should be in an uncompressed column family</li>
-<li>rarely used by very large data could use a slower but more efficient algorithm such as GZ</li>
-<li>small but very often used families should not be compressed</li>
-</ul>
-
-
-<h3>Installing LZO</h3>
-
-<p>To install LZO compression is not exactly trivial, especially on Mac OS X.</p>
-
-<p>The first step is to install the library; I did it with <a href="http://mxcl.github.com/homebrew/">Homebrew</a>. It installs 64 bits versions by default; the only thing to remember is that by default on Mac OS X 10.7, the default compiler is <a href="http://llvm.org">LLVM</a>, but often <a href="http://gcc.gnu.org/">GCC</a> is better.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo brew install lzo --use-gcc</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and LZO will end up under <code>/usr/local/Cellar/lzo/2.06/</code></p>
-
-<p>Next step is to build the hadoop LZO plugin. The basic information is available on the Hadoop <a href="http://wiki.apache.org/hadoop/UsingLzoCompression">wiki</a>, but the main repository it refers to is obsolete. There is another, maintained <a href="https://github.com/toddlipcon/hadoop-lzo">repository</a> on Github.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git clone https://github.com/toddlipcon/hadoop-lzo</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Mac OS X</h4>
-
-<p>Building on Linux should work right away, but Mac OS X (especially 10.7) is slightly different in frustrating way. The <code>ld</code> command is not GNU, but BSD, so it does not understand the same options.</p>
-
-<p>To get the library to compile, you need to edit the <code>build.xml</code> file and clear the <code>LDFLAGS</code> (by default the value is <code>-Wl,--no-as-needed</code>, it needs to be empty).</p>
-
-<p>Liquid error: ClassNotFound: no lexer for alias &#8216;txt&#8217; found</p>
-
-<p>From inside the repository, it can be applied with</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>patch -p1 &lt; hadoop-lzo.patch</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once this is done, the <code>ant</code> invocation documented in the Wiki should almost work. Two things need to be changed: first is the use of <code>GCC</code> instead of <code>LLVM</code> (by setting the <code>CC</code> variable); second is the strange name of the <code>include</code> directory for Java. The build script expects it under <code>$JAVA_HOME/include</code>, but of course in Mac OS X it had to be somewhere else (<code>/System/Library/Frameworks/JavaVM.framework/Headers</code>, if you need to know), so I added it directly to the include path <code>C_INCLUDE_PATH</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>env JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/ \
-</span><span class='line'>C_INCLUDE_PATH=/System/Library/Frameworks/JavaVM.framework/Headers:/usr/local/Cellar/lzo/2.06/include/ \
-</span><span class='line'>LIBRARY_PATH=/usr/local/Cellar/lzo/2.06/lib/ CFAGS='-arch x86_64' \
-</span><span class='line'>CC=/usr/bin/gcc-4.2  ant clean compile-native test tar</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Normally, you should now have a <code>build</code> directory with the jar and native libraries.</p>
-
-<p>The final step is to deploy this in HBase. HBase expect everything to be under the <code>$HBASE_HOME/lib</code>. The instructions from the wiki give the right commands (I just added the creation of the <code>$HBASE_HOME/lib/native</code> directory, which does not exist by default):</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cp build/hadoop-lzo-0.4.15/hadoop-lzo-0.4.15.jar $HBASE_HOME/lib/
-</span><span class='line'>mkdir -p $HBASE_HOME/lib/native
-</span><span class='line'>tar -cBf - -C build/hadoop-lzo-0.4.15/lib/native/ . | tar -xBvf - -C $HBASE_HOME/lib/native</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now you can test whether the new library is enabled: run the command:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./bin/hbase org.apache.hadoop.hbase.util.CompressionTest /tmp/data.lzo lzo</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and it should output:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>11/12/14 09:13:21 INFO lzo.GPLNativeCodeLoader: Loaded native gpl library
-</span><span class='line'>11/12/14 09:13:21 INFO lzo.LzoCodec: Successfully loaded & initialized native-lzo library [hadoop-lzo rev c7d54fffe5a853c437ee23413ba71fc6af23c91d]
-</span><span class='line'>11/12/14 09:13:21 INFO compress.CodecPool: Got brand-new compressor
-</span><span class='line'>SUCCESS</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And that&#8217;s it. The most frustrating part is that HBase will appear to hang when you try to enable a table that uses LZO compression if anything went wrong (and forgot to test as above). The logs will reveal that <code>hadoop-native</code> cannot be found. This means that the native libraries cannot be loaded. So make sure that you have all the files below:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.0.dylib
-</span><span class='line'>$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.a
-</span><span class='line'>$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.dylib
-</span><span class='line'>$HBASE_HOME/lib/native/Mac_OS_X-x86_64-64/libgplcompression.la</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After that, restart the server, and you can use LZO compression instead of GZ.</p>
-
-<p>And this completes Day 2. Next and final day is about deploying HBase to the cloud. This might take more than just a day as I need some time to figure out how to use <a href="http://aws.amazon.com/ec2/">AWS EC2</a> and which options to choose, but hopefully I&#8217;ll be able to deploy Riak there as well.</p>
 ]]></content>
   </entry>
   

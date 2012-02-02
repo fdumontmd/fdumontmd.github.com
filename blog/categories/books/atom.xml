@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-01-31T13:49:06+09:00</updated>
+  <updated>2012-02-02T13:26:16+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,503 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Seven Databases in Seven Weeks CouchDB Day 3]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/"/>
+    <updated>2012-02-01T18:06:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3</id>
+    <content type="html"><![CDATA[<p>Today is a bit juicier than the previous days (together). On the menu,
+advanced views (full MapReduce), replication, conflict management, and
+change monitoring.</p>
+
+<!-- more -->
+
+
+<h3>Advanced views</h3>
+
+<p><a href="http://wiki.apache.org/couchdb/Introduction_to_CouchDB_views">Advanced views</a>
+in CouchDB are, as noted yesterday, materialized output of MapReduce
+computations.</p>
+
+<p>This has a cost: such computations are saved, so they take more time
+than with other implementations, the first time at least.</p>
+
+<p>Updating the views, on the other hand, is fairly fast (CouchDB
+recomputes only what is necessary). Views have to be planned, but
+once there they are fairly cheap. For exploratory queries, other databases
+might be more appropriate.</p>
+
+<p>CouchDB's reduce functions distinguishes between the first invocation,
+and the following ones (on values that have already gone through the
+reduce function). This makes it possible to implement a <code>_count</code>
+function which counts the number of values (the first invocation
+transforms values into numbers, and the following ones add the numbers
+up).</p>
+
+<h3>Replication</h3>
+
+<p><a href="http://wiki.apache.org/couchdb/Replication">Replication</a> is the
+one-way process of replicating the changes of one database on
+another. Replication can be between any two databases, whether on the
+same server or on different ones. It can be one time, or
+continuous. The documents to replicate can be filtered, or selected by
+<code>_id</code>.</p>
+
+<p>Replication is a lower level mechanism than what MongoDB, for
+instance, proposes (where there is a strict hierarchy of masters and
+slaves), and closer to the flexible approach or Riak.</p>
+
+<p>Of course, when concurrent writes are permitted, conflicts can occur,
+and CouchDB handles them.</p>
+
+<h3>Conflicts</h3>
+
+<p><a href="http://wiki.apache.org/couchdb/Replication_and_conflicts">Concurrent updates</a>
+can cause conflicts, and CouchDB detects them so they can be dealt
+with.</p>
+
+<p>First, conflicts cannot happen on a single server: updates to a
+document must refer to the latest revision, otherwise the update
+fails. So clients are directly aware that they need to resubmit the
+(merged) document.</p>
+
+<p>When replication is enabled, conflicts result from concurrent updates
+in two replicated databases. At the next replication, one version will
+be selected as winning, and replicated to other databases. The other
+versions are still accessible from the <code>_conflicts</code> attribute
+(initially, only in the losing databases).</p>
+
+<p>If two ways replications are in place, eventually, all databases will
+have the <code>_conflicts</code> attribute populated (with all the losing
+revisions, if there are more than one).</p>
+
+<p>This makes it possible to implement a remedial action; it is possible
+to have views with only documents in conflicts, or to filter changes
+for conflicts, and implement merging actions in monitoring scripts.</p>
+
+<p>CouchDB documentation helpfully provides some
+<a href="http://wiki.apache.org/couchdb/How_to_design_for_replication">advice</a>
+for designing conflict-aware applications.</p>
+
+<h3>Changes</h3>
+
+<p>Changes are dedicated views that contains a list of updates for a
+specific database. The
+<a href="http://wiki.apache.org/couchdb/HTTP_database_API#Changes">parameters</a>
+support starting at a given revision (in this case, a database
+revision, not a document revision), filtering documents, and keeping
+the stream open in several ways.</p>
+
+<p>This makes it possible (easy, even) to monitor (interesting or
+relevant) changes, to synchronize with other systems, or to
+automatically resolve conflicts, for instance.</p>
+
+<p>When using Long-Polling, I found that one very large datasets, the
+<code>JSON.parse</code> invocation could take a long time, and would suggest to
+always use a <code>limit</code> parameter on the query, to cut the dataset down
+to manageable chunks.</p>
+
+<h2>Exercises</h2>
+
+<h3>Built-in Reduce Functions</h3>
+
+<p>There are three, documented on the
+<a href="http://wiki.apache.org/couchdb/Built-In_Reduce_Functions">Wiki</a>.</p>
+
+<p>They are implemented directly in Erlang, so they have a better
+performance than JavaScript functions.</p>
+
+<h4><code>_sum</code></h4>
+
+<p>This function behaves just as the reduce function from the book; it
+sums the values by key. It is useful when the map functions uses
+<code>emit(key, 1);</code> (or some other numeric value).</p>
+
+<h4><code>_count</code></h4>
+
+<p>It is similar to <code>_sum</code>, but it counts the number of values rather
+than merely summing them. It is useful when the value is not a number.</p>
+
+<h4><code>_stat</code></h4>
+
+<p>This is an extension of <code>_sum</code> which computes additional statistics
+(minimum, maximum, ...) on the numeric values.</p>
+
+<h3>Filtering <code>_changes</code> output</h3>
+
+<p>Filters are nicely described in
+<a href="http://guide.couchdb.org/draft/notifications.html#filters">CouchDB The Definitive Guide</a>.</p>
+
+<p>To create a new filter, I first create a design document to store the function:</p>
+
+<p><code>
+$ curl -X PUT http://localhost:5984/music/_design/filters \
+-d '{ "filters": { "by_country": "function(doc, req) {
+return doc.country == req.query.country; }" } }'
+</code></p>
+
+<p>The <code>by_country</code> function retrieves a <code>country</code> parameter from the
+request, and compares it against the record <code>country</code> attribute; only
+the matching records are returned.</p>
+
+<p>To monitor only updates to bands from Spain, for instance, I can use</p>
+
+<p><code>
+curl http://localhost:5984/music/_changes?filter=filters/by_country\&amp;country=ESP
+</code></p>
+
+<p>To monitor for conflicts, I have the following design document:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="s2">&quot;&lt;em&gt;id&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;/em&gt;design/filters&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;3-ec032384bf365d3caef0ed91185ae45a&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;filters&quot;</span><span class="o">:</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span>   <span class="s2">&quot;by_country&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc, req) { return doc.country == req.query.country; }&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;conflicts&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc, req) { return doc._conflicts; }&quot;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>With that, I can then listen for changes, keeping only the conflicts:</p>
+
+<p><code>
+$ curl http://localhost:5984/music-repl/_changes?filter=filters/conflicts\&amp;since=26000
+{"results":[
+{"seq":26994,"id":"theconflicts","changes":[{"rev":"2-cab47bf4444a20d6a2d2204330fdce2a"}]}
+],
+"last_seq":27000}
+</code></p>
+
+<p>Because CouchDB only set the <code>_conflicts</code> attribute on the
+losing database; the winner database (the one in which the winning
+revision was initially created) does not know about conflicts. This
+means I must check against <code>music-repl</code> instead of <code>music</code>.</p>
+
+<h3>Replication HTTP API</h3>
+
+<p>The API is documented
+<a href="http://www.couchbase.org/sites/default/files/uploads/all/documentation/couchbase-api-misc.html#couchbase-api-misc_replicate_post">here</a>.</p>
+
+<p>To use it, simply pass the <code>source</code> and <code>target</code> databases to the
+<code>_replicate</code> URL:</p>
+
+<p><code>
+$ curl -X POST http://localhost:5984/_replicate \
+-H 'Content-Type: application/json' \
+-H 'Accept: application/json' -d \
+'{ "source" : "music", "target" : "music-repl" }'
+</code></p>
+
+<h3><code>_replicator</code> database</h3>
+
+<p>The
+<a href="http://docs.couchbase.org/couchdb-release-1.1/couchb-release-1.1-replicatordb.html"><code>_replicator</code> database</a>
+is an alternative to the use of the
+<code>_replicate</code> URL above: documents inserted in the <code>_replicator</code>
+database will, if properly formed, cause a replication job to be
+started (either one-off, or continuous).</p>
+
+<p>Deleting the document will cancel the replication job.</p>
+
+<p>Document describing replications are updated to reflect the progress
+of the job.</p>
+
+<p>The command below triggers a replication from <code>music</code> to <code>music-repl</code>:</p>
+
+<p><code>
+$ curl -X PUT http://localhost:5984/_replicator/music-rep \
+-H 'Content-type: application/json' \
+-d '{ "source" : "music", "target" : "music-repl" }'
+{"ok":true,"id":"music-rep","rev":"1-ba761c16b5ca36848b2474758cbc4b22"}
+</code></p>
+
+<p>Using the <code>watch_changes_longpolling_impl.js</code> script on the <code>_replicator</code>
+database, it is possible to monitor the replication job:</p>
+
+<p>```
+$ node watch_changes_longpolling_impl.js <em>replicator
+... elided ...
+{ seq: 2,
+  id: 'music-rep',
+  changes: [ { rev: '1-ba761c16b5ca36848b2474758cbc4b22' } ],
+  doc:
+   { </em>id: 'music-rep',</p>
+
+<pre><code> _rev: '1-ba761c16b5ca36848b2474758cbc4b22',
+ source: 'music',
+ target: 'music-repl' } }
+</code></pre>
+
+<p>{ seq: 3,
+  id: 'music-rep',
+  changes: [ { rev: '2-d1b4fc9da1ef17d43fa91dd7b345a9e6' } ],
+  doc:
+   { _id: 'music-rep',</p>
+
+<pre><code> _rev: '2-d1b4fc9da1ef17d43fa91dd7b345a9e6',
+ source: 'music',
+ target: 'music-repl',
+ _replication_state: 'triggered',
+ _replication_state_time: '2012-02-02T10:23:44+09:00',
+ _replication_id: 'ab65eb4c4ca880bf65e02626573ef683' } }
+</code></pre>
+
+<p>{ seq: 4,
+  id: 'music-rep',
+  changes: [ { rev: '3-b6d32c3ce979af8dc2190735aa39d4f3' } ],
+  doc:
+   { _id: 'music-rep',</p>
+
+<pre><code> _rev: '3-b6d32c3ce979af8dc2190735aa39d4f3',
+ source: 'music',
+ target: 'music-repl',
+ _replication_state: 'completed',
+ _replication_state_time: '2012-02-02T10:23:46+09:00',
+ _replication_id: 'ab65eb4c4ca880bf65e02626573ef683' } }
+</code></pre>
+
+<p>... elided ...
+```</p>
+
+<p>The first change is when the document is created; the second when the
+job starts, and the third when it successfully completes.</p>
+
+<p>Unlike the <code>_replicate</code> based API, continuous jobs stored in
+<code>_replicator</code> will resume when the database is restarted.</p>
+
+<h3>Continuous watcher skeleton</h3>
+
+<p>The approach is to keep input in a buffer, then extract as many line
+from the buffer as possible (if the last line is incomplete, it is put
+back into the buffer), and parse each line as a JSON object.</p>
+
+<p>The format of each parsed object is different: each change is in its
+own object, so there is no <code>results</code> attribute any more.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>watch_changes_continuous.js  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">http_options</span> <span class="o">=&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="p">{</span>
+</span><span class='line'>    <span class="nx">host</span><span class="o">:</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">port</span><span class="o">:</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">db</span> <span class="o">+</span> <span class="s1">&#39;/_changes&#39;</span> <span class="o">+</span>
+</span><span class='line'>        <span class="s1">&#39;?feed=continuous&amp;amp;include_docs=true&amp;amp;since=&#39;</span> <span class="o">+</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">last_seq</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">processLine</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">line</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="nx">line</span><span class="p">.</span><span class="nx">length</span> <span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">line</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">output</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// don&#39;t emit last_seq</span>
+</span><span class='line'>        <span class="c1">// watcher.last_seq not used in this code</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">output</span><span class="p">.</span><span class="nx">last_seq</span><span class="p">)</span>
+</span><span class='line'>            <span class="nx">watcher</span><span class="p">.</span><span class="nx">last_seq</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">last_seq</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>            <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">output</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">line</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">checkForData</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">buffer</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">lines</span> <span class="o">=</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;\n&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// if the last character is line return</span>
+</span><span class='line'><span class="c1">// use the last line; otherwise put it back</span>
+</span><span class='line'><span class="c1">// into the buffer to be completed later</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;\n&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="nx">buffer</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">lines</span><span class="p">.</span><span class="nx">pop</span><span class="p">()</span>
+</span><span class='line'><span class="c1">// process the remaining lines one at a time</span>
+</span><span class='line'><span class="nx">lines</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">processLine</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="nx">buffer</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">};</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">http_options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">res</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">chunk</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">buffer</span> <span class="o">+=</span> <span class="nx">chunk</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">checkForData</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="nx">res</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">checkForData</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">})</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Continuous watcher implementation</h3>
+
+<p>I just inserted the code block above in the original
+<code>watch_changes_skeleton.js</code>; no other modifications were required.</p>
+
+<p>With the code block above, both the long polling and the continuous
+outputs are identical.</p>
+
+<h3>Conflicts view</h3>
+
+<p>As I said above, conflicts are only created in the losing database, so
+to test this I must use the <code>music-repl</code> database.</p>
+
+<p>Otherwise, the code is simple: iterate on the <code>_conflicts</code> attribute,
+and for each revision it contains, emit that revision mapped to the
+document <code>_id</code>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="s2">&quot;&lt;em&gt;id&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;/em&gt;design/conflicts&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;4-1f5c35d83a4cfc7783d60f665946dc6d&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="s2">&quot;javascript&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;views&quot;</span><span class="o">:</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span>   <span class="s2">&quot;conflicts&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>       <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc) { (doc._conflicts || []).forEach(function(rev) { emit(rev, doc._id); }); }&quot;</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Testing it:</p>
+
+<p>```
+$ curl http://localhost:5984/music-repl/<em>design/conflicts/</em>view/conflicts | python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</p>
+
+<pre><code>                             Dload  Upload   Total   Spent    Left  Speed
+</code></pre>
+
+<p>100   129    0   129    0     0  37478      0 --:--:-- --:--:-- --:--:-- 64500
+{</p>
+
+<pre><code>"offset": 0, 
+"rows": [
+    {
+        "id": "theconflicts", 
+        "key": "2-0c969fbfa76eb7fcdf6412ef219fcac5", 
+        "value": "theconflicts"
+    }
+], 
+"total_rows": 1
+</code></pre>
+
+<p>}
+```</p>
+
+<p>And this completes Day 3 and this overview of CouchDB.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks CouchDB Day 2]]></title>
@@ -1645,255 +2142,6 @@ redis 127.0.0.1:6379&gt; lpush "msg:queue" "finish"
 </code></p>
 
 <p>And that's all for today.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Repertoire Method]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method/"/>
-    <updated>2012-01-14T13:33:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method</id>
-    <content type="html"><![CDATA[<p>The repertoire method is never really explained in the book, or
-anywhere else I could find on the Internet. There are a couple of
-posts on this subject, so I though I should add mine.</p>
-
-<p>The repertoire method is really a tool to help with the intuitive step
-of figuring out a closed formula for a recurrence equation. It does so
-by breaking the original problem into smaller parts, with the hope
-they might be easier to solve.</p>
-
-<!-- more -->
-
-
-<h3>Why it works</h3>
-
-<p>Let's assume we have a system of recurrence equations with parameters,
-so that the unknown function can be expressed as a linear combination
-of other (unknown) functions where the coefficients are the parameters:</p>
-
-<div markdown="0">
-\begin{align}
-g(1) &amp; = b(0, \alpha_1, \cdots, \alpha_m)\\\\
-g(n) &amp; = r_n(g_1, \cdots, g_{n-1}, \alpha_1, \cdots, \alpha_m)\\\\
-&amp; = \sum_{i=1}^m A_i(n)\alpha_i,
-\end{align}
-</div>
-
-
-<p>We can consider $g$ as a specific point in a $m$-dimensional function
-space (determined by both the recurrence equations, and the
-parameters), and because $g$ is a linear combination, we can try to
-find $m$ base functions (hopefully known or easy to compute)
-$f_k(n) = \sum_{i=1}^m A_i(n)\alpha_{i_k}$ with $1 \le k \le m$, expressed in
-terms of $m$ linearly independent vectors
-$(\alpha_{1_k},\cdots,\alpha_{m_k})$.</p>
-
-<p>In other words, if we can find $m$ linearly independent parameter
-vectors such that, for each, we have a known solution $f_k(n)$, then
-we can express the function $g$ as a linear combination of $f_k(n)$
-for any parameters (because the $m$ $f_k(n)$ form a base for the
-$m$-dimensional function space defined by the recurrence equations).</p>
-
-<h3>How it works</h3>
-
-<p>First, we need to check that the recurrence equations accept a
-solution expressed as</p>
-
-<div markdown="0">
-\begin{align}
-g(n) &amp; = \sum_{i=1}^m A_i(n)\alpha_i
-\end{align}
-</div>
-
-
-<p>It is enough to plug this definition into the recurrence equations,
-and make sure the different parameters always remain in different
-terms.</p>
-
-<p>Then we can either solve $f(n) = \sum_{i=1}^m A_i(n)\alpha_i$ for
-known $f(n)$, or for known $\alpha_i$
-parameters, as long as we end up with $m$ linearly independent
-parameter vectors (or, as it is equivalent, $m$ linearly independent
-known functions for specific parameters).</p>
-
-<p>It is important to keep in mind that a solution can be searched from
-both direction: either set a function and try to solve for the
-parameters, or set the parameters and solve for the function.</p>
-
-<h3>Homework exercise</h3>
-
-<p>Given</p>
-
-<div markdown="0">
-\begin{align}
-g(1) &amp; = \alpha\\\\
-g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j&amp;&amp;\text{for \(j=0, 1\) and \(n \gt 1 \)}\\\\
-\end{align}
-</div>
-
-
-<p>We need to check that $g$ can be written as</p>
-
-<div markdown="0">
-\begin{align}
-g(n) &amp; = \alpha A(n) + \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)\\\\
-\end{align}
-</div>
-
-
-<p>The base case is trivial. The recurrence case is</p>
-
-<div markdown="0">
-\begin{align}
-g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
-&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + \gamma n \beta_0\\\\
-&amp; = \alpha 3A(n) + \beta_0 (3 B_0(n) + 1) + \beta_1 3B_1(n) + \gamma (3C(n) + n)\\\\
-g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
-&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + + \gamma n\beta_1\\\\
-&amp; = \alpha 3A(n) + \beta_0 3 B_0(n)+ \beta_1 (3B_1(n) + 1) + \gamma (3C(n) + n)\\\\
-\end{align}
-</div>
-
-
-<p>so $g$ can be expressed as a linear combination of other functions,
-with the parameters as the coefficients.</p>
-
-<p>Now, when I tried to solve this problem, I didn't know I could set the
-parameters to values that would lead to an easy solution ($\gamma = 0$
-turns the problem into an easy to solve generalised radix-based
-Josephus problem); instead I wasted a lot of time trying to find known
-functions and solve for the parameters, which is why I have four steps
-below instead of just two as in the book.</p>
-
-<h4>$g(n) = n$</h4>
-
-<p>As the book suggests, I tried to solve for $g(n) = n$:</p>
-
-<div markdown="0">
-\begin{align}
-1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
-2n = g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
-&amp; = 3n + \gamma n + \beta_0&amp;&amp;\gamma = -1, \beta_0 = 0\\\\
-2n+1 = g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
-&amp; = 3n - n + \beta_1&amp;&amp; \beta_1 = 1\\\\
-\end{align}
-</div>
-
-
-<h4>$g(2^m+l) = 3^m$</h4>
-
-<p>As the recurrence equation looks like the generalised radix-based
-Josephus equation, I tried to solve for $g(2^m+1) = 3^m$:</p>
-
-<div markdown="0">
-\begin{align}
-1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
-3^m = g(2^m+2l) &amp; = 3g(2^{m-1}+l) + \gamma (2^{m-1} + l) + \beta_0\\\\
-&amp; = 3\cdot 3^{m-1} + \gamma (2^{m-1} + l) + \beta_0&amp;&amp; \beta_0, \gamma = 0\\\\
-3^m = g(2^m+2l+1) &amp; = 3g(2^{m^1}+l) + \gamma (2^{m-1} + l) + \beta_1\\\\
-&amp; = 3\cdot 3^{m-1}&amp;&amp;\beta_1 = 0\\\\
-\end{align}
-</div>
-
-
-<h4>$g(n) = 1$</h4>
-
-<p>I tried to solve for $g(n) = 1$, as it seemed useful to solve for a
-constant (no linear combination of linearly independent non-constant
-functions can produce a constant function).</p>
-
-<div markdown="0">
-\begin{align}
-1 = g(1) &amp; = \alpha&amp;&amp; \alpha = 1\\\\
-1 = g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j\\\\
-&amp; = 3 + \gamma n + \beta_j&amp;&amp; \gamma = 0, \beta_j = -2\\\\
-\end{align}
-</div>
-
-
-<h4>$\alpha, \beta_1 = 1, \beta_0,  \gamma = 0$</h4>
-
-<p>This is the step that took me the longest, and when I finally
-understood I could fix the parameters, I was able to use the
-radix-based Josephus solution.</p>
-
-<p>The recurrence equations</p>
-
-<div markdown="0">
-\begin{align}
-g(1) &amp; = 1\\\\
-g(2n) &amp; = 3g(n)\\\\
-g(2n+1) &amp; = 3g(n) + 1\\\\
-\end{align}
-</div>
-
-
-<p>have as solution $g(2^m + (b_m\cdots b_0)) = 3^m + (b_m\cdots b_0)_3$.</p>
-
-<h4>Solving for $g(n)$</h4>
-
-<p>We have the equations</p>
-
-<div markdown="0">
-\begin{align}
-A(n) - C(n) &amp; = n\\\\
-A(2^m + l) &amp; = 3^m\\\\
-A(n) -2(B_0(n) + B_1(n)) &amp; = 1\\\\
-B_1(2^m+l) &amp; = h_3(l)&amp;&amp;\text{where \(h_3(b_m\cdots b_0) = (b_m\cdots b_0)_3\)}\\\\
-\end{align}
-</div>
-
-
-<p>We have two functions already defined ($A(n)$ and $B_1(n)$), and the
-other two equations give us the remaining function.</p>
-
-<p>Now we can solve for $g(n)$:</p>
-
-<div markdown="0">
-\begin{align}
-g(2^m+l) = \alpha 3^m &amp; + \beta_0 (\frac{3^m - 1}{2} - h_3(l))\\\\
-&amp; + \beta_1 h_3(l) \\\\
-&amp;+ \gamma (3^m + h_3(l) - 2^m - l)
-\end{align}
-</div>
-
-
-<p>The $\gamma$ term is really $h_3(n) - n$.</p>
-
-<p>The $\beta_0$ term is the same as $h_3(2^m-1-l)$, as can be seen by
-observing that in base $3$, $3^m$ is $1$ followed by $m$ zeroes, so
-$3^m-1$ is $m$ twos, and $\frac{3^m-1}{2}$ is $m$ ones, in other words
-the same representation as the binary representation of $2^m-1$.</p>
-
-<p>Now, the binary representation of $l$ is the same as the
-representation in base $3$ of $h_3(l)$ (by definition of $h_3$), so
-the binary representation of $2^m-1-l$ is the same as the
-representation in base $3$ of $\frac{3^m-1}{2} - h_3(l)$.</p>
-
-<p>With these two observations, it is possible to rewrite $g$ as</p>
-
-<div markdown="0">
-\begin{align}
-g(1b_m\cdots b_0) &amp; = (\alpha\beta_{b_m}\cdots\beta_{b_0})_3 + \gamma ((1b_m\cdots b_0)_3 - (1b_m\cdots b_0)_2)
-\end{align}
-</div>
-
-
-<p>which is the book solution.</p>
-
-<h3>Faster solution</h3>
-
-<p>It is enough to solve for
-$\alpha, \beta_0, \beta_1 \ne 0, \gamma = 0$,
-and to find the parameters for $g(n) = n$. The first gives $A$,
-$B_0$ and $B_1$ directly by the generalised radix-based Josephus
-solution, and the second one adds a constraint to solve for $C$ as well.</p>
-
-<h3>Wrapping up</h3>
-
-<p>As can be seen above, approaching the problem from both directions
-(solving for known functions and solving for known parameters) can
-result in time saved, and simplified expression of the solution.</p>
 ]]></content>
   </entry>
   

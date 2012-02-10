@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-02-02T13:26:16+09:00</updated>
+  <updated>2012-02-10T20:03:17+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,991 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Psychic Modeling]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/"/>
+    <updated>2012-02-10T12:26:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling</id>
+    <content type="html"><![CDATA[<p>In the <a href="http://www.algorist.com/">Algorithm Design Manual</a>, Stephen
+Skiena entertains, edifies and educates his readers with so called
+"War Stories", that is, interesting implementation challenges from his
+own experience.</p>
+
+<p>The first War Story is
+<a href="http://www8.cs.umu.se/kurser/TDBAfl/VT06/algorithms/BOOK/BOOK/NODE19.HTM">Psychic Modeling</a>,
+an attempt to exploit "precognition" to improve the chances of winning
+the lottery.</p>
+
+<!-- more -->
+
+
+<p>This war story is also the subject of one of the first implementation
+projects. In chapter 1.  A few years ago, when I bought the book, I
+had easily solved the previous exercises, but then I reached this
+implementation project, and I got stuck. I could not even get a
+high level sketch of what a solution would look like.</p>
+
+<p>Certainly, if I was unable to solve an exercise of the first chapter
+of this book, it was hopelessly beyond my reach...</p>
+
+<p>Still, I had the ambition of one day resuming my reading, and I would
+from time to time give this problem another attempt.</p>
+
+<p>Recently, it feels like all the pieces finally fell into places, and
+after a few hours of coding I had an (naive) implementation. Yet I
+still have doubts, as the only reference I have to compare my solution
+with, Skiena's own paper
+(<a href="http://www.cs.sunysb.edu/~skiena/papers/lotto.doc">Randomized Algorithms for Identifying Minimal Lottery Ticket Sets</a>),
+apparently is worse (in terms of necessary tickets) than my solution...</p>
+
+<p>Note on this paper: unfortunately it is in Word format, and I found
+that some characters are not properly displayed on non MS Word text
+processing tools (such as Open Office). So you might have to open it
+with MS Word or MS Word Viewer.</p>
+
+<h3>The problem</h3>
+
+<p>I will use the notation from the book rather than the paper. The
+problem is defined as this:</p>
+
+<ul>
+<li>a lottery ticket has $k$ numbers</li>
+<li>a win requires $j$ numbers from the winning ticket</li>
+<li>the psychic visualises $n$ numbers</li>
+<li>of which $j$ are "guaranteed" to be on the winning ticket.</li>
+</ul>
+
+
+<h3>Defining "sufficient coverage"</h3>
+
+<p>A first difference between the paper's approach and mine is that I'm
+using the notion of coverage size rather than distance: I measure how
+similar two subsets are by defining their cover as the size of their
+intersection; in their paper the authors use a notion of distance defined as
+the size of the difference of the two subsets (perhaps to help with
+the design of heuristics in the backtracking version of their algorithm).</p>
+
+<p>Now, clearly the two approaches are equivalent; it is less clear that
+the formulas derived from either are indeed the same.</p>
+
+<p>For a given $j$-subset, how many $j$-subsets have a coverage of at
+least $l$ with the first one? The covered $j$-subsets must have at
+least $l$ numbers (between $l$ and $j$, to be precise) in common with
+the first one, and the rest taken from the $n-j$ other numbers. This gives</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{l \le i \le j} \binom{j}{i} \binom{n-j}{j-i}
+\end{align}
+</div>
+
+
+<p>For a given $j$-subset, how many $j$-subsets are within $j-l$ distance
+of the first one? We can choose at most $j-l$ numbers out of the $n-j$
+rest; and complete with numbers from the first subset. This gives</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{j-i} = \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{i}
+\end{align}
+</div>
+
+
+<p>It took me a while to confirm it, but the formulas are indeed the
+same:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{i} &amp; = \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{j-i}\\\\
+&amp; = \sum_{l-j \le i \le 0} \binom{n-j}{-i} \binom{j}{j+i}&amp;&amp;\text{changing the sign of \(i\)}\\\\
+&amp; = \sum_{l \le j+i \le j} \binom{n-j}{-i} \binom{j}{j+i}\\\\
+&amp; = \sum_{l \le i \le j} \binom{n-j}{j-i} \binom{j}{i}&amp;&amp;\text{replacing \(j+i\) by \(i\)}\\\\
+\end{align}
+</div>
+
+
+<h3>Size of a ticket</h3>
+
+<p>Note that I do not use the $k$ size of a ticket. In fact, in my
+original design, I used it but ignored $j$; reading the paper I
+realised that $j$ was indeed critical: one of the $j$-subsets will be
+on the winning ticket, so they are the ones we need to cover. However,
+I could not understand why the paper did not use the potentially
+larger size of a ticket to cover more $j$-subsets.</p>
+
+<p>Restated with a complete ticket, the coverage formula becomes</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{l \le i \le j} \binom{k}{i} \binom{n-k}{j-i}
+\end{align}
+</div>
+
+
+<p>This apparent small change actually reduces the lower bound of the
+necessary tickets significantly. For $n=15$, $k=6$, $j=5$, $l=4$, for
+instance, will the paper offers as a lower bound $58$, the formula
+above gives $22$.</p>
+
+<p>So the question is: is it valid to use the possibly larger value $k$
+when generating tickets? I could not think of any reason not too, and
+if I'm right, this gives each ticket a much larger cover, and
+therefore a lower number of necessary tickets.</p>
+
+<h2>Implementation</h2>
+
+<p>For a first effort, I chose to code in Haskell, and favoured simplicity
+over speed. The code is indeed both simple, and wasteful, but Moore's
+Law says that computers have become about 1000 times faster since the
+time the paper was written, so I have some margin.</p>
+
+<p>To keep things simple, sets and subsets are just lists.</p>
+
+<h3>Support functions</h3>
+
+<p>Such functions ought to belong to a dedicated library (and perhaps
+they do); I include them to keep the implementation mostly
+self-contained.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Support functions  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">product</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'><span class="nf">combi</span> <span class="n">n</span> <span class="n">c</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fact</span> <span class="n">n</span><span class="p">)</span> <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">div</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">fact</span> <span class="n">c</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">c</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">remainingNumbers</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">union</span> <span class="kt">[]</span> <span class="n">js</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>fact</code> is just the factorial; <code>combi</code> computes the binomial
+coefficient, and <code>remainingNumbers</code> is just the union of all the
+passed $j$-subsets.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Generating Combinations  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">genCombi</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="n">k</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">l</span><span class="kt">:</span><span class="n">cs</span> <span class="o">|</span> <span class="n">cs</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">genCombi</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">ls</span><span class="p">]</span> <span class="o">++&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>                <span class="n">genCombi</span> <span class="n">k</span> <span class="n">ls</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>genCombi k s</code> generates the $k$-subsets of $s$.</p>
+
+<h3>Lower Bound Estimate</h3>
+
+<p>These are simple implementations of the formula above.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Lower Bound Estimates  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">(</span><span class="n">combi</span> <span class="n">k</span> <span class="n">i</span><span class="p">)</span> <span class="o">*&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>                        <span class="p">(</span><span class="n">combi</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">|</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="p">[</span><span class="n">l</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">lowerBound</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">combi</span> <span class="n">n</span> <span class="n">j</span><span class="p">)</span> <span class="o">/&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>                 <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>ticketCover</code> just implements the coverage estimate I defined above
+(the one that uses $k$); <code>lowerBound</code> computes the lower bound for a
+single win.</p>
+
+<h3>Coverage</h3>
+
+<p>As stated above, I define the cover between two subsets as the size of
+their intersection, and define sufficient coverage as the cover being
+larger than $l$.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Defining Coverage  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">cover</span> <span class="n">l1</span> <span class="n">l2</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">intersect</span> <span class="n">l1</span> <span class="n">l2</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="ow">=</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'><span class="nf">notCoveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">notCoveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'><span class="nf">notCoveredBatch</span> <span class="n">l</span> <span class="n">ts</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="n">notCovered</span> <span class="n">l</span><span class="p">)</span> <span class="n">js</span> <span class="n">ts</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>cover</code> implements the cover definition; <code>coveredP</code> and <code>notCoveredP</code>
+are predicates that check for (or against) sufficient coverage.</p>
+
+<p><code>notCovered</code> and <code>notCoveredBatch</code> computes the subsets that are not covered by a single ticket or a set
+of tickets, respectively; they are used to compute what is left to
+cover after selecting a ticket, and to check solutions.</p>
+
+<p>Finally <code>coverageScore</code> computes the size of of the covered subsets by
+a ticket. This function is used to compare potential tickets and
+select the one with the best (i.e. largest) coverage.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Checking the estimates  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">checkFormula</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">candidates</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">ticket</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">k</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">covered</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">ticket</span><span class="p">)</span> <span class="n">candidates</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kr">in</span> <span class="n">length</span> <span class="n">covered</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><code>checkFormula</code> computes the size of the coverage of a single ticket;
+it can be used to confirm the value of <code>ticketCover</code> above (and as far
+as I can tell from my checks, it does).</p>
+
+<h3>Solution Loop</h3>
+
+<p>The solution loop takes the parameters and a ticket candidate
+generating function; it then gets one ticket at a time, computes the
+$j$-subsets not covered yet, and repeat until the remaining
+$j$-subsets set becomes empty.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Solution Loop  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">solve</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">gc</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">jtuples</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">loop</span> <span class="n">jtuples</span>
+</span><span class='line'> <span class="kr">where</span> <span class="n">loop</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="n">loop</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>     <span class="n">t</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">gc</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span>
+</span><span class='line'>     <span class="n">ts</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">loop</span> <span class="o">$</span> <span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span>
+</span><span class='line'>     <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">ts</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The <code>solve</code> function expects the candidate generation function to be a
+monad; this is to make it possible to use random number generators.</p>
+
+<h3>Naive Ticket Selection</h3>
+
+<p>I do not really know how to navigate subsets, so I won't try to
+implement a backtracking solution as describe in the paper. Instead, I
+have what is really the simplest greedy algorithm: when a new ticket
+is needed, get the one that has the best coverage among all the
+possible tickets:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Naive Ticket Selection  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidate</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">tickets</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">k</span> <span class="n">numbers</span>
+</span><span class='line'>  <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kr">in</span> <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>So for each $j$-subsets set, generate all the $k$-subsets, and compare
+their coverage.</p>
+
+<p>Needless to say, this function does not return anything anytime soon
+for even slightly large values of $n$.</p>
+
+<h3>Randomised Ticket Selection</h3>
+
+<p>To improve the performance (well, to get a result in my lifetime), I
+am using what I understand to be the same approach as in the paper:
+generates $\beta$ tickets, compare their coverage of the remaining
+subsets, and keep the best one.</p>
+
+<p>The different with the paper, as mentioned before, is that my tickets
+are $k$-subsets rather than $j$-subsets themselves.</p>
+
+<p>I first need a function to generate a random combination. I'm using a
+method derived from Knuth (no reference as I don't have Volume 4 just yet).</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Sample Generation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">sample</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="n">k</span> <span class="n">ds</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">s</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">sample</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ds</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">p</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span> <span class="n">ds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">ds</span><span class="o">!!</span><span class="n">p</span>
+</span><span class='line'>  <span class="kr">if</span> <span class="n">not</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">elem</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">s</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">head</span> <span class="n">ds</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The generating function is very similar to the naive one</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Randomised Generating Function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidateRandom</span> <span class="n">beta</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>  <span class="n">tickets</span> <span class="ow">&lt;-</span> <span class="n">replicateM</span> <span class="n">beta</span> <span class="p">(</span><span class="n">sample</span> <span class="n">k</span> <span class="n">numbers</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The only difference is the <code>tickets</code> candidate set: the naive function
+generates them all; the randomised one selects $\beta$ randomly.</p>
+
+<h3>Compatibility with the paper version</h3>
+
+<p>By using <code>solve n j j l</code> instead of <code>solve n k j l</code>, my implementation
+should compute subset coverage the same way the paper's implementation
+does.</p>
+
+<h3>Testing and Results</h3>
+
+<p>I will not compare speed, as this would be meaningless. But I can check
+whether different values for ticket size can indeed help reduce the size of
+the covering set.</p>
+
+<p>Let's start with a very simple problem, where $n=5$, $k=3$, $j=3$ and
+$l=2$.</p>
+
+<p>I don't really need to generate the $j$-subsets, but if I do I can
+check the solution.</p>
+
+<p>The solution itself is computed by passing a ticket generating
+function; I could have used <code>getCandidate</code>, but here I'm passing
+<code>getCandidateRandom</code> with a $\beta=100$.</p>
+
+<p>The <code>notCovered</code> set is empty, so the solution is at least a covering one.</p>
+
+<p>The solution has two tickets, and the lower bound confirms it is
+pretty good.</p>
+
+<p><code>
+*Main&gt; let problem = genCombi 3 [1..5]
+*Main&gt; solution &lt;- solve 5 3 3 2 (getCandidateRandom 100)
+*Main&gt; solution
+[[3,4,5],[1,2,4]]
+*Main&gt; notCoveredBatch 2 solution problem
+[]
+*Main&gt; lowerBound 5 3 3 2
+1.4285714285714286
+</code></p>
+
+<p>Next test, with $n=15$, $k=5$, $j=5$ and $l=4$. The paper reports that
+they found a solution with $137$ tickets. As $k=j$, my algorithm
+cannot really beat that (and indeed finds a solution of the same size,
+if I try a couple of times):</p>
+
+<p><code>
+*Main&gt; let problem = genCombi 5 [1..15]
+*Main&gt; solution &lt;- solve 15 5 5 4 (getCandidateRandom 100)
+*Main&gt; length solution
+137
+*Main&gt; notCoveredBatch  4 solution problem
+[]
+*Main&gt; lowerBound 15 5 5 4
+58.88235294117647
+</code></p>
+
+<p>For the next test, I should have a better solution than the paper, as
+$k$ is larger than $j$: $n=15$, $k=6$, $j=5$, $l=4$.</p>
+
+<p>The paper has a lower bound of $58$, and a solution of size $138$, but my
+lower bound is $22$, and my solution has size $57$.</p>
+
+<p><code>
+*Main&gt; let problem = genCombi 5 [1..15]
+*Main&gt; solution &lt;- solve 15 6 5 4 (getCandidateRandom  100)
+*Main&gt; length solution
+57
+*Main&gt; notCoveredBatch 4 solution problem
+[]
+*Main&gt; lowerBound 15 6 5 4
+21.29787234042553
+</code></p>
+
+<p>When the difference between $k$ and $j$ becomes large, the solution
+improves significantly: with $n=18$, $k=10$, $j=7$, $l=6$, the paper
+has a lower bound of $408$, mine is $18$. The paper's solution has
+size $1080$, but mine is just $73$.</p>
+
+<p><code>
+*Main&gt; let problem = genCombi 7 [1..18]
+*Main&gt; solution &lt;- solve 18 10 7 6 (getCandidateRandom 100)
+*Main&gt; length solution
+73
+*Main&gt; notCoveredBatch 6 solution problem
+[]
+*Main&gt; lowerBound 18 10 7 6
+17.68
+</code></p>
+
+<h3>Wrapping up</h3>
+
+<p>Even if my approach is ultimately wrong, I can say I must be close to
+an actual solution. I could (and probably will, given time) try to
+rewrite my solution in C, and focus on performance.</p>
+
+<p>So I declare this problem conquered, I will resume my reading.</p>
+
+<h3>Complete code</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Psychic Modeling Implementation (psychic.hs)</span> <a href='/downloads/code/algo-design-manual/psychic.hs'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+</pre></td><td class='code'><pre><code class='hs'><span class='line'><span class="kr">import</span> <span class="nn">Data.List</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Ord</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Control.Monad</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">System.Random</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- helpers functions</span>
+</span><span class='line'><span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">product</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'><span class="nf">combi</span> <span class="n">n</span> <span class="n">c</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fact</span> <span class="n">n</span><span class="p">)</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="p">(</span><span class="n">fact</span> <span class="n">c</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">c</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">remainingNumbers</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">union</span> <span class="kt">[]</span> <span class="n">js</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- generate combinations</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="n">k</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">l</span><span class="kt">:</span><span class="n">cs</span> <span class="o">|</span> <span class="n">cs</span> <span class="ow">&lt;-</span> <span class="n">genCombi</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">ls</span><span class="p">]</span> <span class="o">++</span>
+</span><span class='line'>                    <span class="n">genCombi</span> <span class="n">k</span> <span class="n">ls</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- estimates for the solution size</span>
+</span><span class='line'><span class="nf">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">(</span><span class="n">combi</span> <span class="n">k</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span>
+</span><span class='line'>                            <span class="p">(</span><span class="n">combi</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">|</span> <span class="n">i</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="n">l</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
+</span><span class='line'><span class="nf">lowerBound</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">combi</span> <span class="n">n</span> <span class="n">j</span><span class="p">)</span> <span class="o">/</span>
+</span><span class='line'>                     <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- definition of coverage measure</span>
+</span><span class='line'><span class="nf">cover</span> <span class="n">l1</span> <span class="n">l2</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">intersect</span> <span class="n">l1</span> <span class="n">l2</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- predicate functions: check cover between ticket and j-subset</span>
+</span><span class='line'><span class="nf">coveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'><span class="nf">notCoveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- keep only j-subsets that are not covered by tickets</span>
+</span><span class='line'><span class="nf">notCoveredBatch</span> <span class="n">l</span> <span class="n">ts</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="n">notCovered</span> <span class="n">l</span><span class="p">)</span> <span class="n">js</span> <span class="n">ts</span>
+</span><span class='line'><span class="nf">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">notCoveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- length of j-subsets from js that are sufficiently covered by t</span>
+</span><span class='line'><span class="nf">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- check the coverage of a single k number ticket on the C_j^n</span>
+</span><span class='line'><span class="c1">-- potentials; can be compared against ticketCover estimate</span>
+</span><span class='line'><span class="nf">checkFormula</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">candidates</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">ticket</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">k</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">covered</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">ticket</span><span class="p">)</span> <span class="n">candidates</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">length</span> <span class="n">covered</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- compute solution given a candidate generator</span>
+</span><span class='line'><span class="nf">solve</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">gc</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">jtuples</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">loop</span> <span class="n">jtuples</span>
+</span><span class='line'> <span class="kr">where</span> <span class="n">loop</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'>       <span class="n">loop</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>         <span class="n">t</span> <span class="ow">&lt;-</span> <span class="n">gc</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">ts</span> <span class="ow">&lt;-</span> <span class="n">loop</span> <span class="o">$</span> <span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">ts</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- naive candidate generator</span>
+</span><span class='line'><span class="nf">getCandidate</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>      <span class="n">tickets</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">k</span> <span class="n">numbers</span>
+</span><span class='line'>      <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- Knuth method for generating combination</span>
+</span><span class='line'><span class="c1">-- adapted for arbitrary set</span>
+</span><span class='line'><span class="nf">sample</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="n">k</span> <span class="n">ds</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">sample</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ds</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">p</span> <span class="ow">&lt;-</span> <span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span> <span class="n">ds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">ds</span><span class="o">!!</span><span class="n">p</span>
+</span><span class='line'>  <span class="kr">if</span> <span class="n">not</span> <span class="p">(</span><span class="n">t</span> <span class="p">`</span><span class="n">elem</span><span class="p">`</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">head</span> <span class="n">ds</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- random candidate generator</span>
+</span><span class='line'><span class="nf">getCandidateRandom</span> <span class="n">beta</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>  <span class="n">tickets</span> <span class="ow">&lt;-</span> <span class="n">replicateM</span> <span class="n">beta</span> <span class="p">(</span><span class="n">sample</span> <span class="n">k</span> <span class="n">numbers</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Exam Problems]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/"/>
+    <updated>2012-02-05T12:27:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems</id>
+    <content type="html"><![CDATA[<p>It took me longer than I thought, and the outcome is slightly
+disappointing: I failed to solve two of the problems, and I solved the
+remaining ones way too slowly, so in a real exam conditions I probably
+would have solved just one or two...</p>
+
+<!-- more -->
+
+
+<h2>Exam Problems</h2>
+
+<h3>4 Pegs Tower of Hanoi</h3>
+
+<p>First, it helps to see that the indices of the recurrence are actually
+$S_n$:</p>
+
+<div markdown="0">
+\begin{align}
+W_{n(n+1)/2}&amp;= W_{S_n}\\\\
+W_{n(n-1)/2}&amp;= W_{S_{n-1}}
+\end{align}
+</div>
+
+
+<p>And of course, $S_n = S_{n-1} + n$.</p>
+
+<p>Setting $m=S_{n-1}$, we try to show:</p>
+
+<div markdown="0">
+\begin{align}
+W_{m+n} &amp; \le 2W_{m} + T_n\\\\
+\end{align}
+</div>
+
+
+<p>Now, obviously, if we have $m+n$ discs, we can move the $m$ top ones
+from $A$ to $C$ using $B$ and $D$ as transfer pegs, then move the
+bottom $n$ ones from $A$ to $B$ using $D$ as transfer peg, and finally
+move the top $m$ ones from $C$ to $B$.</p>
+
+<p>The first step takes $W_m$ moves, the second one is the classic Tower
+of Hanoi problem (as we can no longer use peg $C$, we only have three
+pegs), so it takes $T_n$ moves, and the last step takes $W_m$  moves again.</p>
+
+<p>This is only one possible solution; the optimal one must be equal or
+better, so we have</p>
+
+<div markdown="0">
+\begin{align}
+W_{m+n} &amp; \le 2W_m + T_n\\\\
+\end{align}
+</div>
+
+
+<p>This is true for any $m+n$ discs, and in particular for
+$S_n = S_{n-1} + n$ ones.</p>
+
+<h3>Specific Zigs</h3>
+
+<p>I could not solve this problem. I had found that the half-lines did
+intersect, but then I failed to show that their intersections were all
+distinct.</p>
+
+<p>Even with the solution from the book, it took me a while before I
+finally had a complete understanding.</p>
+
+<p>One problem I had was that lines in a graph are basic college level
+mathematics, but college was a long, long time ago. I pretty much had
+to work from first principles.</p>
+
+<p>Following the book in writing the positions as $(x_j, 0)$ and
+$(x_j - a_j, 1)$, I need to find $\alpha$ and $\beta$ such that
+$y=\alpha x + \beta$ is true for both points above.</p>
+
+<div markdown="0">
+\begin{align}
+0 &amp; = \alpha x_j + \beta \\\\
+\beta &amp; = - \alpha x_j\\\\
+1 &amp; = \alpha (x_j - a_j) - \alpha x_j\\\\
+&amp; = \alpha x_j - \alpha a_j - \alpha x_j\\\\
+&amp; = - \alpha a_j\\\\
+\alpha &amp; = \frac{-1}{a_j}\\\\
+y &amp; = \frac{x_j - x}{a_j}\\\\
+\end{align}
+</div>
+
+
+<p>With this given, I can try to find the intersection of lines from
+different zigs, $j$ and $k$:</p>
+
+<div markdown="0">
+\begin{align}
+\frac{x_j - x}{a_j} &amp; = \frac{x_k - x}{a_k}\\\\
+a_k (x_j - x) &amp; = a_j (x_k - x)\\\\
+a_k x_j - a_k x &amp; = a_j x_k - a_j x\\\\
+a_k x_j - a_j x_k &amp; = (a_k - a_j) x\\\\
+\end{align}
+</div>
+
+
+<p>Now, still following the book, I replace $x$ by $t$ with
+$x=x_j - t a_j$:</p>
+
+<div markdown="0">
+\begin{align}
+a_k x_j - a_j x_k &amp; = (a_k - a_j) (x_j - t a_j)\\\\
+a_k x_j - a_j x_k &amp; = a_k x_j - a_j x_j - t a_j a_k + t a_j^2\\\\
+- a_j x_k &amp; = t a_j^ 2 - a_j x_j - t a_j a_k\\\\
+- x_k &amp; = t a_j - x_j -t a_k&amp;&amp;\text{dividing by \(a_j\)}\\\\
+x_j - x_k &amp; = t (a_j - a_k)\\\\
+t &amp; = \frac{x_j - x_k}{a_j - a_k}\\\\
+\end{align}
+</div>
+
+
+<p>Somehow, I have a faint memory of such a result; I need to check a
+college math book.</p>
+
+<p>To complete, I need to show that $y = t$:</p>
+
+<div markdown="0">
+\begin{align}
+y &amp; = \frac{x_j - x}{a_j}\\\\
+&amp; = \frac{x_j - x_j + t a_j}{a_j}\\\\
+&amp; = \frac{t a_j}{a_j}\\\\
+&amp; = t\\\\
+\end{align}
+</div>
+
+
+<p>So the intersection of any two pair of half-lines from different zigs
+is $(x_j - t a_j, t)$. Note that $t$ has the same value whether
+$j \gt k$ or $k \gt j$. To simplify further computations, I set
+$j \gt k$.</p>
+
+<p>There are two remaining steps: show that $t$ is different for
+different pairs of $j$, $k$ (with $j \ne k$); and then show that the
+four intersections for a pair $j$, $k$ are also distinct.</p>
+
+<p>$a_j$ can be of two forms: $n^j$ and $n^j + n^{-n}$. So $a_j - a_k$
+can be one of</p>
+
+<div markdown="0">
+\begin{align}
+&amp; n^j - n^k\\\\
+&amp; n^j + n^{-n} - n^k\\\\
+&amp; n^j - n^k - n^{-n}\\\\
+n^j + n^{-n} - n^k - n^{-n} = &amp; n^j - n^k\\\\
+\end{align}
+</div>
+
+
+<p>So there are three different forms for $a_j - a_k$, which I will
+simply write $n^j - n^k + \epsilon$ where $|\epsilon| \lt 1$.</p>
+
+<div markdown="0">
+\begin{align}
+t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k + \epsilon}\\\\
+&amp; = \frac{(n^j - n^k)(n^j + n^k)}{n^j - n^k + \epsilon}\\\\
+\end{align}
+</div>
+
+
+<p>Let's show that $n^j+n^k - 1 \lt t \lt n^j+n^k + 1$: multiply the
+whole inequality by $n^j - n^k + \epsilon$. As</p>
+
+<div markdown"0">
+\begin{align}
+n^j - n^k &amp; \ge n\\\\
+&amp; \ge 2\\\\
+&amp; \gt |\epsilon|\\\\
+\end{align}
+</div>
+
+
+<p>so $n^j - n^k + \epsilon \gt 0$. Defining</p>
+
+<div markdown="0">
+\begin{align}
+N_{jk} &amp; = n^j + n^k\\\\
+N'_{jk} &amp; = n^j - n^k\\\\
+\end{align}
+</div>
+
+
+<p>the left and right inequalities become</p>
+
+<div markdown="0">
+\begin{align}
+(N_{jk} - 1) (N'_{jk} + \epsilon) &amp; = N_{jk}N'_{jk} - N'_{jk} + \epsilon N_{jk} - \epsilon\\\\
+(N_{jk} + 1) (N'_{jk} + \epsilon) &amp; = N_{jk}N'_{jk} + N'_{jk} + \epsilon N_{jk} + \epsilon\\\\
+\end{align}
+</div>
+
+
+<p>Subtracting $N_{jk}N'_{jk} = (n^j-n^k)(n^j+n^k)$ from the original inequality:</p>
+
+<div markdown="0">
+\begin{align}
+-N'_{jk}+\epsilon N_jk - \epsilon \lt 0 \lt N'_{jk} + \epsilon N_{jk} + \epsilon\\\\
+\end{align}
+</div>
+
+
+<p>I need to prove the following inequality</p>
+
+<div markdown"0">
+\begin{align}
+(n^j - n^k) &amp; \gt |\epsilon| + |\epsilon| (n^j - n^k)\\\\
+\end{align}
+</div>
+
+
+<p>We already know $|\epsilon| \lt 1$, so looking at the second term (and
+assuming $\epsilon \ne 0$, as this case is trivial)</p>
+
+<div markdown"0">
+\begin{align}
+|\epsilon| (n^j-n^k) &amp; = n^{-n} (n^j - n^k)\\\\
+&amp; = n^{j-n} - n^{k-n}\\\\
+&amp;\lt 1\\\\
+\end{align}
+</div>
+
+
+<p>and we have</p>
+
+<div markdown"0">
+\begin{align}
+n^j - n^k &amp; \ge 2
+&amp; \gt |\epsilon| + |\epsilon (n^j - n^k)|\\\\
+\end{align}
+</div>
+
+
+<p>So the inequalities are established. $N_{jk}$ can be seen as a number
+in based $n$ where the digits are all zeroes except the $j$ and $k$ ones,
+$N_{jk} = N_{j'k'} \implies j=j', k=k'$, and therefore $t$ uniquely
+defines $j$ and $k$ or, two pairs of zigs must have different $t$.</p>
+
+<p>I still need to show that for a given pair, when $t$ is the same, the
+intersections are different. There are three different values of
+$t$, so two intersections points have the same height. This happens
+for</p>
+
+<div markdown="0">
+\begin{align}
+t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k}\\\\
+\end{align}
+</div>
+
+
+<p>which happens when $a_j = n^j$, $a_k = n^k$ and $a_j = n^j + n^{-n}$,
+$a_k = n^k + n^{-n}$. But the $x = x_j - t a_j$ value for
+intersections is different: $t n^j$ and $t (n^j + n^{-n})$, so there
+are indeed four distinct intersection points.</p>
+
+<h3>30 degrees Zigs</h3>
+
+<p>I could not solve this problem. Once again, my lack of intuition with
+geometry was to blame.</p>
+
+<p>But if we have two zigs with half-lines angles $\phi$, $\phi + 30^{\circ}$
+and $\theta$, $\theta + 30^{\circ}$, then for any two pairs of
+half-lines from the two zigs to intersect, their angles must be
+between $0^{\circ}$ and $180^{\circ}$. Taken together, these
+constraints give $0^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.</p>
+
+<p>This means there cannot be more than $5$ such pairs (and to be honest,
+I would have said 4, but the book says it's indeed 5).</p>
+
+<h3>Recurrence Equations</h3>
+
+<h3>Good and Bad Persons in Josephus Problem</h3>
+
+<p>It took me a while, as I was trying to find a recurrence equation of
+some sort which would help me with this problem and the bonus one
+(where Josephus' position is fixed but he can pick $m$). Eventually I
+found one, which did not help me with the bonus problem, but led me to
+a solution for this problem.</p>
+
+<p>Obviously, if we have $k$ persons and want to remove the last one in
+the first round, we can choose $m=k$ and that will work. Actually, any
+multiple $m=ak$ works as well.</p>
+
+<p>This shows that at each round, if we have $k$ persons left, and we
+start counting on the first one, when $m=ak$ we will remove the $k^{th}$
+person then start counting from the first one again.</p>
+
+<p>Back to the original problem: there are $2n$ persons, and we want to
+get rid of the $n+1, \cdots, 2n$ first. If we take
+$m=lcm(n+1,\cdots, 2n)$, then for the first $n$ rounds the last (bad)
+person will be remove, leaving only the good ones at the end.</p>
+
+<p>When first solving the problem, I picked $m=\prod_{i=1}^n (n+i)$,
+which has the same property as the least common multiple, but is
+larger. Perhaps a smaller number is better for the nerves of the
+participants.</p>
+
+<h3>Bonus Problems</h3>
+
+<p>I tried to solve the bonus questions, but after repeatedly failing, I
+had a glimpse at the solutions: they obviously require either
+knowledge of later chapters, or other concepts I know nothing about,
+so I will get back to these bonus problems after I finish the book.</p>
+
+<p>I am now working through Chapter 2. It is a much larger chapter than
+the first, so it will take me some time.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks CouchDB Day 3]]></title>
@@ -1125,1023 +2110,6 @@ It was twenty years ago todaySgt. Pepper taught the band to play...
 <p>(the line breaks have been lost...)</p>
 
 <p>Onward to Day 2!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks Redis Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/"/>
-    <updated>2012-01-21T13:30:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2</id>
-    <content type="html"><![CDATA[<p>Performance tuning with Redis can be achieved in different ways, as we
-see today. First there are basic changes in the client side (such as
-pipelines), then configurations options (frequency of saves, ...), and
-finally distribution of load.</p>
-
-<!-- more -->
-
-
-<h3>Pipeline</h3>
-
-<p>Redis low level protocol supports the notion of pipelines: sending
-commands in batch, and collect all the results at the end, instead of
-waiting for results between each command. This should save a round
-trip delay for each command, so there can be huge performance boosts
-for specific usages, as the informal benchmarks below show.</p>
-
-<h3>Distributed Redis</h3>
-
-<p>Redis servers can be distributed for performance or memory concern,
-but much of the work falls on the client side.</p>
-
-<h4>Slaves</h4>
-
-<p>Slaves in Redis are just the opposite of
-<a href="http://www.mongodb.org/">MongoDB</a>'s. Whereas MongoDB's slaves are
-meant to be written to, so that updates are automatically pushed to
-the master, Redis slaves are, or should be, read-only. Updates are
-only propagated from master to slaves.</p>
-
-<p>There is no integrated support for failover; it has to be implemented
-in client code.</p>
-
-<p>So slaves are mainly a mechanism to distribute reads; combined with
-monitoring client code, they can also be used to data replication and
-failover.</p>
-
-<p>Note that each slave needs as much memory as the master, as it
-contains the same data.</p>
-
-<h4>Sharding</h4>
-
-<p>By itself, Redis does not support sharding, and relies on the client
-library to spread accesses over several instances. There is a
-ongoing development to have real Redis Clusters, but for the time
-being it has to be simulated.</p>
-
-<p>One issue not mentioned in the book is that sharding breaks
-transactions and pipelines: there is no guarantees that the relevant
-keys are all in the same instance, so the Redis Ruby client, for
-instance, will raise an exception when invoking <code>MULTI</code>.</p>
-
-<p>The Java client, Jedis, has a mechanism to "tag" a key such that keys
-with the same tag are guaranteed to be on the Redis server. This makes
-the distribution of keys predictable, and allows the use of
-transactions (provided all the involved keys have the same tag).</p>
-
-<p>This shows that not only this is a client side feature, but the actual
-extent of the feature may vary widely. And of course, there is no
-reason to think that different clients will shard keys the same way.</p>
-
-<p>Properly setup, sharding will distribute the data over each
-node, reducing the memory load of each node.</p>
-
-<h2>Exercises</h2>
-
-<h3>Performance tests</h3>
-
-<p>I first tried to rewrite the code in Java, to measure the cost of Ruby's
-convenience. The code in Java is clumsier than in Ruby, but it ran
-a bit faster (105 seconds instead of 155 seconds for the Ruby version
-using <code>hiredis</code>).</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Simple ISBN Loader (ISBNLoader.java)</span> <a href='/downloads/code/7d7w/redis/isbn/ISBNLoader.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ISBNLoader</span> <span class="o">{</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">REDIS_HOST</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">;</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">REDIS_PORT</span> <span class="o">=</span> <span class="mi">6379</span><span class="o">;</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5000</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>		<span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="n">REDIS_HOST</span><span class="o">,</span> <span class="n">REDIS_PORT</span><span class="o">,</span> <span class="n">TIMEOUT</span><span class="o">);</span>
-</span><span class='line'>		<span class="n">jedis</span><span class="o">.</span><span class="na">flushAll</span><span class="o">();</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">String</span> <span class="n">line</span><span class="o">;</span>
-</span><span class='line'>		<span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>		
-</span><span class='line'>		
-</span><span class='line'>		<span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>			<span class="n">count</span><span class="o">++;</span>
-</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
-</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
-</span><span class='line'>			<span class="n">String</span><span class="o">[]</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
-</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">tokens</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">)</span>
-</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
-</span><span class='line'>			<span class="n">String</span> <span class="n">isbn</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
-</span><span class='line'>			<span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
-</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">isbn</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">||</span> <span class="n">title</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
-</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
-</span><span class='line'>			<span class="n">jedis</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">isbn</span><span class="o">,</span> <span class="n">title</span><span class="o">);</span>
-</span><span class='line'>		<span class="o">}</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">jedis</span><span class="o">.</span><span class="na">disconnect</span><span class="o">();</span>
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Using pipelines, the difference was 11 seconds against 26 seconds
-(again, the Ruby version is using <code>hiredis</code>).</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Pipelined ISBN Loader (ISBNLoader.java)</span> <a href='/downloads/code/7d7w/redis/isbn-pipeline/ISBNLoader.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.LinkedList</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Pipeline</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ISBNLoader</span> <span class="o">{</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">REDIS_HOST</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">;</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">REDIS_PORT</span> <span class="o">=</span> <span class="mi">6379</span><span class="o">;</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5000</span><span class="o">;</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
-</span><span class='line'>	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Jedis</span> <span class="n">client</span><span class="o">;</span>
-</span><span class='line'>	
-</span><span class='line'>	<span class="kd">protected</span> <span class="nf">ISBNLoader</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>		<span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="n">REDIS_HOST</span><span class="o">,</span> <span class="n">REDIS_PORT</span><span class="o">,</span> <span class="n">TIMEOUT</span><span class="o">);</span>
-</span><span class='line'>		<span class="n">client</span><span class="o">.</span><span class="na">flushAll</span><span class="o">();</span>
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'>	
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>		<span class="k">new</span> <span class="nf">ISBNLoader</span><span class="o">().</span><span class="na">load</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'>	
-</span><span class='line'>	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">load</span><span class="o">(</span><span class="n">String</span> <span class="n">fileName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>		<span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">fileName</span><span class="o">));</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">String</span> <span class="n">line</span><span class="o">;</span>
-</span><span class='line'>		<span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">List</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;</span> <span class="n">batch</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;();</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>			<span class="n">count</span><span class="o">++;</span>
-</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
-</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
-</span><span class='line'>			<span class="n">String</span><span class="o">[]</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
-</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">tokens</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">)</span>
-</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
-</span><span class='line'>			<span class="n">String</span> <span class="n">isbn</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
-</span><span class='line'>			<span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
-</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">isbn</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">||</span> <span class="n">title</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
-</span><span class='line'>				<span class="k">continue</span><span class="o">;</span>
-</span><span class='line'>			<span class="n">batch</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Pair</span><span class="o">(</span><span class="n">isbn</span><span class="o">,</span> <span class="n">title</span><span class="o">));</span>
-</span><span class='line'>			
-</span><span class='line'>			<span class="k">if</span> <span class="o">(</span><span class="n">batch</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="n">BATCH_SIZE</span><span class="o">)</span>
-</span><span class='line'>				<span class="n">flush</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
-</span><span class='line'>		<span class="o">}</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">flush</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">client</span><span class="o">.</span><span class="na">disconnect</span><span class="o">();</span>		
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'>	
-</span><span class='line'>	<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">flush</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Pair</span><span class="o">&gt;</span> <span class="n">batch</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>		<span class="n">Pipeline</span> <span class="n">pipe</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">pipelined</span><span class="o">();</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="k">for</span> <span class="o">(</span><span class="n">Pair</span> <span class="n">p</span> <span class="o">:</span> <span class="n">batch</span><span class="o">)</span>
-</span><span class='line'>			<span class="n">pipe</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">key</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
-</span><span class='line'>		<span class="n">pipe</span><span class="o">.</span><span class="na">sync</span><span class="o">();</span>
-</span><span class='line'>		<span class="n">batch</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'>	
-</span><span class='line'>	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Pair</span> <span class="o">{</span>
-</span><span class='line'>		<span class="n">String</span> <span class="n">key</span><span class="o">;</span>
-</span><span class='line'>		<span class="n">String</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">Pair</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>			<span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
-</span><span class='line'>			<span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>		<span class="o">}</span>
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Disabling snapshots and append only file did not improve the time
-significantly compared to the default (snapshots but no append only file).</p>
-
-<p>Enabling the append only file and setting it to <code>always</code> was almost 3
-times as slow for the pipelined Java version (27 seconds). For the
-original Ruby version (with <code>hiredis</code>), it was even worse (1101
-seconds). This means the overhead of writing to file can be mitigated
-with pipelines.</p>
-
-<p>To recap: disabling snapshots did not improve performance measurably,
-but enabling append only file <code>always</code> degrades the performance
-significantly; using pipelines makes it a bit better, but it is still
-much slower.</p>
-
-<h3>URL Shortening Service</h3>
-
-<p>The exact setup to implement is not described, so what I did is to
-distribute data between two shards of one master and two slaves.</p>
-
-<p>There is no direct support for such a layout in Jedis (nor, as far as I
-can tell, in the Ruby library), so I had to write some of it myself.</p>
-
-<p>As always with Redis, the writes are restricted to the masters, and
-the reads are distributed over the slaves (and the masters as well, if
-needed).</p>
-
-<h4>Distribution over slaves</h4>
-
-<p>Jedis does not support slaves directly. What the documentation
-proposes is to have a dedicated client to the master to write on, and
-a sharded pool to the slaves. However, such an approach would be
-difficult, as I need to shard the writes to the masters as well (I
-would have to use a different sharding algorithm, and manage the
-routing of commands through the tree of Redis instances).</p>
-
-<p>Fortunately, Redis user Ingvar Bogdahn had posted an implementation of
-a
-<a href="http://groups.google.com/group/jedis_redis/msg/c8c76371cf543e36">Round Robin pool of slaves</a>. This
-implementation manages a connection pool to a master, and another
-connection pool to a set of slaves. The commands are properly
-distributed: all the write commands are sent to the master, and the
-reads commands are distributed over the slaves.</p>
-
-<p>I had to fix the code in some places: a command implementation was
-missing, another was incorrect, and finally the password was never
-sent to the master, causing authentication errors. But the bulk of the
-code is Ingvar's, and I was glad to use it.</p>
-
-<p>The classes are</p>
-
-<ul>
-<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/UniJedis.java"><code>UniJedis</code></a>: provides pools for both master and a set of slaves, and dispatches commands to the correct pool.</li>
-<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/RoundRobinPool.java"><code>RoundRobinPool</code></a>: implements a pool with Round Robin access</li>
-<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ChainableTransaction.java"><code>ChainableTransaction</code></a>: (not used in this project) provides a fluent interface for Redis transactions.</li>
-<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/DBKeys.java"><code>DBKeys</code></a>: (not used in this project) abstracts database and keys.</li>
-</ul>
-
-
-<h4>Sharding</h4>
-
-<p>Sharding is directly supported by Jedis, but as organized the code is
-restricted to a set of clients to specific instances.</p>
-
-<p>There are basic, generic classes
-(<a href="https://github.com/xetorthio/jedis/blob/master/src/main/java/redis/clients/util/Sharded.java"><code>Sharded</code></a>,
-<a href="https://github.com/xetorthio/jedis/blob/master/src/main/java/redis/clients/util/ShardInfo.java"><code>ShardInfo</code></a>,
-...) that can be used to implement sharding of arbitrary clients (such
-as the Round Robin pool above), but it requires a lot of tedious code
-to map each command to a method on the right shard. Worse, such code
-would be the same for every kind of shard.</p>
-
-<p>So I first wrote generic classes that implement sharding in terms of
-generic Jedis client; the actual implementation is then much simpler
-(just the constructors, and the few commands that cannot be sharded,
-such as <code>disconnect</code> or <code>flushAll</code>).</p>
-
-<ul>
-<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/BinaryShardedGJedis.java"><code>BinaryShardedGJedis</code></a>: first level of Jedis commands implementation (binary commands)</li>
-<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ShardedGJedis.java"><code>ShardedGJedis</code></a>: second level of Jedis commands implementation (<code>String</code> based commands)</li>
-<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/UniJedisShardInfo.java"><code>UniJedisShardInfo</code></a>: descriptor class to use with <code>Sharded</code></li>
-<li><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/redis/clients/jedis/ShardedUniJedis.java"><code>ShardedUniJedis</code></a>: actual implementation of sharded <code>UniJedis</code>. As promised, the class has hardly any code.</li>
-</ul>
-
-
-<h4>Service</h4>
-
-<p>The code for the service itself is now fairly
-small. <a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/client/JedisClient.java"><code>JedisClient</code></a>
-is the class that builds the tree of sharded master/slaves pools. It
-is loaded and initialized as a <a href="http://www.springsource.org/">Spring</a>
-bean. The web services are <a href="http://jsr311.java.net/">JSR 311</a>
-services, running over <a href="http://jersey.java.net/">Jersey</a>, and loaded
-and initialized by Spring.</p>
-
-<p><a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/web/Admin.java"><code>Admin</code></a>
-let the user defines a keyword for a specific URL, and
-<a href="https://github.com/fdumontmd/url-shortener/blob/master/src/main/java/jp/wakatta/web/Client.java"><code>Client</code></a>
-extracts a keyword from the request URL, retrieves the URL for the
-this keyword, and returns a request to redirect to this URL.</p>
-
-<p>Once deployed (on <a href="http://tomcat.apache.org/">Apache Tomcat</a>), it can be used in a browser or on the command line:</p>
-
-<p><code>
-$ curl -X POST http://localhost:8080/url-shortener/u/admin --data "url=http://slashdot.org&amp;shorter=slash"
-Key[slash] mapped to URL[http://slashdot.org]
-</code></p>
-
-<p>and for clients:</p>
-
-<p><code>
-$ curl -I http://localhost:8080/url-shortener/u/s/slash
-HTTP/1.1 303 See Other
-Server: Apache-Coyote/1.1
-Location: http://slashdot.org
-Content-Length: 0
-Date: Mon, 23 Jan 2012 06:13:29 GMT
-</code></p>
-
-<p>The code for the whole project can be found on <a href="https://github.com/fdumontmd/url-shortener">Github</a>.</p>
-
-<p>And this completes Day 2.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks Redis Day 1]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/"/>
-    <updated>2012-01-20T16:52:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1</id>
-    <content type="html"><![CDATA[<p>After a long winter hiatus, the elves at
-<a href="http://pragprog.com/">Pragmatic Bookshelf</a> delivered a late but
-welcome present: the third beta of
-<a href="http://pragprog.com/book/rwdata/seven-databases-in-seven-weeks">Seven Databases in Seven Weeks</a>. The
-book is not complete yet (the chapter on
-<a href="http://couchdb.apache.org/">CouchDB</a> is still missing), but it now
-covers <a href="http://redis.io/">Redis</a>.</p>
-
-<p>Redis is basically a key-value store, like
-<a href="http://wiki.basho.com/">Riak</a>, but while Riak is agnostic about the
-values, Redis values can be data structures (lists, queues,
-dictonaries, ..., or even messaging queues). This allows Redis to act
-as a synchronized shared memory for cooperating applications.</p>
-
-<!-- more -->
-
-
-<h3>Complex Datatypes</h3>
-
-<p>Redis values can have structure, and specific commands manipulate
-these values in appropriate ways. Redis supports
-<a href="http://redis.io/commands/#string">strings</a>, which can also behave
-as numbers if they have the right format,
-<a href="http://redis.io/commands#list">lists</a> which can also be seen as
-queues, and support blocking reads,
-<a href="http://redis.io/commands#set">sets</a>,
-<a href="http://redis.io/commands#hash">hashes</a> (that is, dictionaries), and
-<a href="http://redis.io/commands#sorted_set">sorted sets</a>.</p>
-
-<h3>Transactions</h3>
-
-<p>All Redis commands are atomic, and it is possible to group a sequence
-of commands into a transaction for an all or nothing execution with
-the command <a href="http://redis.io/commands/multi"><code>MULTI</code></a>. But a
-Redis transaction is not similar to a transaction in relational
-databases: it just queues all the commands and executes them when it
-receives the <a href="http://redis.io/commands/exec"><code>EXEC</code></a> command. This
-means it is not possible to read any data while in a transaction.</p>
-
-<h3>Expiry</h3>
-
-<p>Perhaps nothing labels Redis as a datastore for transient data more
-than expiry: keys can be marked for expiration (either relative from
-the current time, or absolute).</p>
-
-<h3>Messaging</h3>
-
-<p>Redis also supports messaging but this is a topic for
-Day 2.</p>
-
-<p>This
-<a href="http://blog.mjrusso.com/2010/10/17/redis-from-the-ground-up.html">post</a>
-has a more detailed but still balanced coverage of Redis.</p>
-
-<h2>Exercises</h2>
-
-<h3>Redis command documentation</h3>
-
-<p>The <a href="http://redis.io/commands">documentation</a> is well done and easy to
-navigate. Of all the databases I have seen so far, this is probably
-the base
-(<a href="http://www.postgresql.org/docs/current/static/index.html">PostgreSQL</a>
-being a strong second).</p>
-
-<h3>Create a Redis client</h3>
-
-<p>I'm using Java and the <a href="https://github.com/xetorthio/jedis">Jedis</a>
-client library.</p>
-
-<p>The code is simple enough:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>simple redis client (RedisFirst.java)</span> <a href='/downloads/code/7d7w/redis/first/RedisFirst.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Transaction</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisFirst</span> <span class="o">{</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>		<span class="c1">// connect</span>
-</span><span class='line'>		<span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">);</span>
-</span><span class='line'>		<span class="c1">// set the key first to 5</span>
-</span><span class='line'>		<span class="n">jedis</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="s">&quot;first&quot;</span><span class="o">,</span> <span class="s">&quot;5&quot;</span><span class="o">);</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="c1">// start a transaction</span>
-</span><span class='line'>		<span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">multi</span><span class="o">();</span>
-</span><span class='line'>		<span class="c1">// increase by 4</span>
-</span><span class='line'>		<span class="n">trans</span><span class="o">.</span><span class="na">incrBy</span><span class="o">(</span><span class="s">&quot;first&quot;</span><span class="o">,</span> <span class="mi">4</span><span class="o">);</span>
-</span><span class='line'>		<span class="n">trans</span><span class="o">.</span><span class="na">exec</span><span class="o">();</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="c1">// retrieve the value</span>
-</span><span class='line'>		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Value is now: &quot;</span> <span class="o">+</span> <span class="n">jedis</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;first&quot;</span><span class="o">));</span>
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The <code>pom.xml</code> file:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/redis/first/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'>	<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;artifactId&gt;</span>redis-first<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="nt">&lt;properties&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/properties&gt;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="nt">&lt;build&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/build&gt;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>redis.clients<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>jedis<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/dependencies&gt;</span>
-</span><span class='line'><span class="nt">&lt;/project&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h3>Create a pair of Redis clients</h3>
-
-<p>This one is simple as well, but having a reader and a writer allowed
-me to try one writer and two readers.</p>
-
-<p>First the writer program:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Redis Push (RedisPush.java)</span> <a href='/downloads/code/7d7w/redis/push/RedisPush.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisPush</span> <span class="o">{</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>		<span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">);</span>
-</span><span class='line'>		<span class="n">jedis</span><span class="o">.</span><span class="na">lpush</span><span class="o">(</span><span class="s">&quot;msg:queue&quot;</span><span class="o">,</span> <span class="s">&quot;A new message&quot;</span><span class="o">);</span>
-</span><span class='line'>		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Message inserted&quot;</span><span class="o">);</span>
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The <code>poml.xml</code> is a bit more complex, as it creates a self-contained
-jar with <code>MANIFEST.MF</code> (so I can run it from the command line easily):</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/redis/push/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'>	<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;artifactId&gt;</span>redis-push<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="nt">&lt;properties&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/properties&gt;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="nt">&lt;build&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.2.2<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;descriptorRefs&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;descriptorRef&gt;</span>jar-with-dependencies<span class="nt">&lt;/descriptorRef&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;/descriptorRefs&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;archive&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;manifest&gt;</span>
-</span><span class='line'>							<span class="nt">&lt;mainClass&gt;</span>jp.wakatta.RedisPush<span class="nt">&lt;/mainClass&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;/manifest&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;/archive&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;id&gt;</span>make-assembly<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;goals&gt;</span>
-</span><span class='line'>							<span class="nt">&lt;goal&gt;</span>attached<span class="nt">&lt;/goal&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;/goals&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/build&gt;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>redis.clients<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>jedis<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/dependencies&gt;</span>
-</span><span class='line'><span class="nt">&lt;/project&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The reader program:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Redis Pop (RedisPop.java)</span> <a href='/downloads/code/7d7w/redis/pop/RedisPop.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">jp</span><span class="o">.</span><span class="na">wakatta</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisPop</span> <span class="o">{</span>
-</span><span class='line'>	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span><span class="na">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>		<span class="kt">boolean</span> <span class="n">again</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>		<span class="k">while</span> <span class="o">(</span><span class="n">again</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Waiting for messages&quot;</span><span class="o">);</span>
-</span><span class='line'>			<span class="n">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jedis</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">);</span>
-</span><span class='line'>			<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">msgs</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">blpop</span><span class="o">(</span><span class="mi">300</span><span class="o">,</span> <span class="s">&quot;msg:queue&quot;</span><span class="o">);</span>
-</span><span class='line'>			
-</span><span class='line'>			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Messages received:&quot;</span><span class="o">);</span>
-</span><span class='line'>			
-</span><span class='line'>			<span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="nl">msg:</span> <span class="n">msgs</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>				<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-</span><span class='line'>				<span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;finish&quot;</span><span class="o">))</span>
-</span><span class='line'>					<span class="n">again</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-</span><span class='line'>			<span class="o">}</span>
-</span><span class='line'>		<span class="o">}</span>
-</span><span class='line'>		
-</span><span class='line'>		<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;No more messages&quot;</span><span class="o">);</span>
-</span><span class='line'>	<span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>with its <code>pom.xml</code>:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/redis/pop/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-</span><span class='line'>	<span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;groupId&gt;</span>jp.wakatta<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;artifactId&gt;</span>redis-pop<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="nt">&lt;properties&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/properties&gt;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="nt">&lt;build&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;version&gt;</span>2.2.2<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;descriptorRefs&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;descriptorRef&gt;</span>jar-with-dependencies<span class="nt">&lt;/descriptorRef&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;/descriptorRefs&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;archive&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;manifest&gt;</span>
-</span><span class='line'>							<span class="nt">&lt;mainClass&gt;</span>jp.wakatta.RedisPop<span class="nt">&lt;/mainClass&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;/manifest&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;/archive&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;id&gt;</span>make-assembly<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;goals&gt;</span>
-</span><span class='line'>							<span class="nt">&lt;goal&gt;</span>attached<span class="nt">&lt;/goal&gt;</span>
-</span><span class='line'>						<span class="nt">&lt;/goals&gt;</span>
-</span><span class='line'>					<span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>				<span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/build&gt;</span>
-</span><span class='line'>
-</span><span class='line'>	<span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;groupId&gt;</span>redis.clients<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;artifactId&gt;</span>jedis<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>			<span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>		<span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>	<span class="nt">&lt;/dependencies&gt;</span>
-</span><span class='line'><span class="nt">&lt;/project&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>The <code>blpop</code> command can block on several lists, so when it receives
-something it is always at least a pair: the list key, and the value.</p>
-
-<p>Now, I can open three terminals to test the code: two with readers:</p>
-
-<p><code>
-java -jar target/redis-pop-0.0.1-SNAPSHOT-jar-with-dependencies.jar
-</code></p>
-
-<p>and one with the writer (which must be started last):</p>
-
-<p><code>
-java -jar target/redis-push-0.0.1-SNAPSHOT-jar-with-dependencies.jar
-</code></p>
-
-<p>The writer will simply state</p>
-
-<p><code>
-Message inserted
-</code></p>
-
-<p>One of the readers will get the message:
-<code>
-Waiting for messages
-Messages received:
-msg:queue
-A new message
-Waiting for messages
-</code></p>
-
-<p>but the other one will just keep waiting:
-<code>
-Waiting for messages
-</code></p>
-
-<p>So Redis blocking queues can only server one blocking reader at a time
-(as it should).</p>
-
-<p>The reader programs can be stopped with <code>Ctrl-c</code>, or by pushing
-<code>finish</code> into <code>msg:queue</code> from a Redis client (twice, once for each
-client):</p>
-
-<p><code>
-redis 127.0.0.1:6379&gt; lpush "msg:queue" "finish"
-(integer) 1
-redis 127.0.0.1:6379&gt; lpush "msg:queue" "finish"
-(integer) 1
-</code></p>
-
-<p>And that's all for today.</p>
 ]]></content>
   </entry>
   

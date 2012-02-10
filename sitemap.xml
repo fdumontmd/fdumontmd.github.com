@@ -331,12 +331,22 @@
         <lastmod>2012-02-02T13:22:02+09:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/
+        </loc>
+        <lastmod>2012-02-05T22:08:08+09:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/</loc>
+        <lastmod>2012-02-10T20:01:44+09:00</lastmod>
+    </url>
+    <url>
         <loc>http://blog.wakatta.jp/about/</loc>
         <lastmod>2011-11-20T12:35:41+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2012-02-02T13:22:02+09:00</lastmod>
+        <lastmod>2012-02-10T20:01:44+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
@@ -348,6 +358,6 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2012-02-02T13:22:02+09:00</lastmod>
+        <lastmod>2012-02-10T20:01:44+09:00</lastmod>
     </url>
 </urlset>

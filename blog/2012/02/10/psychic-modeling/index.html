@@ -1,0 +1,964 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Psychic Modeling - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="In the Algorithm Design Manual, Stephen
+Skiena entertains, edifies and educates his readers with so called
+&#8220;War Stories&#8221;, that is, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>  
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Psychic Modeling</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-10T12:26:00+09:00" pubdate data-updated="true">Feb 10<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In the <a href="http://www.algorist.com/">Algorithm Design Manual</a>, Stephen
+Skiena entertains, edifies and educates his readers with so called
+&#8220;War Stories&#8221;, that is, interesting implementation challenges from his
+own experience.</p>
+
+<p>The first War Story is
+<a href="http://www8.cs.umu.se/kurser/TDBAfl/VT06/algorithms/BOOK/BOOK/NODE19.HTM">Psychic Modeling</a>,
+an attempt to exploit &#8220;precognition&#8221; to improve the chances of winning
+the lottery.</p>
+
+<!-- more -->
+
+
+<p>This war story is also the subject of one of the first implementation
+projects. In chapter 1.  A few years ago, when I bought the book, I
+had easily solved the previous exercises, but then I reached this
+implementation project, and I got stuck. I could not even get a
+high level sketch of what a solution would look like.</p>
+
+<p>Certainly, if I was unable to solve an exercise of the first chapter
+of this book, it was hopelessly beyond my reach&#8230;</p>
+
+<p>Still, I had the ambition of one day resuming my reading, and I would
+from time to time give this problem another attempt.</p>
+
+<p>Recently, it feels like all the pieces finally fell into places, and
+after a few hours of coding I had an (naive) implementation. Yet I
+still have doubts, as the only reference I have to compare my solution
+with, Skiena&#8217;s own paper
+(<a href="http://www.cs.sunysb.edu/~skiena/papers/lotto.doc">Randomized Algorithms for Identifying Minimal Lottery Ticket Sets</a>),
+apparently is worse (in terms of necessary tickets) than my solution&#8230;</p>
+
+<p>Note on this paper: unfortunately it is in Word format, and I found
+that some characters are not properly displayed on non MS Word text
+processing tools (such as Open Office). So you might have to open it
+with MS Word or MS Word Viewer.</p>
+
+<h3>The problem</h3>
+
+<p>I will use the notation from the book rather than the paper. The
+problem is defined as this:</p>
+
+<ul>
+<li>a lottery ticket has $k$ numbers</li>
+<li>a win requires $j$ numbers from the winning ticket</li>
+<li>the psychic visualises $n$ numbers</li>
+<li>of which $j$ are &#8220;guaranteed&#8221; to be on the winning ticket.</li>
+</ul>
+
+
+<h3>Defining &#8220;sufficient coverage&#8221;</h3>
+
+<p>A first difference between the paper&#8217;s approach and mine is that I&#8217;m
+using the notion of coverage size rather than distance: I measure how
+similar two subsets are by defining their cover as the size of their
+intersection; in their paper the authors use a notion of distance defined as
+the size of the difference of the two subsets (perhaps to help with
+the design of heuristics in the backtracking version of their algorithm).</p>
+
+<p>Now, clearly the two approaches are equivalent; it is less clear that
+the formulas derived from either are indeed the same.</p>
+
+<p>For a given $j$-subset, how many $j$-subsets have a coverage of at
+least $l$ with the first one? The covered $j$-subsets must have at
+least $l$ numbers (between $l$ and $j$, to be precise) in common with
+the first one, and the rest taken from the $n-j$ other numbers. This gives</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{l \le i \le j} \binom{j}{i} \binom{n-j}{j-i}
+\end{align}
+</div>
+
+
+<p>For a given $j$-subset, how many $j$-subsets are within $j-l$ distance
+of the first one? We can choose at most $j-l$ numbers out of the $n-j$
+rest; and complete with numbers from the first subset. This gives</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{j-i} = \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{i}
+\end{align}
+</div>
+
+
+<p>It took me a while to confirm it, but the formulas are indeed the
+same:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{i} &amp; = \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{j-i}&#92;&#92;
+&amp; = \sum_{l-j \le i \le 0} \binom{n-j}{-i} \binom{j}{j+i}&amp;&amp;\text{changing the sign of \(i\)}&#92;&#92;
+&amp; = \sum_{l \le j+i \le j} \binom{n-j}{-i} \binom{j}{j+i}&#92;&#92;
+&amp; = \sum_{l \le i \le j} \binom{n-j}{j-i} \binom{j}{i}&amp;&amp;\text{replacing \(j+i\) by \(i\)}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>Size of a ticket</h3>
+
+<p>Note that I do not use the $k$ size of a ticket. In fact, in my
+original design, I used it but ignored $j$; reading the paper I
+realised that $j$ was indeed critical: one of the $j$-subsets will be
+on the winning ticket, so they are the ones we need to cover. However,
+I could not understand why the paper did not use the potentially
+larger size of a ticket to cover more $j$-subsets.</p>
+
+<p>Restated with a complete ticket, the coverage formula becomes</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{l \le i \le j} \binom{k}{i} \binom{n-k}{j-i}
+\end{align}
+</div>
+
+
+<p>This apparent small change actually reduces the lower bound of the
+necessary tickets significantly. For $n=15$, $k=6$, $j=5$, $l=4$, for
+instance, will the paper offers as a lower bound $58$, the formula
+above gives $22$.</p>
+
+<p>So the question is: is it valid to use the possibly larger value $k$
+when generating tickets? I could not think of any reason not too, and
+if I&#8217;m right, this gives each ticket a much larger cover, and
+therefore a lower number of necessary tickets.</p>
+
+<h2>Implementation</h2>
+
+<p>For a first effort, I chose to code in Haskell, and favoured simplicity
+over speed. The code is indeed both simple, and wasteful, but Moore&#8217;s
+Law says that computers have become about 1000 times faster since the
+time the paper was written, so I have some margin.</p>
+
+<p>To keep things simple, sets and subsets are just lists.</p>
+
+<h3>Support functions</h3>
+
+<p>Such functions ought to belong to a dedicated library (and perhaps
+they do); I include them to keep the implementation mostly
+self-contained.</p>
+
+<figure class='code'><figcaption><span>Support functions  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">product</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'><span class="nf">combi</span> <span class="n">n</span> <span class="n">c</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fact</span> <span class="n">n</span><span class="p">)</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="p">(</span><span class="n">fact</span> <span class="n">c</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">c</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">remainingNumbers</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">union</span> <span class="kt">[]</span> <span class="n">js</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>fact</code> is just the factorial; <code>combi</code> computes the binomial
+coefficient, and <code>remainingNumbers</code> is just the union of all the
+passed $j$-subsets.</p>
+
+<figure class='code'><figcaption><span>Generating Combinations  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">genCombi</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="n">k</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">l</span><span class="kt">:</span><span class="n">cs</span> <span class="o">|</span> <span class="n">cs</span> <span class="ow">&lt;-</span> <span class="n">genCombi</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">ls</span><span class="p">]</span> <span class="o">++</span>
+</span><span class='line'>                    <span class="n">genCombi</span> <span class="n">k</span> <span class="n">ls</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>genCombi k s</code> generates the $k$-subsets of $s$.</p>
+
+<h3>Lower Bound Estimate</h3>
+
+<p>These are simple implementations of the formula above.</p>
+
+<figure class='code'><figcaption><span>Lower Bound Estimates  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">(</span><span class="n">combi</span> <span class="n">k</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span>
+</span><span class='line'>                            <span class="p">(</span><span class="n">combi</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">|</span> <span class="n">i</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="n">l</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
+</span><span class='line'><span class="nf">lowerBound</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">combi</span> <span class="n">n</span> <span class="n">j</span><span class="p">)</span> <span class="o">/</span>
+</span><span class='line'>                     <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ticketCover</code> just implements the coverage estimate I defined above
+(the one that uses $k$); <code>lowerBound</code> computes the lower bound for a
+single win.</p>
+
+<h3>Coverage</h3>
+
+<p>As stated above, I define the cover between two subsets as the size of
+their intersection, and define sufficient coverage as the cover being
+larger than $l$.</p>
+
+<figure class='code'><figcaption><span>Defining Coverage  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">cover</span> <span class="n">l1</span> <span class="n">l2</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">intersect</span> <span class="n">l1</span> <span class="n">l2</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">coveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'><span class="nf">notCoveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">notCoveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'><span class="nf">notCoveredBatch</span> <span class="n">l</span> <span class="n">ts</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="n">notCovered</span> <span class="n">l</span><span class="p">)</span> <span class="n">js</span> <span class="n">ts</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>cover</code> implements the cover definition; <code>coveredP</code> and <code>notCoveredP</code>
+are predicates that check for (or against) sufficient coverage.</p>
+
+<p><code>notCovered</code> and <code>notCoveredBatch</code> computes the subsets that are not covered by a single ticket or a set
+of tickets, respectively; they are used to compute what is left to
+cover after selecting a ticket, and to check solutions.</p>
+
+<p>Finally <code>coverageScore</code> computes the size of of the covered subsets by
+a ticket. This function is used to compare potential tickets and
+select the one with the best (i.e. largest) coverage.</p>
+
+<figure class='code'><figcaption><span>Checking the estimates  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">checkFormula</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">candidates</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">ticket</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">k</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">covered</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">ticket</span><span class="p">)</span> <span class="n">candidates</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">length</span> <span class="n">covered</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>checkFormula</code> computes the size of the coverage of a single ticket;
+it can be used to confirm the value of <code>ticketCover</code> above (and as far
+as I can tell from my checks, it does).</p>
+
+<h3>Solution Loop</h3>
+
+<p>The solution loop takes the parameters and a ticket candidate
+generating function; it then gets one ticket at a time, computes the
+$j$-subsets not covered yet, and repeat until the remaining
+$j$-subsets set becomes empty.</p>
+
+<figure class='code'><figcaption><span>Solution Loop  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">solve</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">gc</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">jtuples</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">loop</span> <span class="n">jtuples</span>
+</span><span class='line'> <span class="kr">where</span> <span class="n">loop</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'>       <span class="n">loop</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>         <span class="n">t</span> <span class="ow">&lt;-</span> <span class="n">gc</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">ts</span> <span class="ow">&lt;-</span> <span class="n">loop</span> <span class="o">$</span> <span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">ts</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>solve</code> function expects the candidate generation function to be a
+monad; this is to make it possible to use random number generators.</p>
+
+<h3>Naive Ticket Selection</h3>
+
+<p>I do not really know how to navigate subsets, so I won&#8217;t try to
+implement a backtracking solution as describe in the paper. Instead, I
+have what is really the simplest greedy algorithm: when a new ticket
+is needed, get the one that has the best coverage among all the
+possible tickets:</p>
+
+<figure class='code'><figcaption><span>Naive Ticket Selection  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidate</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>      <span class="n">tickets</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">k</span> <span class="n">numbers</span>
+</span><span class='line'>      <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So for each $j$-subsets set, generate all the $k$-subsets, and compare
+their coverage.</p>
+
+<p>Needless to say, this function does not return anything anytime soon
+for even slightly large values of $n$.</p>
+
+<h3>Randomised Ticket Selection</h3>
+
+<p>To improve the performance (well, to get a result in my lifetime), I
+am using what I understand to be the same approach as in the paper:
+generates $\beta$ tickets, compare their coverage of the remaining
+subsets, and keep the best one.</p>
+
+<p>The different with the paper, as mentioned before, is that my tickets
+are $k$-subsets rather than $j$-subsets themselves.</p>
+
+<p>I first need a function to generate a random combination. I&#8217;m using a
+method derived from Knuth (no reference as I don&#8217;t have Volume 4 just yet).</p>
+
+<figure class='code'><figcaption><span>Sample Generation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">sample</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="n">k</span> <span class="n">ds</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">sample</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ds</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">p</span> <span class="ow">&lt;-</span> <span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span> <span class="n">ds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">ds</span><span class="o">!!</span><span class="n">p</span>
+</span><span class='line'>  <span class="kr">if</span> <span class="n">not</span> <span class="p">(</span><span class="n">t</span> <span class="p">`</span><span class="n">elem</span><span class="p">`</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">head</span> <span class="n">ds</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The generating function is very similar to the naive one</p>
+
+<figure class='code'><figcaption><span>Randomised Generating Function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidateRandom</span> <span class="n">beta</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>  <span class="n">tickets</span> <span class="ow">&lt;-</span> <span class="n">replicateM</span> <span class="n">beta</span> <span class="p">(</span><span class="n">sample</span> <span class="n">k</span> <span class="n">numbers</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The only difference is the <code>tickets</code> candidate set: the naive function
+generates them all; the randomised one selects $\beta$ randomly.</p>
+
+<h3>Compatibility with the paper version</h3>
+
+<p>By using <code>solve n j j l</code> instead of <code>solve n k j l</code>, my implementation
+should compute subset coverage the same way the paper&#8217;s implementation
+does.</p>
+
+<h3>Testing and Results</h3>
+
+<p>I will not compare speed, as this would be meaningless. But I can check
+whether different values for ticket size can indeed help reduce the size of
+the covering set.</p>
+
+<p>Let&#8217;s start with a very simple problem, where $n=5$, $k=3$, $j=3$ and
+$l=2$.</p>
+
+<p>I don&#8217;t really need to generate the $j$-subsets, but if I do I can
+check the solution.</p>
+
+<p>The solution itself is computed by passing a ticket generating
+function; I could have used <code>getCandidate</code>, but here I&#8217;m passing
+<code>getCandidateRandom</code> with a $\beta=100$.</p>
+
+<p>The <code>notCovered</code> set is empty, so the solution is at least a covering one.</p>
+
+<p>The solution has two tickets, and the lower bound confirms it is
+pretty good.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; let problem = genCombi 3 [1..5]
+</span><span class='line'>*Main&gt; solution &lt;- solve 5 3 3 2 (getCandidateRandom 100)
+</span><span class='line'>*Main&gt; solution
+</span><span class='line'>[[3,4,5],[1,2,4]]
+</span><span class='line'>*Main&gt; notCoveredBatch 2 solution problem 
+</span><span class='line'>[]
+</span><span class='line'>*Main&gt; lowerBound 5 3 3 2
+</span><span class='line'>1.4285714285714286</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next test, with $n=15$, $k=5$, $j=5$ and $l=4$. The paper reports that
+they found a solution with $137$ tickets. As $k=j$, my algorithm
+cannot really beat that (and indeed finds a solution of the same size,
+if I try a couple of times):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; let problem = genCombi 5 [1..15]
+</span><span class='line'>*Main&gt; solution &lt;- solve 15 5 5 4 (getCandidateRandom 100)
+</span><span class='line'>*Main&gt; length solution
+</span><span class='line'>137
+</span><span class='line'>*Main&gt; notCoveredBatch  4 solution problem
+</span><span class='line'>[]
+</span><span class='line'>*Main&gt; lowerBound 15 5 5 4
+</span><span class='line'>58.88235294117647</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the next test, I should have a better solution than the paper, as
+$k$ is larger than $j$: $n=15$, $k=6$, $j=5$, $l=4$.</p>
+
+<p>The paper has a lower bound of $58$, and a solution of size $138$, but my
+lower bound is $22$, and my solution has size $57$.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; let problem = genCombi 5 [1..15]
+</span><span class='line'>*Main&gt; solution &lt;- solve 15 6 5 4 (getCandidateRandom  100)
+</span><span class='line'>*Main&gt; length solution
+</span><span class='line'>57
+</span><span class='line'>*Main&gt; notCoveredBatch 4 solution problem
+</span><span class='line'>[]
+</span><span class='line'>*Main&gt; lowerBound 15 6 5 4
+</span><span class='line'>21.29787234042553</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When the difference between $k$ and $j$ becomes large, the solution
+improves significantly: with $n=18$, $k=10$, $j=7$, $l=6$, the paper
+has a lower bound of $408$, mine is $18$. The paper&#8217;s solution has
+size $1080$, but mine is just $73$.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; let problem = genCombi 7 [1..18]
+</span><span class='line'>*Main&gt; solution &lt;- solve 18 10 7 6 (getCandidateRandom 100)
+</span><span class='line'>*Main&gt; length solution
+</span><span class='line'>73
+</span><span class='line'>*Main&gt; notCoveredBatch 6 solution problem
+</span><span class='line'>[]
+</span><span class='line'>*Main&gt; lowerBound 18 10 7 6
+</span><span class='line'>17.68</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Wrapping up</h3>
+
+<p>Even if my approach is ultimately wrong, I can say I must be close to
+an actual solution. I could (and probably will, given time) try to
+rewrite my solution in C, and focus on performance.</p>
+
+<p>So I declare this problem conquered, I will resume my reading.</p>
+
+<h3>Complete code</h3>
+
+<figure class='code'><figcaption><span>Psychic Modeling Implementation (psychic.hs)</span> <a href='/downloads/code/algo-design-manual/psychic.hs'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+</pre></td><td class='code'><pre><code class='hs'><span class='line'><span class="kr">import</span> <span class="nn">Data.List</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Ord</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Control.Monad</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">System.Random</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- helpers functions</span>
+</span><span class='line'><span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">product</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'><span class="nf">combi</span> <span class="n">n</span> <span class="n">c</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fact</span> <span class="n">n</span><span class="p">)</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="p">(</span><span class="n">fact</span> <span class="n">c</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">c</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">remainingNumbers</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">union</span> <span class="kt">[]</span> <span class="n">js</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- generate combinations</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="n">k</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">l</span><span class="kt">:</span><span class="n">cs</span> <span class="o">|</span> <span class="n">cs</span> <span class="ow">&lt;-</span> <span class="n">genCombi</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">ls</span><span class="p">]</span> <span class="o">++</span>
+</span><span class='line'>                    <span class="n">genCombi</span> <span class="n">k</span> <span class="n">ls</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- estimates for the solution size</span>
+</span><span class='line'><span class="nf">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">(</span><span class="n">combi</span> <span class="n">k</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span>
+</span><span class='line'>                            <span class="p">(</span><span class="n">combi</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">|</span> <span class="n">i</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="n">l</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
+</span><span class='line'><span class="nf">lowerBound</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">combi</span> <span class="n">n</span> <span class="n">j</span><span class="p">)</span> <span class="o">/</span>
+</span><span class='line'>                     <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- definition of coverage measure</span>
+</span><span class='line'><span class="nf">cover</span> <span class="n">l1</span> <span class="n">l2</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">intersect</span> <span class="n">l1</span> <span class="n">l2</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- predicate functions: check cover between ticket and j-subset</span>
+</span><span class='line'><span class="nf">coveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'><span class="nf">notCoveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- keep only j-subsets that are not covered by tickets</span>
+</span><span class='line'><span class="nf">notCoveredBatch</span> <span class="n">l</span> <span class="n">ts</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="n">notCovered</span> <span class="n">l</span><span class="p">)</span> <span class="n">js</span> <span class="n">ts</span>
+</span><span class='line'><span class="nf">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">notCoveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- length of j-subsets from js that are sufficiently covered by t</span>
+</span><span class='line'><span class="nf">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- check the coverage of a single k number ticket on the C_j^n</span>
+</span><span class='line'><span class="c1">-- potentials; can be compared against ticketCover estimate</span>
+</span><span class='line'><span class="nf">checkFormula</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">candidates</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">ticket</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">k</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">covered</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">ticket</span><span class="p">)</span> <span class="n">candidates</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">length</span> <span class="n">covered</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- compute solution given a candidate generator</span>
+</span><span class='line'><span class="nf">solve</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">gc</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">jtuples</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">loop</span> <span class="n">jtuples</span>
+</span><span class='line'> <span class="kr">where</span> <span class="n">loop</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'>       <span class="n">loop</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>         <span class="n">t</span> <span class="ow">&lt;-</span> <span class="n">gc</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">ts</span> <span class="ow">&lt;-</span> <span class="n">loop</span> <span class="o">$</span> <span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">ts</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- naive candidate generator</span>
+</span><span class='line'><span class="nf">getCandidate</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>      <span class="n">tickets</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">k</span> <span class="n">numbers</span>
+</span><span class='line'>      <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- Knuth method for generating combination</span>
+</span><span class='line'><span class="c1">-- adapted for arbitrary set</span>
+</span><span class='line'><span class="nf">sample</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="n">k</span> <span class="n">ds</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">sample</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ds</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">p</span> <span class="ow">&lt;-</span> <span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span> <span class="n">ds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">ds</span><span class="o">!!</span><span class="n">p</span>
+</span><span class='line'>  <span class="kr">if</span> <span class="n">not</span> <span class="p">(</span><span class="n">t</span> <span class="p">`</span><span class="n">elem</span><span class="p">`</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">head</span> <span class="n">ds</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- random candidate generator</span>
+</span><span class='line'><span class="nf">getCandidateRandom</span> <span class="n">beta</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>  <span class="n">tickets</span> <span class="ow">&lt;-</span> <span class="n">replicateM</span> <span class="n">beta</span> <span class="p">(</span><span class="n">sample</span> <span class="n">k</span> <span class="n">numbers</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-10T12:26:00+09:00" pubdate data-updated="true">Feb 10<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/algorithms/'>Algorithms</a>, <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/" title="Previous Post: Concrete Mathematics Chapter 1 Exam Problems">&laquo; Concrete Mathematics Chapter 1 Exam Problems</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Algorithm Design Manual Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2012/02/10/psychic-modeling/">Psychic Modeling</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/02/10/psychic-modeling/">Psychic Modeling</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/">Concrete Mathematics Chapter 1 Exam Problems</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/">Seven Databases in Seven Weeks CouchDB Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">Seven Databases in Seven Weeks CouchDB Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">Seven Databases in Seven Weeks CouchDB Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

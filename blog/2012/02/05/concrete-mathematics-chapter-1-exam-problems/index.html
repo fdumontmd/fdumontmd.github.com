@@ -1,0 +1,635 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Concrete Mathematics Chapter 1 Exam Problems - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="It took me longer than I thought, and the outcome is slightly
+disappointing: I failed to solve two of the problems, and I solved the
+remaining ones &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>  
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Concrete Mathematics Chapter 1 Exam Problems</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-05T12:27:00+09:00" pubdate data-updated="true">Feb 5<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>It took me longer than I thought, and the outcome is slightly
+disappointing: I failed to solve two of the problems, and I solved the
+remaining ones way too slowly, so in a real exam conditions I probably
+would have solved just one or two&#8230;</p>
+
+<!-- more -->
+
+
+<h2>Exam Problems</h2>
+
+<h3>4 Pegs Tower of Hanoi</h3>
+
+<p>First, it helps to see that the indices of the recurrence are actually
+$S_n$:</p>
+
+<div markdown="0">
+\begin{align}
+W_{n(n+1)/2}&amp;= W_{S_n}&#92;&#92;
+W_{n(n-1)/2}&amp;= W_{S_{n-1}}
+\end{align}
+</div>
+
+
+<p>And of course, $S_n = S_{n-1} + n$.</p>
+
+<p>Setting $m=S_{n-1}$, we try to show:</p>
+
+<div markdown="0">
+\begin{align}
+W_{m+n} &amp; \le 2W_{m} + T_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Now, obviously, if we have $m+n$ discs, we can move the $m$ top ones
+from $A$ to $C$ using $B$ and $D$ as transfer pegs, then move the
+bottom $n$ ones from $A$ to $B$ using $D$ as transfer peg, and finally
+move the top $m$ ones from $C$ to $B$.</p>
+
+<p>The first step takes $W_m$ moves, the second one is the classic Tower
+of Hanoi problem (as we can no longer use peg $C$, we only have three
+pegs), so it takes $T_n$ moves, and the last step takes $W_m$  moves again.</p>
+
+<p>This is only one possible solution; the optimal one must be equal or
+better, so we have</p>
+
+<div markdown="0">
+\begin{align}
+W_{m+n} &amp; \le 2W_m + T_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>This is true for any $m+n$ discs, and in particular for
+$S_n = S_{n-1} + n$ ones.</p>
+
+<h3>Specific Zigs</h3>
+
+<p>I could not solve this problem. I had found that the half-lines did
+intersect, but then I failed to show that their intersections were all
+distinct.</p>
+
+<p>Even with the solution from the book, it took me a while before I
+finally had a complete understanding.</p>
+
+<p>One problem I had was that lines in a graph are basic college level
+mathematics, but college was a long, long time ago. I pretty much had
+to work from first principles.</p>
+
+<p>Following the book in writing the positions as $(x_j, 0)$ and
+$(x_j - a_j, 1)$, I need to find $\alpha$ and $\beta$ such that
+$y=\alpha x + \beta$ is true for both points above.</p>
+
+<div markdown="0">
+\begin{align}
+0 &amp; = \alpha x_j + \beta &#92;&#92;
+\beta &amp; = - \alpha x_j&#92;&#92;
+1 &amp; = \alpha (x_j - a_j) - \alpha x_j&#92;&#92;
+&amp; = \alpha x_j - \alpha a_j - \alpha x_j&#92;&#92;
+&amp; = - \alpha a_j&#92;&#92;
+\alpha &amp; = \frac{-1}{a_j}&#92;&#92;
+y &amp; = \frac{x_j - x}{a_j}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>With this given, I can try to find the intersection of lines from
+different zigs, $j$ and $k$:</p>
+
+<div markdown="0">
+\begin{align}
+\frac{x_j - x}{a_j} &amp; = \frac{x_k - x}{a_k}&#92;&#92;
+a_k (x_j - x) &amp; = a_j (x_k - x)&#92;&#92;
+a_k x_j - a_k x &amp; = a_j x_k - a_j x&#92;&#92;
+a_k x_j - a_j x_k &amp; = (a_k - a_j) x&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Now, still following the book, I replace $x$ by $t$ with
+$x=x_j - t a_j$:</p>
+
+<div markdown="0">
+\begin{align}
+a_k x_j - a_j x_k &amp; = (a_k - a_j) (x_j - t a_j)&#92;&#92;
+a_k x_j - a_j x_k &amp; = a_k x_j - a_j x_j - t a_j a_k + t a_j^2&#92;&#92;
+- a_j x_k &amp; = t a_j^ 2 - a_j x_j - t a_j a_k&#92;&#92;
+- x_k &amp; = t a_j - x_j -t a_k&amp;&amp;\text{dividing by \(a_j\)}&#92;&#92;
+x_j - x_k &amp; = t (a_j - a_k)&#92;&#92;
+t &amp; = \frac{x_j - x_k}{a_j - a_k}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Somehow, I have a faint memory of such a result; I need to check a
+college math book.</p>
+
+<p>To complete, I need to show that $y = t$:</p>
+
+<div markdown="0">
+\begin{align}
+y &amp; = \frac{x_j - x}{a_j}&#92;&#92;
+&amp; = \frac{x_j - x_j + t a_j}{a_j}&#92;&#92;
+&amp; = \frac{t a_j}{a_j}&#92;&#92;
+&amp; = t&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So the intersection of any two pair of half-lines from different zigs
+is $(x_j - t a_j, t)$. Note that $t$ has the same value whether
+$j \gt k$ or $k \gt j$. To simplify further computations, I set
+$j \gt k$.</p>
+
+<p>There are two remaining steps: show that $t$ is different for
+different pairs of $j$, $k$ (with $j \ne k$); and then show that the
+four intersections for a pair $j$, $k$ are also distinct.</p>
+
+<p>$a_j$ can be of two forms: $n^j$ and $n^j + n^{-n}$. So $a_j - a_k$
+can be one of</p>
+
+<div markdown="0">
+\begin{align}
+&amp; n^j - n^k&#92;&#92;
+&amp; n^j + n^{-n} - n^k&#92;&#92;
+&amp; n^j - n^k - n^{-n}&#92;&#92;
+n^j + n^{-n} - n^k - n^{-n} = &amp; n^j - n^k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So there are three different forms for $a_j - a_k$, which I will
+simply write $n^j - n^k + \epsilon$ where $|\epsilon| \lt 1$.</p>
+
+<div markdown="0">
+\begin{align}
+t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k + \epsilon}&#92;&#92;
+&amp; = \frac{(n^j - n^k)(n^j + n^k)}{n^j - n^k + \epsilon}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Let&#8217;s show that $n^j+n^k - 1 \lt t \lt n^j+n^k + 1$: multiply the
+whole inequality by $n^j - n^k + \epsilon$. As</p>
+
+<div markdown"0">
+\begin{align}
+n^j - n^k &amp; \ge n&#92;&#92;
+&amp; \ge 2&#92;&#92;
+&amp; \gt |\epsilon|&#92;&#92;
+\end{align}
+</div>
+
+
+<p>so $n^j - n^k + \epsilon \gt 0$. Defining</p>
+
+<div markdown="0">
+\begin{align}
+N_{jk} &amp; = n^j + n^k&#92;&#92;
+N&#8217;_{jk} &amp; = n^j - n^k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>the left and right inequalities become</p>
+
+<div markdown="0">
+\begin{align}
+(N_{jk} - 1) (N&#8217;_{jk} + \epsilon) &amp; = N_{jk}N&#8217;_{jk} - N&#8217;_{jk} + \epsilon N_{jk} - \epsilon&#92;&#92;
+(N_{jk} + 1) (N&#8217;_{jk} + \epsilon) &amp; = N_{jk}N&#8217;_{jk} + N&#8217;_{jk} + \epsilon N_{jk} + \epsilon&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Subtracting $N_{jk}N&#8217;_{jk} = (n^j-n^k)(n^j+n^k)$ from the original inequality:</p>
+
+<div markdown="0">
+\begin{align}
+-N&#8217;_{jk}+\epsilon N_jk - \epsilon \lt 0 \lt N&#8217;_{jk} + \epsilon N_{jk} + \epsilon&#92;&#92;
+\end{align}
+</div>
+
+
+<p>I need to prove the following inequality</p>
+
+<div markdown"0">
+\begin{align}
+(n^j - n^k) &amp; \gt |\epsilon| + |\epsilon| (n^j - n^k)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>We already know $|\epsilon| \lt 1$, so looking at the second term (and
+assuming $\epsilon \ne 0$, as this case is trivial)</p>
+
+<div markdown"0">
+\begin{align}
+|\epsilon| (n^j-n^k) &amp; = n^{-n} (n^j - n^k)&#92;&#92;
+&amp; = n^{j-n} - n^{k-n}&#92;&#92;
+&amp;\lt 1&#92;&#92;
+\end{align}
+</div>
+
+
+<p>and we have</p>
+
+<div markdown"0">
+\begin{align}
+n^j - n^k &amp; \ge 2
+&amp; \gt |\epsilon| + |\epsilon (n^j - n^k)|&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So the inequalities are established. $N_{jk}$ can be seen as a number
+in based $n$ where the digits are all zeroes except the $j$ and $k$ ones,
+$N_{jk} = N_{j&#8217;k&#8217;} \implies j=j&#8217;, k=k&#8217;$, and therefore $t$ uniquely
+defines $j$ and $k$ or, two pairs of zigs must have different $t$.</p>
+
+<p>I still need to show that for a given pair, when $t$ is the same, the
+intersections are different. There are three different values of
+$t$, so two intersections points have the same height. This happens
+for</p>
+
+<div markdown="0">
+\begin{align}
+t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>which happens when $a_j = n^j$, $a_k = n^k$ and $a_j = n^j + n^{-n}$,
+$a_k = n^k + n^{-n}$. But the $x = x_j - t a_j$ value for
+intersections is different: $t n^j$ and $t (n^j + n^{-n})$, so there
+are indeed four distinct intersection points.</p>
+
+<h3>30 degrees Zigs</h3>
+
+<p>I could not solve this problem. Once again, my lack of intuition with
+geometry was to blame.</p>
+
+<p>But if we have two zigs with half-lines angles $\phi$, $\phi + 30^{\circ}$
+and $\theta$, $\theta + 30^{\circ}$, then for any two pairs of
+half-lines from the two zigs to intersect, their angles must be
+between $0^{\circ}$ and $180^{\circ}$. Taken together, these
+constraints give $0^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.</p>
+
+<p>This means there cannot be more than $5$ such pairs (and to be honest,
+I would have said 4, but the book says it&#8217;s indeed 5).</p>
+
+<h3>Recurrence Equations</h3>
+
+<h3>Good and Bad Persons in Josephus Problem</h3>
+
+<p>It took me a while, as I was trying to find a recurrence equation of
+some sort which would help me with this problem and the bonus one
+(where Josephus&#8217; position is fixed but he can pick $m$). Eventually I
+found one, which did not help me with the bonus problem, but led me to
+a solution for this problem.</p>
+
+<p>Obviously, if we have $k$ persons and want to remove the last one in
+the first round, we can choose $m=k$ and that will work. Actually, any
+multiple $m=ak$ works as well.</p>
+
+<p>This shows that at each round, if we have $k$ persons left, and we
+start counting on the first one, when $m=ak$ we will remove the $k^{th}$
+person then start counting from the first one again.</p>
+
+<p>Back to the original problem: there are $2n$ persons, and we want to
+get rid of the $n+1, \cdots, 2n$ first. If we take
+$m=lcm(n+1,\cdots, 2n)$, then for the first $n$ rounds the last (bad)
+person will be remove, leaving only the good ones at the end.</p>
+
+<p>When first solving the problem, I picked $m=\prod_{i=1}^n (n+i)$,
+which has the same property as the least common multiple, but is
+larger. Perhaps a smaller number is better for the nerves of the
+participants.</p>
+
+<h3>Bonus Problems</h3>
+
+<p>I tried to solve the bonus questions, but after repeatedly failing, I
+had a glimpse at the solutions: they obviously require either
+knowledge of later chapters, or other concepts I know nothing about,
+so I will get back to these bonus problems after I finish the book.</p>
+
+<p>I am now working through Chapter 2. It is a much larger chapter than
+the first, so it will take me some time.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-05T12:27:00+09:00" pubdate data-updated="true">Feb 5<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>, <a class='category' href='/blog/categories/mathematics/'>Mathematics</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/" title="Previous Post: Seven Databases in Seven Weeks CouchDB Day 3">&laquo; Seven Databases in Seven Weeks CouchDB Day 3</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/02/10/psychic-modeling/" title="next Post: Psychic Modeling">Psychic Modeling &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Concrete Mathematics Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2012/01/06/concrete-mathematics/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Chapter 1 Notes</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/">Chapter 1 Warmups</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/">Chapter 1 Homework Exercises Part 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/">Chapter 1 Homework Exercises Part 2</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">Repertoire Method</a></li>
+		
+			<li class="post"><a href="/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/">Chapter 1 Exam Problems</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/02/10/psychic-modeling/">Psychic Modeling</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/">Concrete Mathematics Chapter 1 Exam Problems</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/">Seven Databases in Seven Weeks CouchDB Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">Seven Databases in Seven Weeks CouchDB Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">Seven Databases in Seven Weeks CouchDB Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-02-02T13:26:16+09:00</updated>
+  <updated>2012-02-10T20:03:17+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,979 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Psychic Modeling]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/"/>
+    <updated>2012-02-10T12:26:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling</id>
+    <content type="html"><![CDATA[<p>In the <a href="http://www.algorist.com/">Algorithm Design Manual</a>, Stephen
+Skiena entertains, edifies and educates his readers with so called
+&#8220;War Stories&#8221;, that is, interesting implementation challenges from his
+own experience.</p>
+
+<p>The first War Story is
+<a href="http://www8.cs.umu.se/kurser/TDBAfl/VT06/algorithms/BOOK/BOOK/NODE19.HTM">Psychic Modeling</a>,
+an attempt to exploit &#8220;precognition&#8221; to improve the chances of winning
+the lottery.</p>
+
+<!-- more -->
+
+
+<p>This war story is also the subject of one of the first implementation
+projects. In chapter 1.  A few years ago, when I bought the book, I
+had easily solved the previous exercises, but then I reached this
+implementation project, and I got stuck. I could not even get a
+high level sketch of what a solution would look like.</p>
+
+<p>Certainly, if I was unable to solve an exercise of the first chapter
+of this book, it was hopelessly beyond my reach&#8230;</p>
+
+<p>Still, I had the ambition of one day resuming my reading, and I would
+from time to time give this problem another attempt.</p>
+
+<p>Recently, it feels like all the pieces finally fell into places, and
+after a few hours of coding I had an (naive) implementation. Yet I
+still have doubts, as the only reference I have to compare my solution
+with, Skiena&#8217;s own paper
+(<a href="http://www.cs.sunysb.edu/~skiena/papers/lotto.doc">Randomized Algorithms for Identifying Minimal Lottery Ticket Sets</a>),
+apparently is worse (in terms of necessary tickets) than my solution&#8230;</p>
+
+<p>Note on this paper: unfortunately it is in Word format, and I found
+that some characters are not properly displayed on non MS Word text
+processing tools (such as Open Office). So you might have to open it
+with MS Word or MS Word Viewer.</p>
+
+<h3>The problem</h3>
+
+<p>I will use the notation from the book rather than the paper. The
+problem is defined as this:</p>
+
+<ul>
+<li>a lottery ticket has $k$ numbers</li>
+<li>a win requires $j$ numbers from the winning ticket</li>
+<li>the psychic visualises $n$ numbers</li>
+<li>of which $j$ are &#8220;guaranteed&#8221; to be on the winning ticket.</li>
+</ul>
+
+
+<h3>Defining &#8220;sufficient coverage&#8221;</h3>
+
+<p>A first difference between the paper&#8217;s approach and mine is that I&#8217;m
+using the notion of coverage size rather than distance: I measure how
+similar two subsets are by defining their cover as the size of their
+intersection; in their paper the authors use a notion of distance defined as
+the size of the difference of the two subsets (perhaps to help with
+the design of heuristics in the backtracking version of their algorithm).</p>
+
+<p>Now, clearly the two approaches are equivalent; it is less clear that
+the formulas derived from either are indeed the same.</p>
+
+<p>For a given $j$-subset, how many $j$-subsets have a coverage of at
+least $l$ with the first one? The covered $j$-subsets must have at
+least $l$ numbers (between $l$ and $j$, to be precise) in common with
+the first one, and the rest taken from the $n-j$ other numbers. This gives</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{l \le i \le j} \binom{j}{i} \binom{n-j}{j-i}
+\end{align}
+</div>
+
+
+<p>For a given $j$-subset, how many $j$-subsets are within $j-l$ distance
+of the first one? We can choose at most $j-l$ numbers out of the $n-j$
+rest; and complete with numbers from the first subset. This gives</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{j-i} = \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{i}
+\end{align}
+</div>
+
+
+<p>It took me a while to confirm it, but the formulas are indeed the
+same:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{i} &amp; = \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{j-i}&#92;&#92;
+&amp; = \sum_{l-j \le i \le 0} \binom{n-j}{-i} \binom{j}{j+i}&amp;&amp;\text{changing the sign of \(i\)}&#92;&#92;
+&amp; = \sum_{l \le j+i \le j} \binom{n-j}{-i} \binom{j}{j+i}&#92;&#92;
+&amp; = \sum_{l \le i \le j} \binom{n-j}{j-i} \binom{j}{i}&amp;&amp;\text{replacing \(j+i\) by \(i\)}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>Size of a ticket</h3>
+
+<p>Note that I do not use the $k$ size of a ticket. In fact, in my
+original design, I used it but ignored $j$; reading the paper I
+realised that $j$ was indeed critical: one of the $j$-subsets will be
+on the winning ticket, so they are the ones we need to cover. However,
+I could not understand why the paper did not use the potentially
+larger size of a ticket to cover more $j$-subsets.</p>
+
+<p>Restated with a complete ticket, the coverage formula becomes</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{l \le i \le j} \binom{k}{i} \binom{n-k}{j-i}
+\end{align}
+</div>
+
+
+<p>This apparent small change actually reduces the lower bound of the
+necessary tickets significantly. For $n=15$, $k=6$, $j=5$, $l=4$, for
+instance, will the paper offers as a lower bound $58$, the formula
+above gives $22$.</p>
+
+<p>So the question is: is it valid to use the possibly larger value $k$
+when generating tickets? I could not think of any reason not too, and
+if I&#8217;m right, this gives each ticket a much larger cover, and
+therefore a lower number of necessary tickets.</p>
+
+<h2>Implementation</h2>
+
+<p>For a first effort, I chose to code in Haskell, and favoured simplicity
+over speed. The code is indeed both simple, and wasteful, but Moore&#8217;s
+Law says that computers have become about 1000 times faster since the
+time the paper was written, so I have some margin.</p>
+
+<p>To keep things simple, sets and subsets are just lists.</p>
+
+<h3>Support functions</h3>
+
+<p>Such functions ought to belong to a dedicated library (and perhaps
+they do); I include them to keep the implementation mostly
+self-contained.</p>
+
+<figure class='code'><figcaption><span>Support functions  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">product</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'><span class="nf">combi</span> <span class="n">n</span> <span class="n">c</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fact</span> <span class="n">n</span><span class="p">)</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="p">(</span><span class="n">fact</span> <span class="n">c</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">c</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">remainingNumbers</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">union</span> <span class="kt">[]</span> <span class="n">js</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>fact</code> is just the factorial; <code>combi</code> computes the binomial
+coefficient, and <code>remainingNumbers</code> is just the union of all the
+passed $j$-subsets.</p>
+
+<figure class='code'><figcaption><span>Generating Combinations  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">genCombi</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="n">k</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">l</span><span class="kt">:</span><span class="n">cs</span> <span class="o">|</span> <span class="n">cs</span> <span class="ow">&lt;-</span> <span class="n">genCombi</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">ls</span><span class="p">]</span> <span class="o">++</span>
+</span><span class='line'>                    <span class="n">genCombi</span> <span class="n">k</span> <span class="n">ls</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>genCombi k s</code> generates the $k$-subsets of $s$.</p>
+
+<h3>Lower Bound Estimate</h3>
+
+<p>These are simple implementations of the formula above.</p>
+
+<figure class='code'><figcaption><span>Lower Bound Estimates  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">(</span><span class="n">combi</span> <span class="n">k</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span>
+</span><span class='line'>                            <span class="p">(</span><span class="n">combi</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">|</span> <span class="n">i</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="n">l</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
+</span><span class='line'><span class="nf">lowerBound</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">combi</span> <span class="n">n</span> <span class="n">j</span><span class="p">)</span> <span class="o">/</span>
+</span><span class='line'>                     <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ticketCover</code> just implements the coverage estimate I defined above
+(the one that uses $k$); <code>lowerBound</code> computes the lower bound for a
+single win.</p>
+
+<h3>Coverage</h3>
+
+<p>As stated above, I define the cover between two subsets as the size of
+their intersection, and define sufficient coverage as the cover being
+larger than $l$.</p>
+
+<figure class='code'><figcaption><span>Defining Coverage  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">cover</span> <span class="n">l1</span> <span class="n">l2</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">intersect</span> <span class="n">l1</span> <span class="n">l2</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">coveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'><span class="nf">notCoveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">notCoveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'><span class="nf">notCoveredBatch</span> <span class="n">l</span> <span class="n">ts</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="n">notCovered</span> <span class="n">l</span><span class="p">)</span> <span class="n">js</span> <span class="n">ts</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>cover</code> implements the cover definition; <code>coveredP</code> and <code>notCoveredP</code>
+are predicates that check for (or against) sufficient coverage.</p>
+
+<p><code>notCovered</code> and <code>notCoveredBatch</code> computes the subsets that are not covered by a single ticket or a set
+of tickets, respectively; they are used to compute what is left to
+cover after selecting a ticket, and to check solutions.</p>
+
+<p>Finally <code>coverageScore</code> computes the size of of the covered subsets by
+a ticket. This function is used to compare potential tickets and
+select the one with the best (i.e. largest) coverage.</p>
+
+<figure class='code'><figcaption><span>Checking the estimates  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">checkFormula</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">candidates</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">ticket</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">k</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">covered</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">ticket</span><span class="p">)</span> <span class="n">candidates</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">length</span> <span class="n">covered</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>checkFormula</code> computes the size of the coverage of a single ticket;
+it can be used to confirm the value of <code>ticketCover</code> above (and as far
+as I can tell from my checks, it does).</p>
+
+<h3>Solution Loop</h3>
+
+<p>The solution loop takes the parameters and a ticket candidate
+generating function; it then gets one ticket at a time, computes the
+$j$-subsets not covered yet, and repeat until the remaining
+$j$-subsets set becomes empty.</p>
+
+<figure class='code'><figcaption><span>Solution Loop  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">solve</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">gc</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">jtuples</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">loop</span> <span class="n">jtuples</span>
+</span><span class='line'> <span class="kr">where</span> <span class="n">loop</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'>       <span class="n">loop</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>         <span class="n">t</span> <span class="ow">&lt;-</span> <span class="n">gc</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">ts</span> <span class="ow">&lt;-</span> <span class="n">loop</span> <span class="o">$</span> <span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">ts</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>solve</code> function expects the candidate generation function to be a
+monad; this is to make it possible to use random number generators.</p>
+
+<h3>Naive Ticket Selection</h3>
+
+<p>I do not really know how to navigate subsets, so I won&#8217;t try to
+implement a backtracking solution as describe in the paper. Instead, I
+have what is really the simplest greedy algorithm: when a new ticket
+is needed, get the one that has the best coverage among all the
+possible tickets:</p>
+
+<figure class='code'><figcaption><span>Naive Ticket Selection  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidate</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>      <span class="n">tickets</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">k</span> <span class="n">numbers</span>
+</span><span class='line'>      <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So for each $j$-subsets set, generate all the $k$-subsets, and compare
+their coverage.</p>
+
+<p>Needless to say, this function does not return anything anytime soon
+for even slightly large values of $n$.</p>
+
+<h3>Randomised Ticket Selection</h3>
+
+<p>To improve the performance (well, to get a result in my lifetime), I
+am using what I understand to be the same approach as in the paper:
+generates $\beta$ tickets, compare their coverage of the remaining
+subsets, and keep the best one.</p>
+
+<p>The different with the paper, as mentioned before, is that my tickets
+are $k$-subsets rather than $j$-subsets themselves.</p>
+
+<p>I first need a function to generate a random combination. I&#8217;m using a
+method derived from Knuth (no reference as I don&#8217;t have Volume 4 just yet).</p>
+
+<figure class='code'><figcaption><span>Sample Generation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">sample</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="n">k</span> <span class="n">ds</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">sample</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ds</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">p</span> <span class="ow">&lt;-</span> <span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span> <span class="n">ds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">ds</span><span class="o">!!</span><span class="n">p</span>
+</span><span class='line'>  <span class="kr">if</span> <span class="n">not</span> <span class="p">(</span><span class="n">t</span> <span class="p">`</span><span class="n">elem</span><span class="p">`</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">head</span> <span class="n">ds</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The generating function is very similar to the naive one</p>
+
+<figure class='code'><figcaption><span>Randomised Generating Function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidateRandom</span> <span class="n">beta</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>  <span class="n">tickets</span> <span class="ow">&lt;-</span> <span class="n">replicateM</span> <span class="n">beta</span> <span class="p">(</span><span class="n">sample</span> <span class="n">k</span> <span class="n">numbers</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The only difference is the <code>tickets</code> candidate set: the naive function
+generates them all; the randomised one selects $\beta$ randomly.</p>
+
+<h3>Compatibility with the paper version</h3>
+
+<p>By using <code>solve n j j l</code> instead of <code>solve n k j l</code>, my implementation
+should compute subset coverage the same way the paper&#8217;s implementation
+does.</p>
+
+<h3>Testing and Results</h3>
+
+<p>I will not compare speed, as this would be meaningless. But I can check
+whether different values for ticket size can indeed help reduce the size of
+the covering set.</p>
+
+<p>Let&#8217;s start with a very simple problem, where $n=5$, $k=3$, $j=3$ and
+$l=2$.</p>
+
+<p>I don&#8217;t really need to generate the $j$-subsets, but if I do I can
+check the solution.</p>
+
+<p>The solution itself is computed by passing a ticket generating
+function; I could have used <code>getCandidate</code>, but here I&#8217;m passing
+<code>getCandidateRandom</code> with a $\beta=100$.</p>
+
+<p>The <code>notCovered</code> set is empty, so the solution is at least a covering one.</p>
+
+<p>The solution has two tickets, and the lower bound confirms it is
+pretty good.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; let problem = genCombi 3 [1..5]
+</span><span class='line'>*Main&gt; solution &lt;- solve 5 3 3 2 (getCandidateRandom 100)
+</span><span class='line'>*Main&gt; solution
+</span><span class='line'>[[3,4,5],[1,2,4]]
+</span><span class='line'>*Main&gt; notCoveredBatch 2 solution problem 
+</span><span class='line'>[]
+</span><span class='line'>*Main&gt; lowerBound 5 3 3 2
+</span><span class='line'>1.4285714285714286</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next test, with $n=15$, $k=5$, $j=5$ and $l=4$. The paper reports that
+they found a solution with $137$ tickets. As $k=j$, my algorithm
+cannot really beat that (and indeed finds a solution of the same size,
+if I try a couple of times):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; let problem = genCombi 5 [1..15]
+</span><span class='line'>*Main&gt; solution &lt;- solve 15 5 5 4 (getCandidateRandom 100)
+</span><span class='line'>*Main&gt; length solution
+</span><span class='line'>137
+</span><span class='line'>*Main&gt; notCoveredBatch  4 solution problem
+</span><span class='line'>[]
+</span><span class='line'>*Main&gt; lowerBound 15 5 5 4
+</span><span class='line'>58.88235294117647</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For the next test, I should have a better solution than the paper, as
+$k$ is larger than $j$: $n=15$, $k=6$, $j=5$, $l=4$.</p>
+
+<p>The paper has a lower bound of $58$, and a solution of size $138$, but my
+lower bound is $22$, and my solution has size $57$.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; let problem = genCombi 5 [1..15]
+</span><span class='line'>*Main&gt; solution &lt;- solve 15 6 5 4 (getCandidateRandom  100)
+</span><span class='line'>*Main&gt; length solution
+</span><span class='line'>57
+</span><span class='line'>*Main&gt; notCoveredBatch 4 solution problem
+</span><span class='line'>[]
+</span><span class='line'>*Main&gt; lowerBound 15 6 5 4
+</span><span class='line'>21.29787234042553</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When the difference between $k$ and $j$ becomes large, the solution
+improves significantly: with $n=18$, $k=10$, $j=7$, $l=6$, the paper
+has a lower bound of $408$, mine is $18$. The paper&#8217;s solution has
+size $1080$, but mine is just $73$.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*Main&gt; let problem = genCombi 7 [1..18]
+</span><span class='line'>*Main&gt; solution &lt;- solve 18 10 7 6 (getCandidateRandom 100)
+</span><span class='line'>*Main&gt; length solution
+</span><span class='line'>73
+</span><span class='line'>*Main&gt; notCoveredBatch 6 solution problem
+</span><span class='line'>[]
+</span><span class='line'>*Main&gt; lowerBound 18 10 7 6
+</span><span class='line'>17.68</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Wrapping up</h3>
+
+<p>Even if my approach is ultimately wrong, I can say I must be close to
+an actual solution. I could (and probably will, given time) try to
+rewrite my solution in C, and focus on performance.</p>
+
+<p>So I declare this problem conquered, I will resume my reading.</p>
+
+<h3>Complete code</h3>
+
+<figure class='code'><figcaption><span>Psychic Modeling Implementation (psychic.hs)</span> <a href='http://blog.wakatta.jp/downloads/code/algo-design-manual/psychic.hs'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+</pre></td><td class='code'><pre><code class='hs'><span class='line'><span class="kr">import</span> <span class="nn">Data.List</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Ord</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Control.Monad</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">System.Random</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- helpers functions</span>
+</span><span class='line'><span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">product</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'><span class="nf">combi</span> <span class="n">n</span> <span class="n">c</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fact</span> <span class="n">n</span><span class="p">)</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="p">(</span><span class="n">fact</span> <span class="n">c</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">c</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">remainingNumbers</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">union</span> <span class="kt">[]</span> <span class="n">js</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- generate combinations</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="n">k</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">l</span><span class="kt">:</span><span class="n">cs</span> <span class="o">|</span> <span class="n">cs</span> <span class="ow">&lt;-</span> <span class="n">genCombi</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">ls</span><span class="p">]</span> <span class="o">++</span>
+</span><span class='line'>                    <span class="n">genCombi</span> <span class="n">k</span> <span class="n">ls</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- estimates for the solution size</span>
+</span><span class='line'><span class="nf">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">(</span><span class="n">combi</span> <span class="n">k</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span>
+</span><span class='line'>                            <span class="p">(</span><span class="n">combi</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">|</span> <span class="n">i</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="n">l</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
+</span><span class='line'><span class="nf">lowerBound</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">combi</span> <span class="n">n</span> <span class="n">j</span><span class="p">)</span> <span class="o">/</span>
+</span><span class='line'>                     <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- definition of coverage measure</span>
+</span><span class='line'><span class="nf">cover</span> <span class="n">l1</span> <span class="n">l2</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">intersect</span> <span class="n">l1</span> <span class="n">l2</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- predicate functions: check cover between ticket and j-subset</span>
+</span><span class='line'><span class="nf">coveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'><span class="nf">notCoveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- keep only j-subsets that are not covered by tickets</span>
+</span><span class='line'><span class="nf">notCoveredBatch</span> <span class="n">l</span> <span class="n">ts</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="n">notCovered</span> <span class="n">l</span><span class="p">)</span> <span class="n">js</span> <span class="n">ts</span>
+</span><span class='line'><span class="nf">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">notCoveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- length of j-subsets from js that are sufficiently covered by t</span>
+</span><span class='line'><span class="nf">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- check the coverage of a single k number ticket on the C_j^n</span>
+</span><span class='line'><span class="c1">-- potentials; can be compared against ticketCover estimate</span>
+</span><span class='line'><span class="nf">checkFormula</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">candidates</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">ticket</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">k</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">covered</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">ticket</span><span class="p">)</span> <span class="n">candidates</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">length</span> <span class="n">covered</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- compute solution given a candidate generator</span>
+</span><span class='line'><span class="nf">solve</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">gc</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">jtuples</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">loop</span> <span class="n">jtuples</span>
+</span><span class='line'> <span class="kr">where</span> <span class="n">loop</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'>       <span class="n">loop</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>         <span class="n">t</span> <span class="ow">&lt;-</span> <span class="n">gc</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">ts</span> <span class="ow">&lt;-</span> <span class="n">loop</span> <span class="o">$</span> <span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span>
+</span><span class='line'>         <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">ts</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- naive candidate generator</span>
+</span><span class='line'><span class="nf">getCandidate</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>      <span class="n">tickets</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">k</span> <span class="n">numbers</span>
+</span><span class='line'>      <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- Knuth method for generating combination</span>
+</span><span class='line'><span class="c1">-- adapted for arbitrary set</span>
+</span><span class='line'><span class="nf">sample</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="n">k</span> <span class="n">ds</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">sample</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ds</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">p</span> <span class="ow">&lt;-</span> <span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span> <span class="n">ds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">ds</span><span class="o">!!</span><span class="n">p</span>
+</span><span class='line'>  <span class="kr">if</span> <span class="n">not</span> <span class="p">(</span><span class="n">t</span> <span class="p">`</span><span class="n">elem</span><span class="p">`</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">head</span> <span class="n">ds</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- random candidate generator</span>
+</span><span class='line'><span class="nf">getCandidateRandom</span> <span class="n">beta</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>  <span class="n">tickets</span> <span class="ow">&lt;-</span> <span class="n">replicateM</span> <span class="n">beta</span> <span class="p">(</span><span class="n">sample</span> <span class="n">k</span> <span class="n">numbers</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Exam Problems]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/"/>
+    <updated>2012-02-05T12:27:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems</id>
+    <content type="html"><![CDATA[<p>It took me longer than I thought, and the outcome is slightly
+disappointing: I failed to solve two of the problems, and I solved the
+remaining ones way too slowly, so in a real exam conditions I probably
+would have solved just one or two&#8230;</p>
+
+<!-- more -->
+
+
+<h2>Exam Problems</h2>
+
+<h3>4 Pegs Tower of Hanoi</h3>
+
+<p>First, it helps to see that the indices of the recurrence are actually
+$S_n$:</p>
+
+<div markdown="0">
+\begin{align}
+W_{n(n+1)/2}&amp;= W_{S_n}&#92;&#92;
+W_{n(n-1)/2}&amp;= W_{S_{n-1}}
+\end{align}
+</div>
+
+
+<p>And of course, $S_n = S_{n-1} + n$.</p>
+
+<p>Setting $m=S_{n-1}$, we try to show:</p>
+
+<div markdown="0">
+\begin{align}
+W_{m+n} &amp; \le 2W_{m} + T_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Now, obviously, if we have $m+n$ discs, we can move the $m$ top ones
+from $A$ to $C$ using $B$ and $D$ as transfer pegs, then move the
+bottom $n$ ones from $A$ to $B$ using $D$ as transfer peg, and finally
+move the top $m$ ones from $C$ to $B$.</p>
+
+<p>The first step takes $W_m$ moves, the second one is the classic Tower
+of Hanoi problem (as we can no longer use peg $C$, we only have three
+pegs), so it takes $T_n$ moves, and the last step takes $W_m$  moves again.</p>
+
+<p>This is only one possible solution; the optimal one must be equal or
+better, so we have</p>
+
+<div markdown="0">
+\begin{align}
+W_{m+n} &amp; \le 2W_m + T_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>This is true for any $m+n$ discs, and in particular for
+$S_n = S_{n-1} + n$ ones.</p>
+
+<h3>Specific Zigs</h3>
+
+<p>I could not solve this problem. I had found that the half-lines did
+intersect, but then I failed to show that their intersections were all
+distinct.</p>
+
+<p>Even with the solution from the book, it took me a while before I
+finally had a complete understanding.</p>
+
+<p>One problem I had was that lines in a graph are basic college level
+mathematics, but college was a long, long time ago. I pretty much had
+to work from first principles.</p>
+
+<p>Following the book in writing the positions as $(x_j, 0)$ and
+$(x_j - a_j, 1)$, I need to find $\alpha$ and $\beta$ such that
+$y=\alpha x + \beta$ is true for both points above.</p>
+
+<div markdown="0">
+\begin{align}
+0 &amp; = \alpha x_j + \beta &#92;&#92;
+\beta &amp; = - \alpha x_j&#92;&#92;
+1 &amp; = \alpha (x_j - a_j) - \alpha x_j&#92;&#92;
+&amp; = \alpha x_j - \alpha a_j - \alpha x_j&#92;&#92;
+&amp; = - \alpha a_j&#92;&#92;
+\alpha &amp; = \frac{-1}{a_j}&#92;&#92;
+y &amp; = \frac{x_j - x}{a_j}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>With this given, I can try to find the intersection of lines from
+different zigs, $j$ and $k$:</p>
+
+<div markdown="0">
+\begin{align}
+\frac{x_j - x}{a_j} &amp; = \frac{x_k - x}{a_k}&#92;&#92;
+a_k (x_j - x) &amp; = a_j (x_k - x)&#92;&#92;
+a_k x_j - a_k x &amp; = a_j x_k - a_j x&#92;&#92;
+a_k x_j - a_j x_k &amp; = (a_k - a_j) x&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Now, still following the book, I replace $x$ by $t$ with
+$x=x_j - t a_j$:</p>
+
+<div markdown="0">
+\begin{align}
+a_k x_j - a_j x_k &amp; = (a_k - a_j) (x_j - t a_j)&#92;&#92;
+a_k x_j - a_j x_k &amp; = a_k x_j - a_j x_j - t a_j a_k + t a_j^2&#92;&#92;
+- a_j x_k &amp; = t a_j^ 2 - a_j x_j - t a_j a_k&#92;&#92;
+- x_k &amp; = t a_j - x_j -t a_k&amp;&amp;\text{dividing by \(a_j\)}&#92;&#92;
+x_j - x_k &amp; = t (a_j - a_k)&#92;&#92;
+t &amp; = \frac{x_j - x_k}{a_j - a_k}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Somehow, I have a faint memory of such a result; I need to check a
+college math book.</p>
+
+<p>To complete, I need to show that $y = t$:</p>
+
+<div markdown="0">
+\begin{align}
+y &amp; = \frac{x_j - x}{a_j}&#92;&#92;
+&amp; = \frac{x_j - x_j + t a_j}{a_j}&#92;&#92;
+&amp; = \frac{t a_j}{a_j}&#92;&#92;
+&amp; = t&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So the intersection of any two pair of half-lines from different zigs
+is $(x_j - t a_j, t)$. Note that $t$ has the same value whether
+$j \gt k$ or $k \gt j$. To simplify further computations, I set
+$j \gt k$.</p>
+
+<p>There are two remaining steps: show that $t$ is different for
+different pairs of $j$, $k$ (with $j \ne k$); and then show that the
+four intersections for a pair $j$, $k$ are also distinct.</p>
+
+<p>$a_j$ can be of two forms: $n^j$ and $n^j + n^{-n}$. So $a_j - a_k$
+can be one of</p>
+
+<div markdown="0">
+\begin{align}
+&amp; n^j - n^k&#92;&#92;
+&amp; n^j + n^{-n} - n^k&#92;&#92;
+&amp; n^j - n^k - n^{-n}&#92;&#92;
+n^j + n^{-n} - n^k - n^{-n} = &amp; n^j - n^k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So there are three different forms for $a_j - a_k$, which I will
+simply write $n^j - n^k + \epsilon$ where $|\epsilon| \lt 1$.</p>
+
+<div markdown="0">
+\begin{align}
+t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k + \epsilon}&#92;&#92;
+&amp; = \frac{(n^j - n^k)(n^j + n^k)}{n^j - n^k + \epsilon}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Let&#8217;s show that $n^j+n^k - 1 \lt t \lt n^j+n^k + 1$: multiply the
+whole inequality by $n^j - n^k + \epsilon$. As</p>
+
+<div markdown"0">
+\begin{align}
+n^j - n^k &amp; \ge n&#92;&#92;
+&amp; \ge 2&#92;&#92;
+&amp; \gt |\epsilon|&#92;&#92;
+\end{align}
+</div>
+
+
+<p>so $n^j - n^k + \epsilon \gt 0$. Defining</p>
+
+<div markdown="0">
+\begin{align}
+N_{jk} &amp; = n^j + n^k&#92;&#92;
+N&#8217;_{jk} &amp; = n^j - n^k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>the left and right inequalities become</p>
+
+<div markdown="0">
+\begin{align}
+(N_{jk} - 1) (N&#8217;_{jk} + \epsilon) &amp; = N_{jk}N&#8217;_{jk} - N&#8217;_{jk} + \epsilon N_{jk} - \epsilon&#92;&#92;
+(N_{jk} + 1) (N&#8217;_{jk} + \epsilon) &amp; = N_{jk}N&#8217;_{jk} + N&#8217;_{jk} + \epsilon N_{jk} + \epsilon&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Subtracting $N_{jk}N&#8217;_{jk} = (n^j-n^k)(n^j+n^k)$ from the original inequality:</p>
+
+<div markdown="0">
+\begin{align}
+-N&#8217;_{jk}+\epsilon N_jk - \epsilon \lt 0 \lt N&#8217;_{jk} + \epsilon N_{jk} + \epsilon&#92;&#92;
+\end{align}
+</div>
+
+
+<p>I need to prove the following inequality</p>
+
+<div markdown"0">
+\begin{align}
+(n^j - n^k) &amp; \gt |\epsilon| + |\epsilon| (n^j - n^k)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>We already know $|\epsilon| \lt 1$, so looking at the second term (and
+assuming $\epsilon \ne 0$, as this case is trivial)</p>
+
+<div markdown"0">
+\begin{align}
+|\epsilon| (n^j-n^k) &amp; = n^{-n} (n^j - n^k)&#92;&#92;
+&amp; = n^{j-n} - n^{k-n}&#92;&#92;
+&amp;\lt 1&#92;&#92;
+\end{align}
+</div>
+
+
+<p>and we have</p>
+
+<div markdown"0">
+\begin{align}
+n^j - n^k &amp; \ge 2
+&amp; \gt |\epsilon| + |\epsilon (n^j - n^k)|&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So the inequalities are established. $N_{jk}$ can be seen as a number
+in based $n$ where the digits are all zeroes except the $j$ and $k$ ones,
+$N_{jk} = N_{j&#8217;k&#8217;} \implies j=j&#8217;, k=k&#8217;$, and therefore $t$ uniquely
+defines $j$ and $k$ or, two pairs of zigs must have different $t$.</p>
+
+<p>I still need to show that for a given pair, when $t$ is the same, the
+intersections are different. There are three different values of
+$t$, so two intersections points have the same height. This happens
+for</p>
+
+<div markdown="0">
+\begin{align}
+t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>which happens when $a_j = n^j$, $a_k = n^k$ and $a_j = n^j + n^{-n}$,
+$a_k = n^k + n^{-n}$. But the $x = x_j - t a_j$ value for
+intersections is different: $t n^j$ and $t (n^j + n^{-n})$, so there
+are indeed four distinct intersection points.</p>
+
+<h3>30 degrees Zigs</h3>
+
+<p>I could not solve this problem. Once again, my lack of intuition with
+geometry was to blame.</p>
+
+<p>But if we have two zigs with half-lines angles $\phi$, $\phi + 30^{\circ}$
+and $\theta$, $\theta + 30^{\circ}$, then for any two pairs of
+half-lines from the two zigs to intersect, their angles must be
+between $0^{\circ}$ and $180^{\circ}$. Taken together, these
+constraints give $0^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.</p>
+
+<p>This means there cannot be more than $5$ such pairs (and to be honest,
+I would have said 4, but the book says it&#8217;s indeed 5).</p>
+
+<h3>Recurrence Equations</h3>
+
+<h3>Good and Bad Persons in Josephus Problem</h3>
+
+<p>It took me a while, as I was trying to find a recurrence equation of
+some sort which would help me with this problem and the bonus one
+(where Josephus&#8217; position is fixed but he can pick $m$). Eventually I
+found one, which did not help me with the bonus problem, but led me to
+a solution for this problem.</p>
+
+<p>Obviously, if we have $k$ persons and want to remove the last one in
+the first round, we can choose $m=k$ and that will work. Actually, any
+multiple $m=ak$ works as well.</p>
+
+<p>This shows that at each round, if we have $k$ persons left, and we
+start counting on the first one, when $m=ak$ we will remove the $k^{th}$
+person then start counting from the first one again.</p>
+
+<p>Back to the original problem: there are $2n$ persons, and we want to
+get rid of the $n+1, \cdots, 2n$ first. If we take
+$m=lcm(n+1,\cdots, 2n)$, then for the first $n$ rounds the last (bad)
+person will be remove, leaving only the good ones at the end.</p>
+
+<p>When first solving the problem, I picked $m=\prod_{i=1}^n (n+i)$,
+which has the same property as the least common multiple, but is
+larger. Perhaps a smaller number is better for the nerves of the
+participants.</p>
+
+<h3>Bonus Problems</h3>
+
+<p>I tried to solve the bonus questions, but after repeatedly failing, I
+had a glimpse at the solutions: they obviously require either
+knowledge of later chapters, or other concepts I know nothing about,
+so I will get back to these bonus problems after I finish the book.</p>
+
+<p>I am now working through Chapter 2. It is a much larger chapter than
+the first, so it will take me some time.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks CouchDB Day 3]]></title>
@@ -6541,820 +7514,6 @@ prints it):</p>
 
 <p>Tomorrow will cover indexing, and more advanced uses of the data (such
 as MapReduce).</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks Riak on EC2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/"/>
-    <updated>2011-12-17T14:36:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2</id>
-    <content type="html"><![CDATA[<p>The third day with Riak had proposed to deploy Riak on a
-<a href="http://aws.amazon.com/ec2/">EC2</a> cluster as an exercise. I could not
-do it then due to poor network connectivity and lack of time (I was
-traveling), but I did it since and here I explain how.</p>
-
-<!--more-->
-
-
-<p>EC2 is a service from Amazon to commission a number of virtual
-computers with specific performance characteristics, and with use
-charged by the hour (the rate depending of the performance).</p>
-
-<p>The whole process is fairly simple and flexible. I got my computers up
-and running in minutes. Setting up Riak was a bit more involved (I
-should probably had tried on my local network first), but eventually I
-was able to load the data and run the queries I wanted.</p>
-
-<p>In outline, here&#8217;s the process</p>
-
-<ul>
-<li>figure out the security requirements</li>
-<li>think about the cluster organisation</li>
-<li>create a few instances of virtual computers</li>
-<li>create the security configuration</li>
-<li>connect to each machine and set it up</li>
-<li>open an SSL tunnel</li>
-<li>&#8230;</li>
-<li>Profit!</li>
-</ul>
-
-
-<p>And now the details.</p>
-
-<h3>Security requirements</h3>
-
-<p>There will be a few machines, and I need each Riak instance to speak
-to each other. This means I need to keep all the required ports open.</p>
-
-<p>As each instance is on a different machine (presumably, I could have
-several instances on each machine but I want to keep things simple), I
-can use the same ports for each instance. I will just have to give
-them different names.</p>
-
-<p>Basho has a helpful
-<a href="http://wiki.basho.com/Network-Security-and-Firewall-Configurations.html">page</a>
-on this topic. It lists the defaults ports (all of them TCP):</p>
-
-<ul>
-<li>epmd&#8217;s listener: 4369</li>
-<li>handoff_port listener: 8099</li>
-<li>web_port: 8098</li>
-<li>pb_port: 8087</li>
-<li>plus a range than can be configured. As I have just a small
-network, I restrict this range to 6000-6999.</li>
-</ul>
-
-
-<p>These are the ports I will open in my configuration settings.</p>
-
-<h3>Cluster organisation</h3>
-
-<p>I want a simple setup:</p>
-
-<ul>
-<li>3 machines</li>
-<li>first one is the ring leader</li>
-<li>first one is also my interface for client connections</li>
-</ul>
-
-
-<p>So I need to set 3 machines up, make the last two join the first, and
-open an SSL tunnel from my local machine to the ring leader.</p>
-
-<h3>EC2 instances</h3>
-
-<p>First I had to sign up to <a href="http://aws.amazon.com/">AWS</a>.</p>
-
-<p>Once this is done, I can use the console, select the EC2 tab, and
-click on &#8220;Launch Instance&#8221;.</p>
-
-<p>I chose &#8220;Launch Classic Wizard&#8221; to have as much flexibility as possible:</p>
-
-<p><img src="https://lh6.googleusercontent.com/-MKXddn82uO8/Tu23KOzMhGI/AAAAAAAAB6Y/XpOren_ANVk/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.26.png"></p>
-
-<p>Then I select a basic 64bit Amazon Linux:</p>
-
-<p><img src="https://lh3.googleusercontent.com/--F8ajmA-58c/Tu23KHI9YNI/AAAAAAAAB6U/1fCrHF_tqg0/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.34.png"></p>
-
-<p>I request 3 instances of type Micro (I&#8217;m just playing; I don&#8217;t really care about performance):</p>
-
-<p><img src="https://lh4.googleusercontent.com/-w31FLsR0iC8/Tu2222Q_ZtI/AAAAAAAAB58/E-E86lTf7xg/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.36.44.png"></p>
-
-<p>I just click through the next two screens (I do not have any specific need for such tuning):</p>
-
-<p><img src="https://lh5.googleusercontent.com/-kRBmxXnSwRc/Tu222wmgj4I/AAAAAAAAB50/U1Rwuqv6R9o/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.05.png">
-<img src="https://lh3.googleusercontent.com/-WiqCpx2PT70/Tu222Iz5nTI/AAAAAAAAB5s/k1ZuuVs1yrE/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.08.png"></p>
-
-<p>For the key pair, I just give a name, then download the file. I will use it later to connect to my new machines:</p>
-
-<p><img src="https://lh4.googleusercontent.com/-JEnCFjVIM54/Tu222D8yOGI/AAAAAAAAB5o/qdAleXN-iDU/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.37.28.png"></p>
-
-<p>For the security, I first name my group, then I can use this name as the source parameter for the rules. All the rules are Custom TCP ones; I just need to give the ports (as determined above):</p>
-
-<p><img src="https://lh3.googleusercontent.com/-dSxG8pYQLEc/Tu222KSxpgI/AAAAAAAAB5w/AtiqjF-QTts/s640/Screen%252520Shot%2525202011-12-18%252520at%25252015.41.18.png"></p>
-
-<p>And then I can finally start my new machines.</p>
-
-<p>On my first attempts, two of the machines did not start; I just created a couple of new machines of the same kind (64bit Amazon Linux Micro), and put them in the same security group.</p>
-
-<p>Here are the complete security rules (I had to add some after the initial setup):</p>
-
-<p><img src="https://lh6.googleusercontent.com/-tSUcf1TbrLQ/Tu23KB_o3wI/AAAAAAAAB6Q/2OopRB6HFeE/s640/Screen%252520Shot%2525202011-12-18%252520at%25252017.05.42.png"></p>
-
-<p>With this, I have a small cluster of machines. Time to connect and put
-them to good use.</p>
-
-<h3>Configuring each machine</h3>
-
-<p>From the EC2 Dashboard, I can access my instances, and get the address for each.</p>
-
-<p>Using the private key downloaded earlier, I can open an SSH connection
-to each machine. Note that the user is by default called <code>ec2-user</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -i riak-private.pem ec2-user@&lt;MACHINE_NAME&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>On each, I first need to install riak. I download it directly from
-Basho <a href="http://downloads.basho.com/riak/CURRENT/">website</a>.</p>
-
-<p>Each machine has some basic tools, but no Erlang compiler. To avoid
-any complications, I chose and retrieved a binary distribution:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>wget http://downloads.basho.com/riak/CURRENT/riak-1.0.2-1.el6.x86_64.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then I  installed the  downloaded package  (<code>ec2-user</code> can  use <code>sudo</code>
-without having to provide a password):</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo rpm -Uvh riak-1.0.2-1.el6.x86_64.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>There are a few error messages (or perhaps warnings), but the package
-is installed and running.</p>
-
-<p>Riak is installed but not started yet. It is important to get the
-configuration right before starting it.</p>
-
-<h4>Common configuration</h4>
-
-<p>For each server, I give it a name that includes the local network IP
-address (not the loopback IP address <code>127.0.0.1</code>). It is important,
-otherwise the machines cannot talk to each others.</p>
-
-<p>I can get it by running <code>ifconfig</code>. I look for the ethernet setup and especially the <code>inet</code> value:
-this is the IP address in Amazon private network. I need to remember
-the IP address for what I will call the first machine, so I copy it
-somewhere (and call it here <code>&lt;IP_ADDRESS_1&gt;</code>)</p>
-
-<p>Using <code>sudo -e /etc/riak/vm.args</code>, I can edit the name of each node. I set it to <code>riak_ec2_1@&lt;IP_ADDRESS&gt;</code>, (or <code>riak_ec2_2</code>, <code>riak_ec2_3</code>, &#8230;).</p>
-
-<p>Note: the editor will be <code>vi</code>.</p>
-
-<p>I also need to change the <code>app.config</code> file:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo -e /etc/riak/app.config`</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I first need to insert a range restriction configuration. I insert the
-following block near the top:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{ kernel, [
-</span><span class='line'>            {inet_dist_listen_min, 6000},
-</span><span class='line'>            {inet_dist_listen_max, 6999}
-</span><span class='line'>            ]},</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For the first machine (the one named <code>riak_ec2_1</code>), I also need to
-extend the <code>http</code> interface list. By default it only listen to the
-loopback interface (<code>127.0.0.1</code>), but I also need it to listen to the
-ethernet interface (see above). Otherwise, I will not be able to set
-the SSL tunnel up.</p>
-
-<p>So I replace the lines that read</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{http, [ {"127.0.0.1", 8098 } ]},</span></code></pre></td></tr></table></div></figure>
-
-
-<p>by something like</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{http, [ {"127.0.0.1", 8098 }, {"&lt;IP_ADDRESS_1&gt;", 8098} ]},</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once this is done, I started the instances:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo riak start</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I can test each instance with:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8098/stats | python -mjson.tool</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally, I can link all instances together by executing on the second
-and third machine:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo riak-admin join riak_ec2_1@&lt;IP_ADDRESS_1&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Testing again the status should show three instances in the same ring.</p>
-
-<p>In case of error, uninstall riak, delete the <code>/var/lib/riak</code> directory,
-and start again (as I did).</p>
-
-<h3>Setting up the SSL tunnel</h3>
-
-<p>Nothing simpler. Using the first machine name (the one I configured
-for connection from the ethernet interface):</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -i riak-private.pem -f ec2-user@&lt;MACHINE_NAME&gt; \
-</span><span class='line'>-L 8098:ec2-user@&lt;MACHINE_NAME&gt;:8098 -N</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And now I can run from my local machine</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:8098/stats | python -mjson.tool</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and get the status of the Riak server as if it was local.</p>
-
-<h3>Loading data and running queries</h3>
-
-<p>The book suggest to use the example data from Basho&#8217;s
-<a href="http://wiki.basho.com/Loading-Data-and-Running-MapReduce-Queries.html">website</a>,
-which is what I did. I downloaded the
-<a href="http://wiki.basho.com/attachments/goog.csv"><code>goog.csv</code></a> data file and
-the <a href="http://wiki.basho.com/attachments/load_data"><code>load_data</code></a>
-script. I changed the port number in the latter to use 8098 instead of
-8091, then I just ran it: the data is send through the SSL tunnel and
-loaded in my EC2 cluster (but it is very slow).</p>
-
-<p>Once this was done, I checked the various queries proposed on the page, and also implemented the MapReduce Challenge:</p>
-
-<h3>MapReduce Challenge</h3>
-
-<p>The MapReduce Challenge is to compute the days with the highest volume
-of dollar traded. This first step is to compute this value, as it is
-not part of the initial data.</p>
-
-<p>I use a definition found
-<a href="http://wiki.fool.com/Daily_dollar_volume">here</a>, which makes
-intuitive sense: <code>Volume*(High - Low)/2</code></p>
-
-<h4>Dollar Traded Volume by Month</h4>
-
-<p>I need to keep both the date and the amount, so my map function will
-keep both items in a data structured indexed by month:</p>
-
-<figure class='code'><figcaption><span>Dollar Traded by Month  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">month</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">pair</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">pair</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then when reducing, I can compare the traded amount and keep the best:</p>
-
-<figure class='code'><figcaption><span>Highest by month  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">month</span> <span class="k">in</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">])</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">?</span>
-</span><span class='line'>  <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span>
-</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">})</span>
-</span><span class='line'>  <span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To test the whole, I can use the following command, then copy and
-paste the query, and execute with <code>Ctrl-D</code>. The command below is run on
-my local machine, but thanks to the SSL tunnel, it will execute on the
-cluster:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -X POST http://127.0.0.1:8098/mapred \
-</span><span class='line'>-H "Content-Type: application/json" -d @-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And the query:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{"inputs":"goog",
-</span><span class='line'> "query":[{"map":{"language":"javascript",
-</span><span class='line'>                  "source":"function(value, keyData, arg) {
-</span><span class='line'>  var data = Riak.mapValuesJson(value)[0];
-</span><span class='line'>  var month = value.key.split('-').slice(0,2).join('-');
-</span><span class='line'>  var pair = {};
-</span><span class='line'>  pair['date'] = value.key;
-</span><span class='line'>  pair['traded'] = data.Volume * (data.High - data.Low) / 2;
-</span><span class='line'>  var obj = {};
-</span><span class='line'>  obj[month] = pair;
-</span><span class='line'>  return [obj];
-</span><span class='line'>}"}},
-</span><span class='line'>         {"reduce":{"language":"javascript",
-</span><span class='line'>                    "source":"function(values, arg) {
-</span><span class='line'>  return [ values.reduce(function(acc, item) {
-</span><span class='line'>    for(var month in item) {
-</span><span class='line'>      if(acc[month]) {
-</span><span class='line'>        acc[month] = acc[month]['traded'] &lt; item[month]['traded'] ?
-</span><span class='line'>  item[month] : acc[month];
-</span><span class='line'>      } else acc[month] = item[month];
-</span><span class='line'>    }
-</span><span class='line'>    return acc;
-</span><span class='line'>  })
-</span><span class='line'>  ];
-</span><span class='line'>}",
-</span><span class='line'>         "keep":true}}]}</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Day by Highest Dollar Traded</h4>
-
-<p>For this one I use a similar approach: I create pairs with the date
-and the amount of dollar traded, but this pair is what I return
-directly (instead of returning it indexed by month).</p>
-
-<p>Indexing by date would not work as in the reduce step I would have to
-keep the result in a simple (i.e. not indexed) variable, and therefore
-would forget the date. By keeping both data items (the date and the
-volume traded in dollar) in the same object, I can reduce a list of
-such objects to a single item and still retain all the relevant information.</p>
-
-<p>The mapping function creates just a pair object from the data:</p>
-
-<figure class='code'><figcaption><span>Dollar Traded by Day  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The reducing function retains the best date by volume traded in dollar
-for each batch. It is simpler than the previous one as the values are
-simple (i.e. not indexed):</p>
-
-<figure class='code'><figcaption><span>Highest ever  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">){</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">){</span>
-</span><span class='line'>             <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">)</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">item</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">item</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>             <span class="k">else</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="nx">item</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>             <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
-</span><span class='line'>            <span class="p">})</span>
-</span><span class='line'>         <span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And the query:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{"inputs":"goog",
-</span><span class='line'> "query":[{"map":{"language":"javascript",
-</span><span class='line'>                  "source":"function(value, keyData, arg) {
-</span><span class='line'>  var data = Riak.mapValuesJson(value)[0];
-</span><span class='line'>  var obj = {};
-</span><span class='line'>  obj['date'] = value.key;
-</span><span class='line'>  obj['traded'] = data.Volume * (data.High - data.Low) / 2;
-</span><span class='line'>  return [obj];
-</span><span class='line'>}"}},
-</span><span class='line'>         {"reduce":{"language":"javascript",
-</span><span class='line'>                    "source":"function(values, arg){
-</span><span class='line'>  return [ values.reduce(function(acc, item){
-</span><span class='line'>                 if(acc) { acc = (acc['traded'] &lt; item['traded']) ? item : acc; }
-</span><span class='line'>                 else { acc = item[date]; }
-</span><span class='line'>             return acc;
-</span><span class='line'>            })
-</span><span class='line'>         ];
-</span><span class='line'>}",
-</span><span class='line'>         "keep":true}}]}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And that&#8217;s it for today.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks HBase Day 3]]></title>
-    <link href="http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/"/>
-    <updated>2011-12-15T16:27:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3</id>
-    <content type="html"><![CDATA[<p>The third day with HBase is a bit short, but opens to a world of
-possibilities: the Cloud.</p>
-
-<p>This is where HBase belongs. No personal (or even that many corporate)
-networks are large enough to let it perform correctly.</p>
-
-<p>HBase depends on a large number of servers running in parallel for
-its performance, and there are few other places to find that many
-machines.</p>
-
-<!--more-->
-
-
-<h3>Thrift</h3>
-
-<p>The first topic for today is <a href="http://thrift.apache.org/">Thrift</a>, a
-generic remote interface to program servers (and a gift from the new
-Evil Empire, Facebook).</p>
-
-<p>It is a tool to document a binary API, and generate client stubs to
-use this API. HBase supports such an API, making it possible to write
-clients in a variety of languages.</p>
-
-<p>Using Thrift on your own project (on the server side, if you have any)
-would make it possible to use different languages on the client side,
-depending on whichever better fits the needs (scripting languages for
-glue scripts, &#8230;)</p>
-
-<p>When I tried the example from the book, I had to change the connection
-address of the <code>thrift_example.rb</code> code from <code>localhost</code> to
-<code>127.0.0.1</code>, otherwise Thrift would refuse the connection.</p>
-
-<h3>Whirr</h3>
-
-<p><a href="http://whirr.apache.org/">Whirr</a> is far more exciting. It is a tool
-to deploy and configure some specific servers on (among others)
-<a href="http://aws.amazon.com/ec2/">Amazon EC2</a>.</p>
-
-<p>The first, and perhaps the most complex step is to open an account on
-<a href="http://aws.amazon.com/">AWS</a>. It will require a phone, a credit card,
-a computer, and some time. And perhaps a couple of emails if the
-account opening remains stuck in &#8220;Pending verification&#8221; status.</p>
-
-<p>Once this is done, Whirr can be used to create instances (be careful
-with that: Amazon will charge at least one hour for each server even
-if you take it down after a couple of minutes), download and install
-specific servers (mostly from the <a href="http://hadoop.apache.org/">Hadoop</a>
-family), configure them, all of this from the comfort of the command
-line (which is my case is cosily close to a cup of warm coco, so it is
-very comfortable indeed).</p>
-
-<p>All you have to do is retrieve you security token from your AWS
-account page, create a public/private key pair, then write a recipe
-file (which describes what kind of machines and how many you need,
-what to install on each, &#8230;), and Whirr takes care of the rest. The
-first two steps only have to be done once; you can deploy as many
-recipes as you need.</p>
-
-<p>The setup process takes a few minutes, then you can connect with SSH
-to one of your remote servers.</p>
-
-<p>Whirr also creates a security configuration for each recipe, opening
-only the ports that are required by the servers in the recipe,
-limiting source of the connections to specific servers. You can also
-edit the security rules directly in the recipe if you want.</p>
-
-<p>The ease with which this can be done is really surprising. It reminds
-me of how easy it was to deploy a Rails application on
-<a href="http://www.heroku.com/">Heroku</a>.</p>
-
-<p>Now, I do not have any foreseen uses for such computing capacity, but
-I can see how it could be helpful for any organisation to be able to
-run occasional large data processing jobs without having to maintain a
-permanent data center.</p>
-
-<h2>Exercises</h2>
-
-<p>There is only one exercise today: to open a Thrift connection to an
-AWS deployed HBase.</p>
-
-<p>First is to get Thrift to run on the deployed machines. The book
-suggest to connect by SSH and start the instance there, but there is a
-better way if you know you will need Thrift: ask Whirr to deploy it
-automatically.</p>
-
-<p>In the file below, I&#8217;ve added the server <code>hbase-thriftserver</code> to the
-master server:</p>
-
-<figure class='code'><figcaption><span>hbase.properties (hbase.properties)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/hbase/hbase.properties'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-</pre></td><td class='code'><pre><code class='properties'><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># Licensed to the Apache Software Foundation (ASF) under one or more</span>
-</span><span class='line'><span class="c"># contributor license agreements.  See the NOTICE file distributed with</span>
-</span><span class='line'><span class="c"># this work for additional information regarding copyright ownership.</span>
-</span><span class='line'><span class="c"># The ASF licenses this file to You under the Apache License, Version 2.0</span>
-</span><span class='line'><span class="c"># (the &quot;License&quot;); you may not use this file except in compliance with</span>
-</span><span class='line'><span class="c"># the License.  You may obtain a copy of the License at</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#     http://www.apache.org/licenses/LICENSE-2.0</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># Unless required by applicable law or agreed to in writing, software</span>
-</span><span class='line'><span class="c"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
-</span><span class='line'><span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
-</span><span class='line'><span class="c"># See the License for the specific language governing permissions and</span>
-</span><span class='line'><span class="c"># limitations under the License.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># HBase 0.90.x on Cloudera Hadoop Cluster on AWS EC2</span>
-</span><span class='line'><span class="c"># </span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Read the Configuration Guide for more info:</span>
-</span><span class='line'><span class="c"># http://incubator.apache.org/whirr/configuration-guide.html</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Change the cluster name here</span>
-</span><span class='line'><span class="na">whirr.cluster-name</span><span class="o">=</span><span class="s">hbase-0.90</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Change the number of machines in the cluster here</span>
-</span><span class='line'><span class="na">whirr.instance-templates</span><span class="o">=</span><span class="s">1 zookeeper+hadoop-namenode+hadoop-jobtracker+hbase-master+hbase-thriftserver,1 hadoop-datanode+hadoop-tasktracker+hbase-regionserver</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># replication level should not be higher than number of data nodes</span>
-</span><span class='line'><span class="na">hbase-site.dfs.replication</span><span class="o">=</span><span class="s">2</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># For EC2 set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.</span>
-</span><span class='line'><span class="na">whirr.provider</span><span class="o">=</span><span class="s">aws-ec2</span>
-</span><span class='line'><span class="na">whirr.identity</span><span class="o">=</span><span class="s">${env:AWS_ACCESS_KEY_ID}</span>
-</span><span class='line'><span class="na">whirr.credential</span><span class="o">=</span><span class="s">${env:AWS_SECRET_ACCESS_KEY}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># The size of the instance to use. See http://aws.amazon.com/ec2/instance-types/</span>
-</span><span class='line'><span class="na">whirr.hardware-id</span><span class="o">=</span><span class="s">c1.xlarge</span>
-</span><span class='line'><span class="c"># Ubuntu 10.04 LTS Lucid. See http://alestic.com/</span>
-</span><span class='line'><span class="na">whirr.image-id</span><span class="o">=</span><span class="s">us-east-1/ami-da0cf8b3</span>
-</span><span class='line'><span class="c"># If you choose a different location, make sure whirr.image-id is updated too</span>
-</span><span class='line'><span class="na">whirr.location-id</span><span class="o">=</span><span class="s">us-east-1</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># By default use the user system SSH keys. Override them here.</span>
-</span><span class='line'><span class="na">whirr.private-key-file</span><span class="o">=</span><span class="s">keys/id_rsa</span>
-</span><span class='line'><span class="na">whirr.public-key-file</span><span class="o">=</span><span class="s">keys/id_rsa.pub</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># The HBase version to use.</span>
-</span><span class='line'><span class="na">whirr.hbase.tarball.url</span><span class="o">=</span><span class="s">http://apache.cu.be/hbase/hbase-0.90.4/hbase-0.90.4.tar.gz</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># The Hadoop version to use. See http://hbase.apache.org/book/hadoop.html</span>
-</span><span class='line'><span class="c"># The default Hadoop version used by Whirr does not fulfill the HBase 0.90.x requirements.</span>
-</span><span class='line'><span class="c"># Whirr will replace the hadoop-core jar in HBase with the one from the actually installed Hadoop.</span>
-</span><span class='line'><span class="c"># This example uses Cloudera&#39;s CDH3.</span>
-</span><span class='line'><span class="na">whirr.hadoop.tarball.url</span><span class="o">=</span><span class="s">http://archive.cloudera.com/cdh/3/hadoop-0.20.2-cdh3u2.tar.gz</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As for the connection to the Thrift server, the method described in
-the book is to open the port 9090 to the world, and to hope to be the
-only one to know about this port: a likely possibility, but who would
-want to take such a chance in production?</p>
-
-<p>Fortunately, there is a better solution: SSH Tunneling. It is very
-easy to set up and requires nothing but what we already have.</p>
-
-<p>The general idea is to open a ssh tunnel between a local port and a
-remote port: whatever you puts in the local port is taken by ssh,
-transported over the SSH connection; once it reaches the remote
-machine, the remote ssh instance will forward the data to the remote
-port, as if it was a client running on the remote machine.</p>
-
-<p>The transport between the two machines only requires the remote one to
-have the SSH port open (which is both the case, and secure). You have
-to use authentication and encryption for the transport.</p>
-
-<p>And what is required to implement this SSH tunneling:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -i keys/id_rsa -f ${USER}@&lt;SERVER_NAME&gt; -L 9090:&lt;SERVER_NAME&gt;:9090 -N</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(from the directory where you created the <code>keys</code> directory)</p>
-
-<p>Here I map the local port 9090 to the remote machine&#8217;s port 9090. That
-way I don&#8217;t even have to change my <code>thrift_example.rb</code> code. But of
-course, if I had to connect to different machines, I would use
-different ports.</p>
-
-<p>The Thrift server was automatically started by the recipe.</p>
-
-<p>With this in place, and after creating some tables in the remote
-HBase:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby thrift_example.rb 
-</span><span class='line'>links
-</span><span class='line'>  from:
-</span><span class='line'>    maxVersions: 1
-</span><span class='line'>    compression: NONE
-</span><span class='line'>    bloomFilterType: ROWCOL
-</span><span class='line'>  to:
-</span><span class='line'>    maxVersions: 1
-</span><span class='line'>    compression: NONE
-</span><span class='line'>    bloomFilterType: ROWCOL
-</span><span class='line'>wiki
-</span><span class='line'>  revision:
-</span><span class='line'>    maxVersions: 2147483647
-</span><span class='line'>    compression: NONE
-</span><span class='line'>    bloomFilterType: NONE
-</span><span class='line'>  text:
-</span><span class='line'>    maxVersions: 2147483647
-</span><span class='line'>    compression: GZ
-</span><span class='line'>    bloomFilterType: ROW</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(be careful not to use LZO as a compression algorithm in the remote
-HBase, as I did when I tried the first time: the default HBase has no
-LZO support and will fail when you try to enable a table with LZO compression).</p>
-
-<p>To take a tunnel down, you&#8217;ll have to find and kill it (as far as I
-can tell). If you have no other ssh connections, <code>killall ssh</code> is a
-simple solution. In any case, the connection will be cut when the
-remote servers are destroyed.</p>
-
-<h2>Wrapping up HBase</h2>
-
-<p>I like what I see with HBase: the project has strong backers among its
-users (Yahoo, Facebook, &#8230;); it belongs to a large family of tools
-that help to design Big Data solutions, and integrates well with some
-Cloud networks</p>
-
-<p>The model is easy to understand (the book mentions the possibility of
-eventual consistency due to regional replication, but this remains a
-simpler model than Riak&#8217;s), and close to the original MapReduce
-concept.</p>
-
-<p>This is really one tool I will have a closer look to in the near
-future.</p>
 ]]></content>
   </entry>
   

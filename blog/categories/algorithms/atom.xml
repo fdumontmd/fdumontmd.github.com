@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Algorithms | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/algorithms/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-02-10T20:03:17+09:00</updated>
+  <updated>2012-02-13T23:55:14+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,856 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Psychic Modeling (fast version)]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version/"/>
+    <updated>2012-02-13T20:23:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version</id>
+    <content type="html"><![CDATA[<p>In <a href="/blog/2012/02/10/psychic-modeling/">Psychic Modeling</a>, I described
+a reasonably understandable implementation of a ticket generator for
+the
+<a href="http://www8.cs.umu.se/kurser/TDBAfl/VT06/algorithms/BOOK/BOOK/NODE19.HTM">Psychic Modeling Problem</a>. While
+this version is not overly slow, it is not amazingly fast either.</p>
+
+<p>As I'm refreshing my C skills, I thought it would be interesting to
+try and implement a version as fast as possible.</p>
+
+<!-- more -->
+
+
+<h3>Design</h3>
+
+<p>I represent a subset as bit patterns in a 32-bits integer. This means
+I am limited to 32 different values (in other words, $n$ must be no
+larger than 32). The upside is that I have extremely fast intersection
+(<code>&amp;</code>) and union (<code>|</code>) operations, among others.</p>
+
+<h3>Memory Management</h3>
+
+<p>I use a work memory allocated at the beginning of the search;
+additional memory is allocated on the stack (using C99 features), and
+the selected tickets are just printed to avoid having to remember
+them.</p>
+
+<p>The work memory is large enough to store $1 + \beta$ times a block
+large that can hold the complete set of $j$-subsets. The first block
+keeps the remaining $j$-subsets, and there's an extra block for each
+random ticket: each time (for a total of $\beta$) a random ticket is
+generated, the $j$-subsets that are not covered yet is computed for
+this ticket; after I have generated $\beta$ tickets, I copy the work
+block of the best one over the first one.</p>
+
+<p>I could have use just 3 blocks, a reference, the best so far, and one
+for the current random ticket, and copy from the current to the best
+each time the current ticket is better. There would be more copy
+operations, but perhaps less movement between the cache and the
+memory. The current design requires less than 2M, and only one copy
+operation per random ticket.</p>
+
+<h3>Non portable features</h3>
+
+<p>I am using a few GCC
+<a href="http://gcc.gnu.org/onlinedocs/gcc-4.6.2/gcc/Other-Builtins.html">built-in</a>
+bit-level operations (number of bits, index of least significant 1
+bit, and count of trailing zeroes);
+<a href="http://www-graphics.stanford.edu/~seander/bithacks.html">Bit Twiddling Hacks</a>
+and <a href="http://www.hackersdelight.org/">Hacker's Delight</a> have portable
+alternatives.</p>
+
+<p>I also use <code>/dev/random</code> as a source of random numbers; replacing
+<code>dev_random</code> by <code>random</code> would restore portability (but the output
+would always be the same, and the random state is reset when the
+program starts).</p>
+
+<h3>Performance</h3>
+
+<p>So, is it fast?</p>
+
+<p>```
+$ time ./psychic 18 10 7 6 > output.txt</p>
+
+<p>real    0m0.289s
+user    0m0.238s
+sys     0m0.050s
+```</p>
+
+<p>The program found 71 tickets covering all 7-subsets with at least 6
+numbers in less than a second. Even when the conditions are not that
+good, it remains fast:</p>
+
+<p>```
+$ time ./psychic 18 7 7 6 > output.txt</p>
+
+<p>real    0m5.445s
+user    0m5.007s
+sys     0m0.430s
+```</p>
+
+<p>Here it generated 1077 tickets using the smaller ticket size from
+<a href="http://www.cs.sunysb.edu/~skiena/papers/lotto.doc">Younas and Skiena paper</a>;
+the paper had a 1080 tickets solution, so my version is effective.</p>
+
+<p>Of course, it would be useless and unfair to compare the speed of this
+version against the numbers from the paper; more relevant is the
+difference with the Haskell version: while the latter was not meant to
+be fast, it is hundreds of times slower. I suppose it would be
+interesting to try and make it faster, but I suspect it would be just
+as ugly or uglier than the C version. And I like to keep using Haskell as a
+design and exploratory tool.</p>
+
+<h3>Overview of the code</h3>
+
+<h4><code>solve</code></h4>
+
+<p>The main function, <code>solve</code>, is more complex than in the Haskell
+version. It allocates the work memory, and fills it with <code>init</code>. A
+first ticket is used in <code>init</code> to filter out $j$-subsets.</p>
+
+<p>Then the loop for the other tickets starts. It of course stops when
+there are no remaining $j$-subsets.</p>
+
+<p>The subset of remaining numbers is computed with <code>funion</code> (fold
+union), and the <code>digits</code> array prepared to be used in <code>sample</code>. It
+consists of the individual bits of the number representing the
+remaining numbers subset. It is computed by repeatedly isolating the
+rightmost 1 bit (with <code>d &amp; -d</code>), then clearing this bit (with <code>d &amp;= d -1</code>).</p>
+
+<p>A first ticket is randomly generated and its uncovered set
+computed. It is also set as the best new ticket (and indeed is the
+best so far). Then for the remaining $\beta-1$ new tickets, the
+uncovered set is computed as well, and if the new set is smaller than
+the best's, the new ticket becomes the best as well.</p>
+
+<p>The best ticket is printed, the main work memory is updated with the
+best uncovered set, and if there are any remaining $j$-subsets to
+find, we loop.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>solve  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">void</span> <span class="nf">solve</span><span class="p">(</span><span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">j</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">UINT</span> <span class="n">r</span> <span class="o">=</span> <span class="n">combi</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+</span><span class='line'><span class="n">UINT</span> <span class="o">*</span><span class="n">work</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">BETA</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">show_set</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">r</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">d</span> <span class="o">=</span> <span class="n">funion</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">bc</span> <span class="o">=</span> <span class="n">bits_count</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">digits</span><span class="p">[</span><span class="n">bc</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">digits</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="o">-</span><span class="n">d</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">d</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="o">=</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">best_remaining</span><span class="p">,</span> <span class="n">best_pos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="n">r</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">BETA</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">new_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">new_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">new_ticket</span><span class="p">,</span>
+</span><span class='line'>                                         <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">new_remaining</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">best_remaining</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">new_ticket</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">new_remaining</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">best_pos</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">show_set</span><span class="p">(</span><span class="n">best_ticket</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">best_remaining</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">memcpy</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">(</span><span class="n">best_pos</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="n">best_remaining</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">r</span> <span class="o">=</span> <span class="n">best_remaining</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">free</span><span class="p">(</span><span class="n">work</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h4><code>init</code></h4>
+
+<p><code>init</code>'s purpose it to avoid wasting a loop over the $j$-subsets by
+merging the generation of $j$-subsets with the coverage of a first
+permutation (defined as <code>[1..k]</code> in <code>solve</code>). The returned value is
+not size of the not yet covered set of $j$-subsets.</p>
+
+<p>If all tickets had to be generated randomly, 0 could be passed instead
+of a ticket to keep all $j$-subsets.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>init  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">init</span><span class="p">(</span><span class="n">UINT</span> <span class="n">c</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">w</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="n">UINT</span> <span class="n">v</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">c</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">v</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">k</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">v</span> <span class="o">=</span> <span class="n">next_perm</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h4><code>check_cover</code></h4>
+
+<p><code>check_cover</code> has a similar design as <code>init</code>, but reads the
+$j$-subsets from the work memory <code>from</code> instead of generating them.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>check_cover  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">check_cover</span><span class="p">(</span><span class="n">UINT</span> <span class="n">r</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">t</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">from</span><span class="p">[],</span> <span class="n">UINT</span> <span class="n">to</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">r</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">t</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">to</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h4><code>sample</code></h4>
+
+<p><code>sample</code> is very similar to the Hashell version (indeed they are both
+based on the same algorithm); here the <code>digits</code> array plays the role
+that <code>ds</code> played in the Haskell version.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>sample  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">sample</span><span class="p">(</span><span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">ds</span><span class="p">[])</span> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">UINT</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ds</span><span class="p">);</span>
+</span><span class='line'><span class="n">UINT</span> <span class="n">p</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">randomR</span><span class="p">(</span><span class="n">n</span><span class="p">)];</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">ds</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">p</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h4><code>next_perm</code></h4>
+
+<p>The <code>next_perm</code> is from <a href="http://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation">Bit Twiddling Hacks</a>, and explained <a href="http://www.alexbowe.com/generating-binary-permutations-in-popcount-or">here</a>.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>next_perm  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">next_perm</span><span class="p">(</span><span class="n">UINT</span> <span class="n">v</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">v</span> <span class="o">|</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(((</span><span class="o">~</span><span class="n">t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="o">-~</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="p">(</span><span class="n">__builtin_ctz</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h4>Compiling and running</h4>
+
+<p>Using <code>gcc</code>, the necessary option is <code>-std=c99</code> to activate C99
+support; <code>-O3</code> gives much (really) better performance, while <code>-Wall</code>
+is in general a good idea:</p>
+
+<p><code>
+$ gcc-4.6.2 -Wall -O3 -std=c99 psychic.c -o psychic
+</code></p>
+
+<p>To run it, just pass the $n$, $k$, $j$ and $l$ parameters on the
+command line. There is no checks, so avoid mistakes. The program
+outputs the generated tickets:</p>
+
+<p><code>
+$ ./psychic 5 3 3 2
+1, 2, 3
+1, 4, 5
+</code></p>
+
+<h3>Wrapping up</h3>
+
+<p>After I completed the Haskell version, I found it not overly difficult
+to implement the C one. I was lucky to have discovered Bit Twiddling
+Hacks the week before; the code fragments there were very helpful in
+writing efficient set oriented functions over words.</p>
+
+<p>Surprisingly, I had just one bug to track (I was using a variable both
+as parameter and temporary storage in one of the function); that was
+lucky as I'm not sure I could have debugged such code.</p>
+
+<h3>Complete Code</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Psychic Modeling Fast Version  (psychic.c)</span> <a href='/downloads/code/algo-design-manual/psychic.c'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdbool.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;stdlib.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">typedef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">UINT</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#define BETA 100</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define first_perm(n) ((1 &lt;&lt; n) - 1);</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Mac OS X/Linux specific */</span>
+</span><span class='line'><span class="kt">FILE</span> <span class="o">*</span><span class="n">drand</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">UINT</span> <span class="nf">def_random</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">r</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">fread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">r</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">drand</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">r</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define _random() def_random()</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">/* GCC specific definitions */</span>
+</span><span class='line'><span class="cp">#define bits_count(v) __builtin_popcount(v)</span>
+</span><span class='line'><span class="cp">#define least_one(v) __builtin_ffs(v)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* http://www-graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation */</span>
+</span><span class='line'><span class="cm">/* return next lexicographic permutation */</span>
+</span><span class='line'><span class="n">UINT</span> <span class="nf">next_perm</span><span class="p">(</span><span class="n">UINT</span> <span class="n">v</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">v</span> <span class="o">|</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(((</span><span class="o">~</span><span class="n">t</span> <span class="o">&amp;</span> <span class="o">-~</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">__builtin_ctz</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* following</span>
+</span><span class='line'><span class="cm">   http://mikeash.com/pyblog/friday-qa-2011-03-18-random-numbers.html */</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * return a random UINT 0 &lt;= r &lt; n</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="n">UINT</span> <span class="nf">randomR</span><span class="p">(</span><span class="n">UINT</span> <span class="n">n</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">two31</span> <span class="o">=</span> <span class="mi">1U</span> <span class="o">&lt;&lt;</span> <span class="mi">31</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">max</span> <span class="o">=</span> <span class="p">(</span><span class="n">two31</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">r</span> <span class="o">=</span> <span class="n">_random</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="n">max</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">r</span> <span class="o">%</span> <span class="n">n</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* http://rosettacode.org/wiki/Evaluate_binomial_coefficients#C */</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * binomial coefficient</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="n">UINT</span> <span class="nf">combi</span><span class="p">(</span><span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">d</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">&gt;</span> <span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">k</span> <span class="o">=</span> <span class="n">d</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">d</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">n</span> <span class="o">&gt;</span> <span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">r</span> <span class="o">*=</span> <span class="n">n</span><span class="o">--</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="n">d</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">r</span> <span class="o">%</span> <span class="n">d</span><span class="p">))</span>
+</span><span class='line'>            <span class="n">r</span> <span class="o">/=</span> <span class="n">d</span><span class="o">--</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">r</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * select k digits from ds. n is length of ds</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="n">UINT</span> <span class="nf">sample</span><span class="p">(</span><span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">ds</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ds</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">p</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">randomR</span><span class="p">(</span><span class="n">n</span><span class="p">)];</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">&amp;</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">ds</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">p</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * displays subset expressed as bit positions</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">show_set</span><span class="p">(</span><span class="n">UINT</span> <span class="n">v</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">bool</span> <span class="n">f</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">f</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="n">least_one</span><span class="p">(</span><span class="n">v</span><span class="p">));</span>
+</span><span class='line'>        <span class="n">f</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">v</span> <span class="o">&amp;=</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * union of all subsets</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="n">UINT</span> <span class="nf">funion</span><span class="p">(</span><span class="n">UINT</span> <span class="n">c</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">w</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">c</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">r</span> <span class="o">|=</span> <span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">r</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * init work memory with subsets that are far from</span>
+</span><span class='line'><span class="cm"> * initial ticket (defined as first_perm)</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="n">UINT</span> <span class="nf">init</span><span class="p">(</span><span class="n">UINT</span> <span class="n">c</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">w</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">v</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">c</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">v</span> <span class="o">&amp;</span> <span class="n">k</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">v</span> <span class="o">=</span> <span class="n">next_perm</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * copies subsets that are far from passed ticket</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="n">UINT</span> <span class="nf">check_cover</span><span class="p">(</span><span class="n">UINT</span> <span class="n">r</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">t</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">from</span><span class="p">[],</span> <span class="n">UINT</span> <span class="n">to</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">t</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">to</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">solve</span><span class="p">(</span><span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">j</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">r</span> <span class="o">=</span> <span class="n">combi</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="o">*</span><span class="n">work</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">BETA</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">show_set</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">r</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">d</span> <span class="o">=</span> <span class="n">funion</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">bc</span> <span class="o">=</span> <span class="n">bits_count</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">digits</span><span class="p">[</span><span class="n">bc</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">digits</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span> <span class="o">&amp;</span> <span class="o">-</span><span class="n">d</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">d</span> <span class="o">&amp;=</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">best_remaining</span><span class="p">,</span> <span class="n">best_pos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="n">r</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">BETA</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">UINT</span> <span class="n">new_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">UINT</span> <span class="n">new_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">new_ticket</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">new_remaining</span> <span class="o">&lt;</span> <span class="n">best_remaining</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">new_ticket</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">new_remaining</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">best_pos</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">show_set</span><span class="p">(</span><span class="n">best_ticket</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">best_remaining</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">memcpy</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">(</span><span class="n">best_pos</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="n">best_remaining</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">r</span> <span class="o">=</span> <span class="n">best_remaining</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">free</span><span class="p">(</span><span class="n">work</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">sscanf</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&quot;%u&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">sscanf</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&quot;%u&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">k</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">sscanf</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s">&quot;%u&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">j</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">sscanf</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="s">&quot;%u&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">l</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">drand</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">&quot;/dev/random&quot;</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">solve</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">fclose</span><span class="p">(</span><span class="n">drand</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Psychic Modeling]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-02-13T23:55:14+09:00</updated>
+  <updated>2012-02-27T23:53:53+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,257 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Notes]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/02/27/concrete-mathematics-chapter-2-notes/"/>
+    <updated>2012-02-27T10:54:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/02/27/concrete-mathematics-chapter-2-notes</id>
+    <content type="html"><![CDATA[<p>After a long but busy silence, I have now a few notes on the second
+chapter, Sums. As with
+<a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Chapter 1</a>,
+these are nothing revolutionary; just some clarifications of the
+points that were not obvious to me, as well as other, random
+observations.</p>
+
+<!--more-->
+
+
+<p>Overall, this chapter felt less overwhelming than the first, despite
+being much longer and introducing very powerful techniques. I have yet
+to do the exercises, though, so I may still revise this judgement.</p>
+
+<h3>Notation</h3>
+
+<p>The authors mentions that the Sigma-notation is "... impressive to
+family and friends". I can confirm that assessment.</p>
+
+<p>The remark on keeping bounds simple actually goes beyond resisting
+"premature optimisation", that is, removing terms just because they
+are equal to zero. Sometimes, it is worth adding a zero term if it
+simplifies the bounds. Such a trick is used in solving
+$\sum_{1\le j\lt k\le n} \frac{1}{k-j}$, and I'll get back to this
+point when I go over this solution.</p>
+
+<p>The Iverson notation (or Iversonian) is a very useful tool, as is the
+general Sigma-notation. About the latter, it already simplifies
+variable changes a lot, but I found it useful (and less error prone)
+to always write the variable change on the right margin (for instance
+as $k \leftarrow k+1$) and to keep that change as the only one in a
+given line of the rewrite; otherwise, no matter how trivial the
+change, any error I make at that time will be hard to locate (I know;
+I tried).</p>
+
+<h3>Sums and Recurrence</h3>
+
+<p>First we see how easy it is to use the repertoire method to build
+solutions to common (or slightly generalised) sums. The only problem
+with the repertoire method is it requires a well furnished repertoire
+of solutions to basic recurrences; I'm sure I would never have come up
+with the radix-change solution to the generalised Josephus
+problem. And given that there is an infinite number of functions one
+could try, a more directed method is sometimes necessary.</p>
+
+<p>This section also shows how to turn some recurrence equations (such as
+the Tower of Hanoi one) into a sum; this method involve a choice
+($s_1$ can be any non-zero value), which could either simplify or
+complicate the solution. I haven't done the exercises yet, so I don't
+know to what extent the choice is obvious or tricky.</p>
+
+<p>Finally it shows how to turn a recurrence expressed as a sum of all
+the previous values into a simpler recurrence by computing the
+difference between two successive values. This is one instance of a
+more general simplification using a linear combination of a few
+successive values.</p>
+
+<h3>Manipulation of Sums</h3>
+
+<p>Unsurprisingly, sums have the same basic properties as common
+additions: distributive, associative and commutative laws. Only the
+latter is really tricky, as it involves a change to the index
+variable. As mentioned above, I found useful to make such changes
+really clear and isolated in any reasoning.</p>
+
+<p>With these laws confirmed, it is possible to build the first method
+for solving sums: the perturbation method. It is very simple, and
+while it does not always work, when it does it is very quick.</p>
+
+<h3>Multiple Sums</h3>
+
+<p>This is perhaps the first section where I had to slow down; basically
+multiple sums are not different from simple sums, and manipulations
+are defined by the distributive law, but index variable changes
+(especially the rocky road variety) require special attention. This,
+combined with "obvious" simplifications (obvious to the authors, and
+sometimes in retrospect to the reader as well), gave me some
+difficulties.</p>
+
+<p>For instance, the solution to</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j\lt k\le n} \frac{1}{k-j}
+\end{align}
+</div>
+
+
+<p>The index variable change $k \leftarrow k+j$ is explained as a
+specific instance of the simplification of $k+f(j)$; more perplexing
+are the ranges for $j$ and $k$ when the sum is replaced by a sum of sum:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le k\le n} \sum_{1\le j \le n-k} \frac{1}{k}
+\end{align}
+</div>
+
+
+<p>The range for $j$ is built from $1\le j$ and $k+j\le n$, so there is
+nothing really strange here.</p>
+
+<p>The range for $k$, however, looks like a typo: certainly the authors
+meant $1\le k\lt n$. A margin graffiti confirms the range, but it does
+not really explain it.</p>
+
+<p>The fact is, it is safe to let $k\le n$ here, because the sum over $j$
+when $k=n$ is zero: not only the expression
+$\sum_{1\le j \le k-n = 0} \frac{1}{k}$ is zero because there is no
+$j$ that can satisfies the range predicate, but the closed form
+of this sum, $\frac{k-n}{k}$, is also zero when $k=n$.</p>
+
+<p>With the closed form checked, it is safe to add extra terms to
+simplify the range of $k$.</p>
+
+<p>What happens if you don't see this possible simplification? As
+expected, the answer remains the same:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le k\lt n} \sum_{1\le j \le n-k} \frac{1}{k} &amp; = \sum_{1\le k\lt n} \frac{n-k}{k}\\\\
+&amp; = \sum_{1\le k\lt n} \frac{n}{k} - \sum_{1\le k\lt n} \frac{k}{k}\\\\
+&amp; = \sum_{1\le k\lt n} \frac{n}{k} - (n-1)\\\\
+&amp; = \sum_{1\le k\lt n} \frac{n}{k} + \frac{n}{n} - n\\\\
+&amp; = \sum_{1\le k\le n} \frac{n}{k} - n\\\\
+&amp; = nH_n - n\\\\
+\end{align}
+</div>
+
+
+<p>So to expend on the original advice of keeping the bounds as simple as
+possible: sometimes it is possible to extend the bounds (in order to
+simplify them), as long as the extra terms in closed form evaluate to
+zero. If the extra terms are still defined as sums, just checking that
+the range is empty might not be enough.</p>
+
+<h3>General Methods</h3>
+
+<p>A cool and fun section on the various ways to solve a given sum.</p>
+
+<p>Method 0 is to look it up. This book, written before the rise of
+Internet (I remember Internet in the early 1990's; most of it was still
+indexed manually on the CERN index pages...), suggests a few books as
+resources.</p>
+
+<p>Fortunately, some of them have migrated to the
+<a href="https://oeis.org/">Web</a>, which is a more suitable tool than books for
+such knowledge; the combination of searches and instant updates is
+hard to beat (a book remains best for a content that is mostly linear
+and somewhat independent of time; a novel, or textbook, for
+instance. References are better on Internet, free if possible, for
+a subscription otherwise).</p>
+
+<p>Method 1 is guessing then proving; proving in fact should be a
+complement for all the other methods (except perhaps Method 0). Having
+two independents proofs is always good.</p>
+
+<p>Method 2 is the perturbation method. In this section example, we see
+how an apparent failure can still be exploited by being imaginative.</p>
+
+<p>Method 3 is the repertoire method. In this chapter it is usually much
+simpler than in the first.</p>
+
+<p>Method 4 uses calculus to get a first approximation, then uses other
+methods to solve the equations for the error function.</p>
+
+<p>Method 5 is a clever rewriting of the problem into a sum of sums;
+like the repertoire method but unlike the others, it requires some
+intuition to find a solution (perhaps more than the repertoire
+method); I have bad memories of trying such a method to solve problems
+at university, always somehow ending up right where I started. I guess
+I will try other methods if I can.</p>
+
+<p>Method 6 is the topic of the next section; method 7 is for another
+chapter.</p>
+
+<h3>Finite and Infinite Calculus</h3>
+
+<p>This section was surprising and exciting, but not really that
+complex. It really is a matter of adapting regular calculus reflexes to the
+finite version. I have to see how it works in practice.</p>
+
+<p>One thing that is causing me some trouble is the falling-power version
+of the law of exponents:</p>
+
+<div markdown="0">
+\begin{align}
+x^{\underline{m+n}} &amp; = x^{\underline m}(x-m)^{\underline n}\\\\
+\end{align}
+</div>
+
+
+<p>While the rule is easy to prove and to remember, it is less easy than
+the general one to recognise in practice; I failed to see it when it
+came up in the solution to</p>
+
+<div markdown="0">
+\begin{align}
+\Sigma xH_x\delta x\\\\
+\end{align}
+</div>
+
+
+<p>Worse, even the explanation in the book, I had to write it down, play
+with it, before seeing it.</p>
+
+<p>So I'm thinking about a notation that would bring out the rule more
+clearly, an extension of the <em>shift operator</em> $E$:</p>
+
+<div markdown="0">
+\begin{align}
+E_k f(x) &amp; = f(x-k)\\\\
+\end{align}
+</div>
+
+
+<p>This would turn the exponent law into</p>
+
+<div markdown="0">
+\begin{align}
+x^{\underline{m+n}} &amp; = x^{\underline m} E_m x^{\underline n}\\\\
+\end{align}
+</div>
+
+
+<p>Whether this is useful, or whether I'll get used to the original
+notation anyway, we'll see in the exercises...</p>
+
+<h3>Infinite Sums</h3>
+
+<p>The last section is about infinite sums. The authors quite sensibly
+restrict the scope to absolutely convergent sums, which have the
+advantage that the three basic laws and the manipulations they allow
+are still valid.</p>
+
+<p>Once again, this was not overly difficult; the only point I had
+trouble understanding was the existence of the subsets $F_j$ such that
+$\sum_{k\in F_j} a_{j,k} \gt (A/A')A_j$ when
+$\sum_{j\in G} A_j = A' \gt A$. But this last equation means that
+$A/A' \lt 1$, so $(A/A')A_j \lt A_j$. The first equation is therefore
+just a consequence of the fact that $A_j$ is a least upper bound.</p>
+
+<p>Next post, the warmups.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Psychic Modeling (fast version)]]></title>
@@ -2342,452 +2593,6 @@ $ curl http://localhost:5984/music-repl/<em>design/conflicts/</em>view/conflicts
 ```</p>
 
 <p>And this completes Day 3 and this overview of CouchDB.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Seven Databases in Seven Weeks CouchDB Day 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/"/>
-    <updated>2012-01-30T18:58:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2</id>
-    <content type="html"><![CDATA[<p>Day 2 is about Views in CouchDB, which serve as an introduction to the
-more general MapReduce support.</p>
-
-<p>It is another fairly short day, as much of this section is actually
-about the complexities of XML parsing...</p>
-
-<!-- more -->
-
-
-<p>Like Riak and MongoDB, CouchDB is scripted with JavaScript, so today has
-a feeling of déjà vu.</p>
-
-<h3>View concept</h3>
-
-<p>A View is just a mapping of a key to a value. Keys and values are
-extracted from documents; there can be more than one key for each
-document, as in MongoDB.</p>
-
-<p>Once the view has been built and updated for the documents it applies
-to, it can be accessed by key using optimized methods (all based on
-some form of lexicographical order).</p>
-
-<h3>View performance</h3>
-
-<p>A View in CouchDB is essentially the equivalent of a
-<a href="http://en.wikipedia.org/wiki/Materialized_view">materialized view</a>
-in relational databases.</p>
-
-<p>Access to the view causes it to be updated (i.e. recomputed) if
-necessary, which can be a painfully slow experience. I had imported
-the whole content of the music database (26990 records), and each time
-I tested a Temporary View or saved a Permanent one, I had to wait for
-CouchDB to finish the refresh (fortunately not too long on this
-dataset).</p>
-
-<p>It interesting to note that while relational databases require the
-schema to be designed ahead of time, but support arbitrary queries,
-CouchDB let you ignore the schema, but need you to design the
-queries ahead of time.</p>
-
-<h2>Exercises</h2>
-
-<h3><code>emit</code> function</h3>
-
-<p>The key can be
-<a href="http://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Complex_Keys">any JSON object</a>,
-although I would say that only strings and arrays of strings have
-sensible semantics.</p>
-
-<p>Arrays can be used with reduce functions to provide query time custom
-grouping, as explained
-<a href="http://wiki.apache.org/couchdb/Introduction_to_CouchDB_views#Grouping">here</a>.</p>
-
-<p>For instance, to compute the number of records by date, I used the
-<code>releasedate</code> of each album to create a key array
-<code>[year, month, date]</code>, and a value of <code>1</code> (1 for each album):</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Album by Date  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;releasedate&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">album</span><span class="p">.</span><span class="nx">releasedate</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="p">[</span><span class="nx">d</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">(),</span>
-</span><span class='line'>                           <span class="nx">d</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">(),</span>
-</span><span class='line'>                           <span class="nx">d</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()];</span>
-</span><span class='line'>                <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>As I intend to use grouping, I also need a reduce function:</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Reduce Function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Each document in the view is now a date as an array, with a single
-number for the record made that date (there are as many identical keys
-as there were records for a given day).</p>
-
-<p>When querying, by default, the reduce function will be called on
-identical keys to get a single value:</p>
-
-<p><code>
-$ curl http://localhost:5984/music/_design/count/_view/album_by_date?limit=5\&amp;group=true
-{"rows":[
-{"key":[2004,11,18],"value":2},
-{"key":[2004,11,21],"value":1},
-{"key":[2004,11,22],"value":1},
-{"key":[2004,11,28],"value":1},
-{"key":[2004,11,29],"value":2}
-]}
-</code></p>
-
-<p>(month is 0 based...)</p>
-
-<p>With the <code>group_level</code> parameter, I can control whether I want to
-group by day (<code>group=true</code> or <code>group_level=3</code>, as above), by month
-(<code>group_level=2</code>), or year (<code>group_level=1</code>):</p>
-
-<p><code>
-$ curl http://localhost:5984/music/_design/count/_view/album_by_date?limit=5\&amp;group_level=2
-{"rows":[
-{"key":[2004,11],"value":7},
-{"key":[2005,0],"value":3},
-{"key":[2005,1],"value":3},
-{"key":[2005,2],"value":5},
-{"key":[2005,3],"value":15}
-]}
-</code></p>
-
-<p><code>
-$ curl http://localhost:5984/music/_design/count/_view/album_by_date?limit=5\&amp;group_level=1
-{"rows":[
-{"key":[2004],"value":7},
-{"key":[2005],"value":306},
-{"key":[2006],"value":1277},
-{"key":[2007],"value":3454},
-{"key":[2008],"value":7330}
-]}
-</code></p>
-
-<h3>View request parameters</h3>
-
-<p>There are quite a few of them listed
-<a href="http://wiki.apache.org/couchdb/HTTP_view_API?action=show&amp;redirect=HttpViewApi">here</a>.</p>
-
-<h3>Random artist script</h3>
-
-<p>The code is essentially the same as the one mapping names to ids, but
-here it associates <code>random</code> to <code>name</code>.</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Artist  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h3>Random artist URL</h3>
-
-<p>The URL below returns the first artist whose random number is greater
-than the random one generated by Ruby.</p>
-
-<p><code>
-$ curl http://localhost:5984/music/_design/random/_view/artist?limit=1\&amp;startkey=`ruby -e 'p rand'`
-{"total_rows":26987,"offset":23180,"rows":[
-{"id":"364215","key":0.8581072409917536,"value":"rakombiacje"}
-]}
-</code></p>
-
-<p>As expected, if given a value too large (for instance, 1), the query
-returns nothing:</p>
-
-<p><code>
-$ curl http://localhost:5984/music/_design/random/_view/artist?limit=1\&amp;startkey=1
-{"total_rows":26987,"offset":26987,"rows":[]}
-</code></p>
-
-<h3>Random everything</h3>
-
-<p>The code of each script is similar, in a way Russian Dolls are
-similar: each one is an extension of the previous, digging deeper into
-the nested structure of the original document.</p>
-
-<h4>Random Album</h4>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Album  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">album</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
-</span><span class='line'>            <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
-</span><span class='line'>            <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Testing:</p>
-
-<p><code>``
-$ curl http://localhost:5984/music/_design/random/_view/album?limit=1\&amp;startkey=</code>ruby -e 'p rand'` | python -mjson.tool
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</p>
-
-<pre><code>                             Dload  Upload   Total   Spent    Left  Speed
-</code></pre>
-
-<p>100   142    0   142    0     0  36419      0 --:--:-- --:--:-- --:--:-- 71000
-{</p>
-
-<pre><code>"offset": 19416, 
-"rows": [
-    {
-        "id": "357995", 
-        "key": 0.35656765622628905, 
-        "value": {
-            "album": "Demo Releses", 
-            "by": "SilvanestY"
-        }
-    }
-], 
-"total_rows": 54669
-</code></pre>
-
-<p>}
-```</p>
-
-<h4>Random Track</h4>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Track  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                    <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">track</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
-</span><span class='line'>                    <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                              <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                              <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
-</span><span class='line'>                    <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>                <span class="p">}</span>
-</span><span class='line'>            <span class="p">});</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Testing:</p>
-
-<p><code>``
-$ curl http://localhost:5984/music/_design/random/_view/track?limit=1\&amp;startkey=</code>ruby -e 'p rand'` | python -mjson.tool
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</p>
-
-<pre><code>                             Dload  Upload   Total   Spent    Left  Speed
-</code></pre>
-
-<p>100   163    0   163    0     0  10294      0 --:--:-- --:--:-- --:--:-- 11642
-{</p>
-
-<pre><code>"offset": 118485, 
-"rows": [
-    {
-        "id": "370935", 
-        "key": 0.3460755726665503, 
-        "value": {
-            "album": "Mako Yama", 
-            "by": "Mako Yama", 
-            "track": "Kinu No Tsuki"
-        }
-    }
-], 
-"total_rows": 342013
-</code></pre>
-
-<p>}
-```</p>
-
-<h4>Random Tag</h4>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Tag  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="s1">&#39;tags&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                    <span class="nx">track</span><span class="p">.</span><span class="nx">tags</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;idstr&#39;</span> <span class="k">in</span> <span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                            <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
-</span><span class='line'>                            <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                      <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                      <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                      <span class="nx">tag</span><span class="o">:</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">idstr</span> <span class="p">};</span>
-</span><span class='line'>                            <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>                        <span class="p">}</span>
-</span><span class='line'>                    <span class="p">});</span>
-</span><span class='line'>                <span class="p">}</span>
-</span><span class='line'>            <span class="p">});</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Testing:</p>
-
-<p><code>``
-$ curl http://localhost:5984/music/_design/random/_view/tag?limit=1\&amp;startkey=</code>ruby -e 'p rand'` | python -mjson.tool
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current</p>
-
-<pre><code>                             Dload  Upload   Total   Spent    Left  Speed
-</code></pre>
-
-<p>100   218    0   218    0     0   9717      0 --:--:-- --:--:-- --:--:-- 10380
-{</p>
-
-<pre><code>"offset": 151963, 
-"rows": [
-    {
-        "id": "340779", 
-        "key": 0.2788540070246309, 
-        "value": {
-            "album": "CABACA-5", 
-            "by": "CC Asia Band", 
-            "tag": "electricguitar", 
-            "track": "CC Asia Band - CABACA - 35 CCilly Love Song"
-        }
-    }
-], 
-"total_rows": 545892
-</code></pre>
-
-<p>}
-```</p>
-
-<p>And that's it for Day 2.</p>
 ]]></content>
   </entry>
   

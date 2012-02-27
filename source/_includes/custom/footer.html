@@ -1,4 +1,14 @@
 <p>
   Copyright &copy; {{ site.time | date: "%Y" }} - {{ site.author }} -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
+  {% for item in page.js %}
+    {% if item == 'math' %}
+  <a style="float: right" href="http://www.mathjax.org/">
+  <img title="Powered by MathJax"
+       src="http://www.mathjax.org/badge.gif"
+       border="0" alt="Powered by MathJax" />
+  </a>
+    {% endif %}
+  {% endfor %}
+  </span>
 </p>

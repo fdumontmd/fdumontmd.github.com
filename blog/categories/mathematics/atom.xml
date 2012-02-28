@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-02-27T23:53:53+09:00</updated>
+  <updated>2012-02-28T22:39:10+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,201 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Warmups]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/02/28/concrete-mathematics-chapter-2-warmups/"/>
+    <updated>2012-02-28T19:18:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/02/28/concrete-mathematics-chapter-2-warmups</id>
+    <content type="html"><![CDATA[<!--more-->
+
+
+<h2>Warmups</h2>
+
+<h3>$\sum_{k=4}^0 q_k$</h3>
+
+<p>The meaning of such an expression is not clear, so there is no real
+way to fail this exercise.</p>
+
+<p>A first interpretation, maybe the common one, is that the sum is zero
+because the range is empty. In other words, the sum is
+$\sum_{4\le k\le 0} q_k$.</p>
+
+<p>A second interpretation, perhaps for those used to programming
+languages with very flexible loops could argue that the sum is
+$q_4 + q_3 + q_2 + q_1 + q_0$.</p>
+
+<p>I toyed briefly with a negative sum, similar to integrals with
+reversed bounds, but I did not come up with the nice book solution
+of $\sum_{k=m}^n = \sum_{k\le n} - \sum_{k\lt m}$, which is consistent
+with and extends the first interpretation.</p>
+
+<h3>Simplify $x([x\gt 0] - [x\lt 0])$</h3>
+
+<p>It is easy to see that the expression has the same value as $|x|$:</p>
+
+<div markdown="0">
+\begin{align}
+x([x\gt 0] - [x\lt 0]) &amp; = x (1-0)&amp;&amp;\text{when \(x\gt 0\)}\\\\
+&amp; = x\\\\
+x([x\gt 0] - [x\lt 0]) &amp; = x (0-1)&amp;&amp;\text{when \(x\lt 0\)}\\\\
+&amp; = -x\\\\
+x([x\gt 0] - [x\lt 0]) &amp; = 0&amp;&amp;\text{when \(x = 0\)}\\\\
+\end{align}
+</div>
+
+
+<h3>Writing out sums</h3>
+
+<p>The first one is easy:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k\le 5}a_k = a_0+a_1+a_2+a_3+a_4+a_5\\\\
+\end{align}
+</div>
+
+
+<p>The second one is tricky, is more than one way. One problem is that
+$k$ is not explicitly defined, and I had assumed it was a natural,
+when the authors thought of it as a integer; now the latter is in line
+with the book conventions, so I was wrong and had missing terms. The
+right answer is:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k^2 \le 5}a_k = a_4 + a_1 + a_0 + a_1 + a_4\\\\
+\end{align}
+</div>
+
+
+<h3>Triple Sum</h3>
+
+<p>Here it is important to restrict the bounds as much as possible (but
+no more); otherwise there is a risk of introducing spurious terms.</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le i \lt j \lt k \le n}a_{ijk} &amp; = \sum_{i=1}^2 \sum_{j=i+1}^3 \sum_{k=j+1}^4 a_{ijk}\\\\
+&amp; = \left((a_{123} + a_{124}) + a_{134} \right) + a_{234}\\\\
+&amp; = \sum_{k=3}^4 \sum_{j=2}^{k-1} \sum_{i=1}^{j-1} a_{ijk}\\\\
+&amp; = a_{123}+\left(a_{124} + (a_{134} + a_{234})\right)\\\\
+\end{align}
+</div>
+
+
+<p>The terms appear in the same order, but are grouped in sums differently.</p>
+
+<h3>Incorrect derivation</h3>
+
+<p>The problem is the step</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{j=1}^n \sum_{k=1}^n = \frac{a_j}{a_k}\sum_{k=1}^n \sum_{k=1}^n \frac{a_k}{a_k}\\\\
+\end{align}
+</div>
+
+
+<p>$k$ is already bound in the inner sum, so it is invalid to replace $j$
+by $k$ in the outer.</p>
+
+<h3>$\sum_k [1\le j\le k\le n]$</h3>
+
+<p>This can be worked explicitly:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_k [1 \le j \le k \le n] &amp = \sum_k [1 \le j \le n] [j \le k \le n]\\\\
+&amp; = \sum_{j\le k \le n} [1 \le j \le n]\\\\
+&amp; = [1 \le j \le n] \sum_{j\le k \le n} 1\\\\
+&amp; = [1 \le j \le n] (n-j+1)\\\\
+\end{align}
+</div>
+
+
+<h3>$\bigtriangledown f(x)$</h3>
+
+<p>The result is not surprising:</p>
+
+<div markdown="0">
+\begin{align}
+\bigtriangledown x^{\overline{m}} &amp; = x^{\overline{m}} - (x-1)^{\overline{m}}\\\\
+&amp; = x(x+1)\cdots(x+m-1) - (x-1)x\cdots(x+m-2)\\\\
+&amp; = x(x+1)\cdots(x+m-2)(x+m-1-(x-1))\\\\
+&amp; = m x^{\overline{m-1}}\\\\
+\end{align}
+</div>
+
+
+<p>So $\bigtriangledown f(x)$ is the difference operator to use with
+rising factorials.</p>
+
+<h3>$0^{\overline{m}}$</h3>
+
+<p>Clearly, when $m\lt 0$, $0^{\overline{m}} = 0$; when $m = 0$,
+$0^{\overline{m}} = 1$ (to make the expression
+$x^{\underline{1+0}}=x^{\underline 1}(x-1)^{\underline 0}$ work when $x=1$); I
+had forgotten about $m&lt;0$, which was perhaps the easiest case, as $\frac{1}{m!}$
+(it follows directly from the definition of falling factorials with negative
+powers).</p>
+
+<h3>Law of exponents for rising factorials</h3>
+
+<p>It is easy to see that $x^{\overline{m+n}} = x^{\overline m}(x+m)^{\overline n}$:</p>
+
+<div markdown="0">
+\begin{align}
+x^{\overline{m+n}} &amp; = x\cdots(x+m-1)(x+m)\cdots(x+m+n-1)\\\\
+&amp; = \left( x\cdots(x+m-1) \right) \left( (x+m)\cdots(x+m+n-1) \right)\\\\
+&amp; = x^{\overline m}(x+m)^{\overline n}\\\\
+\end{align}
+</div>
+
+
+<p>From there, the value of rising factorials for negative powers follows quickly:</p>
+
+<div markdown="0">
+\begin{align}
+1 = x^{\overline{-n+n}} &amp; = x^{\overline{-n}} (x-n)^\overline{n}\\\\
+x^{\overline{-1}} &amp; = \frac{1}{(x-n)^\overline{n}}\\\\
+&amp; = \frac{1}{(x-n)\cdots(x-1)}\\\\
+&amp; = \frac{1}{(x-1)^{\underline{n}}}\\\\
+\end{align}
+</div>
+
+
+<h3>Symmetric difference of a product</h3>
+
+<p>To start, I quickly looked up the proof of the original derivative
+product rule on
+<a href="http://en.wikipedia.org/wiki/Product_rule#Proof_of_the_product_rule">Wikipedia</a>;
+the geometric nature of the proof was illuminating (I believe I was
+taught the so called
+<a href="http://en.wikipedia.org/wiki/Product_rule#A_Brief_Proof">Brief Proof</a>
+both in high-school and at university).</p>
+
+<p>This geometric proof can be used for both the infinite and the finite
+calculus, and its symmetric nature (there are two ways to compute the
+area of the big rectangle:
+$f(x)g(x)+(f(w)-f(x))g(w) + f(x)(g(w)-g(x))$ and
+$f(x)g(x)+f(w)(g(w)-g(x)) + (f(w)-f(x))g(x)$) can be used in the
+finite case. The symmetry (and equality) is restored
+because in the infinite calculus, $\lim_{w\rightarrow x}f(w) = f(x)$
+and $\lim_{w\rightarrow x}g(w) = g(x)$, a restoration that is not
+possible in the finite calculus.</p>
+
+<p>However, the equivalent finite calculus formulas,
+$\bigtriangleup(uv) = u\bigtriangleup v + Ev\bigtriangleup u$ and
+$\bigtriangleup(uv) = Eu\bigtriangleup v + v\bigtriangleup u$, have
+together the symmetry they lack on their own.</p>
+
+<h3>Wrapping up</h3>
+
+<p>OK, that was not entirely bad (two small mistakes, both about negative
+numbers blindness). Next step, the basic exercises.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Notes]]></title>
@@ -1009,292 +1204,6 @@ same:</p>
 <p>I put the repertoire method in its own
 <a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">post</a> as it
 was both the most difficult exercise and the one where I learned the most.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 1]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/"/>
-    <updated>2012-01-09T20:23:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1</id>
-    <content type="html"><![CDATA[<p>I am working my way through the homework exercises, and so far I have
-had more success than with the warmups. Here's what I have solved so far.</p>
-
-<!--more-->
-
-
-<h2>Homework Exercises</h2>
-
-<h3>Basic recurrence</h3>
-
-<p>This one was fairly simple, so simple that I wasted one hour trying to
-improve the solution.</p>
-
-<p>Just computing the first few terms of the sequence:</p>
-
-<div markdown="0">
-\begin{align}
-Q_0 &amp; = \alpha \\\\
-Q_1 &amp; = \beta \\\\
-Q_2 &amp; = \frac{1+\beta}{\alpha}\\\\
-Q_3 &amp; = \frac{1+\alpha+\beta}{\alpha\beta}\\\\
-Q_4 &amp; = \frac{\alpha\left( 1 + \alpha + \alpha\beta + \beta\right)}{\alpha\beta(1+\beta)}\\\\
-&amp; = \frac{(1+\alpha)(1+\beta)}{\beta(1+\beta)}\\\\
-&amp; = \frac{1+\alpha}{\beta}\\\\
-Q_5 &amp; = \frac{\alpha\beta\left(1+\alpha+\beta \right)}{\beta \left( 1+\alpha+\beta \right)}\\\\
-&amp; = \alpha\\\\
-Q_6 &amp; = \frac{\beta\left( 1+\alpha \right)}{1+\alpha}\\\\
-&amp; = \beta
-\end{align}
-</div>
-
-
-<p>So the sequence is cyclic. I tried to find a closed formula, but the
-book does not go that far, and it is unlikely to be possible.</p>
-
-<h3>Product of averages</h3>
-
-<h4>$P(n)$ implies $P(n-1)$</h4>
-
-<p>First of all, I checked that nothing fishy was going on with the
-selection of a particular $x_n$, but if $P(n)$ is true, then it is
-true for every $x_1\cdots x_n$ set, and in particular for one with a
-specific $x_n$.</p>
-
-<p>So nothing fishy is going on.</p>
-
-<p>Assuming the given value for $x_n$, we have</p>
-
-<div markdown="0">
-\begin{align}
-\left( \frac{x_1 + \cdots + x_n}{n} \right)^n &amp; = \left( \frac{x_1 + \cdots + x_{n-1} + \frac{x_1+\cdots+x_{n-1}}{n-1}}{n}\right)^n\\\\
-&amp; = \left( \frac{(n-1)x_1 + \cdots + (n-1)x_{n-1}+x_1+\cdots + x_{n-1}}{n(n-1)}\right)^n\\\\
-&amp; = \left( \frac{n(x_1+\cdots+x_{n-1})}{n(n-1)}\right)^n\\\\
-&amp; = \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^n\\\\
-&amp; = x_n^n
-\end{align}
-</div>
-
-
-<p>So, assuming $P(n)$, we have</p>
-
-<div markdown="0">
-\begin{align}
-x_1\cdots x_{n-1}x_n &amp;\le x_n^n\\\\
-x_1\cdots x_{n-1} &amp;\le x_n^{n-1}\\\\
-x_1\cdots x_{n-1} &amp;\le \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^{n-1}&amp;&amp;\text{i.e. $P(n-1)$}
-\end{align}
-</div>
-
-
-<h4>$P(n)$ and $P(2)$ implies $P(2n)$</h4>
-
-<div markdown="0">
-\begin{align}
-x_1\cdots x_{2n} &amp; = x_1\cdots x_{n}x_{n+1}\cdots x_{2n}&amp;&amp;\text{associativity}\\\\
-&amp; \le \left(\frac{x_1+\cdots+x_n}{n}\right)^n \left(\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n&amp;&amp;\text{applying $P(n)$ twice}\\\\
-&amp; = \left( \frac{x_1+\cdots+x_n}{n}\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n\\\\
-&amp; \le \left( \left(\frac{\frac{x_1+\cdots+x_n}{n} + \frac{x_{n+1}+\cdots+x_{2n}}{n}}{2} \right)^2\right)^n&amp;&amp;\text{applying $P(2)$}\\\\
-&amp; = \left( \frac{x_1+\cdots+x_n+x_{n+1}+\cdots+x_{2n}}{2n}\right)^{2n}&amp;&amp;\text{i.e. $P(2n)$}\\\\
-\end{align}
-</div>
-
-
-<h4>$P(n) \forall n \ge 1$</h4>
-
-<p>The case for $P(1)$ is trivial, and $P(2)$ is already proven. We have
-$P(n)$ implies $P(n-1)$ and $P(n)$ implies $P(2n)$.</p>
-
-<p>One first approach is to use the basic induction step: we have $P(1)$,
-$P(2)$, and we need $P(n) \implies P(n+1)$.</p>
-
-<p>But $P(n) \implies P(2n) \implies P(2n-1) \implies \cdots \implies
-P(2n-(n-1))$. The last one is $P(n1+)$, so the induction step holds.</p>
-
-<p>Alternatively, we can show that to prove $P$ for a given $n$, we need
-to prove $P$ for a smaller value. As naturals have a minimum, we must
-eventually rely on $P(2)$, which would prove the whole chain.</p>
-
-<p>To see this, for $n \ge 3$, if $n = 2m$, we need to prove $P(m)$; if
-$n = 2m+1$, we need to prove $P(2m+2)$, which is implied by $P(m+1)$.</p>
-
-<p>So, $\forall n \ge 3, \exists m \lt n \mid P(m) \implies P(n)$. That
-with the base cases is enough to establish $P(n) \forall n$.</p>
-
-<h3>Clockwise Tower of Hanoi</h3>
-
-<p>First, both $Q_0$ and $R_0$ are trivial.</p>
-
-<p>Then, to move $n$ discs from $A$ to $B$, you need to move $n-1$ discs
-from $A$ to $C$ (counter-clockwise), then move one disc from $A$ to
-$B$, then move the $n-1$ discs from $C$ to $B$ (again,
-counter-clockwise).</p>
-
-<p>This means $Q_n = R_{n-1} + 1 + R_{n-1} = 2R_{n-1} + 1$.</p>
-
-<p>The case for $R_n$ is a bit more complex. My first (flawed) attempt
-was to observe that to move $n$ discs from $B$ to $A$, you could move
-them from $B$ to $C$, then $C$ to $A$. In other words,</p>
-
-<div markdown="0">
-\begin{align}
-R_n &amp; \ge 2Q_n\\\\
-&amp; = Q_n + 2R_{n-1} + 1&amp;&amp;\text{Replacing one \(Q_n\) by \(2R_{n-1}+1\)}\\\\
-&amp; = Q_n + 4Q_{n-1} + 1&amp;&amp;\text{Replacing \(R_{n-1}\) by \(2Q_{n-1}\)}\\\\
-\end{align}
-</div>
-
-
-<p>But the $4Q_{n-1}$ means moving the stack of $n-1$ discs $4$ times,
-which is the same as moving it just one time (as $3$ times bring it
-back to its original position).</p>
-
-<p>So we're left with just $Q_n + Q_{n-1} + 1$. But as I said, this
-reasoning is flawed, as it mixes the count of moves with the effect of
-moves (where $3$ moves are the same as $0$ move).</p>
-
-<p>While it is possible to repair this reasoning by introducing special
-operators that take two parameters (the number of discs, and the
-number of steps), it is simpler to try and express $R_n$ strictly in
-terms $n-1$ stacks and $1$ disc moves.</p>
-
-<p>So, to move $n$ discs from $B$ to $A$, you need to move $n-1$ discs
-from $B$ to $A$ (counter-clockwise), then one disc from $B$ to $C$
-(clockwise), then the $n-1$ discs from $A$ to $B$ (clockwise), then
-one disc from $C$ to $A$ (clockwise), then finally the $n-1$ discs
-from $B$ to $A$ (counter-clockwise).</p>
-
-<p>Or,</p>
-
-<div markdown="0">
-\begin{align}
-R_n &amp;= R_{n-1} + 1 + Q_{n-1} + 1 + R_{n-1}\\\\
-&amp; = 2R_{n-} + 1 + Q_{n-1} + 1\\\\
-&amp; = Q_n + Q_{n-1} + 1&amp;&amp;\text{definition of \(Q_n\)}\\\\
-\end{align}
-</div>
-
-
-<p>As the recurrence is expressed (initially) only in terms of necessary
-moves of strictly smaller stacks, there is no risk of hiding moves
-that are equivalent to no moves (as in my first attempt), so the
-equation is the minimum number of moves.</p>
-
-<h3>Double Tower of Hanoi</h3>
-
-<h4>Basic Problem</h4>
-
-<p>First, notice we should keep each pair together, because otherwise
-they would block larger discs from moving. So each pair of move should
-be used to relocate a pair of identical discs to another peg. So we
-should expect to need twice as many moves as the original tower.</p>
-
-<p>More precisely, with $A(n)$ the number of moves required to solve a
-$2n$ Double Tower of Hanoi, we have:</p>
-
-<div markdown="0">
-\begin{align}
-(1) &amp; = 2\\\\
-A(n) &amp; = A(n-1) + 2 + A(n-1)\\\\
-&amp; = 2A(n-1) + 2\\\\
-\end{align}
-</div>
-
-
-<p>Using $A(n) + 2= U(n)$, we get</p>
-
-<div markdown="0">
-\begin{align}
-U(1) &amp; = 4\\\\
-U(n) &amp; = 2U(n-1)\\\\
-&amp; 2^{n+1}\\\\
-A(n) &amp; = 2^{n+1} -2\\\\
-     &amp; = 2(T_n)\\\\
-\end{align}
-</div>
-
-
-<h4>Order Preserving</h4>
-
-<p>If we consider all the $2n$ discs as different, then in $T_{2n}=2^{2n}-1$
-moves, we can recreate the same order as the original.</p>
-
-<p>Of course, we can do better. It is enough to move each pair an even
-number of times: the first time will switch their order; the second
-one will restore it, ...</p>
-
-<p>This is similar to the warmup problem where we cannot move any disc
-directly between any two pegs, so using the same constraint to move
-any pair would get us to the target order in less than $2\cdot 3^n-1$.</p>
-
-<p>But there is still a better way.</p>
-
-<p>A $2$ discs problem needs exactly $3$ moves.  And the $4$ discs
-problem will require just $11$ moves, rather than the $18$ that the
-above formula predicts.</p>
-
-<p>A wild guess: the number of moves is $4(2^n-1)-1$.</p>
-
-<p>In trying to solve (or even write) the recurrence equation, it is
-important to keep in mind that several ways to move the discs, each
-with its own count, will be used.</p>
-
-<p>We know we need two pairs of moves to relocate the two bottom discs
-while keeping the order (assuming there are other discs). In doing so,
-we will move the next two discs an even number of times, requiring
-another 2 times to keep their order. So as long as we make sure the
-last operation has the right (even) number of moves, we do not need to
-keep this constraint on the other operations.</p>
-
-<p>To recap: we need to move the last pair of discs $2$ times. So we first move
-the $n-1$ pairs to a peg, then move the last pair to the other peg,
-then the $n-1$ pairs to the first peg, then the last pair to the last
-peg. At this stage, the $n-1$ discs have move an even number of times,
-so their in the right order, even if we used the non order preserving
-solution that was computed above (requiring $2T_{n-1}$ moves).</p>
-
-<p>At this stage, a bit of notation should clarify:</p>
-
-<div markdown="0">
-\begin{align}
-B(1) &amp; = 3\\\\
-B(n) &amp; = A(n-1) + 2 + A(n-1) + 2 + B(n-1)\\\\
-&amp; = 2T_{n-1} + 2 + 2T_{n-1} + 2 + B(n-1)\\\\
-&amp; = 4T_{n-1}+4+B(n-1)\\\\
-\end{align}
-</div>
-
-
-<p>Trying to prove the guess above:</p>
-
-<div markdown="0">
-\begin{align}
-B(1) &amp; = 4(2^1-1) - 1\\\\
-&amp; = 3\\\\
-B(n) &amp; = 4(2^{n-1} -1) + 4 + B(n-1)\\\\
-&amp; = 4\cdot 2^{n-1} + 4(2^{n-1} - 1) -1\\\\
-&amp; = 4\cdot 2^n -4 -1\\\\
-&amp; = 4(2^n-1)-1
-\end{align}
-</div>
-
-
-<p>So the guess was right. It can also be rewritten as</p>
-
-<div markdown="0">
-\begin{align}
-4(2^n-1)-1 &amp = 4\cdot 2^n - 4 -1\\\\
-&amp; = 2^{n+2} - 5\\\\
-\end{align}
-</div>
-
-
-<p>which is the book solution.</p>
-
-<p>This being a bonus exercise, I currently experience an intense, although
-pointless, sense of pride and achievement.</p>
-
-<p>No doubt the other exercises will cut me down to size.</p>
 ]]></content>
   </entry>
   

@@ -8,6 +8,11 @@ tags: [Concrete Mathematics, math]
 series: "Concrete Mathematics"
 js: [math]
 ---
+This first batch of exercises is meant to develop familiarity with
+the various concepts and notations introduced in this chapter. There
+is no complex manipulation, but the trick is to be aware of the often
+unmentioned assumptions about the precise meaning of the expressions.
+
 <!--more-->
 
 ## Warmups

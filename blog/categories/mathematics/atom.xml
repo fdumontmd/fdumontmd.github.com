@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-02-28T22:39:10+09:00</updated>
+  <updated>2012-03-11T11:29:53+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -14,11 +14,372 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Basics]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/03/10/concrete-mathematics-chapter-2-basics/"/>
+    <updated>2012-03-10T11:10:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/03/10/concrete-mathematics-chapter-2-basics</id>
+    <content type="html"><![CDATA[<p>This second batch of exercises builds on the
+<a href="/blog/2012/02/28/concrete-mathematics-chapter-2-warmups/">previous one</a>. Once
+again, there are no complex manipulations, and very often the solution
+just follows from the definitions.</p>
+
+<!--more-->
+
+
+<h2>Basics</h2>
+
+<h3>$\sum_{0\le k\lt n}(a_{k+1}-a_k)b_k$</h3>
+
+<p>To show that</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k\lt n}(a_{k+1}-a_k)b_k &amp; = a_n b_n - a_0 b_0 - \sum_{0 \le k \lt n} a_{k+1}(b_{k+1} - b_k)&amp;&amp;n\ge 0\\\\
+\end{align}
+</div>
+
+
+<p>I start by rewriting the sum in the right side of the equation:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0 \le k \lt n} a_{k+1}(b_{k+1} - b_k) &amp; = \sum_{0 \le k \lt n} (a_{k+1}b_{k+1} +  a_{k+1} b_k)\\\\
+&amp; = \sum_{0 \le k \lt n} a_{k+1}b_{k+1} +  \sum_{0 \le k \lt n} a_{k+1} b_k&amp;&amp;\text{associative law}\\\\
+&amp; = \sum_{0 \le k-1 \lt n} a_k b_k +  \sum_{0 \le k \lt n} a_{k+1} b_k&amp;&amp;k\leftarrow k-1\\\\
+&amp; = \sum_{1 \le k \le n} a_k b_k +  \sum_{0 \le k \lt n} a_{k+1} b_k\\\\
+\end{align}
+</div>
+
+
+<p>This latest value can now be put back into the original right:</p>
+
+<div markdown="0">
+\begin{align}
+a_n b_n - a_0 b_0 - \sum_{1 \le k \le n} a_k b_k +  \sum_{0 \le k \lt n} a_{k+1} b_k &amp; = \sum_{0\le k \lt n} a_{k+1} b_k - (a_0 b_0 + \sum_{1 \le k \le n} a_k b_k - a_n b_n)\\\\
+&amp; = \sum_{0\le k \lt n} a_{k+1} b_k - \sum_{0\le k \lt n} a_k b_k\\\\
+&amp; = \sum_{0\le k \lt n} (a_{k+1} b_k - a_k b_k)\\\\
+&amp; = \sum_{0\le k \lt n} (a_{k+1} - a_k) b_k\\\\
+\end{align}
+</div>
+
+
+<p>which is indeed the left side of the equation (the but-last step is
+permitted under the associative law, but that didn't fit in the margin).</p>
+
+<h3>$p(k) = k + (-1)^k c$</h3>
+
+<p>It is clear that there is a single $p(k)$ for every possible (integer)
+$k$. So I need to show that for every $m$, there is a single $k$ such
+that $p(k)=m$, defining $p^{-1}$.</p>
+
+<p>The book method is smart, mine clearly less so, but as far as I can
+tell, still correct: for $m$, I consider $m-c$ and $m+c$. The
+difference is $2c$, so they're either both even, or both
+odd.</p>
+
+<p>If they're both even, then $m-c+(-1)^{m-c}c=m$, so $k=m-c$. If they're
+both odd, then $m+c+(-1)^{m+c}c=m$, so $k=m+c$. So $k$ is always well
+defined for every $m$, and $p$ is indeed a permutation.</p>
+
+<h3>$\sum_{k=0}^n (-1)^k k^2$</h3>
+
+<p>While I found the closed formula for the sum, I could not do it with
+the repertoire method.</p>
+
+<p>Solving the sum is not really difficult (although a little bit than
+the repertoire method, if you know how to do the latter); one way is
+to solve the positive and negative sums separately (they can be broken
+down to already solved sums); another one is to compute the sum of an
+even number of terms (one positive and one negative), then to compute
+sums of odd number of terms (by adding a term to the previous
+solution), and finally combining both to find the closed formula.</p>
+
+<p>In both attempts above, I tried to remove the $(-1)^k$ factor from the
+terms; when using the repertoire method I tried to do the same, which
+is why I failed.</p>
+
+<p>The repertoire method relies on a good intuition: one must have a
+sense of general shape of the parametric functions. In retrospect, it
+seems obvious, but I just couldn't see it, blinded as I was by$(-1)^k$.</p>
+
+<p>Expressing the sum as a recurrence is easy:</p>
+
+<div markdown="0">
+\begin{align}
+R_0 &amp; = 0\\\\
+R_n &amp; = R_{n-1} + (-1)^n n^2\\\\
+\end{align}
+</div>
+
+
+<p>Also, looking at the first few terms of the sum,
+$-1, 3, -6, 10, -15, \dots$, it is natural to consider solutions of
+the form $(-1)^n F(n)$; it is a little bit trickier to see where a good
+generalisation of the recurrence above should put the additional
+terms:</p>
+
+<div markdown="0">
+\begin{align}
+R_0 &amp; = \alpha\\\\
+R_n &amp; = R_{n-1} + (-1)^n \left(\beta + \gamma n + \delta n^2 \right)\\\\
+\end{align}
+</div>
+
+
+<p>With such a form, plugging in solutions $(-1)^nF(n)$ will
+simplify to $F(n) = \beta + \gamma n + \delta n^2 - F(n-1)$.</p>
+
+<p>At this stage, it becomes very easy to find the $A(n)$, $B(n)$, $C(n)$
+and $D(n)$ functions (the latter being the solution we are looking
+for). In fact, if all you care about is $D(n)$, then it is enough to
+use $R_n = (-1)^n n$ and $R_n = (-1)^n n^2$:</p>
+
+<h4>$R_n = (-1)^n n$</h4>
+
+<div markdown="0">
+\begin{align}
+R_0 &amp; = 0&amp;&amp;\alpha = 0\\\\
+n &amp; = \beta + \gamma n + \delta n^n - n + 1\\\\
+2n - 1 &amp; = \beta + \gamma n&amp;&amp;\beta = -1, \gamma = 2\\\\
+\end{align}
+</div>
+
+
+<p>which gives $-B(n)+2C(n) = (-1)^n n$.</p>
+
+<h4>$R_n = (-1)^n n^2$</h4>
+
+<div markdown="0">
+\begin{align}
+R_0 &amp; = 0&amp;&amp;\alpha = 0\\\\
+n^2 &amp; = \beta + \gamma n + \delta n^2 - (n-1) ^2\\\\
+2 n^2 - 2n + 1 &amp; = \beta + \gamma n + \delta n^2&amp;&amp;\beta = 1, \gamma = -2, \delta = 2\\\\
+\end{align}
+</div>
+
+
+<p>which gives $B(n)-2C(n)+2D(n) = (-1)^n n^2$. Combining with the
+previous answer, we have $2D(n) = (-1)^n (n^2-n)$, or
+$D(n) = (-1)^n \frac{n^2-n}{2}$.</p>
+
+<h4>Wrapping up this exercise</h4>
+
+<p>In hindsight, these steps could have helped me solve this
+exercise as intended:</p>
+
+<ul>
+<li>compute the first few terms to see if there is something obvious
+about their shape; in this case, the $(-1)^n$ factor</li>
+<li>at first, write the recurrence equations as simply as possible,
+with all the "inconvenient" parts; comparing them to the "shapes"
+identified in the previous step might give some insight about the
+general solutions, and possibly removed these difficult parts</li>
+<li>only then, consider how to generalise the recurrence equations. The
+base case is always $R_0 = \alpha$; the recurrent case should add
+parameters to each term, and additional terms (with their own
+parameters) to complete some basic classes of problems (for instance,
+if there are any polynomial, there should be a term for each power
+smaller than the largest power of the original problem; another basic
+class is the generalised radix-based Josephus problem)</li>
+<li>each class of problems can be solved independently; this makes it
+easier to find potential solutions and to combine them.</li>
+</ul>
+
+
+<h3>$\sum_{k=1}^n k2^k$</h3>
+
+<p>Not overly complicated; at least the introduction of $j$ is not a
+mystery (unlike the next exercise).</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le k\le n}k 2^k &amp; = \sum_{1\le k\le n} 2^k \sum_{1\le j\le k}1\\\\
+&amp; = \sum_{1\le k\le n} \sum_{1\le j\le k} 2^k\\\\
+&amp; = \sum_{1\le j\le k \le n} 2^k\\\\
+&amp; = \sum_{1\le j\le n} \sum_{j\le k\le n}2^k\\\\
+\end{align}
+</div>
+
+
+<p>The inner sum can be rewritten as</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{j\le k\le n}2^k &amp; = \sum_{1\le k\le n}2^k - \sum_{1\le k\lt j}2^k\\\\
+&amp; = 2^{n+1} - 2 - 2^j + 2\\\\
+&amp; = 2^{n+1} - 2^j\\\\
+\end{align}
+</div>
+
+
+<p>Here I use the already known
+sum $\sum 2^k$. Putting this last result
+in the original sum</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j\le n} 2^{n+1} - 2^j &amp; = n2^{n+1} - (2^{n+1} -2)\\\\
+\end{align}
+</div>
+
+
+<h3>$\sum_{k=1}^n k^3$</h3>
+
+<p>It took me some time to convince myself that the original rewrite was
+legitimate; eventually I did it by induction (the book version is much
+shorter, and once you see it, much easier). Clearly it works for
+$n=1$, so assuming it does for $n-1$, we have</p>
+
+<div markdown="0">
+\begin{align}
+2\sum_{1\le j\le k\le n} jk &amp; = 2\sum_{1\le j\le k\le n-1} jk + 2\sum_{1\le j\le k=n} jk\\\\
+&amp; = \sum_{1\le k\lt n}(k^3+k^2) + 2n\sum_{1\le j\le n} j\\\\
+&amp; = \sum_{1\le k\lt n}(k^3+k^2) + n^2(n+1)\\\\
+&amp; = \sum_{1\le k\lt n}(k^3+k^2) + n^3+n^2\\\\
+\end{align}
+</div>
+
+
+<p>So the rewrite is correct. At this stage, (2.33) pretty much finishes it:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le k\le n}(k^3+k^2) &amp; = (\sum_{1\le k\le n}k)+\sum_{1\le k\le n}k^2\\\\
+\end{align}
+</div>
+
+
+<p>so $\sum_{1\le k\le n}k^3=\frac{n^2(n+1)^2}{4}$.</p>
+
+<h3>$\frac{x^{\underline m}}{(x-n)^{\underline m}} = \frac{x^{\underline n}}{(x-m)^{\underline n}}$</h3>
+
+<p>This follows directly from
+$\frac{a}{b} = \frac{c}{d} \implies ad = bc$, and the use of equation (2.52).</p>
+
+<h3>Rising and Falling Factorial Powers Conversions</h3>
+
+<p>I'll just do the conversion from raising factorial power to falling
+factorial power; the other conversion is just the same.</p>
+
+<p>$x^{\overline m} = \frac{1}{(x-1)^{\underline m}}$ follows from (2.51)
+and (2.52).</p>
+
+<p>For the other equalities, by induction on $m$, and using (2.52) and
+its raising factorial powers equivalent:</p>
+
+<div markdown="0">
+\begin{align}
+x^{\underline m} &amp; = x^{\underline{m-1}}(x-m+1)\\\\
+&amp; = x^{\underline 1}(x-1)^{\underline{m-1}}\\\\
+&amp; = x(x-1)^{\underline{m-1}}\\\\
+x^{\overline m} &amp; = x^{\overline{m-1}}(x+m-1)\\\\
+&amp; = x^{\overline 1}(x+1)^{\overline{m-1}}\\\\
+&amp; = x(x+1)^{\overline{m-1}}\\\\
+\end{align}
+</div>
+
+
+<h4>Base case $m=0$</h4>
+
+<p>They all follow from definition:</p>
+
+<div markdown="0">
+\begin{align}
+x^{\overline 0} &amp; = 1\\\\
+(-1)^0 (-x)^{\underline 0} &amp; = 1\\\\
+(x+0-1)^{\underline 0} &amp; = 1\\\\
+\end{align}
+</div>
+
+
+<h4>Other positive $m$</h4>
+
+<p>Assuming the relations hold for all $k, 0\le k\lt m$:</p>
+
+<div markdown="0">
+\begin{align}
+(-1)^m(-x)^{\underline m} &amp; = -\left((-1)^{m-1}(-x)^{\underline{m-1}}(-x-m+1)\right)\\\\
+&amp; = (x^{\overline{m-1}})(x+m-1)\\\\
+(x+m-1)^{\underline m} &amp; = (x+m-1)^{\underline{m-1}}x\\\\
+&amp; = (x+1+(m-1)-1)^{\underline{m-1}}x\\\\
+&amp; = (x+1)^{\overline{m-1}}x\\\\
+\end{align}
+</div>
+
+
+<h4>Negative $m$</h4>
+
+<p>Using the recurrence relations derived from (2.52) and its raising
+factorial power equivalent:</p>
+
+<div markdown="0">
+\begin{align}
+x^{\underline m} &amp; = x^{\underline{(m+1)+(-1)}}\\\\
+&amp; = x^{\underline{-1}}(x+1)^{\underline{m+1}}\\\\
+&amp; = \frac{(x+1)^{\underline{m+1}}}{x+1}\\\\
+&amp; = x^{\underline{m+1}}(x-m-1)^{\underline{-1}}\\\\
+&amp; = \frac{x^{\underline{m+1}}}{x-m}\\\\
+x^{\overline m} &amp; = x^{\overline{(m+1)+(-1)}}\\\\
+&amp; = x^{\overline{-1}}(x-1)^{\overline{m+1}}\\\\
+&amp; = \frac{(x-1)^{\overline{m+1}}}{x-1}\\\\
+&amp; = x^{\overline{m+1}}(x+m+1)^{\overline{-1}}\\\\
+&amp; = \frac{x^{\overline{m+1}}}{x+m}\\\\
+\end{align}
+</div>
+
+
+<p>Assuming the relations hold for all $k, m\lt k\le 0$:</p>
+
+<div markdown="0">
+\begin{align}
+(-1)^m(-x)^{\underline m} &amp; = -\frac{(-1)^{m+1}(-x)^{\underline{m+1}}}{-x-m}\\\\
+&amp; = \frac{x^{\overline{m+1}}}{x+m}\\\\
+(x+m-1)^{\underline m} &amp; = \frac{(x+m)^{\underline{m+1}}}{x+m-1-m}\\\\
+&amp; = \frac{(x-1)^{\overline{m+1}}}{x-1}\\\\
+\end{align}
+</div>
+
+
+<p>So the main difficulties is to derive two equalities from (2.52) (four
+if we count the negative cases as well), and the identification of the
+recurrence equation in the induction step (especially for
+$(x+m-1)^{\underline{m\pm 1}}$).</p>
+
+<h3>Absolute Convergence of Complex Sums</h3>
+
+<p>I suppose I could say it follows directly from the equivalence of the
+metric functions (if my memory of metric space terminology is correct).</p>
+
+<p>More basically, the equivalence of the propositions follows from the
+relationships based on the hypotenuse formula:
+$\sqrt{(Rz)^2+(Iz)^2}\le |Rz| + |Iz|$, so the absolute convergence of
+the real and imaginary parts implies the absolute convergence of the
+absolute value. Conversely, $|Rz|,|Iz|\le\sqrt{(Rz)^2+(Iz)^2}$, so the
+absolute convergence of the absolute value also implies the absolute
+convergence of both the real and imaginary parts.</p>
+
+<h3>Wrapping up</h3>
+
+<p>This time, I found a solution to all the exercises, which is a
+progress of some sort. I still have trouble with the repertoire method,
+or perhaps not with the method itself but in identifying suitable
+generalisations and candidate solutions. This is something that can
+only be developed with practice, so I just have to be patient and
+keep trying (I hope I'll get there eventually).</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Warmups]]></title>
     <link href="http://blog.wakatta.jp/blog/2012/02/28/concrete-mathematics-chapter-2-warmups/"/>
     <updated>2012-02-28T19:18:00+09:00</updated>
     <id>http://blog.wakatta.jp/blog/2012/02/28/concrete-mathematics-chapter-2-warmups</id>
-    <content type="html"><![CDATA[<!--more-->
+    <content type="html"><![CDATA[<p>This first batch of exercises is meant to develop familiarity with
+the various concepts and notations introduced in this chapter. There
+is no complex manipulation, but the trick is to be aware of the often
+unmentioned assumptions about the precise meaning of the expressions.</p>
+
+<!--more-->
 
 
 <h2>Warmups</h2>
@@ -1020,190 +1381,6 @@ solution, and the second one adds a constraint to solve for $C$ as well.</p>
 <p>As can be seen above, approaching the problem from both directions
 (solving for known functions and solving for known parameters) can
 result in time saved, and simplified expression of the solution.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 2]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/"/>
-    <updated>2012-01-14T12:14:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2</id>
-    <content type="html"><![CDATA[<p>I finally finished the homework exercises.</p>
-
-<!-- more -->
-
-
-<h2>Homework Exercises Part 2</h2>
-
-<h3>Generalized Tower of Hanoi</h3>
-
-<p>To solve this, I first observed that for $n=1$, we need $m_1$ moves,
-and for $n \gt 1$, we need
-$A(m_1, \cdots, m_{n-1}) + m_n + A(m_1, \cdots, m_{n-1})$ or
-$2A(m_1, \cdots, m_{n-1}) + m_n$ moves.</p>
-
-<p>This leads to the solution,</p>
-
-<div markdown="0">
-\begin{align}
-A(m_1, \cdots, m_n) &amp;= \sum_{i=1}^n m_i 2^{n-i}\\\\
-\end{align}
-</div>
-
-
-<p>which is trivially shown by induction. The base case:</p>
-
-<div markdown="0">
-\begin{align}
-A(m_1) &amp; = \sum_{i=1}^1 m_i 2^{1-i}\\\\
-&amp; = m_1 2^0\\\\
-&amp; = m_1
-\end{align}
-</div>
-
-
-<p>And for larger $n$, assuming
-$A(m_1, \cdots, m_n) = \sum_{i=1}^n m_i 2^{n-i}$,</p>
-
-<div markdown="0">
-\begin{align}
-A(m_1, \cdots, m_{n+1}) &amp; = 2A(m_1, \cdots, m_n) +
-m_{n+1}&amp;&amp;\text{by definition}\\\\
-&amp; = 2\sum_{i=1}^n m_i 2^{n-i} + m_{n+1}&amp;&amp;\text{induction hypothesis}\\\\
-&amp; = \sum_{i=1}^{n} m_i 2^{n+1-i} + m_{n+1} 2^{0}\\\\
-&amp; = \sum_{i=1}^{n+1} m_i 2^{n+1-i}\\\\
-\end{align}
-</div>
-
-
-<h3>Zig-zag lines</h3>
-
-<p>A geometric problem, but very similar to the previous intersecting
-lines. A zig-zag is made of 3 segments, so a pair of zig-zag lines can
-intersect at 9 different points. The first zig-zag line defines two
-regions; each new zig-zag adds a new region, plus one more for each
-intersection point.</p>
-
-<p>This gives the following recurrence equations:</p>
-
-<div markdown="0">
-\begin{align}
-ZZ_1 &amp; = 2\\\\
-ZZ_n &amp; = ZZ_{n-1} + 9(n-1) + 1\\\\
-\end{align}
-</div>
-
-
-<p>Using the linearity of the recurrence equation, it is easy to see that</p>
-
-<div markdown="0">
-\begin{align}
-ZZ_n &amp; = ZZ_1 + 9S_{n-1} + (n-1)
-\end{align}
-</div>
-
-
-<p>Here I used the linearity to compute solutions to both
-$ZZ_n = ZZ_{n-1} + 9(n-1)$ and $ZZ_n = ZZ_{n-1} + 1$, which are
-equally trivial. Then I combined the solutions into one.</p>
-
-<p>I use (again) induction to confirm the solution. The base case is
-$ZZ_1 = ZZ_1 + 9S_0 + 0$. And for other $n$, assuming
-$ZZ_n = ZZ_1 + 9S_{n-1} + (n-1)$</p>
-
-<div markdown="0">
-\begin{align}
-ZZ_{n+1} &amp; = ZZ_{n} + 9n + 1&amp;&amp;\text{by definition}\\\\
-&amp; = ZZ_1 + 9S_{n-1} + (n-1) + 9n + 1&amp;&amp;\text{induction hypothesis}\\\\
-&amp; = ZZ_1 + 9(S_{n-1} + n) + (n-1+1)\\\\
-&amp; = ZZ_1 + 9S_n + n
-\end{align}
-</div>
-
-
-<p>The formula can also be written as</p>
-
-<div markdown="0">
-\begin{align}
-ZZ_n &amp; = \frac{9n^2-7n+2}{2}
-\end{align}
-</div>
-
-
-<h3>Planes cutting cheese</h3>
-
-<p>Again, a geometric problem. This one gave me more trouble. It
-took me a while before finally seeing that a new plane intersection
-with the previous ones will be a set of intersecting lines which
-defines the regions the new plan will divide in two.</p>
-
-<p>The number of regions formed by intersecting lines was solved in the
-book, and defined as $L_n = S_n + 1$</p>
-
-<p>So a plane cutting $n$ existing planes will define
-$P_{n+1} = P_n + L_n$
-new regions. This recurrence gives $P_5 = 26$ regions.</p>
-
-<p>The book did not expect a closed formula for this exercise, as the
-necessary techniques are only covered in chapter 5.</p>
-
-<h3>Josephus co-conspirator</h3>
-
-<p>The recurrence equation for $I(n)$ follow the structure of $J(n)$, but
-with different base cases:</p>
-
-<div markdown="0">
-\begin{align}
-I(2) &amp; = 2&amp;&amp;\text{\(I(1)\) is not defined}\\\\
-I(2n) &amp; = 2I(n) - 1\\\\
-I(2n+1) &amp; = 2I(n) + 1
-\end{align}
-</div>
-
-
-<p>Here I generated the first few values to get inspired. I noticed that
-$I(n)$ had increasing odd values for batches that were longer than for
-$J(n)$: $3, 6, 12, 24, \cdots$.</p>
-
-<p>These numbers are from the series $3\cdot 2^m$, so using the same
-"intuitive" step as in the book, I tried to show that
-$I(3\cdot 2^m + l) = 2l + 1$ with $0 \le l \lt 3\cdot 2^m$
-(the formula does not work for $I(2)$, which has to be defined separately).</p>
-
-<p>By induction on $m$: the base case is $I(3) = I(3\cdot 2^0 + l) = 1$.</p>
-
-<p>Assuming $I(3\cdot 2^m + l) = 2l+1$, we have</p>
-
-<div markdown="0">
-\begin{align}
-I(3\cdot2^{m+1} + 2l) &amp; = 2I(3\cdot 2^m + l) -1&amp;&amp;\text{by definition}\\\\
-&amp;= 2(2l+1) -1&amp;&amp;\text{induction hypothesis}\\\\
-&amp;= 4l+2-1\\\\
-&amp;= 2(2l)+1\\\\
-I(3\cdot 2^{m+1} + (2l+ 1)) &amp; = 2I(3\cdot 2^m + l) + 1&amp;&amp;\text{by definition}\\\\
-&amp; = 2(2l+1) + 1&amp;&amp;\text{induction hypothesis}\\\\
-\end{align}
-</div>
-
-
-<p>The book solution is defined in terms of $2^m+2^{m-1}+k$, which is
-same:</p>
-
-<div markdown="0">
-\begin{align}
-2^m+2^{m-1}+k &amp; = 2\cdot 2^{m-1} + 2^{m-1} + k\\\\
-&amp; = 3\cdot 2^{m-1} + k
-\end{align}
-</div>
-
-
-<p>with $1 \le m$, while I have $0 \le m$.</p>
-
-<h3>Repertoire method</h3>
-
-<p>I put the repertoire method in its own
-<a href="/blog/2012/01/14/concrete-mathematics-repertoire-method/">post</a> as it
-was both the most difficult exercise and the one where I learned the most.</p>
 ]]></content>
   </entry>
   

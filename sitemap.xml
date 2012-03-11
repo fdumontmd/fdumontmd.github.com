@@ -350,7 +350,11 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/02/28/concrete-mathematics-chapter-2-warmups/</loc>
-        <lastmod>2012-02-28T22:37:21+09:00</lastmod>
+        <lastmod>2012-03-10T11:16:02+09:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.wakatta.jp/blog/2012/03/10/concrete-mathematics-chapter-2-basics/</loc>
+        <lastmod>2012-03-11T11:25:17+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/about/</loc>
@@ -358,7 +362,7 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2012-02-28T22:37:21+09:00</lastmod>
+        <lastmod>2012-03-11T11:25:17+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
@@ -370,6 +374,6 @@
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2012-02-28T22:37:21+09:00</lastmod>
+        <lastmod>2012-03-11T11:25:17+09:00</lastmod>
     </url>
 </urlset>

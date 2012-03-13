@@ -251,7 +251,7 @@ Wrapping up Riak
 ----------------
 
 It seems Riak is a low level data store that trades easy of use and
-packaged features for high availability and flexible for
+packaged features for high availability and a flexible 
 performance cost.
 
 I can see how this could be in theory appealing in some circumstances,

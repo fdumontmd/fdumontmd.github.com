@@ -9,7 +9,9 @@
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="The second database is Riak, a key-value distributed store. Key-value stores a not really new (many property or configuration files are really basic &hellip;">
+  <meta name="description" content="Today we complete the tour of Riak features. First conflict resolution
+with vector clocks; then pre and post-commit hooks, and finally
+searching Riak &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +78,93 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Seven Databases in Seven Weeks Riak Day 3</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-09T22:32:00+09:00" pubdate data-updated="true">Dec 9<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today we complete the tour of Riak features. First conflict resolution
+with vector clocks; then pre and post-commit hooks, and finally
+searching Riak data with a <a href="http://lucene.apache.org/">Solr</a>
+compatible interface.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Seven Databases in Seven Weeks Riak Day 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-08T22:59:00+09:00" pubdate data-updated="true">Dec 8<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Day 2 with Riak, to cover Mapreduce, distribution, rings and consistency.</p>
+
+<p>Mapreduce will be familiar to anyone who has been paying attention to Google. The basic idea comes from functional programming, but Google showed how it could be used to distribute the load over many machines (this in turn spawned two distinct recent developments in software: one is the range of databases explicitly built around the concept of Mapreduce; the other is the idea that functional languages are better suited to do concurrent and parallel programming).</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -415,88 +504,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/">Seven Languages in Seven Weeks Haskell Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-11-19T14:16:00+09:00" pubdate data-updated="true">Nov 19<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Last day with Haskell, and this time we grapple with classes and monads. That&#8217;s pretty much where most beginners give up in disgust&#8230;</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Seven Languages in Seven Weeks Haskell Day 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-11-18T09:39:00+09:00" pubdate data-updated="true">Nov 18<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today introduces the functional aspects of Haskell: higher order functions, partial application of functions and lazy evaluation.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -520,6 +527,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/">Seven Databases in Seven Weeks Wrapping Up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/">Seven Databases in Seven Weeks Redis Day 3</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/03/10/concrete-mathematics-chapter-2-basics/">Concrete Mathematics Chapter 2 Basics</a>
       </li>
     
@@ -529,14 +544,6 @@
     
       <li class="post">
         <a href="/blog/2012/02/27/concrete-mathematics-chapter-2-notes/">Concrete Mathematics Chapter 2 Notes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/02/13/psychic-modeling-fast-version/">Psychic Modeling (fast version)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/02/10/psychic-modeling/">Psychic Modeling</a>
       </li>
     
   </ul>

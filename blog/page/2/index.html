@@ -9,10 +9,9 @@
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="After a long winter hiatus, the elves at
-Pragmatic Bookshelf delivered a late but
-welcome present: the third beta of
-Seven Databases in Seven Weeks. &hellip;">
+  <meta name="description" content="Another beta version of the book, finally with the chapter on
+CouchDB. I was going through
+the Redis chapter, but the third day uses other databases &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +78,95 @@ Seven Databases in Seven Weeks. &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">Seven Databases in Seven Weeks CouchDB Day 1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T13:57:00+09:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Another beta version of the book, finally with the chapter on
+<a href="http://couchdb.apache.org/">CouchDB</a>. I was going through
+the Redis chapter, but the third day uses other databases, in
+particular CouchDB. So I&#8217;ll get back to Redis after I&#8217;m done with
+CouchDB.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Seven Databases in Seven Weeks Redis Day 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-21T13:30:00+09:00" pubdate data-updated="true">Jan 21<span>st</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Performance tuning with Redis can be achieved in different ways, as we
+see today. First there are basic changes in the client side (such as
+pipelines), then configurations options (frequency of saves, &#8230;), and
+finally distribution of load.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -450,116 +538,6 @@ this blog (or lack thereof), would I dare put any equations?</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Seven Databases in Seven Weeks Neo4j Day 3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-30T21:15:00+09:00" pubdate data-updated="true">Dec 30<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Third, last and quite short day with Neo4j. Today on the menu:
-transactions, replication, and backups.</p>
-
-<p>Transactions are a standard feature of relational databases, but NOSQL
-databases seem to consider them too costly (of the other databases in
-the book, only HBase and Redis also support transactions, as far as I
-can tell). Neo4j does support them, along with rollbacks.</p>
-
-<p>Replication is Neo4j&#8217;s answer for High Availability and, to some
-extent, Scaling. The latter is limited as Neo4j does not partition the
-data, so everything has to fit in each computer in the cluster.</p>
-
-<p>Finally, backups are exactly what you would expect them to be. Neo4J
-offers both full and incremental backups, which update a previous
-backup.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Seven Databases in Seven Weeks Neo4j Day 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-29T09:17:00+09:00" pubdate data-updated="true">Dec 29<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today we play further with Neo4j, exploring the ReST API, indexes, and
-algorithms in various languages.</p>
-
-<p>The ReST API is always available, although not the easiest thing to
-work with. Besides what the book covers, I also learned how to extend
-it, and how to bypass it for large loads.</p>
-
-<p>Indexing can be manual, as the book shows, or automatic (although
-the
-<a href="http://docs.neo4j.org/chunked/snapshot/auto-indexing.html">documentation</a>
-warns this is still an experimental feature).</p>
-
-<p>Finally, the algorithms are mostly provided by an external library,
-<a href="http://jung.sourceforge.net/">JUNG</a>, so its use require direct access
-to the data, bypassing the server.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -583,6 +561,14 @@ to the data, bypassing the server.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/">Seven Databases in Seven Weeks Wrapping Up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/">Seven Databases in Seven Weeks Redis Day 3</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/03/10/concrete-mathematics-chapter-2-basics/">Concrete Mathematics Chapter 2 Basics</a>
       </li>
     
@@ -592,14 +578,6 @@ to the data, bypassing the server.</p>
     
       <li class="post">
         <a href="/blog/2012/02/27/concrete-mathematics-chapter-2-notes/">Concrete Mathematics Chapter 2 Notes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/02/13/psychic-modeling-fast-version/">Psychic Modeling (fast version)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/02/10/psychic-modeling/">Psychic Modeling</a>
       </li>
     
   </ul>

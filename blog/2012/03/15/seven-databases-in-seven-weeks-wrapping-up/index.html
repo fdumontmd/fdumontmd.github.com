@@ -1,0 +1,418 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Seven Databases in Seven Weeks Wrapping Up - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="This has lasted a little bit longer than seven weeks (the release
+schedule of the beta versions did not help; my day job did not help
+either), but &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Seven Databases in Seven Weeks Wrapping Up</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-15T10:57:00+09:00" pubdate data-updated="true">Mar 15<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This has lasted a little bit longer than seven weeks (the release
+schedule of the beta versions did not help; my day job did not help
+either), but finally I finished the book.</p>
+
+<!--more-->
+
+
+<h3>Pro</h3>
+
+<p>I liked that the book started with PostgreSQL. All too often, I am put
+of by the amazingly uninformed criticisms of the NoSQL crowd about
+relational databases; this left me with the general impression that a
+younger generation of engineers was just too ignorant to figure SQL
+out, so they build something new (without the benefits of decades of
+experience&#8230;).</p>
+
+<p>By having a balance approach, the book cleared this misconception
+(<a href="http://shop.oreilly.com/product/0636920010388.do">Hadoop, the Definitive Guide</a>
+also has a balance coverage in its introduction).</p>
+
+<p>Each database&#8217;s strengths and weaknesses are correctly (as far as I
+can tell) reported, along with its position in the CAP triangle, and
+intended or ideal usage.</p>
+
+<p>A recapitulative (but already partially incorrect, at least in the 5.0
+beta version) overview of all the databases properties in Appendix A
+is also very useful.</p>
+
+<h3>Cons</h3>
+
+<p>Well, this is not exactly a problem of the book itself, but rather of
+the tools it covers: the rapid and sometimes radical changes in some
+of the databases meant that the technical information in the book was
+already obsolete.</p>
+
+<p>The book&#8217;s intention is not to be a detailed tutorial; for instance,
+they skip installations (really, most technical books should skip
+installation and go straight to setup and use; think of the number of
+trees that would save), but the search for corrections was heavily
+taxing my already sparse free time.</p>
+
+<p>All this will eventually improve, as the tools and documentation
+mature; right now using them is a bit too involved for the broad but
+shallow approach this book follows.</p>
+
+<p>Compared to
+<a href="http://pragprog.com/book/btlang/seven-languages-in-seven-weeks">Seven Languages in Seven Weeks</a>,
+I found this book more challenging. But this is perhaps a consequence
+of my prior exposure to a variety of languages and programming
+concepts; I suspect many people may find this book much easier.</p>
+
+<h3>Recommendation</h3>
+
+<p>Of all the books I have read recently, this is the one that changed
+and enlarged my views the most.</p>
+
+<p>If you are, like me, a traditional software engineer with years of
+experience in relational databases but little exposure to newer kind
+of storage, you will benefit from this presentation of many databases and
+solution designs.</p>
+
+<p>If, however, you already come from the NoSQL database and have
+experience in a few of the covered tools, this one book might not be
+the ideal one to convince you of the strengths of PostgreSQL. The
+problem with relational databases is that, having been the defacto
+standard storage solutions for decades, nobody remember why they
+became popular in the first place (they actually replaced databases
+that looked pretty much like document or graph databases, only much
+more primitive).</p>
+
+<p>Still, given its price, as a broad introduction to many different
+data tools and techniques, this book is hard to beat. I certainly am
+glad for having read it, and I think you would be too.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-15T10:57:00+09:00" pubdate data-updated="true">Mar 15<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/" title="Previous Post: Seven Databases in Seven Weeks Redis Day 3">&laquo; Seven Databases in Seven Weeks Redis Day 3</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">MongoDB Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Neo4j Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Neo4j Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Neo4j Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/">Redis Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Redis Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">CouchDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">CouchDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/">CouchDB Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/">Redis Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/">Wrapping Up</a></li>
+		
+		</ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/">Seven Databases in Seven Weeks Wrapping Up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/">Seven Databases in Seven Weeks Redis Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/10/concrete-mathematics-chapter-2-basics/">Concrete Mathematics Chapter 2 Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/28/concrete-mathematics-chapter-2-warmups/">Concrete Mathematics Chapter 2 Warmups</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/27/concrete-mathematics-chapter-2-notes/">Concrete Mathematics Chapter 2 Notes</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
+  
+  </span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

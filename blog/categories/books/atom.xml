@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-03-15T12:59:19+09:00</updated>
+  <updated>2012-04-09T15:34:55+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,228 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Machine Learning in Action - Naïve Bayes]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes/"/>
+    <updated>2012-04-09T13:51:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes</id>
+    <content type="html"><![CDATA[<p>I am currently reading
+<a href="http://www.manning.com/pharrington/">Machine Learning in Action</a>, as
+I need something light between sessions with
+<a href="http://www-cs-faculty.stanford.edu/~uno/gkp.html">Concrete Mathematics</a>. This
+book introduces a number of important machine learning algorithms,
+each time with a complete implementation and one or more test data sets; it also
+explains the underlying mathematics, and provides information about
+additional reference material (mostly heavier and more expensive books).</p>
+
+<p>However, in Chapter 4 about Naïve Bayes classifiers, I didn't see how
+the implementation derived by the maths. Eventually, I confirm that it
+could not, and try to correct it.</p>
+
+<!-- more -->
+
+
+<p>It is of course possible that the implementation is eventually
+correct, and derives from more advanced theoretical concepts or
+practical concerns, but the book mentions neither; on the other hands,
+I found papers
+(<a href="http://trevorstone.org/school/spamfiltering.pdf">here</a> or
+<a href="http://www.cs.cmu.edu/%7Etom/mlbook/NBayesLogReg.pdf">here</a>) that
+seem to confirm my corrections.</p>
+
+<p>Everything that follows assumes the book's implementation was
+wrong. Humble and groveling apologies to the author if it was not.</p>
+
+<h2>What exactly is the model</h2>
+
+<p>The book introduces the concept of conditional probability using balls
+in buckets. This makes the explanation clearer, but this is just one
+possible model; each model (or
+<a href="http://en.wikipedia.org/wiki/Probability_distribution">distribution</a>)
+uses dedicated formulas.</p>
+
+<p>The problem is that the book then uses set of words or bags of words
+as it these were the same underlying model, which they are not.</p>
+
+<h3>Set of words</h3>
+
+<p>If we are only interested in whether a given word is present in a
+message or not, then the correct model is that of a biased coin where
+tails indicate the absence of the word, and heads its presence.</p>
+
+<p>This is also known as a
+<a href="http://en.wikipedia.org/wiki/Bernoulli_trial">Bernoulli trial</a>,
+and the estimator for the probability of presence is the mean
+presence: the number of documents in which the word is present,
+divided by the total number of documents.</p>
+
+<p>The book algorithm does not implement this model correctly, as its
+numerator is the count of documents in which the word is present
+(correct), but the denominator is the total number of words
+(incorrect).</p>
+
+<h3>Bag of words</h3>
+
+<p>If we want to consider the number of times a word is present in
+messages, then the balls in buckets model is correct (it is a
+also known as
+<a href="http://en.wikipedia.org/wiki/Categorical_distribution">Categorical distribution</a>),
+and the code in the book adequately implements it.</p>
+
+<h2>There is a word for it: Additive Smoothing</h2>
+
+<p>The book then improves the algorithm in two different ways. One is the
+use of logarithms to prevent underflow. The other is to always use one
+as the basic count for words, whether they are present or not.</p>
+
+<p>This is in fact not so much a trick as a concept called
+<a href="http://en.wikipedia.org/wiki/Additive_smoothing">Additive smoothing</a>,
+where a basic estimator $\theta_i = \frac{w_i}{N}$ is replaced by
+$\hat{\theta}_i = \frac{w_i + \alpha}{N + \alpha d}$</p>
+
+<p>$\alpha$ is a so-called smoothing parameter, and $d$ is the total
+number of words.</p>
+
+<p>If the model is Bernoulli trial, $w_i$ is the number of documents
+where word $i$ is present, and $N$ is the total number of documents.</p>
+
+<p>If the model is categorical distribution, $w_i$ is the total count of
+word $i$ is the documents and $N$ is the total count of words in the documents.</p>
+
+<p>As we are interested in $P(w_i|C_j)$ (with $C_0, C_1$ the two
+classes we are building a classifier for), $N$ above is restricted to
+documents in the relevant class; $\alpha$ and $d$ are independent of
+classes.</p>
+
+<p>So the correct formula becomes</p>
+
+<div markdown="0">
+\begin{align}
+\hat{\theta}_{i,j} = \frac{x_i,j+\alpha}{N_j+\alpha d}\\\\
+\end{align}
+</div>
+
+
+<p>With $\alpha=1$ as a smoothing parameter, the book should have used
+<code>numWords</code> instead of <code>2.0</code> as an initial value for both <code>p0Denom</code> and
+<code>p1Denom</code>.</p>
+
+<h2>Putting it together</h2>
+
+<p>The differences with the code from the book are minor: first I
+introduce a flag to indicates whether I'm using set of words
+(Bernoulli trials)  or bags of words (categorical distribution) as a
+model. Then I initialise <code>p0Denom</code> and <code>p1Denom</code> with <code>numWords</code> as
+explained above; finally I check the <code>bag</code> flag to know what to add to
+either denominators.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>new trainingNB0  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">trainNB0</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">,</span> <span class="n">trainCategory</span><span class="p">,</span> <span class="n">bag</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">numTrainDocs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">)</span>
+</span><span class='line'><span class="n">numWords</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span class='line'><span class="n">pAbusive</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainCategory</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">)</span>
+</span><span class='line'><span class="n">p0Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">);</span> <span class="n">p1Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">)</span>
+</span><span class='line'><span class="n">p0Denom</span> <span class="o">=</span> <span class="n">numWords</span><span class="p">;</span> <span class="n">p1Denom</span> <span class="o">=</span> <span class="n">numWords</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">trainCategory</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">p1Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p1Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p1Denom</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">p0Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p0Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p0Denom</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">p1Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p1Num</span><span class="o">/</span><span class="p">(</span><span class="n">p1Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
+</span><span class='line'><span class="n">p0Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p0Num</span><span class="o">/</span><span class="p">(</span><span class="n">p0Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
+</span><span class='line'><span class="k">return</span> <span class="n">p0Vect</span><span class="p">,</span> <span class="n">p1Vect</span><span class="p">,</span> <span class="n">pAbusive</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>Evaluation</h2>
+
+<p>For the Spam test, the book version has an average error of 6%. The
+rewritten version has an error between 3% and 4%. The Spam test uses
+messages as set, for which my version is the most different.</p>
+
+<p>For the New-York/San Francisco messages classification, I did not
+measure any difference in error rates; this test uses messages as
+bags, for which the book version was mostly correct (the only
+difference was in the denominators).</p>
+
+<h2>So what?</h2>
+
+<p>OK, well, but the book algorithm still works, at least on the original
+data.</p>
+
+<p>But how well exactly would it work with other data? As the algorithm
+does not seem to implement any kind of sound model, is there any way
+to quantify the error we can expect? By building on theoretical
+foundations, at least we can quantify the outcome, and rely on the
+work of all the brilliant minds who improved that theory.</p>
+
+<p>Theories (the scientific kind, not the hunch kind) provide well
+studied abstractions. There are always cases where they do not apply,
+and other cases where they do, but only partially or imperfectly. This
+should be expected as abstractions ignore part of the real world
+problem to make it tractable.</p>
+
+<p>Using a specific theory to address a problem is very much similar to
+looking for lost keys under a lamppost: maybe the keys are not there,
+but that's where the light is brightest, so there is little chance to
+find them anywhere else anyway.</p>
+
+<h2>A bad book then?</h2>
+
+<p>So far, this was the only chapter where I had anything bad to
+say about the book. And even then, it was not that bad.</p>
+
+<p>The rest of the book is very good; the underlying concepts are well
+explained (indeed, that's how I found the problem in the first place),
+there is always data to play with, and the choice of language and
+libraries (<a href="http://www.python.org/">Python</a>,
+<a href="http://numpy.scipy.org/">Numpy</a> and
+<a href="http://matplotlib.sourceforge.net/">matplotlib</a>) is very well
+suited to the kind of exploratory programming that makes learning
+much easier.</p>
+
+<p>So I would recommend this book as an introduction to this subject, and
+I'm certainly glad I bought it.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks Wrapping Up]]></title>
@@ -3291,257 +3513,6 @@ together the symmetry they lack on their own.</p>
 
 <p>OK, that was not entirely bad (two small mistakes, both about negative
 numbers blindness). Next step, the basic exercises.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Notes]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/02/27/concrete-mathematics-chapter-2-notes/"/>
-    <updated>2012-02-27T10:54:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/02/27/concrete-mathematics-chapter-2-notes</id>
-    <content type="html"><![CDATA[<p>After a long but busy silence, I have now a few notes on the second
-chapter, Sums. As with
-<a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Chapter 1</a>,
-these are nothing revolutionary; just some clarifications of the
-points that were not obvious to me, as well as other, random
-observations.</p>
-
-<!--more-->
-
-
-<p>Overall, this chapter felt less overwhelming than the first, despite
-being much longer and introducing very powerful techniques. I have yet
-to do the exercises, though, so I may still revise this judgement.</p>
-
-<h3>Notation</h3>
-
-<p>The authors mentions that the Sigma-notation is "... impressive to
-family and friends". I can confirm that assessment.</p>
-
-<p>The remark on keeping bounds simple actually goes beyond resisting
-"premature optimisation", that is, removing terms just because they
-are equal to zero. Sometimes, it is worth adding a zero term if it
-simplifies the bounds. Such a trick is used in solving
-$\sum_{1\le j\lt k\le n} \frac{1}{k-j}$, and I'll get back to this
-point when I go over this solution.</p>
-
-<p>The Iverson notation (or Iversonian) is a very useful tool, as is the
-general Sigma-notation. About the latter, it already simplifies
-variable changes a lot, but I found it useful (and less error prone)
-to always write the variable change on the right margin (for instance
-as $k \leftarrow k+1$) and to keep that change as the only one in a
-given line of the rewrite; otherwise, no matter how trivial the
-change, any error I make at that time will be hard to locate (I know;
-I tried).</p>
-
-<h3>Sums and Recurrence</h3>
-
-<p>First we see how easy it is to use the repertoire method to build
-solutions to common (or slightly generalised) sums. The only problem
-with the repertoire method is it requires a well furnished repertoire
-of solutions to basic recurrences; I'm sure I would never have come up
-with the radix-change solution to the generalised Josephus
-problem. And given that there is an infinite number of functions one
-could try, a more directed method is sometimes necessary.</p>
-
-<p>This section also shows how to turn some recurrence equations (such as
-the Tower of Hanoi one) into a sum; this method involve a choice
-($s_1$ can be any non-zero value), which could either simplify or
-complicate the solution. I haven't done the exercises yet, so I don't
-know to what extent the choice is obvious or tricky.</p>
-
-<p>Finally it shows how to turn a recurrence expressed as a sum of all
-the previous values into a simpler recurrence by computing the
-difference between two successive values. This is one instance of a
-more general simplification using a linear combination of a few
-successive values.</p>
-
-<h3>Manipulation of Sums</h3>
-
-<p>Unsurprisingly, sums have the same basic properties as common
-additions: distributive, associative and commutative laws. Only the
-latter is really tricky, as it involves a change to the index
-variable. As mentioned above, I found useful to make such changes
-really clear and isolated in any reasoning.</p>
-
-<p>With these laws confirmed, it is possible to build the first method
-for solving sums: the perturbation method. It is very simple, and
-while it does not always work, when it does it is very quick.</p>
-
-<h3>Multiple Sums</h3>
-
-<p>This is perhaps the first section where I had to slow down; basically
-multiple sums are not different from simple sums, and manipulations
-are defined by the distributive law, but index variable changes
-(especially the rocky road variety) require special attention. This,
-combined with "obvious" simplifications (obvious to the authors, and
-sometimes in retrospect to the reader as well), gave me some
-difficulties.</p>
-
-<p>For instance, the solution to</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le j\lt k\le n} \frac{1}{k-j}
-\end{align}
-</div>
-
-
-<p>The index variable change $k \leftarrow k+j$ is explained as a
-specific instance of the simplification of $k+f(j)$; more perplexing
-are the ranges for $j$ and $k$ when the sum is replaced by a sum of sum:</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le k\le n} \sum_{1\le j \le n-k} \frac{1}{k}
-\end{align}
-</div>
-
-
-<p>The range for $j$ is built from $1\le j$ and $k+j\le n$, so there is
-nothing really strange here.</p>
-
-<p>The range for $k$, however, looks like a typo: certainly the authors
-meant $1\le k\lt n$. A margin graffiti confirms the range, but it does
-not really explain it.</p>
-
-<p>The fact is, it is safe to let $k\le n$ here, because the sum over $j$
-when $k=n$ is zero: not only the expression
-$\sum_{1\le j \le k-n = 0} \frac{1}{k}$ is zero because there is no
-$j$ that can satisfies the range predicate, but the closed form
-of this sum, $\frac{k-n}{k}$, is also zero when $k=n$.</p>
-
-<p>With the closed form checked, it is safe to add extra terms to
-simplify the range of $k$.</p>
-
-<p>What happens if you don't see this possible simplification? As
-expected, the answer remains the same:</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le k\lt n} \sum_{1\le j \le n-k} \frac{1}{k} &amp; = \sum_{1\le k\lt n} \frac{n-k}{k}\\\\
-&amp; = \sum_{1\le k\lt n} \frac{n}{k} - \sum_{1\le k\lt n} \frac{k}{k}\\\\
-&amp; = \sum_{1\le k\lt n} \frac{n}{k} - (n-1)\\\\
-&amp; = \sum_{1\le k\lt n} \frac{n}{k} + \frac{n}{n} - n\\\\
-&amp; = \sum_{1\le k\le n} \frac{n}{k} - n\\\\
-&amp; = nH_n - n\\\\
-\end{align}
-</div>
-
-
-<p>So to expend on the original advice of keeping the bounds as simple as
-possible: sometimes it is possible to extend the bounds (in order to
-simplify them), as long as the extra terms in closed form evaluate to
-zero. If the extra terms are still defined as sums, just checking that
-the range is empty might not be enough.</p>
-
-<h3>General Methods</h3>
-
-<p>A cool and fun section on the various ways to solve a given sum.</p>
-
-<p>Method 0 is to look it up. This book, written before the rise of
-Internet (I remember Internet in the early 1990's; most of it was still
-indexed manually on the CERN index pages...), suggests a few books as
-resources.</p>
-
-<p>Fortunately, some of them have migrated to the
-<a href="https://oeis.org/">Web</a>, which is a more suitable tool than books for
-such knowledge; the combination of searches and instant updates is
-hard to beat (a book remains best for a content that is mostly linear
-and somewhat independent of time; a novel, or textbook, for
-instance. References are better on Internet, free if possible, for
-a subscription otherwise).</p>
-
-<p>Method 1 is guessing then proving; proving in fact should be a
-complement for all the other methods (except perhaps Method 0). Having
-two independents proofs is always good.</p>
-
-<p>Method 2 is the perturbation method. In this section example, we see
-how an apparent failure can still be exploited by being imaginative.</p>
-
-<p>Method 3 is the repertoire method. In this chapter it is usually much
-simpler than in the first.</p>
-
-<p>Method 4 uses calculus to get a first approximation, then uses other
-methods to solve the equations for the error function.</p>
-
-<p>Method 5 is a clever rewriting of the problem into a sum of sums;
-like the repertoire method but unlike the others, it requires some
-intuition to find a solution (perhaps more than the repertoire
-method); I have bad memories of trying such a method to solve problems
-at university, always somehow ending up right where I started. I guess
-I will try other methods if I can.</p>
-
-<p>Method 6 is the topic of the next section; method 7 is for another
-chapter.</p>
-
-<h3>Finite and Infinite Calculus</h3>
-
-<p>This section was surprising and exciting, but not really that
-complex. It really is a matter of adapting regular calculus reflexes to the
-finite version. I have to see how it works in practice.</p>
-
-<p>One thing that is causing me some trouble is the falling-power version
-of the law of exponents:</p>
-
-<div markdown="0">
-\begin{align}
-x^{\underline{m+n}} &amp; = x^{\underline m}(x-m)^{\underline n}\\\\
-\end{align}
-</div>
-
-
-<p>While the rule is easy to prove and to remember, it is less easy than
-the general one to recognise in practice; I failed to see it when it
-came up in the solution to</p>
-
-<div markdown="0">
-\begin{align}
-\Sigma xH_x\delta x\\\\
-\end{align}
-</div>
-
-
-<p>Worse, even the explanation in the book, I had to write it down, play
-with it, before seeing it.</p>
-
-<p>So I'm thinking about a notation that would bring out the rule more
-clearly, an extension of the <em>shift operator</em> $E$:</p>
-
-<div markdown="0">
-\begin{align}
-E_k f(x) &amp; = f(x-k)\\\\
-\end{align}
-</div>
-
-
-<p>This would turn the exponent law into</p>
-
-<div markdown="0">
-\begin{align}
-x^{\underline{m+n}} &amp; = x^{\underline m} E_m x^{\underline n}\\\\
-\end{align}
-</div>
-
-
-<p>Whether this is useful, or whether I'll get used to the original
-notation anyway, we'll see in the exercises...</p>
-
-<h3>Infinite Sums</h3>
-
-<p>The last section is about infinite sums. The authors quite sensibly
-restrict the scope to absolutely convergent sums, which have the
-advantage that the three basic laws and the manipulations they allow
-are still valid.</p>
-
-<p>Once again, this was not overly difficult; the only point I had
-trouble understanding was the existence of the subsets $F_j$ such that
-$\sum_{k\in F_j} a_{j,k} \gt (A/A')A_j$ when
-$\sum_{j\in G} A_j = A' \gt A$. But this last equation means that
-$A/A' \lt 1$, so $(A/A')A_j \lt A_j$. The first equation is therefore
-just a consequence of the fact that $A_j$ is a least upper bound.</p>
-
-<p>Next post, the warmups.</p>
 ]]></content>
   </entry>
   

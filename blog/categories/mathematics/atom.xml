@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-03-15T12:59:19+09:00</updated>
+  <updated>2012-04-09T15:34:55+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,228 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Machine Learning in Action - Naïve Bayes]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes/"/>
+    <updated>2012-04-09T13:51:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes</id>
+    <content type="html"><![CDATA[<p>I am currently reading
+<a href="http://www.manning.com/pharrington/">Machine Learning in Action</a>, as
+I need something light between sessions with
+<a href="http://www-cs-faculty.stanford.edu/~uno/gkp.html">Concrete Mathematics</a>. This
+book introduces a number of important machine learning algorithms,
+each time with a complete implementation and one or more test data sets; it also
+explains the underlying mathematics, and provides information about
+additional reference material (mostly heavier and more expensive books).</p>
+
+<p>However, in Chapter 4 about Naïve Bayes classifiers, I didn't see how
+the implementation derived by the maths. Eventually, I confirm that it
+could not, and try to correct it.</p>
+
+<!-- more -->
+
+
+<p>It is of course possible that the implementation is eventually
+correct, and derives from more advanced theoretical concepts or
+practical concerns, but the book mentions neither; on the other hands,
+I found papers
+(<a href="http://trevorstone.org/school/spamfiltering.pdf">here</a> or
+<a href="http://www.cs.cmu.edu/%7Etom/mlbook/NBayesLogReg.pdf">here</a>) that
+seem to confirm my corrections.</p>
+
+<p>Everything that follows assumes the book's implementation was
+wrong. Humble and groveling apologies to the author if it was not.</p>
+
+<h2>What exactly is the model</h2>
+
+<p>The book introduces the concept of conditional probability using balls
+in buckets. This makes the explanation clearer, but this is just one
+possible model; each model (or
+<a href="http://en.wikipedia.org/wiki/Probability_distribution">distribution</a>)
+uses dedicated formulas.</p>
+
+<p>The problem is that the book then uses set of words or bags of words
+as it these were the same underlying model, which they are not.</p>
+
+<h3>Set of words</h3>
+
+<p>If we are only interested in whether a given word is present in a
+message or not, then the correct model is that of a biased coin where
+tails indicate the absence of the word, and heads its presence.</p>
+
+<p>This is also known as a
+<a href="http://en.wikipedia.org/wiki/Bernoulli_trial">Bernoulli trial</a>,
+and the estimator for the probability of presence is the mean
+presence: the number of documents in which the word is present,
+divided by the total number of documents.</p>
+
+<p>The book algorithm does not implement this model correctly, as its
+numerator is the count of documents in which the word is present
+(correct), but the denominator is the total number of words
+(incorrect).</p>
+
+<h3>Bag of words</h3>
+
+<p>If we want to consider the number of times a word is present in
+messages, then the balls in buckets model is correct (it is a
+also known as
+<a href="http://en.wikipedia.org/wiki/Categorical_distribution">Categorical distribution</a>),
+and the code in the book adequately implements it.</p>
+
+<h2>There is a word for it: Additive Smoothing</h2>
+
+<p>The book then improves the algorithm in two different ways. One is the
+use of logarithms to prevent underflow. The other is to always use one
+as the basic count for words, whether they are present or not.</p>
+
+<p>This is in fact not so much a trick as a concept called
+<a href="http://en.wikipedia.org/wiki/Additive_smoothing">Additive smoothing</a>,
+where a basic estimator $\theta_i = \frac{w_i}{N}$ is replaced by
+$\hat{\theta}_i = \frac{w_i + \alpha}{N + \alpha d}$</p>
+
+<p>$\alpha$ is a so-called smoothing parameter, and $d$ is the total
+number of words.</p>
+
+<p>If the model is Bernoulli trial, $w_i$ is the number of documents
+where word $i$ is present, and $N$ is the total number of documents.</p>
+
+<p>If the model is categorical distribution, $w_i$ is the total count of
+word $i$ is the documents and $N$ is the total count of words in the documents.</p>
+
+<p>As we are interested in $P(w_i|C_j)$ (with $C_0, C_1$ the two
+classes we are building a classifier for), $N$ above is restricted to
+documents in the relevant class; $\alpha$ and $d$ are independent of
+classes.</p>
+
+<p>So the correct formula becomes</p>
+
+<div markdown="0">
+\begin{align}
+\hat{\theta}_{i,j} = \frac{x_i,j+\alpha}{N_j+\alpha d}\\\\
+\end{align}
+</div>
+
+
+<p>With $\alpha=1$ as a smoothing parameter, the book should have used
+<code>numWords</code> instead of <code>2.0</code> as an initial value for both <code>p0Denom</code> and
+<code>p1Denom</code>.</p>
+
+<h2>Putting it together</h2>
+
+<p>The differences with the code from the book are minor: first I
+introduce a flag to indicates whether I'm using set of words
+(Bernoulli trials)  or bags of words (categorical distribution) as a
+model. Then I initialise <code>p0Denom</code> and <code>p1Denom</code> with <code>numWords</code> as
+explained above; finally I check the <code>bag</code> flag to know what to add to
+either denominators.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>new trainingNB0  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">trainNB0</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">,</span> <span class="n">trainCategory</span><span class="p">,</span> <span class="n">bag</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">numTrainDocs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">)</span>
+</span><span class='line'><span class="n">numWords</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span class='line'><span class="n">pAbusive</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainCategory</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">)</span>
+</span><span class='line'><span class="n">p0Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">);</span> <span class="n">p1Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">)</span>
+</span><span class='line'><span class="n">p0Denom</span> <span class="o">=</span> <span class="n">numWords</span><span class="p">;</span> <span class="n">p1Denom</span> <span class="o">=</span> <span class="n">numWords</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">trainCategory</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">p1Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p1Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p1Denom</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">p0Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p0Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p0Denom</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">p1Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p1Num</span><span class="o">/</span><span class="p">(</span><span class="n">p1Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
+</span><span class='line'><span class="n">p0Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p0Num</span><span class="o">/</span><span class="p">(</span><span class="n">p0Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
+</span><span class='line'><span class="k">return</span> <span class="n">p0Vect</span><span class="p">,</span> <span class="n">p1Vect</span><span class="p">,</span> <span class="n">pAbusive</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>Evaluation</h2>
+
+<p>For the Spam test, the book version has an average error of 6%. The
+rewritten version has an error between 3% and 4%. The Spam test uses
+messages as set, for which my version is the most different.</p>
+
+<p>For the New-York/San Francisco messages classification, I did not
+measure any difference in error rates; this test uses messages as
+bags, for which the book version was mostly correct (the only
+difference was in the denominators).</p>
+
+<h2>So what?</h2>
+
+<p>OK, well, but the book algorithm still works, at least on the original
+data.</p>
+
+<p>But how well exactly would it work with other data? As the algorithm
+does not seem to implement any kind of sound model, is there any way
+to quantify the error we can expect? By building on theoretical
+foundations, at least we can quantify the outcome, and rely on the
+work of all the brilliant minds who improved that theory.</p>
+
+<p>Theories (the scientific kind, not the hunch kind) provide well
+studied abstractions. There are always cases where they do not apply,
+and other cases where they do, but only partially or imperfectly. This
+should be expected as abstractions ignore part of the real world
+problem to make it tractable.</p>
+
+<p>Using a specific theory to address a problem is very much similar to
+looking for lost keys under a lamppost: maybe the keys are not there,
+but that's where the light is brightest, so there is little chance to
+find them anywhere else anyway.</p>
+
+<h2>A bad book then?</h2>
+
+<p>So far, this was the only chapter where I had anything bad to
+say about the book. And even then, it was not that bad.</p>
+
+<p>The rest of the book is very good; the underlying concepts are well
+explained (indeed, that's how I found the problem in the first place),
+there is always data to play with, and the choice of language and
+libraries (<a href="http://www.python.org/">Python</a>,
+<a href="http://numpy.scipy.org/">Numpy</a> and
+<a href="http://matplotlib.sourceforge.net/">matplotlib</a>) is very well
+suited to the kind of exploratory programming that makes learning
+much easier.</p>
+
+<p>So I would recommend this book as an introduction to this subject, and
+I'm certainly glad I bought it.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Basics]]></title>
@@ -1132,255 +1354,6 @@ so I will get back to these bonus problems after I finish the book.</p>
 
 <p>I am now working through Chapter 2. It is a much larger chapter than
 the first, so it will take me some time.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Repertoire Method]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method/"/>
-    <updated>2012-01-14T13:33:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method</id>
-    <content type="html"><![CDATA[<p>The repertoire method is never really explained in the book, or
-anywhere else I could find on the Internet. There are a couple of
-posts on this subject, so I though I should add mine.</p>
-
-<p>The repertoire method is really a tool to help with the intuitive step
-of figuring out a closed formula for a recurrence equation. It does so
-by breaking the original problem into smaller parts, with the hope
-they might be easier to solve.</p>
-
-<!-- more -->
-
-
-<h3>Why it works</h3>
-
-<p>Let's assume we have a system of recurrence equations with parameters,
-so that the unknown function can be expressed as a linear combination
-of other (unknown) functions where the coefficients are the parameters:</p>
-
-<div markdown="0">
-\begin{align}
-g(1) &amp; = b(0, \alpha_1, \cdots, \alpha_m)\\\\
-g(n) &amp; = r_n(g_1, \cdots, g_{n-1}, \alpha_1, \cdots, \alpha_m)\\\\
-&amp; = \sum_{i=1}^m A_i(n)\alpha_i,
-\end{align}
-</div>
-
-
-<p>We can consider $g$ as a specific point in a $m$-dimensional function
-space (determined by both the recurrence equations, and the
-parameters), and because $g$ is a linear combination, we can try to
-find $m$ base functions (hopefully known or easy to compute)
-$f_k(n) = \sum_{i=1}^m A_i(n)\alpha_{i_k}$ with $1 \le k \le m$, expressed in
-terms of $m$ linearly independent vectors
-$(\alpha_{1_k},\cdots,\alpha_{m_k})$.</p>
-
-<p>In other words, if we can find $m$ linearly independent parameter
-vectors such that, for each, we have a known solution $f_k(n)$, then
-we can express the function $g$ as a linear combination of $f_k(n)$
-for any parameters (because the $m$ $f_k(n)$ form a base for the
-$m$-dimensional function space defined by the recurrence equations).</p>
-
-<h3>How it works</h3>
-
-<p>First, we need to check that the recurrence equations accept a
-solution expressed as</p>
-
-<div markdown="0">
-\begin{align}
-g(n) &amp; = \sum_{i=1}^m A_i(n)\alpha_i
-\end{align}
-</div>
-
-
-<p>It is enough to plug this definition into the recurrence equations,
-and make sure the different parameters always remain in different
-terms.</p>
-
-<p>Then we can either solve $f(n) = \sum_{i=1}^m A_i(n)\alpha_i$ for
-known $f(n)$, or for known $\alpha_i$
-parameters, as long as we end up with $m$ linearly independent
-parameter vectors (or, as it is equivalent, $m$ linearly independent
-known functions for specific parameters).</p>
-
-<p>It is important to keep in mind that a solution can be searched from
-both direction: either set a function and try to solve for the
-parameters, or set the parameters and solve for the function.</p>
-
-<h3>Homework exercise</h3>
-
-<p>Given</p>
-
-<div markdown="0">
-\begin{align}
-g(1) &amp; = \alpha\\\\
-g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j&amp;&amp;\text{for \(j=0, 1\) and \(n \gt 1 \)}\\\\
-\end{align}
-</div>
-
-
-<p>We need to check that $g$ can be written as</p>
-
-<div markdown="0">
-\begin{align}
-g(n) &amp; = \alpha A(n) + \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)\\\\
-\end{align}
-</div>
-
-
-<p>The base case is trivial. The recurrence case is</p>
-
-<div markdown="0">
-\begin{align}
-g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
-&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + \gamma n \beta_0\\\\
-&amp; = \alpha 3A(n) + \beta_0 (3 B_0(n) + 1) + \beta_1 3B_1(n) + \gamma (3C(n) + n)\\\\
-g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
-&amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + + \gamma n\beta_1\\\\
-&amp; = \alpha 3A(n) + \beta_0 3 B_0(n)+ \beta_1 (3B_1(n) + 1) + \gamma (3C(n) + n)\\\\
-\end{align}
-</div>
-
-
-<p>so $g$ can be expressed as a linear combination of other functions,
-with the parameters as the coefficients.</p>
-
-<p>Now, when I tried to solve this problem, I didn't know I could set the
-parameters to values that would lead to an easy solution ($\gamma = 0$
-turns the problem into an easy to solve generalised radix-based
-Josephus problem); instead I wasted a lot of time trying to find known
-functions and solve for the parameters, which is why I have four steps
-below instead of just two as in the book.</p>
-
-<h4>$g(n) = n$</h4>
-
-<p>As the book suggests, I tried to solve for $g(n) = n$:</p>
-
-<div markdown="0">
-\begin{align}
-1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
-2n = g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
-&amp; = 3n + \gamma n + \beta_0&amp;&amp;\gamma = -1, \beta_0 = 0\\\\
-2n+1 = g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
-&amp; = 3n - n + \beta_1&amp;&amp; \beta_1 = 1\\\\
-\end{align}
-</div>
-
-
-<h4>$g(2^m+l) = 3^m$</h4>
-
-<p>As the recurrence equation looks like the generalised radix-based
-Josephus equation, I tried to solve for $g(2^m+1) = 3^m$:</p>
-
-<div markdown="0">
-\begin{align}
-1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
-3^m = g(2^m+2l) &amp; = 3g(2^{m-1}+l) + \gamma (2^{m-1} + l) + \beta_0\\\\
-&amp; = 3\cdot 3^{m-1} + \gamma (2^{m-1} + l) + \beta_0&amp;&amp; \beta_0, \gamma = 0\\\\
-3^m = g(2^m+2l+1) &amp; = 3g(2^{m^1}+l) + \gamma (2^{m-1} + l) + \beta_1\\\\
-&amp; = 3\cdot 3^{m-1}&amp;&amp;\beta_1 = 0\\\\
-\end{align}
-</div>
-
-
-<h4>$g(n) = 1$</h4>
-
-<p>I tried to solve for $g(n) = 1$, as it seemed useful to solve for a
-constant (no linear combination of linearly independent non-constant
-functions can produce a constant function).</p>
-
-<div markdown="0">
-\begin{align}
-1 = g(1) &amp; = \alpha&amp;&amp; \alpha = 1\\\\
-1 = g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j\\\\
-&amp; = 3 + \gamma n + \beta_j&amp;&amp; \gamma = 0, \beta_j = -2\\\\
-\end{align}
-</div>
-
-
-<h4>$\alpha, \beta_1 = 1, \beta_0,  \gamma = 0$</h4>
-
-<p>This is the step that took me the longest, and when I finally
-understood I could fix the parameters, I was able to use the
-radix-based Josephus solution.</p>
-
-<p>The recurrence equations</p>
-
-<div markdown="0">
-\begin{align}
-g(1) &amp; = 1\\\\
-g(2n) &amp; = 3g(n)\\\\
-g(2n+1) &amp; = 3g(n) + 1\\\\
-\end{align}
-</div>
-
-
-<p>have as solution $g(2^m + (b_m\cdots b_0)) = 3^m + (b_m\cdots b_0)_3$.</p>
-
-<h4>Solving for $g(n)$</h4>
-
-<p>We have the equations</p>
-
-<div markdown="0">
-\begin{align}
-A(n) - C(n) &amp; = n\\\\
-A(2^m + l) &amp; = 3^m\\\\
-A(n) -2(B_0(n) + B_1(n)) &amp; = 1\\\\
-B_1(2^m+l) &amp; = h_3(l)&amp;&amp;\text{where \(h_3(b_m\cdots b_0) = (b_m\cdots b_0)_3\)}\\\\
-\end{align}
-</div>
-
-
-<p>We have two functions already defined ($A(n)$ and $B_1(n)$), and the
-other two equations give us the remaining function.</p>
-
-<p>Now we can solve for $g(n)$:</p>
-
-<div markdown="0">
-\begin{align}
-g(2^m+l) = \alpha 3^m &amp; + \beta_0 (\frac{3^m - 1}{2} - h_3(l))\\\\
-&amp; + \beta_1 h_3(l) \\\\
-&amp;+ \gamma (3^m + h_3(l) - 2^m - l)
-\end{align}
-</div>
-
-
-<p>The $\gamma$ term is really $h_3(n) - n$.</p>
-
-<p>The $\beta_0$ term is the same as $h_3(2^m-1-l)$, as can be seen by
-observing that in base $3$, $3^m$ is $1$ followed by $m$ zeroes, so
-$3^m-1$ is $m$ twos, and $\frac{3^m-1}{2}$ is $m$ ones, in other words
-the same representation as the binary representation of $2^m-1$.</p>
-
-<p>Now, the binary representation of $l$ is the same as the
-representation in base $3$ of $h_3(l)$ (by definition of $h_3$), so
-the binary representation of $2^m-1-l$ is the same as the
-representation in base $3$ of $\frac{3^m-1}{2} - h_3(l)$.</p>
-
-<p>With these two observations, it is possible to rewrite $g$ as</p>
-
-<div markdown="0">
-\begin{align}
-g(1b_m\cdots b_0) &amp; = (\alpha\beta_{b_m}\cdots\beta_{b_0})_3 + \gamma ((1b_m\cdots b_0)_3 - (1b_m\cdots b_0)_2)
-\end{align}
-</div>
-
-
-<p>which is the book solution.</p>
-
-<h3>Faster solution</h3>
-
-<p>It is enough to solve for
-$\alpha, \beta_0, \beta_1 \ne 0, \gamma = 0$,
-and to find the parameters for $g(n) = n$. The first gives $A$,
-$B_0$ and $B_1$ directly by the generalised radix-based Josephus
-solution, and the second one adds a constraint to solve for $C$ as well.</p>
-
-<h3>Wrapping up</h3>
-
-<p>As can be seen above, approaching the problem from both directions
-(solving for known functions and solving for known parameters) can
-result in time saved, and simplified expression of the solution.</p>
 ]]></content>
   </entry>
   

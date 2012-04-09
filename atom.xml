@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-03-15T12:59:19+09:00</updated>
+  <updated>2012-04-09T15:34:55+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,221 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Machine Learning in Action - Naïve Bayes]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes/"/>
+    <updated>2012-04-09T13:51:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes</id>
+    <content type="html"><![CDATA[<p>I am currently reading
+<a href="http://www.manning.com/pharrington/">Machine Learning in Action</a>, as
+I need something light between sessions with
+<a href="http://www-cs-faculty.stanford.edu/~uno/gkp.html">Concrete Mathematics</a>. This
+book introduces a number of important machine learning algorithms,
+each time with a complete implementation and one or more test data sets; it also
+explains the underlying mathematics, and provides information about
+additional reference material (mostly heavier and more expensive books).</p>
+
+<p>However, in Chapter 4 about Naïve Bayes classifiers, I didn&#8217;t see how
+the implementation derived by the maths. Eventually, I confirm that it
+could not, and try to correct it.</p>
+
+<!-- more -->
+
+
+<p>It is of course possible that the implementation is eventually
+correct, and derives from more advanced theoretical concepts or
+practical concerns, but the book mentions neither; on the other hands,
+I found papers
+(<a href="http://trevorstone.org/school/spamfiltering.pdf">here</a> or
+<a href="http://www.cs.cmu.edu/%7Etom/mlbook/NBayesLogReg.pdf">here</a>) that
+seem to confirm my corrections.</p>
+
+<p>Everything that follows assumes the book&#8217;s implementation was
+wrong. Humble and groveling apologies to the author if it was not.</p>
+
+<h2>What exactly is the model</h2>
+
+<p>The book introduces the concept of conditional probability using balls
+in buckets. This makes the explanation clearer, but this is just one
+possible model; each model (or
+<a href="http://en.wikipedia.org/wiki/Probability_distribution">distribution</a>)
+uses dedicated formulas.</p>
+
+<p>The problem is that the book then uses set of words or bags of words
+as it these were the same underlying model, which they are not.</p>
+
+<h3>Set of words</h3>
+
+<p>If we are only interested in whether a given word is present in a
+message or not, then the correct model is that of a biased coin where
+tails indicate the absence of the word, and heads its presence.</p>
+
+<p>This is also known as a
+<a href="http://en.wikipedia.org/wiki/Bernoulli_trial">Bernoulli trial</a>,
+and the estimator for the probability of presence is the mean
+presence: the number of documents in which the word is present,
+divided by the total number of documents.</p>
+
+<p>The book algorithm does not implement this model correctly, as its
+numerator is the count of documents in which the word is present
+(correct), but the denominator is the total number of words
+(incorrect).</p>
+
+<h3>Bag of words</h3>
+
+<p>If we want to consider the number of times a word is present in
+messages, then the balls in buckets model is correct (it is a
+also known as
+<a href="http://en.wikipedia.org/wiki/Categorical_distribution">Categorical distribution</a>),
+and the code in the book adequately implements it.</p>
+
+<h2>There is a word for it: Additive Smoothing</h2>
+
+<p>The book then improves the algorithm in two different ways. One is the
+use of logarithms to prevent underflow. The other is to always use one
+as the basic count for words, whether they are present or not.</p>
+
+<p>This is in fact not so much a trick as a concept called
+<a href="http://en.wikipedia.org/wiki/Additive_smoothing">Additive smoothing</a>,
+where a basic estimator $\theta_i = \frac{w_i}{N}$ is replaced by
+$\hat{\theta}_i = \frac{w_i + \alpha}{N + \alpha d}$</p>
+
+<p>$\alpha$ is a so-called smoothing parameter, and $d$ is the total
+number of words.</p>
+
+<p>If the model is Bernoulli trial, $w_i$ is the number of documents
+where word $i$ is present, and $N$ is the total number of documents.</p>
+
+<p>If the model is categorical distribution, $w_i$ is the total count of
+word $i$ is the documents and $N$ is the total count of words in the documents.</p>
+
+<p>As we are interested in $P(w_i|C_j)$ (with $C_0, C_1$ the two
+classes we are building a classifier for), $N$ above is restricted to
+documents in the relevant class; $\alpha$ and $d$ are independent of
+classes.</p>
+
+<p>So the correct formula becomes</p>
+
+<div markdown="0">
+\begin{align}
+\hat{\theta}_{i,j} = \frac{x_i,j+\alpha}{N_j+\alpha d}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>With $\alpha=1$ as a smoothing parameter, the book should have used
+<code>numWords</code> instead of <code>2.0</code> as an initial value for both <code>p0Denom</code> and
+<code>p1Denom</code>.</p>
+
+<h2>Putting it together</h2>
+
+<p>The differences with the code from the book are minor: first I
+introduce a flag to indicates whether I&#8217;m using set of words
+(Bernoulli trials)  or bags of words (categorical distribution) as a
+model. Then I initialise <code>p0Denom</code> and <code>p1Denom</code> with <code>numWords</code> as
+explained above; finally I check the <code>bag</code> flag to know what to add to
+either denominators.</p>
+
+<figure class='code'><figcaption><span>new trainingNB0  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">trainNB0</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">,</span> <span class="n">trainCategory</span><span class="p">,</span> <span class="n">bag</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">numTrainDocs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">numWords</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span class='line'>    <span class="n">pAbusive</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainCategory</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">p0Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">);</span> <span class="n">p1Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">p0Denom</span> <span class="o">=</span> <span class="n">numWords</span><span class="p">;</span> <span class="n">p1Denom</span> <span class="o">=</span> <span class="n">numWords</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">trainCategory</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p1Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">p1Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">p1Denom</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p0Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">p0Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">p0Denom</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">p1Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p1Num</span><span class="o">/</span><span class="p">(</span><span class="n">p1Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">p0Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p0Num</span><span class="o">/</span><span class="p">(</span><span class="n">p0Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">p0Vect</span><span class="p">,</span> <span class="n">p1Vect</span><span class="p">,</span> <span class="n">pAbusive</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Evaluation</h2>
+
+<p>For the Spam test, the book version has an average error of 6%. The
+rewritten version has an error between 3% and 4%. The Spam test uses
+messages as set, for which my version is the most different.</p>
+
+<p>For the New-York/San Francisco messages classification, I did not
+measure any difference in error rates; this test uses messages as
+bags, for which the book version was mostly correct (the only
+difference was in the denominators).</p>
+
+<h2>So what?</h2>
+
+<p>OK, well, but the book algorithm still works, at least on the original
+data.</p>
+
+<p>But how well exactly would it work with other data? As the algorithm
+does not seem to implement any kind of sound model, is there any way
+to quantify the error we can expect? By building on theoretical
+foundations, at least we can quantify the outcome, and rely on the
+work of all the brilliant minds who improved that theory.</p>
+
+<p>Theories (the scientific kind, not the hunch kind) provide well
+studied abstractions. There are always cases where they do not apply,
+and other cases where they do, but only partially or imperfectly. This
+should be expected as abstractions ignore part of the real world
+problem to make it tractable.</p>
+
+<p>Using a specific theory to address a problem is very much similar to
+looking for lost keys under a lamppost: maybe the keys are not there,
+but that&#8217;s where the light is brightest, so there is little chance to
+find them anywhere else anyway.</p>
+
+<h2>A bad book then?</h2>
+
+<p>So far, this was the only chapter where I had anything bad to
+say about the book. And even then, it was not that bad.</p>
+
+<p>The rest of the book is very good; the underlying concepts are well
+explained (indeed, that&#8217;s how I found the problem in the first place),
+there is always data to play with, and the choice of language and
+libraries (<a href="http://www.python.org/">Python</a>,
+<a href="http://numpy.scipy.org/">Numpy</a> and
+<a href="http://matplotlib.sourceforge.net/">matplotlib</a>) is very well
+suited to the kind of exploratory programming that makes learning
+much easier.</p>
+
+<p>So I would recommend this book as an introduction to this subject, and
+I&#8217;m certainly glad I bought it.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Seven Databases in Seven Weeks Wrapping Up]]></title>
@@ -8909,69 +9124,6 @@ recurrence over $m$ (with $m$ the number of digits or the argument in
 base $d$).</p>
 
 <p>In the next post in this series, I will start the exercises.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics/"/>
-    <updated>2012-01-06T13:16:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics</id>
-    <content type="html"><![CDATA[<p>Stephen Hawking once said that his editor had warned him that each
-equation in his book would halve the readership.</p>
-
-<p>With that in mind, and taking into account the number of readers of
-this blog (or lack thereof), would I dare put any equations?</p>
-
-<p>You better believe it!</p>
-
-<!--more-->
-
-
-<p>I just picked up my old copy of
-<a href="http://en.wikipedia.org/wiki/Concrete_Mathematics">Concrete Mathematics</a>,
-a book I have too long neglected. The ultimate goal, of course, is
-slaying the
-<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming">Beast</a>,
-which I should try to complete before Donald E. Knuth passes away.
-While I wish him a very long life, long enough at least to complete
-<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming#Volumes">Volume 5</a>,
-and better yet 6 and 7, I should not take his remarkable health as an
-excuse to dither.</p>
-
-<p>For the math notation, I use <a href="http://www.mathjax.org/">MathJax</a>, a
-JavaScript library that can parse either
-<a href="http://www.w3.org/Math/">MathMl</a>, or much better
-<a href="http://www.latex-project.org/">LaTeX</a> (which is based on
-<a href="http://www.math.upenn.edu/TeX.html">TeX</a>, another gift of Donald
-E. Knuth to the world).</p>
-
-<p>The setup for this blog is based on this
-<a href="http://greglus.com/blog/2011/11/29/integrate-MathJax-LaTeX-and-MathML-Markup-in-Octopress/">post</a>.</p>
-
-<p>The quality of rendering is variable: pretty good in Firefox, OK in
-Safari or Chrome, and no idea in IE or Opera. Of course, it is not as
-good as the output of LaTeX, but for the Web it is acceptable.</p>
-
-<p>For instance, given the recurrence</p>
-
-<div markdown="0">
-$$
-\begin{align}
-f(j) &amp; = \alpha_j, &amp;&amp;\text{for $1 &#92;leq j &#92;lt  d$}&#92;&#92;
-f(dn + j) &amp; = cf(n) + \beta_j, &amp;&amp;\text{for $0 &#92;leq j &#92;lt d$ and $n &#92;geq 1$}
-\end{align}
-$$
-</div>
-
-
-<p>then the solution is</p>
-
-<p>$$f \left( ( b_m b_{m-1} \cdots b_1 b_0)_d \right) = \left( \alpha_{b_m} \beta_{b_{m-1}} \beta_{b_{m-2}} \cdots \beta_{b_1} \beta_{b_0} \right)_c$$</p>
-
-<p>(refer to the book for explanations).</p>
-
-<p>Isn&#8217;t this lovely?</p>
 ]]></content>
   </entry>
   

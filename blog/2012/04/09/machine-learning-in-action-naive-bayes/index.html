@@ -1,0 +1,523 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Machine Learning in Action - Naïve Bayes - Wakatta!</title>
+  <meta name="author" content="Frédéric Dumont">
+
+  
+  <meta name="description" content="I am currently reading
+Machine Learning in Action, as
+I need something light between sessions with
+Concrete Mathematics. This
+book introduces a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>  
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26245052-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Wakatta!</a></h1>
+  
+    <h2>Like Eureka!, only cooler</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.wakatta.jp" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Machine Learning in Action - Naïve Bayes</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-09T13:51:00+09:00" pubdate data-updated="true">Apr 9<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I am currently reading
+<a href="http://www.manning.com/pharrington/">Machine Learning in Action</a>, as
+I need something light between sessions with
+<a href="http://www-cs-faculty.stanford.edu/~uno/gkp.html">Concrete Mathematics</a>. This
+book introduces a number of important machine learning algorithms,
+each time with a complete implementation and one or more test data sets; it also
+explains the underlying mathematics, and provides information about
+additional reference material (mostly heavier and more expensive books).</p>
+
+<p>However, in Chapter 4 about Naïve Bayes classifiers, I didn&#8217;t see how
+the implementation derived by the maths. Eventually, I confirm that it
+could not, and try to correct it.</p>
+
+<!-- more -->
+
+
+<p>It is of course possible that the implementation is eventually
+correct, and derives from more advanced theoretical concepts or
+practical concerns, but the book mentions neither; on the other hands,
+I found papers
+(<a href="http://trevorstone.org/school/spamfiltering.pdf">here</a> or
+<a href="http://www.cs.cmu.edu/%7Etom/mlbook/NBayesLogReg.pdf">here</a>) that
+seem to confirm my corrections.</p>
+
+<p>Everything that follows assumes the book&#8217;s implementation was
+wrong. Humble and groveling apologies to the author if it was not.</p>
+
+<h2>What exactly is the model</h2>
+
+<p>The book introduces the concept of conditional probability using balls
+in buckets. This makes the explanation clearer, but this is just one
+possible model; each model (or
+<a href="http://en.wikipedia.org/wiki/Probability_distribution">distribution</a>)
+uses dedicated formulas.</p>
+
+<p>The problem is that the book then uses set of words or bags of words
+as it these were the same underlying model, which they are not.</p>
+
+<h3>Set of words</h3>
+
+<p>If we are only interested in whether a given word is present in a
+message or not, then the correct model is that of a biased coin where
+tails indicate the absence of the word, and heads its presence.</p>
+
+<p>This is also known as a
+<a href="http://en.wikipedia.org/wiki/Bernoulli_trial">Bernoulli trial</a>,
+and the estimator for the probability of presence is the mean
+presence: the number of documents in which the word is present,
+divided by the total number of documents.</p>
+
+<p>The book algorithm does not implement this model correctly, as its
+numerator is the count of documents in which the word is present
+(correct), but the denominator is the total number of words
+(incorrect).</p>
+
+<h3>Bag of words</h3>
+
+<p>If we want to consider the number of times a word is present in
+messages, then the balls in buckets model is correct (it is a
+also known as
+<a href="http://en.wikipedia.org/wiki/Categorical_distribution">Categorical distribution</a>),
+and the code in the book adequately implements it.</p>
+
+<h2>There is a word for it: Additive Smoothing</h2>
+
+<p>The book then improves the algorithm in two different ways. One is the
+use of logarithms to prevent underflow. The other is to always use one
+as the basic count for words, whether they are present or not.</p>
+
+<p>This is in fact not so much a trick as a concept called
+<a href="http://en.wikipedia.org/wiki/Additive_smoothing">Additive smoothing</a>,
+where a basic estimator $\theta_i = \frac{w_i}{N}$ is replaced by
+$\hat{\theta}_i = \frac{w_i + \alpha}{N + \alpha d}$</p>
+
+<p>$\alpha$ is a so-called smoothing parameter, and $d$ is the total
+number of words.</p>
+
+<p>If the model is Bernoulli trial, $w_i$ is the number of documents
+where word $i$ is present, and $N$ is the total number of documents.</p>
+
+<p>If the model is categorical distribution, $w_i$ is the total count of
+word $i$ is the documents and $N$ is the total count of words in the documents.</p>
+
+<p>As we are interested in $P(w_i|C_j)$ (with $C_0, C_1$ the two
+classes we are building a classifier for), $N$ above is restricted to
+documents in the relevant class; $\alpha$ and $d$ are independent of
+classes.</p>
+
+<p>So the correct formula becomes</p>
+
+<div markdown="0">
+\begin{align}
+\hat{\theta}_{i,j} = \frac{x_i,j+\alpha}{N_j+\alpha d}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>With $\alpha=1$ as a smoothing parameter, the book should have used
+<code>numWords</code> instead of <code>2.0</code> as an initial value for both <code>p0Denom</code> and
+<code>p1Denom</code>.</p>
+
+<h2>Putting it together</h2>
+
+<p>The differences with the code from the book are minor: first I
+introduce a flag to indicates whether I&#8217;m using set of words
+(Bernoulli trials)  or bags of words (categorical distribution) as a
+model. Then I initialise <code>p0Denom</code> and <code>p1Denom</code> with <code>numWords</code> as
+explained above; finally I check the <code>bag</code> flag to know what to add to
+either denominators.</p>
+
+<figure class='code'><figcaption><span>new trainingNB0  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">trainNB0</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">,</span> <span class="n">trainCategory</span><span class="p">,</span> <span class="n">bag</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">numTrainDocs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">numWords</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span class='line'>    <span class="n">pAbusive</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainCategory</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">p0Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">);</span> <span class="n">p1Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">p0Denom</span> <span class="o">=</span> <span class="n">numWords</span><span class="p">;</span> <span class="n">p1Denom</span> <span class="o">=</span> <span class="n">numWords</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">trainCategory</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p1Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">p1Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">p1Denom</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">p0Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">p0Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">p0Denom</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">p1Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p1Num</span><span class="o">/</span><span class="p">(</span><span class="n">p1Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">p0Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p0Num</span><span class="o">/</span><span class="p">(</span><span class="n">p0Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">p0Vect</span><span class="p">,</span> <span class="n">p1Vect</span><span class="p">,</span> <span class="n">pAbusive</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Evaluation</h2>
+
+<p>For the Spam test, the book version has an average error of 6%. The
+rewritten version has an error between 3% and 4%. The Spam test uses
+messages as set, for which my version is the most different.</p>
+
+<p>For the New-York/San Francisco messages classification, I did not
+measure any difference in error rates; this test uses messages as
+bags, for which the book version was mostly correct (the only
+difference was in the denominators).</p>
+
+<h2>So what?</h2>
+
+<p>OK, well, but the book algorithm still works, at least on the original
+data.</p>
+
+<p>But how well exactly would it work with other data? As the algorithm
+does not seem to implement any kind of sound model, is there any way
+to quantify the error we can expect? By building on theoretical
+foundations, at least we can quantify the outcome, and rely on the
+work of all the brilliant minds who improved that theory.</p>
+
+<p>Theories (the scientific kind, not the hunch kind) provide well
+studied abstractions. There are always cases where they do not apply,
+and other cases where they do, but only partially or imperfectly. This
+should be expected as abstractions ignore part of the real world
+problem to make it tractable.</p>
+
+<p>Using a specific theory to address a problem is very much similar to
+looking for lost keys under a lamppost: maybe the keys are not there,
+but that&#8217;s where the light is brightest, so there is little chance to
+find them anywhere else anyway.</p>
+
+<h2>A bad book then?</h2>
+
+<p>So far, this was the only chapter where I had anything bad to
+say about the book. And even then, it was not that bad.</p>
+
+<p>The rest of the book is very good; the underlying concepts are well
+explained (indeed, that&#8217;s how I found the problem in the first place),
+there is always data to play with, and the choice of language and
+libraries (<a href="http://www.python.org/">Python</a>,
+<a href="http://numpy.scipy.org/">Numpy</a> and
+<a href="http://matplotlib.sourceforge.net/">matplotlib</a>) is very well
+suited to the kind of exploratory programming that makes learning
+much easier.</p>
+
+<p>So I would recommend this book as an introduction to this subject, and
+I&#8217;m certainly glad I bought it.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Frédéric Dumont</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-09T13:51:00+09:00" pubdate data-updated="true">Apr 9<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/books/'>Books</a>, <a class='category' href='/blog/categories/computer/'>Computer</a>, <a class='category' href='/blog/categories/mathematics/'>Mathematics</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/" title="Previous Post: Seven Databases in Seven Weeks Wrapping Up">&laquo; Seven Databases in Seven Weeks Wrapping Up</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Wakatta!</h1>
+  <p>
+		<a href="/about">more...</a>
+	</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/04/09/machine-learning-in-action-naive-bayes/">Machine Learning in Action - Naïve Bayes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/">Seven Databases in Seven Weeks Wrapping Up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/">Seven Databases in Seven Weeks Redis Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/10/concrete-mathematics-chapter-2-basics/">Concrete Mathematics Chapter 2 Basics</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/02/28/concrete-mathematics-chapter-2-warmups/">Concrete Mathematics Chapter 2 Warmups</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'fdumontmd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Frédéric Dumont -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
+  
+    
+  <a style="float: right" href="http://www.mathjax.org/">
+  <img title="Powered by MathJax"
+       src="http://www.mathjax.org/badge.gif"
+       border="0" alt="Powered by MathJax" />
+  </a>
+    
+  
+  </span>
+</p>
+
+</footer>
+  
+
+<div class="tex2jax_ignore">
+<script type="text/javascript">
+      var disqus_shortname = 'wakatta-blog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+</div>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

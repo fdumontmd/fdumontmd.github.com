@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-04-09T15:34:55+09:00</updated>
+  <updated>2012-05-02T16:29:24+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,476 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Homework Exercises]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/05/02/concrete-mathematics-chapter-2-homework-exercises/"/>
+    <updated>2012-05-02T13:13:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/05/02/concrete-mathematics-chapter-2-homework-exercises</id>
+    <content type="html"><![CDATA[<p>It has been a long time since I wrote about this book; I had worked
+the solutions more than a month ago, but then life happened, and I
+could not find the time (or, perhaps, more accurately the courage) to
+typeset my notes...</p>
+
+<p>Anyway, I do have time now and am eager to go on with Chapter 3; but
+first let's finish Chapter 2. Today the homework exercises, and very
+soon the exams and bonus (at least the ones I could do) exercises.</p>
+
+<!--more-->
+
+
+<h2>Homework</h2>
+
+<h3>$2T_n = nT_{n-1}+3\cdot n!$</h3>
+
+<p>This exercise is not tricky in anyway; just follow the method and
+the result is guaranteed.</p>
+
+<p>The recurrence equations are</p>
+
+<div markdown="0">
+\begin{align}
+T_0 &amp; = 5\\\\
+2T_n &amp; = nT_{n-1}+3\cdot n!\\\\
+\end{align}
+</div>
+
+
+<p>The $a_n$, $b_n$ and $c_n$ series are:</p>
+
+<div markdown="0">
+\begin{align}
+a_n &amp; = 2\\\\
+b_n &amp; = n\\\\
+c_n &amp; = 3\cdot n!\\\\
+\end{align}
+</div>
+
+
+<p>The summation factor</p>
+
+<div markdown="0">
+\begin{align}
+s_n &amp; = \frac{a_{n-1}\dots a_1}{b_n\dots b_2}s_1\\\\
+&amp; = \frac{2^{n-1}}{n!}s_1\\\\
+\end{align}
+</div>
+
+
+<p>After experimenting a bit, I found that $s_1 = 2$ is slightly easier
+to work with, so the summation factor is $s_n = \frac{2^n}{n!}$.</p>
+
+<p>With $S_n = \frac{2^n+1}{n!} T_n$, the recurrence equation becomes</p>
+
+<div markdown="0">
+\begin{align}
+S_n &amp; = S_{n-1} + 3\cdot 2^n\\\\
+&amp; = S_0 + 3\sum_{k=1}^n 2^k\\\\
+\end{align}
+</div>
+
+
+<p>The sum is well-known, with $\sum_{k=0}^n 2^k = 2^{n+1}-1$, so
+$\sum_{k=1}^n 2^k = 2^{n+1}-2$.</p>
+
+<p>Going back to $T_n$, we have</p>
+
+<div markdown="0">
+\begin{align}
+T_n &amp; = \frac{n!(10+3(2^{n+1}-2))}{2^{n+1}}\\\\
+&amp; = \frac{n!(5+3(2^n-1))}{2^n}\\\\
+&amp; = \frac{n!(5 + 3\cdot 2^n - 3)}{2^n}\\\\
+&amp; = \frac{n!(3\cdot 2^n + 2)}{2^n}\\\\
+&amp; = 3\cdot n! + \frac{n!}{2^{n-1}}\\\\
+\end{align}
+</div>
+
+
+<h3>$\sum_{k=0}^n kH_k$</h3>
+
+<p>Using the perturbation method:</p>
+
+<div markdown="0">
+\begin{align}
+S_{n+1} = S_n + (n+1) H_{n+1} &amp; = 0 + \sum_{k=1}^{n+1} k H_k\\\\
+&amp; = \sum_{k+1=1}^{n+1}(k+1)H_{k+1}&amp;&amp;k\leftarrow k+1\\\\
+&amp; = \sum_{k=0}^n (k+1) (H_k + \frac{1}{k+1})\\\\
+&amp; = \sum_{k=0}^n k H_k + \sum_{k=0}^n \frac{k}{k+1} 
++ \sum_{k=0}^n H_k + \sum_{k=0}^n \frac{1}{k+1}\\\\
+&amp; = S_n + \sum_{k=0}^n\frac{k+1}{k+1} + \sum_{k_0}^n H_k\\\\
+&amp; = S_n + n+1 + \sum_{k=0}^n H_k\\\\
+\end{align}
+</div>
+
+
+<p>so $\sum_{k=0}^n H_k$ is</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=0}^n H_k &amp; = (n+1)H_{n+1} - (n + 1)\\\\
+&amp; = (n+1)H_n + (n+1)\frac{1}{n+1} - n - 1\\\\
+&amp; = (n+1)H_n + 1 - n - 1\\\\
+&amp; = (n+1)H_n - n\\\\
+\end{align}
+</div>
+
+
+<h3>More perturbation method</h3>
+
+<p>This exercise is just tricky in the very first step (working out the
+exact meaning of $S_{n+1}$), as the sign of the terms change depending
+of whether $n$ is odd or even.</p>
+
+<p>This means that instead of the book equation (2.24)
+$S_{n+1} = S_n + a_{n+1}$, we find something like
+$S_{n+1} = a_{n+1} - S_n$.</p>
+
+<h4>$S_n = \sum_{k=0}^n (-1)^{n-k}$</h4>
+
+<p>First, the left hand part of the equation:</p>
+
+<div markdown="0">
+\begin{align}
+S_{n+1} &amp; = \sum_{k=0}^n (-1)^{n+1-k} + (-1)^{n+1-n-1}\\\\
+&amp; = -\sum_{k=0}^n (-1)^{n-k} + 1\\\\
+&amp; = 1 - S_n\\\\
+\end{align}
+</div>
+
+
+<p>Then, the right hand part:</p>
+
+<div markdown="0">
+\begin{align}
+S_{n+1} &amp; = (-1)^{n+1} + \sum_{k=1}^{n+1} (-1)^{n+1-k}\\\\
+&amp; =
+(-1)^{n+1}+\sum_{k+1=1}^{n+1}(-1)^{n+1-k-1}&amp;&amp;k\leftarrow k+1\\\\
+&amp; = (-1)^{n+1} + \sum_{k=0}^n(-1)^{n-k}\\\\
+&amp; = (-1)^{n+1} + S_n\\\\
+\end{align}
+</div>
+
+
+<p>Putting both together, $S_n = \frac{1-(-1)^{n+1}}{2}$, or, as the book
+states, $S_n = [\text{\(n\) is even}]$.</p>
+
+<h4>$T_n = \sum_{k=0}^n (-1)^{n-k}k$</h4>
+
+<p>Using the same approach as above:</p>
+
+<div markdown="0">
+\begin{align}
+T_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k\\\\
+&amp; = -\sum_{k=0}^n(-1)^{n-k}k + (-1){n+1-n-1}(n+1)\\\\
+&amp; = n+1-T_n\\\\
+\end{align}
+</div>
+
+
+<p>and</p>
+
+<div markdown="0">
+\begin{align}
+T_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k\\\\
+&amp; = (-1)^{n+1}0 + \sum_{k=1}^{n+1}(-1)^{n+1-k}k\\\\
+&amp; = 0 + \sum_{k+1=1}^{n+1}(-1)^{n+1-k-1}{k+1}&amp;&amp;k\leftarrow k+1\\\\
+&amp; = \sum_{k=0}^n(-1)^{n-k}k + \sum_{k=0}^n(-1)^{n-k}\\\\
+&amp; = T_n + S_n\\\\
+\end{align}
+</div>
+
+
+<p>Together:</p>
+
+<div markdown="0">
+\begin{align}
+T_n &amp; = \frac{n+1-S_n}{2}\\\\
+&amp; = \frac{1}{2}\left(n+[\text{\(n\) is odd}] \right)\\\\
+&amp; = \left\lceil \frac{n}{2} \right\rceil\\\\
+\end{align}
+</div>
+
+
+<p>The last version uses the ceiling operator from Chapter 3.</p>
+
+<h4>$U_n = \sum_{k=0}^n (-1)^{n-k}k^2$</h4>
+
+<p>It will probably not be a surprised to find $U_n$ expressed in terms
+of $S_n$ and $T_n$.</p>
+
+<div markdown="0">
+\begin{align}
+U_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k^2\\\\
+&amp; = \sum_{k=0}^n(-1)^{n+1-k}k^2 + (-1)^{n+1-n-1}(n+1)^2\\\\
+&amp; = -1\sum_{k=0}^n(-1)^{n-k}k^2 + (n+1)^2\\\\
+&amp; = (n+1)^2 - U_n\\\\
+\end{align}
+</div>
+
+
+<p>and</p>
+
+<div markdown="0">
+\begin{align}
+U_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k^2\\\\
+&amp; = (-1)^{n+1}0 + \sum_{k=1}^{n+1}(-1)^{n+1-k}k^2\\\\
+&amp; = 0 + \sum_{k+1=1}^{n+1}(-1)^{n+1-k-2}(k+1)^2&amp;&amp;
+k\leftarrow k+1\\\\
+&amp; = \sum_{k=0}^n(-1)^{n-k}(k^2+2k+1)\\\\
+&amp; = U_n + 2T_n + S_n\\\\
+\end{align}
+</div>
+
+
+<p>With $2T_n = n+1-S_n$, this produces $U_{n+1} = U_n + n + 1$, which
+gives the answer away, but let's just continue with the current
+method.</p>
+
+<p>Putting both side together:</p>
+
+<div markdown="0">
+\begin{align}
+U_n &amp = \frac{(n+1)^2 - (n+1)}{2}\\\\
+&amp; = \frac{(n+1)(n+1) - (n+1)}{2}\\\\
+&amp; = \frac{n(n+1)}{2}\\\\
+\end{align}
+</div>
+
+
+<h3>Lagrange's Identity</h3>
+
+<p>First, I look for a usable double sum. I use the fact that for any
+$j, k$, $j &lt; k$, $(a_jb_k - a_kb_j) = -(a_kb_j - a_jb_k)$ and
+$(A_jB_k - A_kB_j)= - (A_kB_j - A_jB_k)$. This means that, with
+$s_{j,k} = (a_jb_k - a_kb_j)(A_jB_k - A_kB_j)$, $s_{j,k} = s_{k,j}$.</p>
+
+<p>There is also the fact that $s_{j,j} = 0$, so now I can complete the
+sum to the whole rectangle:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j,k\le n}s_{j,k} &amp; = \sum_{1\le j\lt k\le n}s_{j,k}
++ \sum_{1\le j = k \le n} s_{j,k} + \sum_{1\le k \lt j \le
+n}s_{k,j}\\\\
+&amp; = \sum_{1\le j \lt k \le n}s_{j,k} + 0
++ \sum_{1\le j \lt k \le n}s_{j,k}\\\\
+&amp; = 2\sum_{1\le j \lt k \le n}s_{j,k}\\\\
+\end{align}
+</div>
+
+
+<p>The expansion of $s_{j,k}$ is
+$a_jA_jb_kB_k - a_jB_jA_kb_k - A_jb_ja_kB_k + b_jB_ja_kA_k$. Showing
+the summation just for the first one (the other three are identical):</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j, k \le n} a_jA_jb_kB_k &amp; = \sum_{j=1}^n\sum_{k=1}^n a_jA_jb_kB_k\\\\
+&amp; = \sum_{j=1}^n a_jA_j \left(\sum_{k=1}^n b_kB_k \right)\\\\
+&amp; = \left(\sum_{j=1}^n a_jA_j\right)\left(\sum_{k=1}^n b_kB_k \right)\\\\
+&amp; = \left(\sum_{k=1}^n a_kA_k\right)\left(\sum_{k=1}^n b_kB_k \right)\\\\
+\end{align}
+</div>
+
+
+<p>Putting it all together:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j\lt k\le n}(a_jb_k - a_kb_j)(A_jB_k - A_kB_j) &amp; =
+\left(\sum_{k=1}^n a_kA_k\right)\left(\sum_{k=1}^n b_kB_k\right) -
+\left(\sum_{k=1}^n a_kB_k\right)\left(\sum_{k=1}^n A_kb_k\right)\\\\
+\end{align}
+</div>
+
+
+<p>In particular, with $a_k = A_k$ and $b_k = B_k$, the sum is
+$\left(\sum_{k=1}^n a_k^2 \right)\left(\sum_{k=1}^n b_k^2 \right) - 2 \left(\sum_{k=1}^n a_kb_k \right)$.</p>
+
+<h3>$\sum_{k=1}^n \frac{2k+1}{k(k+1)}$</h3>
+
+<h4>Partial fractions</h4>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n\frac{2k+1}{k(k+1)}
+&amp; = \sum_{k=1}^n(k+(k+1))\left(\frac{1}{k}-\frac{1}{k+1} \right)\\\\
+&amp; = \sum_{k=1}^n\left(\frac{k}{k} + \frac{k+1}{k} - \frac{k}{k+1} - \frac{k+1}{k+1} \right)\\\\
+&amp; = \sum_{k=1}^n \frac{k+1}{k} - \sum_{k=1}^n \frac{k}{k+1}\\\\
+&amp; = n + H_n - \sum_{k=1}^n \frac{k}{k+1} -
+\sum_{k=1}^n\frac{1}{k+1} + \sum_{k=1}^n\frac{1}{k+1}\\\\
+&amp; = n + H_n - \sum_{k=1}^n \frac{k+1}{k+1} + \sum_{k=1}^n
+\frac{1}{k+1}\\\\
+&amp; = H_n + \sum_{k-1=1}^n \frac{1}{k}&amp;&amp;k\leftarrow k-1\\\\
+&amp; = H_n + \sum_{k=2}^{n+1} \frac{1}{k}\\\\
+&amp; = H_n + H_{n+1} - 1\\\\
+&amp; = H_h + H_n + \frac{1}{n+1} - \frac{n+1}{n+1}\\\\
+&amp; = 2H_n - \frac{n}{n+1}\\\\
+\end{align}
+</div>
+
+
+<h4>Sum by parts</h4>
+
+<p>Using</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = \frac{1}{k(k+1)} = (k-1)^{\underline{-2}}\\\\
+v &amp; = -(k-1)^{\underline{-1}}\\\\
+Ev &amp; = -k^{\underline{-1}}\\\\
+u &amp; = 2k+1\\\\
+\Delta u &amp; = 2\\\\
+\end{align}
+</div>
+
+
+<p>First the sum by part</p>
+
+<div markdown="0">
+\begin{align}
+\sum \frac{2x+1}{x(x+1)}\delta x &amp; = 
+-(2x+1)(x-1)^{\underline{-1}} + 2 \sum x^{\underline{-1}} \delta x + c\\\\
+&amp; = -\frac{2x+1}{x} + 2 H_x + c\\\\
+\end{align}
+</div>
+
+
+<p>Then the evaluation</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n\frac{2k+1}{k(k+1)} &amp; = \left. -\frac{2x+1}{x}+2H_x\right|_1^{n+1}\\\\
+&amp; = -\frac{2(n+1)+1}{n+1} + 2 H_{n+1} + 2 + 1 - 2\\\\
+&amp; = 2 H_{n+1} + 1 - 2 - \frac{1}{n+1}\\\\
+&amp; = H_{n+1} + H_n - 1\\\\
+&amp; = 2H_n - \frac{n}{n+1}\\\\
+\end{align}
+</div>
+
+
+<h3>$\sum_{1\le k \lt n}\frac{H_k}{(k+1)(k+2)}$</h3>
+
+<p>For the sum by part, I use</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = x^{\underline{-2}}\\\\
+v &amp; = -x^{\underline{-1}}\\\\
+Ev &amp; = -(x+1)^{\underline{-1}}\\\\
+u &amp; = H_x\\\\
+\Delta u &amp; = x^{\underline{-1}}\\\\
+\end{align}
+</div>
+
+
+<p>The sum by part</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n H_x x^{\underline{-2}} \delta x
+&amp; = -H_x x^{\underline{-1}} + \sum
+(x+1)^{\underline{-1}}x^{\underline{-1}}\delta x + c\\\\
+&amp; = -H_x x^{\underline{-1}} + \sum x^{\underline{-2}} \delta x + c\\\\
+&amp; = -H_x x^{\underline{-1}} - x^{\underline{-1}} + c\\\\
+&amp; = -(H_x + 1) x^{\underline{-1}} + c\\\\
+\end{align}
+</div>
+
+
+<p>The evaluation is</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k \lt n} \frac{H_k}{(k+1)(k+2)} &amp; =
+\left. -\frac{H_x + 1}{x+1} \right|_0^n\\\\
+&amp; = 1 - \frac{H_n + 1}{n+1}\\\\
+\end{align}
+</div>
+
+
+<h3>Product laws</h3>
+
+<p>I don't think I listed all the laws for this exercise, as the only
+complete list for the sum laws in the book is in the answer for this
+exercise.</p>
+
+<p>I will not repeat it here; suffice to say that when we replace sum by
+product, the laws can be updated by replacing product by
+exponentiation, and sum by product.</p>
+
+<h3>$\prod_{1\le j \le k \le n}a_ja_k$</h3>
+
+<p>While it took me a few false starts, I eventually found that the
+triangular completion used for (2.32) works here as well.</p>
+
+<div markdown="0">
+\begin{align}
+\left(\prod_{1\le j\le k \le n} a_ja_k \right)^2 &amp; = 
+\left(\prod_{1\le j,k \le n}a_ja_k \right)
+\left(\prod_{1\le j=k \le n}a_ja_k\right)\\\\
+&amp; = \left(\prod_{1\le j,k \le n} a_j\right)
+\left(\prod_{1\le j,k \le n} a_k\right)
+\left(\prod_{1\le k \le n}a_k^2\right)\\\\
+&amp; = \left(\prod_{1\le k \le n} a_k^n\right)
+\left(\prod_{1\le j \le n} a_j^n\right)
+\left(\prod_{1\le k \le n}a_k^2\right)\\\\
+&amp; = \prod_{1\le k\le} a_k^{2n+2}\\\\
+\end{align}
+</div>
+
+
+<p>So
+$\prod_{1\le j \le k \le n}a_ja_k = \left(\prod_{1\le k\le} a_k\right)^{n+1}$.</p>
+
+<h3>$\sum_{k=1}^n \frac{(-2)^{\underline k}}{k}$</h3>
+
+<p>As suggested, I worked out $\Delta c^{\underline x}$:</p>
+
+<div markdown="0">
+\begin{align}
+\Delta c^{\underline x} &amp; = c^{\underline{x+1}} - c^{\underline x}\\\\
+&amp; = c(c-1)\cdots (c-x+1)(c-x) - c(c-1)\cdots (c-x+1)\\\\
+&amp; = c^{\underline x}(c-x-1)\\\\
+\end{align}
+</div>
+
+
+<p>I did not immediately saw the relation between this and the original
+sum. First I rewrote the original sum to remove the division:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n \frac{(-2)^{\underline k}}{k}
+&amp; = \sum_{k=1}^n \frac{(-2)^{\underline{k-1}}(-2-k+1)}{k}\\\\
+&amp; = -\sum_{k=1}^n \frac{(-2)^{\underline{k-2}(k+1)(-2-k+2)}}{k}\\\\
+&amp; = \sum_{k=1}^n \frac{(-2)^{\underline{k-2}(k+1)(k)}}{k}\\\\
+&amp; = \sum_{k=1}^n (-2)^{\underline{k-2}}(k+1)\\\\
+\end{align}
+</div>
+
+
+<p>Now the relation is visible. So we have</p>
+
+<div markdown="0">
+\begin{align}
+\sum_1^{n+1}\frac{(-2)^{\underline x}}{x}\delta x &amp; = \sum_1^{n+1}(-2)^{\underline x}(x+1)\delta x\\\\
+x &amp; = \left. - (-2)^{\underline{x-2}}\right|_1^{n+1}\\\\
+&amp; = (-2)^{\underline{-1}} - (-2)^{\underline{n-1}}\\\\
+&amp; = -1 - (-2)(-3) \cdots (-n)\\\\
+&amp; = (-1)^n n! - 1\\\\
+\end{align}
+</div>
+
+
+<h3>Incorrect derivation</h3>
+
+<p>As stated in the book, the infinite sums do no converge, so the third
+step is invalid.</p>
+
+<p>And that's all for today.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Machine Learning in Action - Naïve Bayes]]></title>
@@ -1039,321 +1509,6 @@ $A/A' \lt 1$, so $(A/A')A_j \lt A_j$. The first equation is therefore
 just a consequence of the fact that $A_j$ is a least upper bound.</p>
 
 <p>Next post, the warmups.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Exam Problems]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/"/>
-    <updated>2012-02-05T12:27:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems</id>
-    <content type="html"><![CDATA[<p>It took me longer than I thought, and the outcome is slightly
-disappointing: I failed to solve two of the problems, and I solved the
-remaining ones way too slowly, so in a real exam conditions I probably
-would have solved just one or two...</p>
-
-<!-- more -->
-
-
-<h2>Exam Problems</h2>
-
-<h3>4 Pegs Tower of Hanoi</h3>
-
-<p>First, it helps to see that the indices of the recurrence are actually
-$S_n$:</p>
-
-<div markdown="0">
-\begin{align}
-W_{n(n+1)/2}&amp;= W_{S_n}\\\\
-W_{n(n-1)/2}&amp;= W_{S_{n-1}}
-\end{align}
-</div>
-
-
-<p>And of course, $S_n = S_{n-1} + n$.</p>
-
-<p>Setting $m=S_{n-1}$, we try to show:</p>
-
-<div markdown="0">
-\begin{align}
-W_{m+n} &amp; \le 2W_{m} + T_n\\\\
-\end{align}
-</div>
-
-
-<p>Now, obviously, if we have $m+n$ discs, we can move the $m$ top ones
-from $A$ to $C$ using $B$ and $D$ as transfer pegs, then move the
-bottom $n$ ones from $A$ to $B$ using $D$ as transfer peg, and finally
-move the top $m$ ones from $C$ to $B$.</p>
-
-<p>The first step takes $W_m$ moves, the second one is the classic Tower
-of Hanoi problem (as we can no longer use peg $C$, we only have three
-pegs), so it takes $T_n$ moves, and the last step takes $W_m$  moves again.</p>
-
-<p>This is only one possible solution; the optimal one must be equal or
-better, so we have</p>
-
-<div markdown="0">
-\begin{align}
-W_{m+n} &amp; \le 2W_m + T_n\\\\
-\end{align}
-</div>
-
-
-<p>This is true for any $m+n$ discs, and in particular for
-$S_n = S_{n-1} + n$ ones.</p>
-
-<h3>Specific Zigs</h3>
-
-<p>I could not solve this problem. I had found that the half-lines did
-intersect, but then I failed to show that their intersections were all
-distinct.</p>
-
-<p>Even with the solution from the book, it took me a while before I
-finally had a complete understanding.</p>
-
-<p>One problem I had was that lines in a graph are basic college level
-mathematics, but college was a long, long time ago. I pretty much had
-to work from first principles.</p>
-
-<p>Following the book in writing the positions as $(x_j, 0)$ and
-$(x_j - a_j, 1)$, I need to find $\alpha$ and $\beta$ such that
-$y=\alpha x + \beta$ is true for both points above.</p>
-
-<div markdown="0">
-\begin{align}
-0 &amp; = \alpha x_j + \beta \\\\
-\beta &amp; = - \alpha x_j\\\\
-1 &amp; = \alpha (x_j - a_j) - \alpha x_j\\\\
-&amp; = \alpha x_j - \alpha a_j - \alpha x_j\\\\
-&amp; = - \alpha a_j\\\\
-\alpha &amp; = \frac{-1}{a_j}\\\\
-y &amp; = \frac{x_j - x}{a_j}\\\\
-\end{align}
-</div>
-
-
-<p>With this given, I can try to find the intersection of lines from
-different zigs, $j$ and $k$:</p>
-
-<div markdown="0">
-\begin{align}
-\frac{x_j - x}{a_j} &amp; = \frac{x_k - x}{a_k}\\\\
-a_k (x_j - x) &amp; = a_j (x_k - x)\\\\
-a_k x_j - a_k x &amp; = a_j x_k - a_j x\\\\
-a_k x_j - a_j x_k &amp; = (a_k - a_j) x\\\\
-\end{align}
-</div>
-
-
-<p>Now, still following the book, I replace $x$ by $t$ with
-$x=x_j - t a_j$:</p>
-
-<div markdown="0">
-\begin{align}
-a_k x_j - a_j x_k &amp; = (a_k - a_j) (x_j - t a_j)\\\\
-a_k x_j - a_j x_k &amp; = a_k x_j - a_j x_j - t a_j a_k + t a_j^2\\\\
-- a_j x_k &amp; = t a_j^ 2 - a_j x_j - t a_j a_k\\\\
-- x_k &amp; = t a_j - x_j -t a_k&amp;&amp;\text{dividing by \(a_j\)}\\\\
-x_j - x_k &amp; = t (a_j - a_k)\\\\
-t &amp; = \frac{x_j - x_k}{a_j - a_k}\\\\
-\end{align}
-</div>
-
-
-<p>Somehow, I have a faint memory of such a result; I need to check a
-college math book.</p>
-
-<p>To complete, I need to show that $y = t$:</p>
-
-<div markdown="0">
-\begin{align}
-y &amp; = \frac{x_j - x}{a_j}\\\\
-&amp; = \frac{x_j - x_j + t a_j}{a_j}\\\\
-&amp; = \frac{t a_j}{a_j}\\\\
-&amp; = t\\\\
-\end{align}
-</div>
-
-
-<p>So the intersection of any two pair of half-lines from different zigs
-is $(x_j - t a_j, t)$. Note that $t$ has the same value whether
-$j \gt k$ or $k \gt j$. To simplify further computations, I set
-$j \gt k$.</p>
-
-<p>There are two remaining steps: show that $t$ is different for
-different pairs of $j$, $k$ (with $j \ne k$); and then show that the
-four intersections for a pair $j$, $k$ are also distinct.</p>
-
-<p>$a_j$ can be of two forms: $n^j$ and $n^j + n^{-n}$. So $a_j - a_k$
-can be one of</p>
-
-<div markdown="0">
-\begin{align}
-&amp; n^j - n^k\\\\
-&amp; n^j + n^{-n} - n^k\\\\
-&amp; n^j - n^k - n^{-n}\\\\
-n^j + n^{-n} - n^k - n^{-n} = &amp; n^j - n^k\\\\
-\end{align}
-</div>
-
-
-<p>So there are three different forms for $a_j - a_k$, which I will
-simply write $n^j - n^k + \epsilon$ where $|\epsilon| \lt 1$.</p>
-
-<div markdown="0">
-\begin{align}
-t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k + \epsilon}\\\\
-&amp; = \frac{(n^j - n^k)(n^j + n^k)}{n^j - n^k + \epsilon}\\\\
-\end{align}
-</div>
-
-
-<p>Let's show that $n^j+n^k - 1 \lt t \lt n^j+n^k + 1$: multiply the
-whole inequality by $n^j - n^k + \epsilon$. As</p>
-
-<div markdown"0">
-\begin{align}
-n^j - n^k &amp; \ge n\\\\
-&amp; \ge 2\\\\
-&amp; \gt |\epsilon|\\\\
-\end{align}
-</div>
-
-
-<p>so $n^j - n^k + \epsilon \gt 0$. Defining</p>
-
-<div markdown="0">
-\begin{align}
-N_{jk} &amp; = n^j + n^k\\\\
-N'_{jk} &amp; = n^j - n^k\\\\
-\end{align}
-</div>
-
-
-<p>the left and right inequalities become</p>
-
-<div markdown="0">
-\begin{align}
-(N_{jk} - 1) (N'_{jk} + \epsilon) &amp; = N_{jk}N'_{jk} - N'_{jk} + \epsilon N_{jk} - \epsilon\\\\
-(N_{jk} + 1) (N'_{jk} + \epsilon) &amp; = N_{jk}N'_{jk} + N'_{jk} + \epsilon N_{jk} + \epsilon\\\\
-\end{align}
-</div>
-
-
-<p>Subtracting $N_{jk}N'_{jk} = (n^j-n^k)(n^j+n^k)$ from the original inequality:</p>
-
-<div markdown="0">
-\begin{align}
--N'_{jk}+\epsilon N_jk - \epsilon \lt 0 \lt N'_{jk} + \epsilon N_{jk} + \epsilon\\\\
-\end{align}
-</div>
-
-
-<p>I need to prove the following inequality</p>
-
-<div markdown"0">
-\begin{align}
-(n^j - n^k) &amp; \gt |\epsilon| + |\epsilon| (n^j - n^k)\\\\
-\end{align}
-</div>
-
-
-<p>We already know $|\epsilon| \lt 1$, so looking at the second term (and
-assuming $\epsilon \ne 0$, as this case is trivial)</p>
-
-<div markdown"0">
-\begin{align}
-|\epsilon| (n^j-n^k) &amp; = n^{-n} (n^j - n^k)\\\\
-&amp; = n^{j-n} - n^{k-n}\\\\
-&amp;\lt 1\\\\
-\end{align}
-</div>
-
-
-<p>and we have</p>
-
-<div markdown"0">
-\begin{align}
-n^j - n^k &amp; \ge 2
-&amp; \gt |\epsilon| + |\epsilon (n^j - n^k)|\\\\
-\end{align}
-</div>
-
-
-<p>So the inequalities are established. $N_{jk}$ can be seen as a number
-in based $n$ where the digits are all zeroes except the $j$ and $k$ ones,
-$N_{jk} = N_{j'k'} \implies j=j', k=k'$, and therefore $t$ uniquely
-defines $j$ and $k$ or, two pairs of zigs must have different $t$.</p>
-
-<p>I still need to show that for a given pair, when $t$ is the same, the
-intersections are different. There are three different values of
-$t$, so two intersections points have the same height. This happens
-for</p>
-
-<div markdown="0">
-\begin{align}
-t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k}\\\\
-\end{align}
-</div>
-
-
-<p>which happens when $a_j = n^j$, $a_k = n^k$ and $a_j = n^j + n^{-n}$,
-$a_k = n^k + n^{-n}$. But the $x = x_j - t a_j$ value for
-intersections is different: $t n^j$ and $t (n^j + n^{-n})$, so there
-are indeed four distinct intersection points.</p>
-
-<h3>30 degrees Zigs</h3>
-
-<p>I could not solve this problem. Once again, my lack of intuition with
-geometry was to blame.</p>
-
-<p>But if we have two zigs with half-lines angles $\phi$, $\phi + 30^{\circ}$
-and $\theta$, $\theta + 30^{\circ}$, then for any two pairs of
-half-lines from the two zigs to intersect, their angles must be
-between $0^{\circ}$ and $180^{\circ}$. Taken together, these
-constraints give $0^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.</p>
-
-<p>This means there cannot be more than $5$ such pairs (and to be honest,
-I would have said 4, but the book says it's indeed 5).</p>
-
-<h3>Recurrence Equations</h3>
-
-<h3>Good and Bad Persons in Josephus Problem</h3>
-
-<p>It took me a while, as I was trying to find a recurrence equation of
-some sort which would help me with this problem and the bonus one
-(where Josephus' position is fixed but he can pick $m$). Eventually I
-found one, which did not help me with the bonus problem, but led me to
-a solution for this problem.</p>
-
-<p>Obviously, if we have $k$ persons and want to remove the last one in
-the first round, we can choose $m=k$ and that will work. Actually, any
-multiple $m=ak$ works as well.</p>
-
-<p>This shows that at each round, if we have $k$ persons left, and we
-start counting on the first one, when $m=ak$ we will remove the $k^{th}$
-person then start counting from the first one again.</p>
-
-<p>Back to the original problem: there are $2n$ persons, and we want to
-get rid of the $n+1, \cdots, 2n$ first. If we take
-$m=lcm(n+1,\cdots, 2n)$, then for the first $n$ rounds the last (bad)
-person will be remove, leaving only the good ones at the end.</p>
-
-<p>When first solving the problem, I picked $m=\prod_{i=1}^n (n+i)$,
-which has the same property as the least common multiple, but is
-larger. Perhaps a smaller number is better for the nerves of the
-participants.</p>
-
-<h3>Bonus Problems</h3>
-
-<p>I tried to solve the bonus questions, but after repeatedly failing, I
-had a glimpse at the solutions: they obviously require either
-knowledge of later chapters, or other concepts I know nothing about,
-so I will get back to these bonus problems after I finish the book.</p>
-
-<p>I am now working through Chapter 2. It is a much larger chapter than
-the first, so it will take me some time.</p>
 ]]></content>
   </entry>
   

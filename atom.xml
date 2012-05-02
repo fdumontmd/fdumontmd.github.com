@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-04-09T15:34:55+09:00</updated>
+  <updated>2012-05-02T16:29:24+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,492 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Now I'm blushing...]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot/"/>
+    <updated>2012-05-02T16:14:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot</id>
+    <content type="html"><![CDATA[<p>Eric Redmond, one of the authors of
+<a href="http://pragprog.com/book/rwdata/seven-databases-in-seven-weeks">Seven Databases in Seven Weeks</a>
+apparently found my blog, read it and posted a nice comment on
+<a href="http://sevenweeks.org/">his blog</a>.</p>
+
+<p>Now I have no choice but to urge all my three readers (that includes
+you, Mom) to go and by this great book. Even if you already own a
+copy.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Homework Exercises]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/05/02/concrete-mathematics-chapter-2-homework-exercises/"/>
+    <updated>2012-05-02T13:13:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/05/02/concrete-mathematics-chapter-2-homework-exercises</id>
+    <content type="html"><![CDATA[<p>It has been a long time since I wrote about this book; I had worked
+the solutions more than a month ago, but then life happened, and I
+could not find the time (or, perhaps, more accurately the courage) to
+typeset my notes&#8230;</p>
+
+<p>Anyway, I do have time now and am eager to go on with Chapter 3; but
+first let&#8217;s finish Chapter 2. Today the homework exercises, and very
+soon the exams and bonus (at least the ones I could do) exercises.</p>
+
+<!--more-->
+
+
+<h2>Homework</h2>
+
+<h3>$2T_n = nT_{n-1}+3\cdot n!$</h3>
+
+<p>This exercise is not tricky in anyway; just follow the method and
+the result is guaranteed.</p>
+
+<p>The recurrence equations are</p>
+
+<div markdown="0">
+\begin{align}
+T_0 &amp; = 5&#92;&#92;
+2T_n &amp; = nT_{n-1}+3\cdot n!&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The $a_n$, $b_n$ and $c_n$ series are:</p>
+
+<div markdown="0">
+\begin{align}
+a_n &amp; = 2&#92;&#92;
+b_n &amp; = n&#92;&#92;
+c_n &amp; = 3\cdot n!&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The summation factor</p>
+
+<div markdown="0">
+\begin{align}
+s_n &amp; = \frac{a_{n-1}\dots a_1}{b_n\dots b_2}s_1&#92;&#92;
+&amp; = \frac{2^{n-1}}{n!}s_1&#92;&#92;
+\end{align}
+</div>
+
+
+<p>After experimenting a bit, I found that $s_1 = 2$ is slightly easier
+to work with, so the summation factor is $s_n = \frac{2^n}{n!}$.</p>
+
+<p>With $S_n = \frac{2^n+1}{n!} T_n$, the recurrence equation becomes</p>
+
+<div markdown="0">
+\begin{align}
+S_n &amp; = S_{n-1} + 3\cdot 2^n&#92;&#92;
+&amp; = S_0 + 3\sum_{k=1}^n 2^k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The sum is well-known, with $\sum_{k=0}^n 2^k = 2^{n+1}-1$, so
+$\sum_{k=1}^n 2^k = 2^{n+1}-2$.</p>
+
+<p>Going back to $T_n$, we have</p>
+
+<div markdown="0">
+\begin{align}
+T_n &amp; = \frac{n!(10+3(2^{n+1}-2))}{2^{n+1}}&#92;&#92;
+&amp; = \frac{n!(5+3(2^n-1))}{2^n}&#92;&#92;
+&amp; = \frac{n!(5 + 3\cdot 2^n - 3)}{2^n}&#92;&#92;
+&amp; = \frac{n!(3\cdot 2^n + 2)}{2^n}&#92;&#92;
+&amp; = 3\cdot n! + \frac{n!}{2^{n-1}}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>$\sum_{k=0}^n kH_k$</h3>
+
+<p>Using the perturbation method:</p>
+
+<div markdown="0">
+\begin{align}
+S_{n+1} = S_n + (n+1) H_{n+1} &amp; = 0 + \sum_{k=1}^{n+1} k H_k&#92;&#92;
+&amp; = \sum_{k+1=1}^{n+1}(k+1)H_{k+1}&amp;&amp;k\leftarrow k+1&#92;&#92;
+&amp; = \sum_{k=0}^n (k+1) (H_k + \frac{1}{k+1})&#92;&#92;
+&amp; = \sum_{k=0}^n k H_k + \sum_{k=0}^n \frac{k}{k+1} 
++ \sum_{k=0}^n H_k + \sum_{k=0}^n \frac{1}{k+1}&#92;&#92;
+&amp; = S_n + \sum_{k=0}^n\frac{k+1}{k+1} + \sum_{k_0}^n H_k&#92;&#92;
+&amp; = S_n + n+1 + \sum_{k=0}^n H_k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>so $\sum_{k=0}^n H_k$ is</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=0}^n H_k &amp; = (n+1)H_{n+1} - (n + 1)&#92;&#92;
+&amp; = (n+1)H_n + (n+1)\frac{1}{n+1} - n - 1&#92;&#92;
+&amp; = (n+1)H_n + 1 - n - 1&#92;&#92;
+&amp; = (n+1)H_n - n&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>More perturbation method</h3>
+
+<p>This exercise is just tricky in the very first step (working out the
+exact meaning of $S_{n+1}$), as the sign of the terms change depending
+of whether $n$ is odd or even.</p>
+
+<p>This means that instead of the book equation (2.24)
+$S_{n+1} = S_n + a_{n+1}$, we find something like
+$S_{n+1} = a_{n+1} - S_n$.</p>
+
+<h4>$S_n = \sum_{k=0}^n (-1)^{n-k}$</h4>
+
+<p>First, the left hand part of the equation:</p>
+
+<div markdown="0">
+\begin{align}
+S_{n+1} &amp; = \sum_{k=0}^n (-1)^{n+1-k} + (-1)^{n+1-n-1}&#92;&#92;
+&amp; = -\sum_{k=0}^n (-1)^{n-k} + 1&#92;&#92;
+&amp; = 1 - S_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Then, the right hand part:</p>
+
+<div markdown="0">
+\begin{align}
+S_{n+1} &amp; = (-1)^{n+1} + \sum_{k=1}^{n+1} (-1)^{n+1-k}&#92;&#92;
+&amp; =
+(-1)^{n+1}+\sum_{k+1=1}^{n+1}(-1)^{n+1-k-1}&amp;&amp;k\leftarrow k+1&#92;&#92;
+&amp; = (-1)^{n+1} + \sum_{k=0}^n(-1)^{n-k}&#92;&#92;
+&amp; = (-1)^{n+1} + S_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Putting both together, $S_n = \frac{1-(-1)^{n+1}}{2}$, or, as the book
+states, $S_n = [\text{\(n\) is even}]$.</p>
+
+<h4>$T_n = \sum_{k=0}^n (-1)^{n-k}k$</h4>
+
+<p>Using the same approach as above:</p>
+
+<div markdown="0">
+\begin{align}
+T_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k&#92;&#92;
+&amp; = -\sum_{k=0}^n(-1)^{n-k}k + (-1){n+1-n-1}(n+1)&#92;&#92;
+&amp; = n+1-T_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>and</p>
+
+<div markdown="0">
+\begin{align}
+T_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k&#92;&#92;
+&amp; = (-1)^{n+1}0 + \sum_{k=1}^{n+1}(-1)^{n+1-k}k&#92;&#92;
+&amp; = 0 + \sum_{k+1=1}^{n+1}(-1)^{n+1-k-1}{k+1}&amp;&amp;k\leftarrow k+1&#92;&#92;
+&amp; = \sum_{k=0}^n(-1)^{n-k}k + \sum_{k=0}^n(-1)^{n-k}&#92;&#92;
+&amp; = T_n + S_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Together:</p>
+
+<div markdown="0">
+\begin{align}
+T_n &amp; = \frac{n+1-S_n}{2}&#92;&#92;
+&amp; = \frac{1}{2}\left(n+[\text{\(n\) is odd}] \right)&#92;&#92;
+&amp; = \left\lceil \frac{n}{2} \right\rceil&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The last version uses the ceiling operator from Chapter 3.</p>
+
+<h4>$U_n = \sum_{k=0}^n (-1)^{n-k}k^2$</h4>
+
+<p>It will probably not be a surprised to find $U_n$ expressed in terms
+of $S_n$ and $T_n$.</p>
+
+<div markdown="0">
+\begin{align}
+U_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k^2&#92;&#92;
+&amp; = \sum_{k=0}^n(-1)^{n+1-k}k^2 + (-1)^{n+1-n-1}(n+1)^2&#92;&#92;
+&amp; = -1\sum_{k=0}^n(-1)^{n-k}k^2 + (n+1)^2&#92;&#92;
+&amp; = (n+1)^2 - U_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>and</p>
+
+<div markdown="0">
+\begin{align}
+U_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k^2&#92;&#92;
+&amp; = (-1)^{n+1}0 + \sum_{k=1}^{n+1}(-1)^{n+1-k}k^2&#92;&#92;
+&amp; = 0 + \sum_{k+1=1}^{n+1}(-1)^{n+1-k-2}(k+1)^2&amp;&amp;
+k\leftarrow k+1&#92;&#92;
+&amp; = \sum_{k=0}^n(-1)^{n-k}(k^2+2k+1)&#92;&#92;
+&amp; = U_n + 2T_n + S_n&#92;&#92;
+\end{align}
+</div>
+
+
+<p>With $2T_n = n+1-S_n$, this produces $U_{n+1} = U_n + n + 1$, which
+gives the answer away, but let&#8217;s just continue with the current
+method.</p>
+
+<p>Putting both side together:</p>
+
+<div markdown="0">
+\begin{align}
+U_n &amp = \frac{(n+1)^2 - (n+1)}{2}&#92;&#92;
+&amp; = \frac{(n+1)(n+1) - (n+1)}{2}&#92;&#92;
+&amp; = \frac{n(n+1)}{2}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>Lagrange&#8217;s Identity</h3>
+
+<p>First, I look for a usable double sum. I use the fact that for any
+$j, k$, $j &lt; k$, $(a_jb_k - a_kb_j) = -(a_kb_j - a_jb_k)$ and
+$(A_jB_k - A_kB_j)= - (A_kB_j - A_jB_k)$. This means that, with
+$s_{j,k} = (a_jb_k - a_kb_j)(A_jB_k - A_kB_j)$, $s_{j,k} = s_{k,j}$.</p>
+
+<p>There is also the fact that $s_{j,j} = 0$, so now I can complete the
+sum to the whole rectangle:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j,k\le n}s_{j,k} &amp; = \sum_{1\le j\lt k\le n}s_{j,k}
++ \sum_{1\le j = k \le n} s_{j,k} + \sum_{1\le k \lt j \le
+n}s_{k,j}&#92;&#92;
+&amp; = \sum_{1\le j \lt k \le n}s_{j,k} + 0
++ \sum_{1\le j \lt k \le n}s_{j,k}&#92;&#92;
+&amp; = 2\sum_{1\le j \lt k \le n}s_{j,k}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The expansion of $s_{j,k}$ is
+$a_jA_jb_kB_k - a_jB_jA_kb_k - A_jb_ja_kB_k + b_jB_ja_kA_k$. Showing
+the summation just for the first one (the other three are identical):</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j, k \le n} a_jA_jb_kB_k &amp; = \sum_{j=1}^n\sum_{k=1}^n a_jA_jb_kB_k&#92;&#92;
+&amp; = \sum_{j=1}^n a_jA_j \left(\sum_{k=1}^n b_kB_k \right)&#92;&#92;
+&amp; = \left(\sum_{j=1}^n a_jA_j\right)\left(\sum_{k=1}^n b_kB_k \right)&#92;&#92;
+&amp; = \left(\sum_{k=1}^n a_kA_k\right)\left(\sum_{k=1}^n b_kB_k \right)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Putting it all together:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j\lt k\le n}(a_jb_k - a_kb_j)(A_jB_k - A_kB_j) &amp; =
+\left(\sum_{k=1}^n a_kA_k\right)\left(\sum_{k=1}^n b_kB_k\right) -
+\left(\sum_{k=1}^n a_kB_k\right)\left(\sum_{k=1}^n A_kb_k\right)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>In particular, with $a_k = A_k$ and $b_k = B_k$, the sum is
+$\left(\sum_{k=1}^n a_k^2 \right)\left(\sum_{k=1}^n b_k^2 \right) - 2 \left(\sum_{k=1}^n a_kb_k \right)$.</p>
+
+<h3>$\sum_{k=1}^n \frac{2k+1}{k(k+1)}$</h3>
+
+<h4>Partial fractions</h4>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n\frac{2k+1}{k(k+1)}
+&amp; = \sum_{k=1}^n(k+(k+1))\left(\frac{1}{k}-\frac{1}{k+1} \right)&#92;&#92;
+&amp; = \sum_{k=1}^n\left(\frac{k}{k} + \frac{k+1}{k} - \frac{k}{k+1} - \frac{k+1}{k+1} \right)&#92;&#92;
+&amp; = \sum_{k=1}^n \frac{k+1}{k} - \sum_{k=1}^n \frac{k}{k+1}&#92;&#92;
+&amp; = n + H_n - \sum_{k=1}^n \frac{k}{k+1} -
+\sum_{k=1}^n\frac{1}{k+1} + \sum_{k=1}^n\frac{1}{k+1}&#92;&#92;
+&amp; = n + H_n - \sum_{k=1}^n \frac{k+1}{k+1} + \sum_{k=1}^n
+\frac{1}{k+1}&#92;&#92;
+&amp; = H_n + \sum_{k-1=1}^n \frac{1}{k}&amp;&amp;k\leftarrow k-1&#92;&#92;
+&amp; = H_n + \sum_{k=2}^{n+1} \frac{1}{k}&#92;&#92;
+&amp; = H_n + H_{n+1} - 1&#92;&#92;
+&amp; = H_h + H_n + \frac{1}{n+1} - \frac{n+1}{n+1}&#92;&#92;
+&amp; = 2H_n - \frac{n}{n+1}&#92;&#92;
+\end{align}
+</div>
+
+
+<h4>Sum by parts</h4>
+
+<p>Using</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = \frac{1}{k(k+1)} = (k-1)^{\underline{-2}}&#92;&#92;
+v &amp; = -(k-1)^{\underline{-1}}&#92;&#92;
+Ev &amp; = -k^{\underline{-1}}&#92;&#92;
+u &amp; = 2k+1&#92;&#92;
+\Delta u &amp; = 2&#92;&#92;
+\end{align}
+</div>
+
+
+<p>First the sum by part</p>
+
+<div markdown="0">
+\begin{align}
+\sum \frac{2x+1}{x(x+1)}\delta x &amp; = 
+-(2x+1)(x-1)^{\underline{-1}} + 2 \sum x^{\underline{-1}} \delta x + c&#92;&#92;
+&amp; = -\frac{2x+1}{x} + 2 H_x + c&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Then the evaluation</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n\frac{2k+1}{k(k+1)} &amp; = \left. -\frac{2x+1}{x}+2H_x\right|_1^{n+1}&#92;&#92;
+&amp; = -\frac{2(n+1)+1}{n+1} + 2 H_{n+1} + 2 + 1 - 2&#92;&#92;
+&amp; = 2 H_{n+1} + 1 - 2 - \frac{1}{n+1}&#92;&#92;
+&amp; = H_{n+1} + H_n - 1&#92;&#92;
+&amp; = 2H_n - \frac{n}{n+1}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>$\sum_{1\le k \lt n}\frac{H_k}{(k+1)(k+2)}$</h3>
+
+<p>For the sum by part, I use</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = x^{\underline{-2}}&#92;&#92;
+v &amp; = -x^{\underline{-1}}&#92;&#92;
+Ev &amp; = -(x+1)^{\underline{-1}}&#92;&#92;
+u &amp; = H_x&#92;&#92;
+\Delta u &amp; = x^{\underline{-1}}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The sum by part</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n H_x x^{\underline{-2}} \delta x
+&amp; = -H_x x^{\underline{-1}} + \sum
+(x+1)^{\underline{-1}}x^{\underline{-1}}\delta x + c&#92;&#92;
+&amp; = -H_x x^{\underline{-1}} + \sum x^{\underline{-2}} \delta x + c&#92;&#92;
+&amp; = -H_x x^{\underline{-1}} - x^{\underline{-1}} + c&#92;&#92;
+&amp; = -(H_x + 1) x^{\underline{-1}} + c&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The evaluation is</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k \lt n} \frac{H_k}{(k+1)(k+2)} &amp; =
+\left. -\frac{H_x + 1}{x+1} \right|_0^n&#92;&#92;
+&amp; = 1 - \frac{H_n + 1}{n+1}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>Product laws</h3>
+
+<p>I don&#8217;t think I listed all the laws for this exercise, as the only
+complete list for the sum laws in the book is in the answer for this
+exercise.</p>
+
+<p>I will not repeat it here; suffice to say that when we replace sum by
+product, the laws can be updated by replacing product by
+exponentiation, and sum by product.</p>
+
+<h3>$\prod_{1\le j \le k \le n}a_ja_k$</h3>
+
+<p>While it took me a few false starts, I eventually found that the
+triangular completion used for (2.32) works here as well.</p>
+
+<div markdown="0">
+\begin{align}
+\left(\prod_{1\le j\le k \le n} a_ja_k \right)^2 &amp; = 
+\left(\prod_{1\le j,k \le n}a_ja_k \right)
+\left(\prod_{1\le j=k \le n}a_ja_k\right)&#92;&#92;
+&amp; = \left(\prod_{1\le j,k \le n} a_j\right)
+\left(\prod_{1\le j,k \le n} a_k\right)
+\left(\prod_{1\le k \le n}a_k^2\right)&#92;&#92;
+&amp; = \left(\prod_{1\le k \le n} a_k^n\right)
+\left(\prod_{1\le j \le n} a_j^n\right)
+\left(\prod_{1\le k \le n}a_k^2\right)&#92;&#92;
+&amp; = \prod_{1\le k\le} a_k^{2n+2}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So
+$\prod_{1\le j \le k \le n}a_ja_k = \left(\prod_{1\le k\le} a_k\right)^{n+1}$.</p>
+
+<h3>$\sum_{k=1}^n \frac{(-2)^{\underline k}}{k}$</h3>
+
+<p>As suggested, I worked out $\Delta c^{\underline x}$:</p>
+
+<div markdown="0">
+\begin{align}
+\Delta c^{\underline x} &amp; = c^{\underline{x+1}} - c^{\underline x}&#92;&#92;
+&amp; = c(c-1)\cdots (c-x+1)(c-x) - c(c-1)\cdots (c-x+1)&#92;&#92;
+&amp; = c^{\underline x}(c-x-1)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>I did not immediately saw the relation between this and the original
+sum. First I rewrote the original sum to remove the division:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n \frac{(-2)^{\underline k}}{k}
+&amp; = \sum_{k=1}^n \frac{(-2)^{\underline{k-1}}(-2-k+1)}{k}&#92;&#92;
+&amp; = -\sum_{k=1}^n \frac{(-2)^{\underline{k-2}(k+1)(-2-k+2)}}{k}&#92;&#92;
+&amp; = \sum_{k=1}^n \frac{(-2)^{\underline{k-2}(k+1)(k)}}{k}&#92;&#92;
+&amp; = \sum_{k=1}^n (-2)^{\underline{k-2}}(k+1)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Now the relation is visible. So we have</p>
+
+<div markdown="0">
+\begin{align}
+\sum_1^{n+1}\frac{(-2)^{\underline x}}{x}\delta x &amp; = \sum_1^{n+1}(-2)^{\underline x}(x+1)\delta x&#92;&#92;
+x &amp; = \left. - (-2)^{\underline{x-2}}\right|_1^{n+1}&#92;&#92;
+&amp; = (-2)^{\underline{-1}} - (-2)^{\underline{n-1}}&#92;&#92;
+&amp; = -1 - (-2)(-3) \cdots (-n)&#92;&#92;
+&amp; = (-1)^n n! - 1&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>Incorrect derivation</h3>
+
+<p>As stated in the book, the infinite sums do no converge, so the third
+step is invalid.</p>
+
+<p>And that&#8217;s all for today.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Machine Learning in Action - Naïve Bayes]]></title>
@@ -8793,337 +9279,6 @@ B(n) &amp; = 4(2^{n-1} -1) + 4 + B(n-1)&#92;&#92;
 pointless, sense of pride and achievement.</p>
 
 <p>No doubt the other exercises will cut me down to size.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Warmups]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/"/>
-    <updated>2012-01-07T19:09:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups</id>
-    <content type="html"><![CDATA[<p>It took me far longer than it should have, and I had a very partial
-success; I guess my excuse is that my brain was still cold&#8230;</p>
-
-<p>At least I can claim I did try to solve all the exercises; I really
-spent hours on this.</p>
-
-<!--more-->
-
-
-<h2>Warmups</h2>
-
-<h3>Horse colour</h3>
-
-<p>I kind of botched this one, as I tried to answer it even before
-reading the chapter&#8230; and my first instinct was that such a use of
-induction (taking numbered subsets) was invalid.</p>
-
-<p>Of course it is not. This is a perfectly valid approach, but, as the
-book states, in the present case it breaks down for $n=2$.</p>
-
-<p>Properly expressed with math notation, it becomes clear that the
-&#8220;same colour&#8221; concept is a binary relation (a reflexive, symmetric
-and transitive one). The key is <em>binary</em>: if every pair of horses were
-the same colour, then induction could be used.</p>
-
-<h3>Tower of Hanoi Variation</h3>
-
-<p>The description in the book is somewhat confusing, as it states the
-restriction in terms of absolute positions (that is, no direct move
-between left peg and right peg), rather than relative (if you want to
-move a disc between peg $A$ and peg $B$, you must first move it to peg $C$,
-then to peg $B$).</p>
-
-<p>The first approach does not work (that is, it is impossible to solve
-the problem under these conditions), but obviously the authors meant
-the second approach.</p>
-
-<h4>Number of moves</h4>
-
-<p>This variation can be solved using the exact same tools as the
-original problem.</p>
-
-<p>Assuming we want to move a stack from $A$ to $B$, using $C$ as
-transfer peg: a single disc can be moved in $2$ steps ($A$ to $C$, $C$
-to $B$); to move more than $1$, you first need to move the $n-1$ from
-$A$ to $B$, then move $1$ disk from $A$ to $C$, move the $n-1$ discs
-from $B$ back to $A$, move the one disc from $C$ to $B$, and finally
-move the $n-1$ discs from $A$ to $B$.</p>
-
-<p>More concisely:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-T_1 &amp;= 2&amp;&amp;\text{base case}&#92;&#92;
-T_n &amp;= T_{n-1} + 1 + T_{n-1} + 1 + T_{n-1}&#92;&#92;
-&amp; = 3T_{n-1} + 2&amp;&amp;\text{recurrence equation}
-\end{align}
-$$
-</div>
-
-
-<p>Using the exact same method as in the book, let&#8217;s define
-$T_n + 1= U_n$:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-U_1 &amp;= T_1 + 1&#92;&#92;
-&amp; = 3&#92;&#92;
-U_n &amp;= T_n + 1&#92;&#92;
-&amp; = 3(U_{n-1} -1) + 3&#92;&#92;
-&amp; = 3U_{n-1} - 3 + 3&#92;&#92;
-&amp; = 3U_{n-1}
-\end{align}
-$$
-</div>
-
-
-<p>Then, $U_n = 3^n$, and $T_n = 3^n-1$.</p>
-
-<h4>Arrangements</h4>
-
-<p>As discs must be sorted, to describe an arrangement it is enough to
-list the peg for each disc. As there are $3$ pegs, this means
-there are $3^n$ different arrangements.</p>
-
-<p>The variation takes $3^n-1$ moves, but counting the starting position
-as well, this means $3^n$ different positions, which is the same as
-the total number of arrangements.</p>
-
-<h3>Tower of Hanoi, Initial Setup Variation</h3>
-
-<p>Once again, by induction: to move a disk to peg $B$:</p>
-
-<p><em>Base case</em>: moving the smallest disc takes at most $1$ move ($0$ if
-it is already on peg $B$), so $T_1 \le 1$;
-<em>Recurrence</em>: to move the disc of size $n$, assuming it is on $A$, we
-need to move all the smaller discs to $C$ (to clear both $A$ and $B$),
-then move the disc of size $n$, and finally move all the smaller discs
-to $B$. Calling the clearing operation $Cl_n$, we have
-$T_n \le Cl_{n-1} + 1 + T_{n-1}$.</p>
-
-<p>A moment of thought is enough to realise that $Cl_n$ amounts to the
-same operation as $T_n$ (that is, move each disc to a specific peg,
-no matter where it currently is), so we have $Cl_n = T_n$, and
-therefore $T_n \le 2T_{n-1} + 1$, which is the same recurrence equation
-as the original problem.</p>
-
-<p>Therefore there is no position that is more that $2^n-1$ moves from
-the target position.</p>
-
-<h3>Venn Diagram with 4 circles</h3>
-
-<p>I completely failed to solve this one, even though I spent most of the
-time on this problem alone. I had the intuition that it could not be
-done; I also found that the maximum number of regions would be 14, but
-not matter what I tried, I could not prove it.</p>
-
-<p>I tried to use Geometry, hoping that a minimal list of constraints on
-the circles would prove that some of the regions that should be
-restricted to two circles were in fact always covered by three or
-more.</p>
-
-<p>Eventually, when I gave up and looked at the solution, I still could not
-understand it. So a circle can only intersect another one in at most 2
-points. OK, so what?</p>
-
-<p>After more research (the Google kind, this time), I found
-<a href="http://www.brynmawr.edu/math/people/anmyers/PAPERS/Venn.pdf">this paper</a>
-which explains why. Each intersection point creates a single new
-region. Although once again I have no intuition I can trust in this
-domain, in this case the reasoning seems similar enough to
-intersecting lines that I feel somewhat confident.</p>
-
-<p>So the above observation gives a recurrence equation:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-C_1 &amp;= 2&#92;&#92;
-C_n &amp;= C_{n-1} + 2(n-1)
-\end{align}
-$$
-</div>
-
-
-<p>Already, we have that $C_4 = 14$, which is less than the required
-$16$ for a Venn diagram (and according to this
-<a href="http://www.combinatorics.org/Surveys/ds5/VennEJC.html">document</a>),
-four circles form a <em>Euler diagram</em>, not a Venn diagram.</p>
-
-<p>Clearly a triangular number sequence is hiding in there. The
-recurrence equations above can be rewritten as</p>
-
-<div markdown="0">
-$$
-\begin{align}
-C_n &amp;= 2+\sum_{i=1}^{n}2(i-1)&#92;&#92;
-&amp;= 2+2\sum_{i=0}^{n-1}i&#92;&#92;
-&amp;= 2+2\frac{n(n-1)}{2}&#92;&#92;
-&amp;= n^2-n+2
-\end{align}
-$$
-</div>
-
-
-<h3>Bounded Regions in the Plane</h3>
-
-<p>Another one where my intuition for Geometry completely failed me. I
-had a correct start, identifying that each new line intersecting the
-existing ones at $k$ points could at best create $k-1$ new bounded
-regions, but when I try to check this I fumbled.</p>
-
-<p>Yet the reason it simple: a line intersecting 2 others will either
-define a bounded triangle, or cut an existing bounded region in two.</p>
-
-<p>The new bounded regions are not made of arbitrary triple of lines, but
-are next to each others in the plane; really this is similar to the
-fence problem. So a line cutting $k$ other lines will create at best
-$k-1$ new bounded region. The equality is achieved if there are no
-parallel lines, and all the intersection points are distinct.</p>
-
-<p>As the book observes, each new line will also add two new unbounded
-regions (the original problem had that a new line would create
-$k+1$ new regions).</p>
-
-<p>Once again, the triangular number sequence is not far:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-B_i &amp; = 0 &amp;&amp\text{for $1 &#92;le i &#92;lt 3$}&#92;&#92;
-B_3 &amp; = 1&#92;&#92;
-B_n &amp; = B_{n-1} + n - 2&#92;&#92;
-&amp; = \sum_{i=2}^{n} i-2&#92;&#92;
-&amp; = \sum_{i=0}^{n-2} i&#92;&#92;
-&amp; = \frac{(n-1)(n-2)}{2}&#92;&#92;
-&amp; = S_{n-2}
-\end{align}
-$$
-</div>
-
-
-<h3>Invalid Recurrence</h3>
-
-<p>The recurrence for $H$ has a number of problems. The one I found is
-that it only establishes the induction hypothesis for going from an
-even number to an odd one; nothing can be said for going from an odd
-number to an even one (and indeed, the hypothesis breaks then).</p>
-
-<p>As the book mentions, another problem is the base case, which is
-incompatible with the induction hypothesis.</p>
-
-<h3>Wrapping up</h3>
-
-<p>I spent way too much time on these exercises, but most of it was on
-exercises with a geometric nature: I could not find an algebraic
-description of these problems that would be suitable for the kind of
-treatment this chapter is about. But once I had the equations, I was
-able to solve the problems without trouble.</p>
-
-<p>Next, the homework exercises.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Notes]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes/"/>
-    <updated>2012-01-06T13:52:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes</id>
-    <content type="html"><![CDATA[<p>For the first post of this hopefully long series, I have a few notes I
-wrote down as I was reading Chapter 1. Nothing revolutionary, but it
-gives me a chance to play with math notation.</p>
-
-<!--more-->
-
-
-<h1>Lines in the Plane</h1>
-
-<p>I must admit that my memories of Geometry are far, far away (the
-subject was not addressed at all when I studied Mathematics at
-university, and I had no need for Geometry in my work since), so I
-spent perhaps an unreasonable amount of time to check the validity of
-the most elementary steps.</p>
-
-<p>It goes without saying that the exercises of a Geometric nature are
-particularly challenging (as if I needed the extra difficulty).</p>
-
-<h2>Intersecting lines</h2>
-
-<p>The notion that one line will add $k$ new regions if it intersects
-other lines at $k-1$ points is due to the fact that $k-1$ distinct
-lines define at least $k$ regions (more if they are not all parallel),
-and one more line that intersects them all will divide these $k$
-regions in two.</p>
-
-<h1>Josephus Problem</h1>
-
-<h2>$J(5 \cdot 2^m) = 2^{m+1} + 1$</h2>
-
-<p>This is based on the fact that $J(10) = 5$ and $J(2n) = 2J(n) -1$.</p>
-
-<p>By induction:</p>
-
-<p><em>Base case</em>: it is true for $m = 1$: $J(5\cdot 2) = J(10) = 5 =
-2^{1+1} + 1$</p>
-
-<p><em>Recurrence</em>: assuming it is true for $m$,</p>
-
-<div markdown="0">
-$$
-\begin{align}
-J(5\cdot 2^{m+1}) &amp;= J(2(5\cdot 2^m))&#92;&#92;
-&amp;= 2J(5\cdot 2^m) - 1&amp;&amp;\text{as $J(2n) = 2J(n) -1$}&#92;&#92;
-&amp;= 2(2^{m+1}+1) - 1&amp;&amp;\text{induction hypothesis}&#92;&#92;
-&amp;= 2\cdot 2^{m+1} + 2 - 1&#92;&#92;
-&amp;= 2^{m+2} + 1
-\end{align}
-$$
-</div>
-
-
-<h2>$A(2^{m}+l) = 2^{m}$</h2>
-
-<p>It took me a while to convince myself that the $l$ was not a problem
-here. This can be seen by considering $l$ in binary notation, and
-using $A(2n) = 2A(n)$ and $A(2n+1) = 2A(n)$ to remove the rightmost
-bit.</p>
-
-<p>That is, with $2^m > l = (b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2$,we have:</p>
-
-<div markdown="0">
-$$
-\begin{align}
-A(2^{m}+l) &amp;= A(2^{m}+(b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2)&#92;&#92;
-&amp;= 2A(2^{m-1}+(b_{m-1}b_{m-2}\cdots b_{1})_2)&#92;&#92;
-&amp;= 2^{2}A(2^{m-2}+(b_{m-1}b_{m-2}\cdots b_{2})_2)&#92;&#92;
-&amp;= 2^{3}A(2^{m-3}+(b_{m-1}b_{m-2}\cdots b_{3})_2)&#92;&#92;
-&amp;= \cdots
-\end{align}
-$$
-</div>
-
-
-<p>At each iteration, whether $b_i$ is $0$ or $1$, we can ignore it when
-dividing by $2$. And as $2^m &lt; l$, it takes no more than $m$ steps
-(removing the $m$ bits $b_0$ to $b_{m-1}$) to reduce $A(2^m+l)$ to
-$2^mA(1) = 2^m$</p>
-
-<h2>Radix-based Generalised Josephus Solution</h2>
-
-<p>The equation 1.18:</p>
-
-<p>$$f \left( ( b_m b_{m-1} \cdots b_1 b_0)_d \right) = \left( \alpha_{b_m} \beta_{b_{m-1}} \beta_{b_{m-2}} \cdots \beta_{b_1} \beta_{b_0} \right)_c$$</p>
-
-<p>is so unnaturally smart and simple that I thought the proof must be
-missing. But in fact it is indeed trivial, and just as the book
-states, follows from the rewriting of the argument in base $d$, then
-recurrence over $m$ (with $m$ the number of digits or the argument in
-base $d$).</p>
-
-<p>In the next post in this series, I will start the exercises.</p>
 ]]></content>
   </entry>
   

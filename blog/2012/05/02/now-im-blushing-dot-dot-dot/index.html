@@ -5,11 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Writing a Jeckyl Plugin - Wakatta!</title>
+  <title>Now I'm blushing... - Wakatta!</title>
   <meta name="author" content="Frédéric Dumont">
 
   
-  <meta name="description" content="This blog is built with Octopress, itself built on top of Jekyll, a static site generator. As I was blogging through Seven Languages in Seven Weeks, &hellip;">
+  <meta name="description" content="Eric Redmond, one of the authors of
+Seven Databases in Seven Weeks
+apparently found my blog, read it and posted a nice comment on
+his blog. Now I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -79,7 +82,7 @@
   
   <header>
     
-      <h1 class="entry-title">Writing a Jeckyl Plugin</h1>
+      <h1 class="entry-title">Now I'm Blushing...</h1>
     
     
       <p class="meta">
@@ -95,72 +98,21 @@
   
 
 
-<time datetime="2011-10-13T12:40:00+09:00" pubdate data-updated="true">Oct 13<span>th</span>, 2011</time>
+<time datetime="2012-05-02T16:14:00+09:00" pubdate data-updated="true">May 2<span>nd</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>This blog is built with <a href="http://octopress.org/">Octopress</a>, itself built on top of <a href="http://jekyllrb.com/">Jekyll</a>, a static site generator.</p>
+<div class="entry-content"><p>Eric Redmond, one of the authors of
+<a href="http://pragprog.com/book/rwdata/seven-databases-in-seven-weeks">Seven Databases in Seven Weeks</a>
+apparently found my blog, read it and posted a nice comment on
+<a href="http://sevenweeks.org/">his blog</a>.</p>
 
-<!--more-->
-
-
-<p>As I was blogging through <a href="/blog/2011/10/11/seven-languages-in-seven-weeks/">Seven Languages in Seven Weeks</a>, I thought it would be neat to have a list of all the posts in that series, accessible from the sidebar.</p>
-
-<p>Essentially, my goal was to be able to add an attribute <code>series</code> to a post, to add it to a named group of posts, and to generate a list of all posts in the same group to add to the sidebar.</p>
-
-<p>The first part is easy. In Jekyll, the <a href="https://github.com/mojombo/jekyll/wiki/YAML-Front-Matter">YAML Front Matter</a> is extensible. So I just added</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>series: "Seven Languages in Seven Weeks"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>to the relevant posts.</p>
-
-<p>The second one is a bit trickier. Jekyll exposes the post data not directly, but through a hash that is built for each post. This hash is built by two methods, <code>render</code> and <code>to_liquid</code>.</p>
-
-<p>My plugin replaces <code>render</code> to insert the <code>series_posts</code>, an array of all the posts with the same <code>series</code> attribute.</p>
-
-<p>But to display the list of posts, I need a short title, so also added support for that. A short title is computed in the overridden <code>to_liquid</code> method. The computation is the following:</p>
-
-<ul>
-<li>if there is a short_title attribute in the YAML Front Matter, use it</li>
-<li>otherwise, if the name of the series is a prefix of the post title, remove it from the title and use the rest</li>
-<li>otherwise use the post title.</li>
-</ul>
-
-
-<p>To display the series posts in the sidebar, I&#8217;m using this code:</p>
-
-<figure class='code'><figcaption><span> (series.html)</span> <a href='/downloads/code/series.html'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>{% if page and page.series %}
-</span><span class='line'><span class="nt">&lt;section&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;h1&gt;</span>{{page.series}} Series<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>  {% assign series_posts = site.series_posts %}
-</span><span class='line'>      <span class="nt">&lt;ul&gt;</span>
-</span><span class='line'>      {% for p in series_posts %}
-</span><span class='line'>          <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;post&quot;</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;{{ root_url }}{{ p.url }}&quot;</span><span class="nt">&gt;</span>{{ p.short_title }}<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span><span class='line'>      {% endfor %}
-</span><span class='line'>      <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'><span class="nt">&lt;/section&gt;</span>
-</span><span class='line'>{% endif %}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The code can be found <a href="https://github.com/fdumontmd/jekyll-plugins/tree/master/series">here</a>.</p>
+<p>Now I have no choice but to urge all my three readers (that includes
+you, Mom) to go and by this great book. Even if you already own a
+copy.</p>
 </div>
 
 
@@ -183,12 +135,12 @@
   
 
 
-<time datetime="2011-10-13T12:40:00+09:00" pubdate data-updated="true">Oct 13<span>th</span>, 2011</time>
+<time datetime="2012-05-02T16:14:00+09:00" pubdate data-updated="true">May 2<span>nd</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/blog/'>Blog</a>
+    <a class='category' href='/blog/categories/blog/'>Blog</a>, <a class='category' href='/blog/categories/books/'>Books</a>
   
 </span>
 
@@ -197,7 +149,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot/" >Tweet</a>
   
   
   
@@ -206,10 +158,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/" title="Previous Post: Seven Languages in Seven Weeks Ruby Day 2">&laquo; Seven Languages in Seven Weeks Ruby Day 2</a>
+        <a class="basic-alignment left" href="/blog/2012/05/02/concrete-mathematics-chapter-2-homework-exercises/" title="Previous Post: Concrete Mathematics Chapter 2 Homework Exercises">&laquo; Concrete Mathematics Chapter 2 Homework Exercises</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2011/10/13/kyogen-traditional-japanese-slapstick/" title="next Post: Kyogen - Traditional Japanese Slapstick">Kyogen - Traditional Japanese Slapstick &raquo;</a>
       
     </p>
   </footer>
@@ -230,6 +180,64 @@
   <p>
 		<a href="/about">more...</a>
 	</p>
+</section>
+
+<section>
+	<h1>Seven Databases in Seven Weeks Series</h1>
+	
+		<ul>
+		
+			<li class="post"><a href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/">Intro</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">PostgreSQL Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/">PostgreSQL Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">PostgreSQL Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/">Riak Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">Riak Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/">Riak Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">HBase Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/">HBase Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/">HBase Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">Riak on EC2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/">MongoDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">MongoDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">MongoDB Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/">Neo4j Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">Neo4j Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/">Neo4j Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/">Redis Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/">Redis Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/">CouchDB Day 1</a></li>
+		
+			<li class="post"><a href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">CouchDB Day 2</a></li>
+		
+			<li class="post"><a href="/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/">CouchDB Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/">Redis Day 3</a></li>
+		
+			<li class="post"><a href="/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/">Wrapping Up</a></li>
+		
+			<li class="post"><a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a></li>
+		
+		</ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
@@ -312,8 +320,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/';
-        var disqus_url = 'http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/';
+        var disqus_identifier = 'http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot/';
+        var disqus_url = 'http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot/';
         var disqus_script = 'embed.js';
       
     (function () {

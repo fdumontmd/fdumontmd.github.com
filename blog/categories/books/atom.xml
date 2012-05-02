@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-04-09T15:34:55+09:00</updated>
+  <updated>2012-05-02T16:29:24+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,492 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Now I'm blushing...]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot/"/>
+    <updated>2012-05-02T16:14:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot</id>
+    <content type="html"><![CDATA[<p>Eric Redmond, one of the authors of
+<a href="http://pragprog.com/book/rwdata/seven-databases-in-seven-weeks">Seven Databases in Seven Weeks</a>
+apparently found my blog, read it and posted a nice comment on
+<a href="http://sevenweeks.org/">his blog</a>.</p>
+
+<p>Now I have no choice but to urge all my three readers (that includes
+you, Mom) to go and by this great book. Even if you already own a
+copy.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Homework Exercises]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/05/02/concrete-mathematics-chapter-2-homework-exercises/"/>
+    <updated>2012-05-02T13:13:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/05/02/concrete-mathematics-chapter-2-homework-exercises</id>
+    <content type="html"><![CDATA[<p>It has been a long time since I wrote about this book; I had worked
+the solutions more than a month ago, but then life happened, and I
+could not find the time (or, perhaps, more accurately the courage) to
+typeset my notes...</p>
+
+<p>Anyway, I do have time now and am eager to go on with Chapter 3; but
+first let's finish Chapter 2. Today the homework exercises, and very
+soon the exams and bonus (at least the ones I could do) exercises.</p>
+
+<!--more-->
+
+
+<h2>Homework</h2>
+
+<h3>$2T_n = nT_{n-1}+3\cdot n!$</h3>
+
+<p>This exercise is not tricky in anyway; just follow the method and
+the result is guaranteed.</p>
+
+<p>The recurrence equations are</p>
+
+<div markdown="0">
+\begin{align}
+T_0 &amp; = 5\\\\
+2T_n &amp; = nT_{n-1}+3\cdot n!\\\\
+\end{align}
+</div>
+
+
+<p>The $a_n$, $b_n$ and $c_n$ series are:</p>
+
+<div markdown="0">
+\begin{align}
+a_n &amp; = 2\\\\
+b_n &amp; = n\\\\
+c_n &amp; = 3\cdot n!\\\\
+\end{align}
+</div>
+
+
+<p>The summation factor</p>
+
+<div markdown="0">
+\begin{align}
+s_n &amp; = \frac{a_{n-1}\dots a_1}{b_n\dots b_2}s_1\\\\
+&amp; = \frac{2^{n-1}}{n!}s_1\\\\
+\end{align}
+</div>
+
+
+<p>After experimenting a bit, I found that $s_1 = 2$ is slightly easier
+to work with, so the summation factor is $s_n = \frac{2^n}{n!}$.</p>
+
+<p>With $S_n = \frac{2^n+1}{n!} T_n$, the recurrence equation becomes</p>
+
+<div markdown="0">
+\begin{align}
+S_n &amp; = S_{n-1} + 3\cdot 2^n\\\\
+&amp; = S_0 + 3\sum_{k=1}^n 2^k\\\\
+\end{align}
+</div>
+
+
+<p>The sum is well-known, with $\sum_{k=0}^n 2^k = 2^{n+1}-1$, so
+$\sum_{k=1}^n 2^k = 2^{n+1}-2$.</p>
+
+<p>Going back to $T_n$, we have</p>
+
+<div markdown="0">
+\begin{align}
+T_n &amp; = \frac{n!(10+3(2^{n+1}-2))}{2^{n+1}}\\\\
+&amp; = \frac{n!(5+3(2^n-1))}{2^n}\\\\
+&amp; = \frac{n!(5 + 3\cdot 2^n - 3)}{2^n}\\\\
+&amp; = \frac{n!(3\cdot 2^n + 2)}{2^n}\\\\
+&amp; = 3\cdot n! + \frac{n!}{2^{n-1}}\\\\
+\end{align}
+</div>
+
+
+<h3>$\sum_{k=0}^n kH_k$</h3>
+
+<p>Using the perturbation method:</p>
+
+<div markdown="0">
+\begin{align}
+S_{n+1} = S_n + (n+1) H_{n+1} &amp; = 0 + \sum_{k=1}^{n+1} k H_k\\\\
+&amp; = \sum_{k+1=1}^{n+1}(k+1)H_{k+1}&amp;&amp;k\leftarrow k+1\\\\
+&amp; = \sum_{k=0}^n (k+1) (H_k + \frac{1}{k+1})\\\\
+&amp; = \sum_{k=0}^n k H_k + \sum_{k=0}^n \frac{k}{k+1} 
++ \sum_{k=0}^n H_k + \sum_{k=0}^n \frac{1}{k+1}\\\\
+&amp; = S_n + \sum_{k=0}^n\frac{k+1}{k+1} + \sum_{k_0}^n H_k\\\\
+&amp; = S_n + n+1 + \sum_{k=0}^n H_k\\\\
+\end{align}
+</div>
+
+
+<p>so $\sum_{k=0}^n H_k$ is</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=0}^n H_k &amp; = (n+1)H_{n+1} - (n + 1)\\\\
+&amp; = (n+1)H_n + (n+1)\frac{1}{n+1} - n - 1\\\\
+&amp; = (n+1)H_n + 1 - n - 1\\\\
+&amp; = (n+1)H_n - n\\\\
+\end{align}
+</div>
+
+
+<h3>More perturbation method</h3>
+
+<p>This exercise is just tricky in the very first step (working out the
+exact meaning of $S_{n+1}$), as the sign of the terms change depending
+of whether $n$ is odd or even.</p>
+
+<p>This means that instead of the book equation (2.24)
+$S_{n+1} = S_n + a_{n+1}$, we find something like
+$S_{n+1} = a_{n+1} - S_n$.</p>
+
+<h4>$S_n = \sum_{k=0}^n (-1)^{n-k}$</h4>
+
+<p>First, the left hand part of the equation:</p>
+
+<div markdown="0">
+\begin{align}
+S_{n+1} &amp; = \sum_{k=0}^n (-1)^{n+1-k} + (-1)^{n+1-n-1}\\\\
+&amp; = -\sum_{k=0}^n (-1)^{n-k} + 1\\\\
+&amp; = 1 - S_n\\\\
+\end{align}
+</div>
+
+
+<p>Then, the right hand part:</p>
+
+<div markdown="0">
+\begin{align}
+S_{n+1} &amp; = (-1)^{n+1} + \sum_{k=1}^{n+1} (-1)^{n+1-k}\\\\
+&amp; =
+(-1)^{n+1}+\sum_{k+1=1}^{n+1}(-1)^{n+1-k-1}&amp;&amp;k\leftarrow k+1\\\\
+&amp; = (-1)^{n+1} + \sum_{k=0}^n(-1)^{n-k}\\\\
+&amp; = (-1)^{n+1} + S_n\\\\
+\end{align}
+</div>
+
+
+<p>Putting both together, $S_n = \frac{1-(-1)^{n+1}}{2}$, or, as the book
+states, $S_n = [\text{\(n\) is even}]$.</p>
+
+<h4>$T_n = \sum_{k=0}^n (-1)^{n-k}k$</h4>
+
+<p>Using the same approach as above:</p>
+
+<div markdown="0">
+\begin{align}
+T_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k\\\\
+&amp; = -\sum_{k=0}^n(-1)^{n-k}k + (-1){n+1-n-1}(n+1)\\\\
+&amp; = n+1-T_n\\\\
+\end{align}
+</div>
+
+
+<p>and</p>
+
+<div markdown="0">
+\begin{align}
+T_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k\\\\
+&amp; = (-1)^{n+1}0 + \sum_{k=1}^{n+1}(-1)^{n+1-k}k\\\\
+&amp; = 0 + \sum_{k+1=1}^{n+1}(-1)^{n+1-k-1}{k+1}&amp;&amp;k\leftarrow k+1\\\\
+&amp; = \sum_{k=0}^n(-1)^{n-k}k + \sum_{k=0}^n(-1)^{n-k}\\\\
+&amp; = T_n + S_n\\\\
+\end{align}
+</div>
+
+
+<p>Together:</p>
+
+<div markdown="0">
+\begin{align}
+T_n &amp; = \frac{n+1-S_n}{2}\\\\
+&amp; = \frac{1}{2}\left(n+[\text{\(n\) is odd}] \right)\\\\
+&amp; = \left\lceil \frac{n}{2} \right\rceil\\\\
+\end{align}
+</div>
+
+
+<p>The last version uses the ceiling operator from Chapter 3.</p>
+
+<h4>$U_n = \sum_{k=0}^n (-1)^{n-k}k^2$</h4>
+
+<p>It will probably not be a surprised to find $U_n$ expressed in terms
+of $S_n$ and $T_n$.</p>
+
+<div markdown="0">
+\begin{align}
+U_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k^2\\\\
+&amp; = \sum_{k=0}^n(-1)^{n+1-k}k^2 + (-1)^{n+1-n-1}(n+1)^2\\\\
+&amp; = -1\sum_{k=0}^n(-1)^{n-k}k^2 + (n+1)^2\\\\
+&amp; = (n+1)^2 - U_n\\\\
+\end{align}
+</div>
+
+
+<p>and</p>
+
+<div markdown="0">
+\begin{align}
+U_{n+1} &amp; = \sum_{k=0}^{n+1}(-1)^{n+1-k}k^2\\\\
+&amp; = (-1)^{n+1}0 + \sum_{k=1}^{n+1}(-1)^{n+1-k}k^2\\\\
+&amp; = 0 + \sum_{k+1=1}^{n+1}(-1)^{n+1-k-2}(k+1)^2&amp;&amp;
+k\leftarrow k+1\\\\
+&amp; = \sum_{k=0}^n(-1)^{n-k}(k^2+2k+1)\\\\
+&amp; = U_n + 2T_n + S_n\\\\
+\end{align}
+</div>
+
+
+<p>With $2T_n = n+1-S_n$, this produces $U_{n+1} = U_n + n + 1$, which
+gives the answer away, but let's just continue with the current
+method.</p>
+
+<p>Putting both side together:</p>
+
+<div markdown="0">
+\begin{align}
+U_n &amp = \frac{(n+1)^2 - (n+1)}{2}\\\\
+&amp; = \frac{(n+1)(n+1) - (n+1)}{2}\\\\
+&amp; = \frac{n(n+1)}{2}\\\\
+\end{align}
+</div>
+
+
+<h3>Lagrange's Identity</h3>
+
+<p>First, I look for a usable double sum. I use the fact that for any
+$j, k$, $j &lt; k$, $(a_jb_k - a_kb_j) = -(a_kb_j - a_jb_k)$ and
+$(A_jB_k - A_kB_j)= - (A_kB_j - A_jB_k)$. This means that, with
+$s_{j,k} = (a_jb_k - a_kb_j)(A_jB_k - A_kB_j)$, $s_{j,k} = s_{k,j}$.</p>
+
+<p>There is also the fact that $s_{j,j} = 0$, so now I can complete the
+sum to the whole rectangle:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j,k\le n}s_{j,k} &amp; = \sum_{1\le j\lt k\le n}s_{j,k}
++ \sum_{1\le j = k \le n} s_{j,k} + \sum_{1\le k \lt j \le
+n}s_{k,j}\\\\
+&amp; = \sum_{1\le j \lt k \le n}s_{j,k} + 0
++ \sum_{1\le j \lt k \le n}s_{j,k}\\\\
+&amp; = 2\sum_{1\le j \lt k \le n}s_{j,k}\\\\
+\end{align}
+</div>
+
+
+<p>The expansion of $s_{j,k}$ is
+$a_jA_jb_kB_k - a_jB_jA_kb_k - A_jb_ja_kB_k + b_jB_ja_kA_k$. Showing
+the summation just for the first one (the other three are identical):</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j, k \le n} a_jA_jb_kB_k &amp; = \sum_{j=1}^n\sum_{k=1}^n a_jA_jb_kB_k\\\\
+&amp; = \sum_{j=1}^n a_jA_j \left(\sum_{k=1}^n b_kB_k \right)\\\\
+&amp; = \left(\sum_{j=1}^n a_jA_j\right)\left(\sum_{k=1}^n b_kB_k \right)\\\\
+&amp; = \left(\sum_{k=1}^n a_kA_k\right)\left(\sum_{k=1}^n b_kB_k \right)\\\\
+\end{align}
+</div>
+
+
+<p>Putting it all together:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{1\le j\lt k\le n}(a_jb_k - a_kb_j)(A_jB_k - A_kB_j) &amp; =
+\left(\sum_{k=1}^n a_kA_k\right)\left(\sum_{k=1}^n b_kB_k\right) -
+\left(\sum_{k=1}^n a_kB_k\right)\left(\sum_{k=1}^n A_kb_k\right)\\\\
+\end{align}
+</div>
+
+
+<p>In particular, with $a_k = A_k$ and $b_k = B_k$, the sum is
+$\left(\sum_{k=1}^n a_k^2 \right)\left(\sum_{k=1}^n b_k^2 \right) - 2 \left(\sum_{k=1}^n a_kb_k \right)$.</p>
+
+<h3>$\sum_{k=1}^n \frac{2k+1}{k(k+1)}$</h3>
+
+<h4>Partial fractions</h4>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n\frac{2k+1}{k(k+1)}
+&amp; = \sum_{k=1}^n(k+(k+1))\left(\frac{1}{k}-\frac{1}{k+1} \right)\\\\
+&amp; = \sum_{k=1}^n\left(\frac{k}{k} + \frac{k+1}{k} - \frac{k}{k+1} - \frac{k+1}{k+1} \right)\\\\
+&amp; = \sum_{k=1}^n \frac{k+1}{k} - \sum_{k=1}^n \frac{k}{k+1}\\\\
+&amp; = n + H_n - \sum_{k=1}^n \frac{k}{k+1} -
+\sum_{k=1}^n\frac{1}{k+1} + \sum_{k=1}^n\frac{1}{k+1}\\\\
+&amp; = n + H_n - \sum_{k=1}^n \frac{k+1}{k+1} + \sum_{k=1}^n
+\frac{1}{k+1}\\\\
+&amp; = H_n + \sum_{k-1=1}^n \frac{1}{k}&amp;&amp;k\leftarrow k-1\\\\
+&amp; = H_n + \sum_{k=2}^{n+1} \frac{1}{k}\\\\
+&amp; = H_n + H_{n+1} - 1\\\\
+&amp; = H_h + H_n + \frac{1}{n+1} - \frac{n+1}{n+1}\\\\
+&amp; = 2H_n - \frac{n}{n+1}\\\\
+\end{align}
+</div>
+
+
+<h4>Sum by parts</h4>
+
+<p>Using</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = \frac{1}{k(k+1)} = (k-1)^{\underline{-2}}\\\\
+v &amp; = -(k-1)^{\underline{-1}}\\\\
+Ev &amp; = -k^{\underline{-1}}\\\\
+u &amp; = 2k+1\\\\
+\Delta u &amp; = 2\\\\
+\end{align}
+</div>
+
+
+<p>First the sum by part</p>
+
+<div markdown="0">
+\begin{align}
+\sum \frac{2x+1}{x(x+1)}\delta x &amp; = 
+-(2x+1)(x-1)^{\underline{-1}} + 2 \sum x^{\underline{-1}} \delta x + c\\\\
+&amp; = -\frac{2x+1}{x} + 2 H_x + c\\\\
+\end{align}
+</div>
+
+
+<p>Then the evaluation</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n\frac{2k+1}{k(k+1)} &amp; = \left. -\frac{2x+1}{x}+2H_x\right|_1^{n+1}\\\\
+&amp; = -\frac{2(n+1)+1}{n+1} + 2 H_{n+1} + 2 + 1 - 2\\\\
+&amp; = 2 H_{n+1} + 1 - 2 - \frac{1}{n+1}\\\\
+&amp; = H_{n+1} + H_n - 1\\\\
+&amp; = 2H_n - \frac{n}{n+1}\\\\
+\end{align}
+</div>
+
+
+<h3>$\sum_{1\le k \lt n}\frac{H_k}{(k+1)(k+2)}$</h3>
+
+<p>For the sum by part, I use</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = x^{\underline{-2}}\\\\
+v &amp; = -x^{\underline{-1}}\\\\
+Ev &amp; = -(x+1)^{\underline{-1}}\\\\
+u &amp; = H_x\\\\
+\Delta u &amp; = x^{\underline{-1}}\\\\
+\end{align}
+</div>
+
+
+<p>The sum by part</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n H_x x^{\underline{-2}} \delta x
+&amp; = -H_x x^{\underline{-1}} + \sum
+(x+1)^{\underline{-1}}x^{\underline{-1}}\delta x + c\\\\
+&amp; = -H_x x^{\underline{-1}} + \sum x^{\underline{-2}} \delta x + c\\\\
+&amp; = -H_x x^{\underline{-1}} - x^{\underline{-1}} + c\\\\
+&amp; = -(H_x + 1) x^{\underline{-1}} + c\\\\
+\end{align}
+</div>
+
+
+<p>The evaluation is</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k \lt n} \frac{H_k}{(k+1)(k+2)} &amp; =
+\left. -\frac{H_x + 1}{x+1} \right|_0^n\\\\
+&amp; = 1 - \frac{H_n + 1}{n+1}\\\\
+\end{align}
+</div>
+
+
+<h3>Product laws</h3>
+
+<p>I don't think I listed all the laws for this exercise, as the only
+complete list for the sum laws in the book is in the answer for this
+exercise.</p>
+
+<p>I will not repeat it here; suffice to say that when we replace sum by
+product, the laws can be updated by replacing product by
+exponentiation, and sum by product.</p>
+
+<h3>$\prod_{1\le j \le k \le n}a_ja_k$</h3>
+
+<p>While it took me a few false starts, I eventually found that the
+triangular completion used for (2.32) works here as well.</p>
+
+<div markdown="0">
+\begin{align}
+\left(\prod_{1\le j\le k \le n} a_ja_k \right)^2 &amp; = 
+\left(\prod_{1\le j,k \le n}a_ja_k \right)
+\left(\prod_{1\le j=k \le n}a_ja_k\right)\\\\
+&amp; = \left(\prod_{1\le j,k \le n} a_j\right)
+\left(\prod_{1\le j,k \le n} a_k\right)
+\left(\prod_{1\le k \le n}a_k^2\right)\\\\
+&amp; = \left(\prod_{1\le k \le n} a_k^n\right)
+\left(\prod_{1\le j \le n} a_j^n\right)
+\left(\prod_{1\le k \le n}a_k^2\right)\\\\
+&amp; = \prod_{1\le k\le} a_k^{2n+2}\\\\
+\end{align}
+</div>
+
+
+<p>So
+$\prod_{1\le j \le k \le n}a_ja_k = \left(\prod_{1\le k\le} a_k\right)^{n+1}$.</p>
+
+<h3>$\sum_{k=1}^n \frac{(-2)^{\underline k}}{k}$</h3>
+
+<p>As suggested, I worked out $\Delta c^{\underline x}$:</p>
+
+<div markdown="0">
+\begin{align}
+\Delta c^{\underline x} &amp; = c^{\underline{x+1}} - c^{\underline x}\\\\
+&amp; = c(c-1)\cdots (c-x+1)(c-x) - c(c-1)\cdots (c-x+1)\\\\
+&amp; = c^{\underline x}(c-x-1)\\\\
+\end{align}
+</div>
+
+
+<p>I did not immediately saw the relation between this and the original
+sum. First I rewrote the original sum to remove the division:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^n \frac{(-2)^{\underline k}}{k}
+&amp; = \sum_{k=1}^n \frac{(-2)^{\underline{k-1}}(-2-k+1)}{k}\\\\
+&amp; = -\sum_{k=1}^n \frac{(-2)^{\underline{k-2}(k+1)(-2-k+2)}}{k}\\\\
+&amp; = \sum_{k=1}^n \frac{(-2)^{\underline{k-2}(k+1)(k)}}{k}\\\\
+&amp; = \sum_{k=1}^n (-2)^{\underline{k-2}}(k+1)\\\\
+\end{align}
+</div>
+
+
+<p>Now the relation is visible. So we have</p>
+
+<div markdown="0">
+\begin{align}
+\sum_1^{n+1}\frac{(-2)^{\underline x}}{x}\delta x &amp; = \sum_1^{n+1}(-2)^{\underline x}(x+1)\delta x\\\\
+x &amp; = \left. - (-2)^{\underline{x-2}}\right|_1^{n+1}\\\\
+&amp; = (-2)^{\underline{-1}} - (-2)^{\underline{n-1}}\\\\
+&amp; = -1 - (-2)(-3) \cdots (-n)\\\\
+&amp; = (-1)^n n! - 1\\\\
+\end{align}
+</div>
+
+
+<h3>Incorrect derivation</h3>
+
+<p>As stated in the book, the infinite sums do no converge, so the third
+step is invalid.</p>
+
+<p>And that's all for today.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Machine Learning in Action - Naïve Bayes]]></title>
@@ -2957,562 +3443,6 @@ part of the initial design).</p>
 <p>Another upcoming book, <a href="http://www.manning.com/marz/">Big Data</a>, takes
 a very different approach (no updates, only appends). I look forward
 to reading it.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Basics]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/03/10/concrete-mathematics-chapter-2-basics/"/>
-    <updated>2012-03-10T11:10:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/03/10/concrete-mathematics-chapter-2-basics</id>
-    <content type="html"><![CDATA[<p>This second batch of exercises builds on the
-<a href="/blog/2012/02/28/concrete-mathematics-chapter-2-warmups/">previous one</a>. Once
-again, there are no complex manipulations, and very often the solution
-just follows from the definitions.</p>
-
-<!--more-->
-
-
-<h2>Basics</h2>
-
-<h3>$\sum_{0\le k\lt n}(a_{k+1}-a_k)b_k$</h3>
-
-<p>To show that</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{0\le k\lt n}(a_{k+1}-a_k)b_k &amp; = a_n b_n - a_0 b_0 - \sum_{0 \le k \lt n} a_{k+1}(b_{k+1} - b_k)&amp;&amp;n\ge 0\\\\
-\end{align}
-</div>
-
-
-<p>I start by rewriting the sum in the right side of the equation:</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{0 \le k \lt n} a_{k+1}(b_{k+1} - b_k) &amp; = \sum_{0 \le k \lt n} (a_{k+1}b_{k+1} +  a_{k+1} b_k)\\\\
-&amp; = \sum_{0 \le k \lt n} a_{k+1}b_{k+1} +  \sum_{0 \le k \lt n} a_{k+1} b_k&amp;&amp;\text{associative law}\\\\
-&amp; = \sum_{0 \le k-1 \lt n} a_k b_k +  \sum_{0 \le k \lt n} a_{k+1} b_k&amp;&amp;k\leftarrow k-1\\\\
-&amp; = \sum_{1 \le k \le n} a_k b_k +  \sum_{0 \le k \lt n} a_{k+1} b_k\\\\
-\end{align}
-</div>
-
-
-<p>This latest value can now be put back into the original right:</p>
-
-<div markdown="0">
-\begin{align}
-a_n b_n - a_0 b_0 - \sum_{1 \le k \le n} a_k b_k +  \sum_{0 \le k \lt n} a_{k+1} b_k &amp; = \sum_{0\le k \lt n} a_{k+1} b_k - (a_0 b_0 + \sum_{1 \le k \le n} a_k b_k - a_n b_n)\\\\
-&amp; = \sum_{0\le k \lt n} a_{k+1} b_k - \sum_{0\le k \lt n} a_k b_k\\\\
-&amp; = \sum_{0\le k \lt n} (a_{k+1} b_k - a_k b_k)\\\\
-&amp; = \sum_{0\le k \lt n} (a_{k+1} - a_k) b_k\\\\
-\end{align}
-</div>
-
-
-<p>which is indeed the left side of the equation (the but-last step is
-permitted under the associative law, but that didn't fit in the margin).</p>
-
-<h3>$p(k) = k + (-1)^k c$</h3>
-
-<p>It is clear that there is a single $p(k)$ for every possible (integer)
-$k$. So I need to show that for every $m$, there is a single $k$ such
-that $p(k)=m$, defining $p^{-1}$.</p>
-
-<p>The book method is smart, mine clearly less so, but as far as I can
-tell, still correct: for $m$, I consider $m-c$ and $m+c$. The
-difference is $2c$, so they're either both even, or both
-odd.</p>
-
-<p>If they're both even, then $m-c+(-1)^{m-c}c=m$, so $k=m-c$. If they're
-both odd, then $m+c+(-1)^{m+c}c=m$, so $k=m+c$. So $k$ is always well
-defined for every $m$, and $p$ is indeed a permutation.</p>
-
-<h3>$\sum_{k=0}^n (-1)^k k^2$</h3>
-
-<p>While I found the closed formula for the sum, I could not do it with
-the repertoire method.</p>
-
-<p>Solving the sum is not really difficult (although a little bit than
-the repertoire method, if you know how to do the latter); one way is
-to solve the positive and negative sums separately (they can be broken
-down to already solved sums); another one is to compute the sum of an
-even number of terms (one positive and one negative), then to compute
-sums of odd number of terms (by adding a term to the previous
-solution), and finally combining both to find the closed formula.</p>
-
-<p>In both attempts above, I tried to remove the $(-1)^k$ factor from the
-terms; when using the repertoire method I tried to do the same, which
-is why I failed.</p>
-
-<p>The repertoire method relies on a good intuition: one must have a
-sense of general shape of the parametric functions. In retrospect, it
-seems obvious, but I just couldn't see it, blinded as I was by$(-1)^k$.</p>
-
-<p>Expressing the sum as a recurrence is easy:</p>
-
-<div markdown="0">
-\begin{align}
-R_0 &amp; = 0\\\\
-R_n &amp; = R_{n-1} + (-1)^n n^2\\\\
-\end{align}
-</div>
-
-
-<p>Also, looking at the first few terms of the sum,
-$-1, 3, -6, 10, -15, \dots$, it is natural to consider solutions of
-the form $(-1)^n F(n)$; it is a little bit trickier to see where a good
-generalisation of the recurrence above should put the additional
-terms:</p>
-
-<div markdown="0">
-\begin{align}
-R_0 &amp; = \alpha\\\\
-R_n &amp; = R_{n-1} + (-1)^n \left(\beta + \gamma n + \delta n^2 \right)\\\\
-\end{align}
-</div>
-
-
-<p>With such a form, plugging in solutions $(-1)^nF(n)$ will
-simplify to $F(n) = \beta + \gamma n + \delta n^2 - F(n-1)$.</p>
-
-<p>At this stage, it becomes very easy to find the $A(n)$, $B(n)$, $C(n)$
-and $D(n)$ functions (the latter being the solution we are looking
-for). In fact, if all you care about is $D(n)$, then it is enough to
-use $R_n = (-1)^n n$ and $R_n = (-1)^n n^2$:</p>
-
-<h4>$R_n = (-1)^n n$</h4>
-
-<div markdown="0">
-\begin{align}
-R_0 &amp; = 0&amp;&amp;\alpha = 0\\\\
-n &amp; = \beta + \gamma n + \delta n^n - n + 1\\\\
-2n - 1 &amp; = \beta + \gamma n&amp;&amp;\beta = -1, \gamma = 2\\\\
-\end{align}
-</div>
-
-
-<p>which gives $-B(n)+2C(n) = (-1)^n n$.</p>
-
-<h4>$R_n = (-1)^n n^2$</h4>
-
-<div markdown="0">
-\begin{align}
-R_0 &amp; = 0&amp;&amp;\alpha = 0\\\\
-n^2 &amp; = \beta + \gamma n + \delta n^2 - (n-1) ^2\\\\
-2 n^2 - 2n + 1 &amp; = \beta + \gamma n + \delta n^2&amp;&amp;\beta = 1, \gamma = -2, \delta = 2\\\\
-\end{align}
-</div>
-
-
-<p>which gives $B(n)-2C(n)+2D(n) = (-1)^n n^2$. Combining with the
-previous answer, we have $2D(n) = (-1)^n (n^2-n)$, or
-$D(n) = (-1)^n \frac{n^2-n}{2}$.</p>
-
-<h4>Wrapping up this exercise</h4>
-
-<p>In hindsight, these steps could have helped me solve this
-exercise as intended:</p>
-
-<ul>
-<li>compute the first few terms to see if there is something obvious
-about their shape; in this case, the $(-1)^n$ factor</li>
-<li>at first, write the recurrence equations as simply as possible,
-with all the "inconvenient" parts; comparing them to the "shapes"
-identified in the previous step might give some insight about the
-general solutions, and possibly removed these difficult parts</li>
-<li>only then, consider how to generalise the recurrence equations. The
-base case is always $R_0 = \alpha$; the recurrent case should add
-parameters to each term, and additional terms (with their own
-parameters) to complete some basic classes of problems (for instance,
-if there are any polynomial, there should be a term for each power
-smaller than the largest power of the original problem; another basic
-class is the generalised radix-based Josephus problem)</li>
-<li>each class of problems can be solved independently; this makes it
-easier to find potential solutions and to combine them.</li>
-</ul>
-
-
-<h3>$\sum_{k=1}^n k2^k$</h3>
-
-<p>Not overly complicated; at least the introduction of $j$ is not a
-mystery (unlike the next exercise).</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le k\le n}k 2^k &amp; = \sum_{1\le k\le n} 2^k \sum_{1\le j\le k}1\\\\
-&amp; = \sum_{1\le k\le n} \sum_{1\le j\le k} 2^k\\\\
-&amp; = \sum_{1\le j\le k \le n} 2^k\\\\
-&amp; = \sum_{1\le j\le n} \sum_{j\le k\le n}2^k\\\\
-\end{align}
-</div>
-
-
-<p>The inner sum can be rewritten as</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{j\le k\le n}2^k &amp; = \sum_{1\le k\le n}2^k - \sum_{1\le k\lt j}2^k\\\\
-&amp; = 2^{n+1} - 2 - 2^j + 2\\\\
-&amp; = 2^{n+1} - 2^j\\\\
-\end{align}
-</div>
-
-
-<p>Here I use the already known
-sum $\sum 2^k$. Putting this last result
-in the original sum</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le j\le n} 2^{n+1} - 2^j &amp; = n2^{n+1} - (2^{n+1} -2)\\\\
-\end{align}
-</div>
-
-
-<h3>$\sum_{k=1}^n k^3$</h3>
-
-<p>It took me some time to convince myself that the original rewrite was
-legitimate; eventually I did it by induction (the book version is much
-shorter, and once you see it, much easier). Clearly it works for
-$n=1$, so assuming it does for $n-1$, we have</p>
-
-<div markdown="0">
-\begin{align}
-2\sum_{1\le j\le k\le n} jk &amp; = 2\sum_{1\le j\le k\le n-1} jk + 2\sum_{1\le j\le k=n} jk\\\\
-&amp; = \sum_{1\le k\lt n}(k^3+k^2) + 2n\sum_{1\le j\le n} j\\\\
-&amp; = \sum_{1\le k\lt n}(k^3+k^2) + n^2(n+1)\\\\
-&amp; = \sum_{1\le k\lt n}(k^3+k^2) + n^3+n^2\\\\
-\end{align}
-</div>
-
-
-<p>So the rewrite is correct. At this stage, (2.33) pretty much finishes it:</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le k\le n}(k^3+k^2) &amp; = (\sum_{1\le k\le n}k)+\sum_{1\le k\le n}k^2\\\\
-\end{align}
-</div>
-
-
-<p>so $\sum_{1\le k\le n}k^3=\frac{n^2(n+1)^2}{4}$.</p>
-
-<h3>$\frac{x^{\underline m}}{(x-n)^{\underline m}} = \frac{x^{\underline n}}{(x-m)^{\underline n}}$</h3>
-
-<p>This follows directly from
-$\frac{a}{b} = \frac{c}{d} \implies ad = bc$, and the use of equation (2.52).</p>
-
-<h3>Rising and Falling Factorial Powers Conversions</h3>
-
-<p>I'll just do the conversion from raising factorial power to falling
-factorial power; the other conversion is just the same.</p>
-
-<p>$x^{\overline m} = \frac{1}{(x-1)^{\underline m}}$ follows from (2.51)
-and (2.52).</p>
-
-<p>For the other equalities, by induction on $m$, and using (2.52) and
-its raising factorial powers equivalent:</p>
-
-<div markdown="0">
-\begin{align}
-x^{\underline m} &amp; = x^{\underline{m-1}}(x-m+1)\\\\
-&amp; = x^{\underline 1}(x-1)^{\underline{m-1}}\\\\
-&amp; = x(x-1)^{\underline{m-1}}\\\\
-x^{\overline m} &amp; = x^{\overline{m-1}}(x+m-1)\\\\
-&amp; = x^{\overline 1}(x+1)^{\overline{m-1}}\\\\
-&amp; = x(x+1)^{\overline{m-1}}\\\\
-\end{align}
-</div>
-
-
-<h4>Base case $m=0$</h4>
-
-<p>They all follow from definition:</p>
-
-<div markdown="0">
-\begin{align}
-x^{\overline 0} &amp; = 1\\\\
-(-1)^0 (-x)^{\underline 0} &amp; = 1\\\\
-(x+0-1)^{\underline 0} &amp; = 1\\\\
-\end{align}
-</div>
-
-
-<h4>Other positive $m$</h4>
-
-<p>Assuming the relations hold for all $k, 0\le k\lt m$:</p>
-
-<div markdown="0">
-\begin{align}
-(-1)^m(-x)^{\underline m} &amp; = -\left((-1)^{m-1}(-x)^{\underline{m-1}}(-x-m+1)\right)\\\\
-&amp; = (x^{\overline{m-1}})(x+m-1)\\\\
-(x+m-1)^{\underline m} &amp; = (x+m-1)^{\underline{m-1}}x\\\\
-&amp; = (x+1+(m-1)-1)^{\underline{m-1}}x\\\\
-&amp; = (x+1)^{\overline{m-1}}x\\\\
-\end{align}
-</div>
-
-
-<h4>Negative $m$</h4>
-
-<p>Using the recurrence relations derived from (2.52) and its raising
-factorial power equivalent:</p>
-
-<div markdown="0">
-\begin{align}
-x^{\underline m} &amp; = x^{\underline{(m+1)+(-1)}}\\\\
-&amp; = x^{\underline{-1}}(x+1)^{\underline{m+1}}\\\\
-&amp; = \frac{(x+1)^{\underline{m+1}}}{x+1}\\\\
-&amp; = x^{\underline{m+1}}(x-m-1)^{\underline{-1}}\\\\
-&amp; = \frac{x^{\underline{m+1}}}{x-m}\\\\
-x^{\overline m} &amp; = x^{\overline{(m+1)+(-1)}}\\\\
-&amp; = x^{\overline{-1}}(x-1)^{\overline{m+1}}\\\\
-&amp; = \frac{(x-1)^{\overline{m+1}}}{x-1}\\\\
-&amp; = x^{\overline{m+1}}(x+m+1)^{\overline{-1}}\\\\
-&amp; = \frac{x^{\overline{m+1}}}{x+m}\\\\
-\end{align}
-</div>
-
-
-<p>Assuming the relations hold for all $k, m\lt k\le 0$:</p>
-
-<div markdown="0">
-\begin{align}
-(-1)^m(-x)^{\underline m} &amp; = -\frac{(-1)^{m+1}(-x)^{\underline{m+1}}}{-x-m}\\\\
-&amp; = \frac{x^{\overline{m+1}}}{x+m}\\\\
-(x+m-1)^{\underline m} &amp; = \frac{(x+m)^{\underline{m+1}}}{x+m-1-m}\\\\
-&amp; = \frac{(x-1)^{\overline{m+1}}}{x-1}\\\\
-\end{align}
-</div>
-
-
-<p>So the main difficulties is to derive two equalities from (2.52) (four
-if we count the negative cases as well), and the identification of the
-recurrence equation in the induction step (especially for
-$(x+m-1)^{\underline{m\pm 1}}$).</p>
-
-<h3>Absolute Convergence of Complex Sums</h3>
-
-<p>I suppose I could say it follows directly from the equivalence of the
-metric functions (if my memory of metric space terminology is correct).</p>
-
-<p>More basically, the equivalence of the propositions follows from the
-relationships based on the hypotenuse formula:
-$\sqrt{(Rz)^2+(Iz)^2}\le |Rz| + |Iz|$, so the absolute convergence of
-the real and imaginary parts implies the absolute convergence of the
-absolute value. Conversely, $|Rz|,|Iz|\le\sqrt{(Rz)^2+(Iz)^2}$, so the
-absolute convergence of the absolute value also implies the absolute
-convergence of both the real and imaginary parts.</p>
-
-<h3>Wrapping up</h3>
-
-<p>This time, I found a solution to all the exercises, which is a
-progress of some sort. I still have trouble with the repertoire method,
-or perhaps not with the method itself but in identifying suitable
-generalisations and candidate solutions. This is something that can
-only be developed with practice, so I just have to be patient and
-keep trying (I hope I'll get there eventually).</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Warmups]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/02/28/concrete-mathematics-chapter-2-warmups/"/>
-    <updated>2012-02-28T19:18:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/02/28/concrete-mathematics-chapter-2-warmups</id>
-    <content type="html"><![CDATA[<p>This first batch of exercises is meant to develop familiarity with
-the various concepts and notations introduced in this chapter. There
-is no complex manipulation, but the trick is to be aware of the often
-unmentioned assumptions about the precise meaning of the expressions.</p>
-
-<!--more-->
-
-
-<h2>Warmups</h2>
-
-<h3>$\sum_{k=4}^0 q_k$</h3>
-
-<p>The meaning of such an expression is not clear, so there is no real
-way to fail this exercise.</p>
-
-<p>A first interpretation, maybe the common one, is that the sum is zero
-because the range is empty. In other words, the sum is
-$\sum_{4\le k\le 0} q_k$.</p>
-
-<p>A second interpretation, perhaps for those used to programming
-languages with very flexible loops could argue that the sum is
-$q_4 + q_3 + q_2 + q_1 + q_0$.</p>
-
-<p>I toyed briefly with a negative sum, similar to integrals with
-reversed bounds, but I did not come up with the nice book solution
-of $\sum_{k=m}^n = \sum_{k\le n} - \sum_{k\lt m}$, which is consistent
-with and extends the first interpretation.</p>
-
-<h3>Simplify $x([x\gt 0] - [x\lt 0])$</h3>
-
-<p>It is easy to see that the expression has the same value as $|x|$:</p>
-
-<div markdown="0">
-\begin{align}
-x([x\gt 0] - [x\lt 0]) &amp; = x (1-0)&amp;&amp;\text{when \(x\gt 0\)}\\\\
-&amp; = x\\\\
-x([x\gt 0] - [x\lt 0]) &amp; = x (0-1)&amp;&amp;\text{when \(x\lt 0\)}\\\\
-&amp; = -x\\\\
-x([x\gt 0] - [x\lt 0]) &amp; = 0&amp;&amp;\text{when \(x = 0\)}\\\\
-\end{align}
-</div>
-
-
-<h3>Writing out sums</h3>
-
-<p>The first one is easy:</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{0\le k\le 5}a_k = a_0+a_1+a_2+a_3+a_4+a_5\\\\
-\end{align}
-</div>
-
-
-<p>The second one is tricky, is more than one way. One problem is that
-$k$ is not explicitly defined, and I had assumed it was a natural,
-when the authors thought of it as a integer; now the latter is in line
-with the book conventions, so I was wrong and had missing terms. The
-right answer is:</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{0\le k^2 \le 5}a_k = a_4 + a_1 + a_0 + a_1 + a_4\\\\
-\end{align}
-</div>
-
-
-<h3>Triple Sum</h3>
-
-<p>Here it is important to restrict the bounds as much as possible (but
-no more); otherwise there is a risk of introducing spurious terms.</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le i \lt j \lt k \le n}a_{ijk} &amp; = \sum_{i=1}^2 \sum_{j=i+1}^3 \sum_{k=j+1}^4 a_{ijk}\\\\
-&amp; = \left((a_{123} + a_{124}) + a_{134} \right) + a_{234}\\\\
-&amp; = \sum_{k=3}^4 \sum_{j=2}^{k-1} \sum_{i=1}^{j-1} a_{ijk}\\\\
-&amp; = a_{123}+\left(a_{124} + (a_{134} + a_{234})\right)\\\\
-\end{align}
-</div>
-
-
-<p>The terms appear in the same order, but are grouped in sums differently.</p>
-
-<h3>Incorrect derivation</h3>
-
-<p>The problem is the step</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{j=1}^n \sum_{k=1}^n = \frac{a_j}{a_k}\sum_{k=1}^n \sum_{k=1}^n \frac{a_k}{a_k}\\\\
-\end{align}
-</div>
-
-
-<p>$k$ is already bound in the inner sum, so it is invalid to replace $j$
-by $k$ in the outer.</p>
-
-<h3>$\sum_k [1\le j\le k\le n]$</h3>
-
-<p>This can be worked explicitly:</p>
-
-<div markdown="0">
-\begin{align}
-\sum_k [1 \le j \le k \le n] &amp = \sum_k [1 \le j \le n] [j \le k \le n]\\\\
-&amp; = \sum_{j\le k \le n} [1 \le j \le n]\\\\
-&amp; = [1 \le j \le n] \sum_{j\le k \le n} 1\\\\
-&amp; = [1 \le j \le n] (n-j+1)\\\\
-\end{align}
-</div>
-
-
-<h3>$\bigtriangledown f(x)$</h3>
-
-<p>The result is not surprising:</p>
-
-<div markdown="0">
-\begin{align}
-\bigtriangledown x^{\overline{m}} &amp; = x^{\overline{m}} - (x-1)^{\overline{m}}\\\\
-&amp; = x(x+1)\cdots(x+m-1) - (x-1)x\cdots(x+m-2)\\\\
-&amp; = x(x+1)\cdots(x+m-2)(x+m-1-(x-1))\\\\
-&amp; = m x^{\overline{m-1}}\\\\
-\end{align}
-</div>
-
-
-<p>So $\bigtriangledown f(x)$ is the difference operator to use with
-rising factorials.</p>
-
-<h3>$0^{\overline{m}}$</h3>
-
-<p>Clearly, when $m\lt 0$, $0^{\overline{m}} = 0$; when $m = 0$,
-$0^{\overline{m}} = 1$ (to make the expression
-$x^{\underline{1+0}}=x^{\underline 1}(x-1)^{\underline 0}$ work when $x=1$); I
-had forgotten about $m&lt;0$, which was perhaps the easiest case, as $\frac{1}{m!}$
-(it follows directly from the definition of falling factorials with negative
-powers).</p>
-
-<h3>Law of exponents for rising factorials</h3>
-
-<p>It is easy to see that $x^{\overline{m+n}} = x^{\overline m}(x+m)^{\overline n}$:</p>
-
-<div markdown="0">
-\begin{align}
-x^{\overline{m+n}} &amp; = x\cdots(x+m-1)(x+m)\cdots(x+m+n-1)\\\\
-&amp; = \left( x\cdots(x+m-1) \right) \left( (x+m)\cdots(x+m+n-1) \right)\\\\
-&amp; = x^{\overline m}(x+m)^{\overline n}\\\\
-\end{align}
-</div>
-
-
-<p>From there, the value of rising factorials for negative powers follows quickly:</p>
-
-<div markdown="0">
-\begin{align}
-1 = x^{\overline{-n+n}} &amp; = x^{\overline{-n}} (x-n)^\overline{n}\\\\
-x^{\overline{-1}} &amp; = \frac{1}{(x-n)^\overline{n}}\\\\
-&amp; = \frac{1}{(x-n)\cdots(x-1)}\\\\
-&amp; = \frac{1}{(x-1)^{\underline{n}}}\\\\
-\end{align}
-</div>
-
-
-<h3>Symmetric difference of a product</h3>
-
-<p>To start, I quickly looked up the proof of the original derivative
-product rule on
-<a href="http://en.wikipedia.org/wiki/Product_rule#Proof_of_the_product_rule">Wikipedia</a>;
-the geometric nature of the proof was illuminating (I believe I was
-taught the so called
-<a href="http://en.wikipedia.org/wiki/Product_rule#A_Brief_Proof">Brief Proof</a>
-both in high-school and at university).</p>
-
-<p>This geometric proof can be used for both the infinite and the finite
-calculus, and its symmetric nature (there are two ways to compute the
-area of the big rectangle:
-$f(x)g(x)+(f(w)-f(x))g(w) + f(x)(g(w)-g(x))$ and
-$f(x)g(x)+f(w)(g(w)-g(x)) + (f(w)-f(x))g(x)$) can be used in the
-finite case. The symmetry (and equality) is restored
-because in the infinite calculus, $\lim_{w\rightarrow x}f(w) = f(x)$
-and $\lim_{w\rightarrow x}g(w) = g(x)$, a restoration that is not
-possible in the finite calculus.</p>
-
-<p>However, the equivalent finite calculus formulas,
-$\bigtriangleup(uv) = u\bigtriangleup v + Ev\bigtriangleup u$ and
-$\bigtriangleup(uv) = Eu\bigtriangleup v + v\bigtriangleup u$, have
-together the symmetry they lack on their own.</p>
-
-<h3>Wrapping up</h3>
-
-<p>OK, that was not entirely bad (two small mistakes, both about negative
-numbers blindness). Next step, the basic exercises.</p>
 ]]></content>
   </entry>
   

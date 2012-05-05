@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-05-02T16:29:24+09:00</updated>
+  <updated>2012-05-05T19:56:29+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,504 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Exam Exercises]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/05/05/concrete-mathematics-chapter-2-exam-exercises/"/>
+    <updated>2012-05-05T14:36:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/05/05/concrete-mathematics-chapter-2-exam-exercises</id>
+    <content type="html"><![CDATA[<p>The exam exercises for this chapter were much trickier than the
+homework exercises. With the right approach, they could be solved
+quickly; too bad I never found that right approach&#8230;</p>
+
+<!--more-->
+
+
+<h2>Exam Exercises</h2>
+
+<h3>$\sum_{k=1}^n(-1)^k\frac{k}{4k^2-1}$</h3>
+
+<p>I managed to solve this exercise using sum by parts; the book uses
+partial fractions, but as far as I can tell I never learned about
+these. They seem to be part of high school curriculum in America, but
+might not be in Belgium (or I was sleeping that day).</p>
+
+<p>Sum by parts worked for me because I eventually asked myself what kind
+of function of $k$ would produce a finite difference
+$\frac{1}{4k^2-1} = \frac{1}{(2k+1)(2k-1)}$.</p>
+
+<p>By looking at $\Delta (2k)^{\underline m}$, I realised that the
+solution was fairly simple. I first experimented with
+$\Delta (2k)^{\underline{-1}}$, then found the right expression:</p>
+
+<div markdown="0">
+\begin{align}
+\Delta (2k-2)^{\underline{-1}} &amp; = \frac{1}{2k+1}-\frac{1}{2k-1}&#92;&#92;
+&amp; = \frac{2k-1 - 2k - 1}{(2k+1)(2k-1)}&#92;&#92;
+&amp; = \frac{-2}{4k^2-1}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>For the sum by parts, I can therefore try to use:</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = \frac{1}{4k^2-1}&#92;&#92;
+v &amp; = -\frac{1}{2}(2k-2)^{\underline{-1}}&#92;&#92;
+Ev &amp; = -\frac{1}{2}(2k)^{\underline{-1}}&#92;&#92;
+u &amp; = (-1)^kk&#92;&#92;
+\Delta u &amp; = (-1)^k +(k+1)(-2 (-1)^k)&#92;&#92;
+&amp; = (-1)^k - 2(k+1)(-1)^k&#92;&#92;
+&amp; = (-1)^k(1-2k-2)&#92;&#92;
+&amp; = -(-1)^k(2k+1)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The last expression was computed using the product rule for finite difference.</p>
+
+<p>When I put everything into the sum by parts formula, the various
+blocks felt into place with satisfying &#8220;clicks&#8221;:</p>
+
+<div markdown="0">
+\begin{align}
+\sum (-1)^x\frac{x}{4x^2-1}\delta x 
+= &amp; -\frac{1}{2}(-1)^x x(2x-2)^{\underline{-1}} &#92;&#92;
+&amp; - \frac{1}{2} \sum (-1)^x (2x+1)(2x)^{\underline{-1}}\delta x&#92;&#92;
+= &amp; -\frac{(-1)^x x}{2(2x-1)} - \frac{1}{2}\sum (-1)^x \delta x
+&amp;&amp;(2x+1)(2x)^{\underline{-1}}=1&#92;&#92;
+= &amp; -\frac{(-1)^x x}{2(2x-1)} + \frac{(-1)^x}{4} + c&#92;&#92;
+= &amp; (-1)^x \left(\frac{1}{4} - \frac{x}{2(2x-1)} \right) + c&#92;&#92;
+= &amp; (-1)^x \left(\frac{4x - 2 - 4x}{4.2.(2x-1)} \right) + c&#92;&#92;
+= &amp; -\frac{(-1)^x}{8x-4} + c&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The answer as a function of $n$ is</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^{n} (-1)^k\frac{k}{4k^2-1} 
+= &amp; \sum_1^{n+1} (-1)^x\frac{x}{4x^2-1}\delta x&#92;&#92;
+= &amp; \left. -\frac{(-1)^x}{8x^4}\right|_1^{n+1}&#92;&#92;
+= &amp; -\frac{(-1)^{n+1}}{8n+8-4} - \frac{1}{4}&#92;&#92;
+= &amp; \frac{(-1)^n}{8n+4} - \frac{1}{4}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>1050</h3>
+
+<p>I could not do this exercise; I also failed to see the basic sum that
+was at the centre of the question (quite prominently).</p>
+
+<p>Even the book solution took me a while to figure out.</p>
+
+<p>The book solution asks how many pairs $a$, $b$ are there such that
+$\sum_{a\le k \lt b}k = 1050$.</p>
+
+<p>Rewriting this in terms of finite calculus is simple enough:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{a\le k \lt b}k &amp; = \sum_a^b x\delta x&#92;&#92;
+&amp; = \frac{1}{2}\left(b^{\underline 2} - a^{\underline 2}\right)&#92;&#92;
+&amp; = \frac{1}{2}\left(b(b-1) - a(a-1)\right)&#92;&#92;
+&amp; = \frac{1}{2}\left(b^2-b - a^2 + a\right)&#92;&#92;
+&amp; = \frac{1}{2}\left(b^2-b + ab - a^2 + a - ab\right)&#92;&#92;
+&amp; = \frac{1}{2}\left(b(b-1+a) - a(a-1+b)\right)&#92;&#92;
+&amp; = \frac{1}{2}(b-a)(b+a-1)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Now, one thing to notice is that if a sum of two integers is even, so is
+the difference, and vice-versa. Therefore the product above is the
+product of one even and one odd integers.</p>
+
+<p>So we are now looking for ways to express</p>
+
+<div markdown="0">
+\begin{align}
+(b-a)(b+a-1)=xy=2.1050=2100=2^2 3 5^2 7&#92;&#92;
+\end{align}
+</div>
+
+
+<p>as a product with $x$ is even and $y$ odd.</p>
+
+<p>To compute how many ways there are to produce a divisor of a number
+whose prime factors are known, it is enough to see that, for each
+prime factor $p$ with multiplicity $n_p$, this prime can be left out,
+or included up to $n_p$ times in the divisor; so for each prime p
+there are $n_p+1$ possibilities. Summing these over the prime factors
+give the number of divisors of the original number.</p>
+
+<p>In the present case, this number is 12.</p>
+
+<p>Now that we have the number of possible pairs of $x$ and $y$, we have
+to go back to $a$ and $b$.  There might be a principle involved here,
+but I don&#8217;t really see it, so I&#8217;ll just try to rebuild the solution
+from the ground up.</p>
+
+<p>We already know that either
+$b-a=x$ and $b+a-1=y$ or $b-a=y$ and $b+a-1=x$. So we already see that
+whatever expression we need, both $a$ and $b$ will have a
+$\frac{1}{2}$ added so that their difference cancels out, and their
+sum produces a $1$ that will cancel the $-1$.</p>
+
+<p>Looking at sum and differences, we have $(x+y)-(x-y) = 2y$ and
+$(x+y)+(x-y)=2x$, so there will be a sum and a difference involved. We
+also need $a$ to be smaller than $b$, so it is a candidate for
+$\frac{1}{2}(x-y)+\frac{1}{2}$. However, we also need it to be
+positive, so we add an absolute value.</p>
+
+<p>So the candidate solutions are $a=\frac{1}{2}|x-y|+\frac{1}{2}$ and
+$b=\frac{1}{2}(x+y)+\frac{1}{2}$. Let&#8217;s check them:</p>
+
+<div markdown="0">
+\begin{align}
+x \gt y: &amp; 
+(\frac{1}{2}(x+y)+\frac{1}{2} - \frac{1}{2}(x-y)-\frac{1}{2})
+(\frac{1}{2}(x+y)+\frac{1}{2} + \frac{1}{2}(x-y)+\frac{1}{2} - 1)&#92;&#92;
+= &amp; (\frac{1}{2}(2y))(\frac{1}{2}(2x))&#92;&#92;
+= &amp; yx&#92;&#92;
+x \lt y: &amp;
+(\frac{1}{2}(x+y)+\frac{1}{2} - \frac{1}{2}(y-x)-\frac{1}{2})
+(\frac{1}{2}(x+y)+\frac{1}{2} + \frac{1}{2}(y-x)+\frac{1}{2} - 1)&#92;&#92;
+= &amp; (\frac{1}{2}(2x))(\frac{1}{2}(2y))&#92;&#92;
+= &amp; xy&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So it all adds up.</p>
+
+<h3>Riemann&#8217;s zeta function</h3>
+
+<p>This exercise was more in line with the content of this chapter, and
+easy enough. Essentially, it is just a matter of changing the order of
+summation.</p>
+
+<h4>$\sum_{k\ge 2}(\zeta(k)-1) = 1$</h4>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 2}(\zeta(k)-1) 
+&amp; = \sum_{k\ge 2}(\sum_{j\ge 1}\frac{1}{j^k}-1)&#92;&#92;
+&amp; = \sum_{k\ge 2}(\sum_{j\ge 2}\frac{1}{j^k})&#92;&#92;
+&amp; = \sum_{j\ge 2}\sum_{k\ge 2}\frac{1}{j^k}&#92;&#92;
+&amp; = \sum_{j\ge 2}\sum_{k\ge 2}(\frac{1}{j})^k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The inner sum is a geometric progression:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 2}(\frac{1}{j})^k 
+&amp; = \lim_{n\rightarrow \infty}
+\frac{\frac{1}{j^2}-\frac{1}{j^n}}{1-\frac{1}{j}}&#92;&#92;
+&amp; = \frac{\frac{1}{j^2}-0}{1-\frac{1}{j}}&#92;&#92;
+&amp; = \frac{1}{j(j-1)}
+\end{align}
+</div>
+
+
+<p>So we need to solve
+$\sum_{j\ge 2}\frac{1}{j(j-1)}=\sum_{j\ge 0}\frac{1}{(j+1)(j+2)}$,
+which we already saw as well, and the value is indeed 1.</p>
+
+<h4>$\sum_{k\ge 1}(\zeta(2k)-1)$</h4>
+
+<p>Using the same approach:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 1}(\zeta(2k)-1) &amp; = \sum_{k\ge 1} 
+(\sum_{j\ge 1}\frac{1}{j^{2k}}-1)&#92;&#92;
+&amp; = \sum_{k\ge 1}\sum_{j\ge 2}\frac{1}{j^{2k}}&#92;&#92;
+&amp; = \sum_{j\ge 2}\sum_{k\ge 1}\frac{1}{j^{2k}}&#92;&#92;
+&amp; = \sum_{j\ge 2}\sum_{k\ge 1}(\frac{1}{j^2})^k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Once again, we have a geometric progression, just as easy to solve as
+the previous one:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 1}(\frac{1}{j^2})^k 
+&amp; = \lim_{n\rightarrow \infty}
+\frac{\frac{1}{j^2}-\frac{1}{j^{2n}}}{1-\frac{1}{j^2}}&#92;&#92;
+&amp; = \frac{\frac{1}{j^2}-0}{1-\frac{1}{j^2}}&#92;&#92;
+&amp; = \frac{1}{j^2-1}&#92;&#92;
+&amp; = \frac{1}{(j11)(j+1)}&#92;&#92;
+&amp; = \frac{j}{(j-1)j(j+1)}&#92;&#92;
+&amp; = j (j-2)^{\underline{-3}}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Now we have $\sum_{j\ge 2} j(j-2)^{\underline{-3}}$, which can be
+summed by parts. I chose:</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = (x-2)^{\underline{-3}}&#92;&#92;
+v &amp; = -\frac{(x-2)^{\underline{-2}}}{2}&#92;&#92;
+Ev &amp; = -\frac{(x-1)^{\underline{-2}}}{2}&#92;&#92;
+u &amp; = x&#92;&#92;
+\Delta u &amp; = 1&#92;&#92;
+\end{align}
+</div>
+
+
+<p>and now the sum by part:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_2^{\infty} x(x-2)^{\underline{-3}}\delta x
+&amp; = -\frac{x}{(x-1)x} + \frac{1}{2}\sum_2^\infty
+(x-1)^{\underline{-2}}\delta x&#92;&#92;
+&amp; = \left. -\frac{1}{2(x-1)}-\frac{1}{2x}\right|_2^\infty&#92;&#92;
+&amp; = \frac{3}{4}&#92;&#92;
+\end{align}
+</div>
+
+
+<h3>$\sum_{k\ge 0}\min(k, x \dot{-} k)$</h3>
+
+<p>I am not really sure of my solution here, despite the fact that the
+outcome is identical to the book; my method is somewhat different from
+the book&#8217;s, and using some concepts from Chapter 3.</p>
+
+<p>To prove that the two sums have the same value, I just evaluate each.</p>
+
+<p>First, a basic observation on the $\dot{-}$ operator: if
+$b\le 0$, $a\dot{-}b$ is at least zero, and if $a\le 0$, at most
+$a$ (otherwise it is always zero).</p>
+
+<p>So if $a\le 0$ or $a\le b$, $a\dot{-}b=0$.</p>
+
+<p>I will now assume that $x\ge 0$; otherwise both sums are zero.</p>
+
+<h3>$\sum_{k\ge 0}\min(k,x\dot{-}k)$</h3>
+
+<p>First, I replace the infinity sum by a finite one: as seen above, if
+$k\gt x$, $\min(k,x\dot{-}k)=0$, so</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 0}\min(k,x\dot{-}k) &amp; = \sum_{0\le k \le x}\min(k,x-k)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>I then try to remove the $\min$ operator:</p>
+
+<div markdown="0">
+\begin{align}
+k &amp; \le x - k&#92;&#92;
+2k &amp; \le x&#92;&#92;
+k &amp; \le \frac{x}{2}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>so that</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k \le x}\min(k,x-k)
+&amp; = \sum_{0\le k \le \frac{x}{2}} k
+&amp; + \sum_{\frac{x}{2}\lt k \le x} x - k
+\end{align}
+</div>
+
+
+<p>The general idea here is to find a way to eliminate the $k$ terms, by
+shifting each term in the second sum by an equal amount.</p>
+
+<p>At this point, the number of terms in each sum is important: the total
+number of terms is the number of $k$ such that $0\le k\le x$; clearly
+this is $\lfloor x \rfloor + 1$.</p>
+
+<p>The number of terms in the first sum is similarly
+$\lfloor\frac{x}{2}\rfloor + 1$.</p>
+
+<p>The number of terms in the second sum is therefore
+$\lfloor x \rfloor - \lfloor \frac{x}{2} \rfloor$. To find an
+expression for this, it helps to look at integral $x$ first.</p>
+
+<p>If $x=4$, $\lfloor 4 \rfloor - \lfloor \frac{4}{2} \rfloor = 2$.</p>
+
+<p>If $x=5$, $\lfloor 5 \rfloor - \lfloor \frac{5}{2} \rfloor = 5-2 = 3$.</p>
+
+<p>More generally, if $2n\le \lt 2n+1$, there will be $n+1$ terms in the
+first sum, and $n$ in the second. And if $2n-1\le x\le 2n$, there will
+be $n$ terms in each sum.</p>
+
+<p>A first attempt for the number of terms in the second sum is
+$\lfloor \frac{x}{2} \rfloor$, but this only works for $x$ such that
+$2n\le x\lt 2n+1$. But it is easy to see that
+$\lfloor \frac{x+1}{2} \rfloor$ will always work: if
+$2n\le x\lt 2n+1$,
+$\lfloor \frac{x+1}{2} \rfloor = \lfloor\frac{2n+1}{2}\rfloor = n$,
+and if $2n-1\le x\lt 2n$,
+$\lfloor \frac{x+1}{2}\rfloor = \lfloor\frac{2n}{2}\rfloor = n$.</p>
+
+<p>Using this value to &#8220;shift&#8221; the terms of the second sum:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k \le \frac{x}{2}} k
++ \sum_{\frac{x}{2}\lt k \le x} x - k
+&amp; = \sum_{0\le k \le \frac{x}{2}} k
++ \sum_{\frac{x}{2}-\lfloor \frac{x+1}{2}\rfloor\lt k\le x- \lfloor
+\frac{x+1}{2}\rfloor}
+(x-\left\lfloor \frac{x+1}{2}\right\rfloor)-k&#92;&#92;
+&amp; = \sum_{0\le k \le \lfloor \frac{x}{2} \rfloor} k
++ \sum_{\frac{x}{2}-\lfloor \frac{x+1}{2}\rfloor\lt k\le \lfloor
+\frac{x}{2}\rfloor}
+(x-\left\lfloor \frac{x+1}{2}\right\rfloor)-k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>Now the question is whether the new $k$ in the second sum cancel the
+$k$ in the first sum. Once again, let&#8217;s check the cases:</p>
+
+<ul>
+<li>if $2n\le x\lt 2n+1$,
+$\frac{x}{2} \gt \lfloor\frac{x+1}{2}\rfloor$, so $k\ge 1$: this
+means the $\lfloor \frac{x}{2}\rfloor$ non-zero $k$ terms of the
+first sum are cancelled by the
+$\lfloor \frac{x+1}{2}\rfloor = \lfloor \frac{x}{2}\rfloor$ non zero
+$k$ terms of the second sum; the zero term can safely be ignored.</li>
+<li>if $2n-1\le x\lt 2n$,
+$\frac{x}{2} \lt \lfloor\frac{x+1}{2}\rfloor$, so $k\ge 0$; this
+means the $\lfloor \frac{x}{2}\rfloor+1$ $k$ terms (including 0) are
+all cancelled by the
+$\lfloor \frac{x+1}{2}\rfloor = \lfloor \frac{x}{2}\rfloor+1$ $k$
+terms of the second sum.</li>
+</ul>
+
+
+<p>So we can safely rewrite the sum as</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{\frac{x}{2} - \lfloor \frac{x+1}{2}\rfloor \lt k \le 
+\lfloor\frac{x}{2}\rfloor}(x-\left\lfloor \frac{x+1}{2}\right\rfloor)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>And, as we already know the number of terms is
+$\left\lfloor \frac{x+1}{2}\right\rfloor$, the sum value is</p>
+
+<div markdown="0">
+\begin{align}
+\left\lfloor \frac{x+1}{2}\right\rfloor
+\left(x- \left\lfloor \frac{x+1}{2}\right\rfloor\right)
+\end{align}
+</div>
+
+
+<h4>$\sum_{k\le 0}(x\dot{-}(2k+1))$</h4>
+
+<p>This sum is much easier than the previous one. First I remove the
+$\dot{-}$ operator. I need $2k+1\le x$:</p>
+
+<div markdown="0">
+\begin{align}
+2k+1 &amp; \le x&#92;&#92;
+k &amp; \le \frac{x-1}{2}&#92;&#92;
+\end{align}
+</div>
+
+
+<p>This gives me $\lfloor \frac{x+1}{2}\rfloor$ number of terms.</p>
+
+<p>So I can extract $x$ and work only on $k$</p>
+
+<div markdown="0">
+\begin{align}
+\left\lfloor \frac{x+1}{2}\right\rfloor(x-1) +
+2 \sum_{0\le k\lt \lfloor \frac{x+1}{2}\rfloor}k 
+&amp; = \left\lfloor \frac{x+1}{2}\right\rfloor(x-1)+
+\left\lfloor\frac{x-1}{2}\right\rfloor\left\lfloor\frac{x+1}{2}\right\rfloor&#92;&#92;
+&amp; = \left\lfloor \frac{x+1}{2}\right\rfloor
+(x - 1 - \left\lfloor \frac{x-1}{2}\right\rfloor)&#92;&#92;
+&amp; = \left\lfloor \frac{x+1}{2}\right\rfloor
+(x - \left\lfloor \frac{x+1}{2}\right\rfloor)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So the both expressions have the same value.</p>
+
+<h2>Bonus Questions</h2>
+
+<h3>$\vee$ Laws</h3>
+
+<p>I find it easier to work from the basic $\min$ operator, and scale
+that up to $\vee$ (the formulas can always be derived mechanically
+from the underlying algebra).</p>
+
+<p>$\min$ is an associative and commutative operator, is distributive
+with addition, and its neutral element is $\infty$.</p>
+
+<p>I will not repeat the full list of formulas; the book has them
+already.</p>
+
+<h3>Undefined infinite sums</h3>
+
+<p>An undefined sum, according to (2.59), is one in which both the
+positive sum and the negative sums are unbounded.</p>
+
+<p>I define $K^+$ as $\{k\in K| a_k \gt 0\}$ and $K^-$ as
+$\{k\in K| a_k\lt 0\}$.</p>
+
+<p>The point about unbounded sums is that, even if I drop a large number
+of terms, there are always enough remaining terms to add up to an
+arbitrary amount.</p>
+
+<p>For instance, given $n$ even and $E_n=K^+\setminus F_{n-1}$,
+it is always true that I can find $E&#8217;_n\subset E_n$ such that</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\in E&#8217;_n}a_k \ge A^+ - \sum_{k\in F_{n-1}}a_k&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So if I define $F_n = F_{n-1} \cup E&#8217;_n$, $\sum_{k\in F_n}a_k \ge A^+$.</p>
+
+<p>And when $n$ is odd, with $O_n=K^-\setminus F_{n-1}$, I can always
+find a subset $O&#8217;_n\subset O_n$ such that</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\in O&#8217;_n}a_k \le \sum_{k\in F_{n-1}}a_k - A^-&#92;&#92;
+\end{align}
+</div>
+
+
+<p>(with $K^-$, the $a_k$ are smaller than zero, so the sum can be
+arbitrarily small).</p>
+
+<p>If I define $F_n = F_{n-1} \cup O&#8217;_n$, $\sum_{k\in F_n}a_k \le A^-$.</p>
+
+<p>As I could not do the other bonus questions, this completes Chapter 2.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Now I'm blushing...]]></title>
@@ -8993,292 +9491,6 @@ template, which is why the best use is to
 adjust it to your own need, then install it locally.</p>
 
 <p>Hope this helps.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 1 Homework Exercises Part 1]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/"/>
-    <updated>2012-01-09T20:23:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1</id>
-    <content type="html"><![CDATA[<p>I am working my way through the homework exercises, and so far I have
-had more success than with the warmups. Here&#8217;s what I have solved so far.</p>
-
-<!--more-->
-
-
-<h2>Homework Exercises</h2>
-
-<h3>Basic recurrence</h3>
-
-<p>This one was fairly simple, so simple that I wasted one hour trying to
-improve the solution.</p>
-
-<p>Just computing the first few terms of the sequence:</p>
-
-<div markdown="0">
-\begin{align}
-Q_0 &amp; = \alpha &#92;&#92;
-Q_1 &amp; = \beta &#92;&#92;
-Q_2 &amp; = \frac{1+\beta}{\alpha}&#92;&#92;
-Q_3 &amp; = \frac{1+\alpha+\beta}{\alpha\beta}&#92;&#92;
-Q_4 &amp; = \frac{\alpha\left( 1 + \alpha + \alpha\beta + \beta\right)}{\alpha\beta(1+\beta)}&#92;&#92;
-&amp; = \frac{(1+\alpha)(1+\beta)}{\beta(1+\beta)}&#92;&#92;
-&amp; = \frac{1+\alpha}{\beta}&#92;&#92;
-Q_5 &amp; = \frac{\alpha\beta\left(1+\alpha+\beta \right)}{\beta \left( 1+\alpha+\beta \right)}&#92;&#92;
-&amp; = \alpha&#92;&#92;
-Q_6 &amp; = \frac{\beta\left( 1+\alpha \right)}{1+\alpha}&#92;&#92;
-&amp; = \beta
-\end{align}
-</div>
-
-
-<p>So the sequence is cyclic. I tried to find a closed formula, but the
-book does not go that far, and it is unlikely to be possible.</p>
-
-<h3>Product of averages</h3>
-
-<h4>$P(n)$ implies $P(n-1)$</h4>
-
-<p>First of all, I checked that nothing fishy was going on with the
-selection of a particular $x_n$, but if $P(n)$ is true, then it is
-true for every $x_1\cdots x_n$ set, and in particular for one with a
-specific $x_n$.</p>
-
-<p>So nothing fishy is going on.</p>
-
-<p>Assuming the given value for $x_n$, we have</p>
-
-<div markdown="0">
-\begin{align}
-\left( \frac{x_1 + \cdots + x_n}{n} \right)^n &amp; = \left( \frac{x_1 + \cdots + x_{n-1} + \frac{x_1+\cdots+x_{n-1}}{n-1}}{n}\right)^n&#92;&#92;
-&amp; = \left( \frac{(n-1)x_1 + \cdots + (n-1)x_{n-1}+x_1+\cdots + x_{n-1}}{n(n-1)}\right)^n&#92;&#92;
-&amp; = \left( \frac{n(x_1+\cdots+x_{n-1})}{n(n-1)}\right)^n&#92;&#92;
-&amp; = \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^n&#92;&#92;
-&amp; = x_n^n
-\end{align}
-</div>
-
-
-<p>So, assuming $P(n)$, we have</p>
-
-<div markdown="0">
-\begin{align}
-x_1\cdots x_{n-1}x_n &amp;\le x_n^n&#92;&#92;
-x_1\cdots x_{n-1} &amp;\le x_n^{n-1}&#92;&#92;
-x_1\cdots x_{n-1} &amp;\le \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^{n-1}&amp;&amp;\text{i.e. $P(n-1)$}
-\end{align}
-</div>
-
-
-<h4>$P(n)$ and $P(2)$ implies $P(2n)$</h4>
-
-<div markdown="0">
-\begin{align}
-x_1\cdots x_{2n} &amp; = x_1\cdots x_{n}x_{n+1}\cdots x_{2n}&amp;&amp;\text{associativity}&#92;&#92;
-&amp; \le \left(\frac{x_1+\cdots+x_n}{n}\right)^n \left(\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n&amp;&amp;\text{applying $P(n)$ twice}&#92;&#92;
-&amp; = \left( \frac{x_1+\cdots+x_n}{n}\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n&#92;&#92;
-&amp; \le \left( \left(\frac{\frac{x_1+\cdots+x_n}{n} + \frac{x_{n+1}+\cdots+x_{2n}}{n}}{2} \right)^2\right)^n&amp;&amp;\text{applying $P(2)$}&#92;&#92;
-&amp; = \left( \frac{x_1+\cdots+x_n+x_{n+1}+\cdots+x_{2n}}{2n}\right)^{2n}&amp;&amp;\text{i.e. $P(2n)$}&#92;&#92;
-\end{align}
-</div>
-
-
-<h4>$P(n) \forall n \ge 1$</h4>
-
-<p>The case for $P(1)$ is trivial, and $P(2)$ is already proven. We have
-$P(n)$ implies $P(n-1)$ and $P(n)$ implies $P(2n)$.</p>
-
-<p>One first approach is to use the basic induction step: we have $P(1)$,
-$P(2)$, and we need $P(n) \implies P(n+1)$.</p>
-
-<p>But $P(n) \implies P(2n) \implies P(2n-1) \implies \cdots \implies
-P(2n-(n-1))$. The last one is $P(n1+)$, so the induction step holds.</p>
-
-<p>Alternatively, we can show that to prove $P$ for a given $n$, we need
-to prove $P$ for a smaller value. As naturals have a minimum, we must
-eventually rely on $P(2)$, which would prove the whole chain.</p>
-
-<p>To see this, for $n \ge 3$, if $n = 2m$, we need to prove $P(m)$; if
-$n = 2m+1$, we need to prove $P(2m+2)$, which is implied by $P(m+1)$.</p>
-
-<p>So, $\forall n \ge 3, \exists m \lt n \mid P(m) \implies P(n)$. That
-with the base cases is enough to establish $P(n) \forall n$.</p>
-
-<h3>Clockwise Tower of Hanoi</h3>
-
-<p>First, both $Q_0$ and $R_0$ are trivial.</p>
-
-<p>Then, to move $n$ discs from $A$ to $B$, you need to move $n-1$ discs
-from $A$ to $C$ (counter-clockwise), then move one disc from $A$ to
-$B$, then move the $n-1$ discs from $C$ to $B$ (again,
-counter-clockwise).</p>
-
-<p>This means $Q_n = R_{n-1} + 1 + R_{n-1} = 2R_{n-1} + 1$.</p>
-
-<p>The case for $R_n$ is a bit more complex. My first (flawed) attempt
-was to observe that to move $n$ discs from $B$ to $A$, you could move
-them from $B$ to $C$, then $C$ to $A$. In other words,</p>
-
-<div markdown="0">
-\begin{align}
-R_n &amp; \ge 2Q_n&#92;&#92;
-&amp; = Q_n + 2R_{n-1} + 1&amp;&amp;\text{Replacing one \(Q_n\) by \(2R_{n-1}+1\)}&#92;&#92;
-&amp; = Q_n + 4Q_{n-1} + 1&amp;&amp;\text{Replacing \(R_{n-1}\) by \(2Q_{n-1}\)}&#92;&#92;
-\end{align}
-</div>
-
-
-<p>But the $4Q_{n-1}$ means moving the stack of $n-1$ discs $4$ times,
-which is the same as moving it just one time (as $3$ times bring it
-back to its original position).</p>
-
-<p>So we&#8217;re left with just $Q_n + Q_{n-1} + 1$. But as I said, this
-reasoning is flawed, as it mixes the count of moves with the effect of
-moves (where $3$ moves are the same as $0$ move).</p>
-
-<p>While it is possible to repair this reasoning by introducing special
-operators that take two parameters (the number of discs, and the
-number of steps), it is simpler to try and express $R_n$ strictly in
-terms $n-1$ stacks and $1$ disc moves.</p>
-
-<p>So, to move $n$ discs from $B$ to $A$, you need to move $n-1$ discs
-from $B$ to $A$ (counter-clockwise), then one disc from $B$ to $C$
-(clockwise), then the $n-1$ discs from $A$ to $B$ (clockwise), then
-one disc from $C$ to $A$ (clockwise), then finally the $n-1$ discs
-from $B$ to $A$ (counter-clockwise).</p>
-
-<p>Or,</p>
-
-<div markdown="0">
-\begin{align}
-R_n &amp;= R_{n-1} + 1 + Q_{n-1} + 1 + R_{n-1}&#92;&#92;
-&amp; = 2R_{n-} + 1 + Q_{n-1} + 1&#92;&#92;
-&amp; = Q_n + Q_{n-1} + 1&amp;&amp;\text{definition of \(Q_n\)}&#92;&#92;
-\end{align}
-</div>
-
-
-<p>As the recurrence is expressed (initially) only in terms of necessary
-moves of strictly smaller stacks, there is no risk of hiding moves
-that are equivalent to no moves (as in my first attempt), so the
-equation is the minimum number of moves.</p>
-
-<h3>Double Tower of Hanoi</h3>
-
-<h4>Basic Problem</h4>
-
-<p>First, notice we should keep each pair together, because otherwise
-they would block larger discs from moving. So each pair of move should
-be used to relocate a pair of identical discs to another peg. So we
-should expect to need twice as many moves as the original tower.</p>
-
-<p>More precisely, with $A(n)$ the number of moves required to solve a
-$2n$ Double Tower of Hanoi, we have:</p>
-
-<div markdown="0">
-\begin{align}
-(1) &amp; = 2&#92;&#92;
-A(n) &amp; = A(n-1) + 2 + A(n-1)&#92;&#92;
-&amp; = 2A(n-1) + 2&#92;&#92;
-\end{align}
-</div>
-
-
-<p>Using $A(n) + 2= U(n)$, we get</p>
-
-<div markdown="0">
-\begin{align}
-U(1) &amp; = 4&#92;&#92;
-U(n) &amp; = 2U(n-1)&#92;&#92;
-&amp; 2^{n+1}&#92;&#92;
-A(n) &amp; = 2^{n+1} -2&#92;&#92;
-     &amp; = 2(T_n)&#92;&#92;
-\end{align}
-</div>
-
-
-<h4>Order Preserving</h4>
-
-<p>If we consider all the $2n$ discs as different, then in $T_{2n}=2^{2n}-1$
-moves, we can recreate the same order as the original.</p>
-
-<p>Of course, we can do better. It is enough to move each pair an even
-number of times: the first time will switch their order; the second
-one will restore it, &#8230;</p>
-
-<p>This is similar to the warmup problem where we cannot move any disc
-directly between any two pegs, so using the same constraint to move
-any pair would get us to the target order in less than $2\cdot 3^n-1$.</p>
-
-<p>But there is still a better way.</p>
-
-<p>A $2$ discs problem needs exactly $3$ moves.  And the $4$ discs
-problem will require just $11$ moves, rather than the $18$ that the
-above formula predicts.</p>
-
-<p>A wild guess: the number of moves is $4(2^n-1)-1$.</p>
-
-<p>In trying to solve (or even write) the recurrence equation, it is
-important to keep in mind that several ways to move the discs, each
-with its own count, will be used.</p>
-
-<p>We know we need two pairs of moves to relocate the two bottom discs
-while keeping the order (assuming there are other discs). In doing so,
-we will move the next two discs an even number of times, requiring
-another 2 times to keep their order. So as long as we make sure the
-last operation has the right (even) number of moves, we do not need to
-keep this constraint on the other operations.</p>
-
-<p>To recap: we need to move the last pair of discs $2$ times. So we first move
-the $n-1$ pairs to a peg, then move the last pair to the other peg,
-then the $n-1$ pairs to the first peg, then the last pair to the last
-peg. At this stage, the $n-1$ discs have move an even number of times,
-so their in the right order, even if we used the non order preserving
-solution that was computed above (requiring $2T_{n-1}$ moves).</p>
-
-<p>At this stage, a bit of notation should clarify:</p>
-
-<div markdown="0">
-\begin{align}
-B(1) &amp; = 3&#92;&#92;
-B(n) &amp; = A(n-1) + 2 + A(n-1) + 2 + B(n-1)&#92;&#92;
-&amp; = 2T_{n-1} + 2 + 2T_{n-1} + 2 + B(n-1)&#92;&#92;
-&amp; = 4T_{n-1}+4+B(n-1)&#92;&#92;
-\end{align}
-</div>
-
-
-<p>Trying to prove the guess above:</p>
-
-<div markdown="0">
-\begin{align}
-B(1) &amp; = 4(2^1-1) - 1&#92;&#92;
-&amp; = 3&#92;&#92;
-B(n) &amp; = 4(2^{n-1} -1) + 4 + B(n-1)&#92;&#92;
-&amp; = 4\cdot 2^{n-1} + 4(2^{n-1} - 1) -1&#92;&#92;
-&amp; = 4\cdot 2^n -4 -1&#92;&#92;
-&amp; = 4(2^n-1)-1
-\end{align}
-</div>
-
-
-<p>So the guess was right. It can also be rewritten as</p>
-
-<div markdown="0">
-\begin{align}
-4(2^n-1)-1 &amp = 4\cdot 2^n - 4 -1&#92;&#92;
-&amp; = 2^{n+2} - 5&#92;&#92;
-\end{align}
-</div>
-
-
-<p>which is the book solution.</p>
-
-<p>This being a bonus exercise, I currently experience an intense, although
-pointless, sense of pride and achievement.</p>
-
-<p>No doubt the other exercises will cut me down to size.</p>
 ]]></content>
   </entry>
   

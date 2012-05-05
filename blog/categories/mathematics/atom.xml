@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-05-02T16:29:24+09:00</updated>
+  <updated>2012-05-05T19:56:29+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -12,6 +12,504 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Exam Exercises]]></title>
+    <link href="http://blog.wakatta.jp/blog/2012/05/05/concrete-mathematics-chapter-2-exam-exercises/"/>
+    <updated>2012-05-05T14:36:00+09:00</updated>
+    <id>http://blog.wakatta.jp/blog/2012/05/05/concrete-mathematics-chapter-2-exam-exercises</id>
+    <content type="html"><![CDATA[<p>The exam exercises for this chapter were much trickier than the
+homework exercises. With the right approach, they could be solved
+quickly; too bad I never found that right approach...</p>
+
+<!--more-->
+
+
+<h2>Exam Exercises</h2>
+
+<h3>$\sum_{k=1}^n(-1)^k\frac{k}{4k^2-1}$</h3>
+
+<p>I managed to solve this exercise using sum by parts; the book uses
+partial fractions, but as far as I can tell I never learned about
+these. They seem to be part of high school curriculum in America, but
+might not be in Belgium (or I was sleeping that day).</p>
+
+<p>Sum by parts worked for me because I eventually asked myself what kind
+of function of $k$ would produce a finite difference
+$\frac{1}{4k^2-1} = \frac{1}{(2k+1)(2k-1)}$.</p>
+
+<p>By looking at $\Delta (2k)^{\underline m}$, I realised that the
+solution was fairly simple. I first experimented with
+$\Delta (2k)^{\underline{-1}}$, then found the right expression:</p>
+
+<div markdown="0">
+\begin{align}
+\Delta (2k-2)^{\underline{-1}} &amp; = \frac{1}{2k+1}-\frac{1}{2k-1}\\\\
+&amp; = \frac{2k-1 - 2k - 1}{(2k+1)(2k-1)}\\\\
+&amp; = \frac{-2}{4k^2-1}\\\\
+\end{align}
+</div>
+
+
+<p>For the sum by parts, I can therefore try to use:</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = \frac{1}{4k^2-1}\\\\
+v &amp; = -\frac{1}{2}(2k-2)^{\underline{-1}}\\\\
+Ev &amp; = -\frac{1}{2}(2k)^{\underline{-1}}\\\\
+u &amp; = (-1)^kk\\\\
+\Delta u &amp; = (-1)^k +(k+1)(-2 (-1)^k)\\\\
+&amp; = (-1)^k - 2(k+1)(-1)^k\\\\
+&amp; = (-1)^k(1-2k-2)\\\\
+&amp; = -(-1)^k(2k+1)\\\\
+\end{align}
+</div>
+
+
+<p>The last expression was computed using the product rule for finite difference.</p>
+
+<p>When I put everything into the sum by parts formula, the various
+blocks felt into place with satisfying "clicks":</p>
+
+<div markdown="0">
+\begin{align}
+\sum (-1)^x\frac{x}{4x^2-1}\delta x 
+= &amp; -\frac{1}{2}(-1)^x x(2x-2)^{\underline{-1}} \\\\
+&amp; - \frac{1}{2} \sum (-1)^x (2x+1)(2x)^{\underline{-1}}\delta x\\\\
+= &amp; -\frac{(-1)^x x}{2(2x-1)} - \frac{1}{2}\sum (-1)^x \delta x
+&amp;&amp;(2x+1)(2x)^{\underline{-1}}=1\\\\
+= &amp; -\frac{(-1)^x x}{2(2x-1)} + \frac{(-1)^x}{4} + c\\\\
+= &amp; (-1)^x \left(\frac{1}{4} - \frac{x}{2(2x-1)} \right) + c\\\\
+= &amp; (-1)^x \left(\frac{4x - 2 - 4x}{4.2.(2x-1)} \right) + c\\\\
+= &amp; -\frac{(-1)^x}{8x-4} + c\\\\
+\end{align}
+</div>
+
+
+<p>The answer as a function of $n$ is</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k=1}^{n} (-1)^k\frac{k}{4k^2-1} 
+= &amp; \sum_1^{n+1} (-1)^x\frac{x}{4x^2-1}\delta x\\\\
+= &amp; \left. -\frac{(-1)^x}{8x^4}\right|_1^{n+1}\\\\
+= &amp; -\frac{(-1)^{n+1}}{8n+8-4} - \frac{1}{4}\\\\
+= &amp; \frac{(-1)^n}{8n+4} - \frac{1}{4}\\\\
+\end{align}
+</div>
+
+
+<h3>1050</h3>
+
+<p>I could not do this exercise; I also failed to see the basic sum that
+was at the centre of the question (quite prominently).</p>
+
+<p>Even the book solution took me a while to figure out.</p>
+
+<p>The book solution asks how many pairs $a$, $b$ are there such that
+$\sum_{a\le k \lt b}k = 1050$.</p>
+
+<p>Rewriting this in terms of finite calculus is simple enough:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{a\le k \lt b}k &amp; = \sum_a^b x\delta x\\\\
+&amp; = \frac{1}{2}\left(b^{\underline 2} - a^{\underline 2}\right)\\\\
+&amp; = \frac{1}{2}\left(b(b-1) - a(a-1)\right)\\\\
+&amp; = \frac{1}{2}\left(b^2-b - a^2 + a\right)\\\\
+&amp; = \frac{1}{2}\left(b^2-b + ab - a^2 + a - ab\right)\\\\
+&amp; = \frac{1}{2}\left(b(b-1+a) - a(a-1+b)\right)\\\\
+&amp; = \frac{1}{2}(b-a)(b+a-1)\\\\
+\end{align}
+</div>
+
+
+<p>Now, one thing to notice is that if a sum of two integers is even, so is
+the difference, and vice-versa. Therefore the product above is the
+product of one even and one odd integers.</p>
+
+<p>So we are now looking for ways to express</p>
+
+<div markdown="0">
+\begin{align}
+(b-a)(b+a-1)=xy=2.1050=2100=2^2 3 5^2 7\\\\
+\end{align}
+</div>
+
+
+<p>as a product with $x$ is even and $y$ odd.</p>
+
+<p>To compute how many ways there are to produce a divisor of a number
+whose prime factors are known, it is enough to see that, for each
+prime factor $p$ with multiplicity $n_p$, this prime can be left out,
+or included up to $n_p$ times in the divisor; so for each prime p
+there are $n_p+1$ possibilities. Summing these over the prime factors
+give the number of divisors of the original number.</p>
+
+<p>In the present case, this number is 12.</p>
+
+<p>Now that we have the number of possible pairs of $x$ and $y$, we have
+to go back to $a$ and $b$.  There might be a principle involved here,
+but I don't really see it, so I'll just try to rebuild the solution
+from the ground up.</p>
+
+<p>We already know that either
+$b-a=x$ and $b+a-1=y$ or $b-a=y$ and $b+a-1=x$. So we already see that
+whatever expression we need, both $a$ and $b$ will have a
+$\frac{1}{2}$ added so that their difference cancels out, and their
+sum produces a $1$ that will cancel the $-1$.</p>
+
+<p>Looking at sum and differences, we have $(x+y)-(x-y) = 2y$ and
+$(x+y)+(x-y)=2x$, so there will be a sum and a difference involved. We
+also need $a$ to be smaller than $b$, so it is a candidate for
+$\frac{1}{2}(x-y)+\frac{1}{2}$. However, we also need it to be
+positive, so we add an absolute value.</p>
+
+<p>So the candidate solutions are $a=\frac{1}{2}|x-y|+\frac{1}{2}$ and
+$b=\frac{1}{2}(x+y)+\frac{1}{2}$. Let's check them:</p>
+
+<div markdown="0">
+\begin{align}
+x \gt y: &amp; 
+(\frac{1}{2}(x+y)+\frac{1}{2} - \frac{1}{2}(x-y)-\frac{1}{2})
+(\frac{1}{2}(x+y)+\frac{1}{2} + \frac{1}{2}(x-y)+\frac{1}{2} - 1)\\\\
+= &amp; (\frac{1}{2}(2y))(\frac{1}{2}(2x))\\\\
+= &amp; yx\\\\
+x \lt y: &amp;
+(\frac{1}{2}(x+y)+\frac{1}{2} - \frac{1}{2}(y-x)-\frac{1}{2})
+(\frac{1}{2}(x+y)+\frac{1}{2} + \frac{1}{2}(y-x)+\frac{1}{2} - 1)\\\\
+= &amp; (\frac{1}{2}(2x))(\frac{1}{2}(2y))\\\\
+= &amp; xy\\\\
+\end{align}
+</div>
+
+
+<p>So it all adds up.</p>
+
+<h3>Riemann's zeta function</h3>
+
+<p>This exercise was more in line with the content of this chapter, and
+easy enough. Essentially, it is just a matter of changing the order of
+summation.</p>
+
+<h4>$\sum_{k\ge 2}(\zeta(k)-1) = 1$</h4>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 2}(\zeta(k)-1) 
+&amp; = \sum_{k\ge 2}(\sum_{j\ge 1}\frac{1}{j^k}-1)\\\\
+&amp; = \sum_{k\ge 2}(\sum_{j\ge 2}\frac{1}{j^k})\\\\
+&amp; = \sum_{j\ge 2}\sum_{k\ge 2}\frac{1}{j^k}\\\\
+&amp; = \sum_{j\ge 2}\sum_{k\ge 2}(\frac{1}{j})^k\\\\
+\end{align}
+</div>
+
+
+<p>The inner sum is a geometric progression:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 2}(\frac{1}{j})^k 
+&amp; = \lim_{n\rightarrow \infty}
+\frac{\frac{1}{j^2}-\frac{1}{j^n}}{1-\frac{1}{j}}\\\\
+&amp; = \frac{\frac{1}{j^2}-0}{1-\frac{1}{j}}\\\\
+&amp; = \frac{1}{j(j-1)}
+\end{align}
+</div>
+
+
+<p>So we need to solve
+$\sum_{j\ge 2}\frac{1}{j(j-1)}=\sum_{j\ge 0}\frac{1}{(j+1)(j+2)}$,
+which we already saw as well, and the value is indeed 1.</p>
+
+<h4>$\sum_{k\ge 1}(\zeta(2k)-1)$</h4>
+
+<p>Using the same approach:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 1}(\zeta(2k)-1) &amp; = \sum_{k\ge 1} 
+(\sum_{j\ge 1}\frac{1}{j^{2k}}-1)\\\\
+&amp; = \sum_{k\ge 1}\sum_{j\ge 2}\frac{1}{j^{2k}}\\\\
+&amp; = \sum_{j\ge 2}\sum_{k\ge 1}\frac{1}{j^{2k}}\\\\
+&amp; = \sum_{j\ge 2}\sum_{k\ge 1}(\frac{1}{j^2})^k\\\\
+\end{align}
+</div>
+
+
+<p>Once again, we have a geometric progression, just as easy to solve as
+the previous one:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 1}(\frac{1}{j^2})^k 
+&amp; = \lim_{n\rightarrow \infty}
+\frac{\frac{1}{j^2}-\frac{1}{j^{2n}}}{1-\frac{1}{j^2}}\\\\
+&amp; = \frac{\frac{1}{j^2}-0}{1-\frac{1}{j^2}}\\\\
+&amp; = \frac{1}{j^2-1}\\\\
+&amp; = \frac{1}{(j11)(j+1)}\\\\
+&amp; = \frac{j}{(j-1)j(j+1)}\\\\
+&amp; = j (j-2)^{\underline{-3}}\\\\
+\end{align}
+</div>
+
+
+<p>Now we have $\sum_{j\ge 2} j(j-2)^{\underline{-3}}$, which can be
+summed by parts. I chose:</p>
+
+<div markdown="0">
+\begin{align}
+\Delta v &amp; = (x-2)^{\underline{-3}}\\\\
+v &amp; = -\frac{(x-2)^{\underline{-2}}}{2}\\\\
+Ev &amp; = -\frac{(x-1)^{\underline{-2}}}{2}\\\\
+u &amp; = x\\\\
+\Delta u &amp; = 1\\\\
+\end{align}
+</div>
+
+
+<p>and now the sum by part:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_2^{\infty} x(x-2)^{\underline{-3}}\delta x
+&amp; = -\frac{x}{(x-1)x} + \frac{1}{2}\sum_2^\infty
+(x-1)^{\underline{-2}}\delta x\\\\
+&amp; = \left. -\frac{1}{2(x-1)}-\frac{1}{2x}\right|_2^\infty\\\\
+&amp; = \frac{3}{4}\\\\
+\end{align}
+</div>
+
+
+<h3>$\sum_{k\ge 0}\min(k, x \dot{-} k)$</h3>
+
+<p>I am not really sure of my solution here, despite the fact that the
+outcome is identical to the book; my method is somewhat different from
+the book's, and using some concepts from Chapter 3.</p>
+
+<p>To prove that the two sums have the same value, I just evaluate each.</p>
+
+<p>First, a basic observation on the $\dot{-}$ operator: if
+$b\le 0$, $a\dot{-}b$ is at least zero, and if $a\le 0$, at most
+$a$ (otherwise it is always zero).</p>
+
+<p>So if $a\le 0$ or $a\le b$, $a\dot{-}b=0$.</p>
+
+<p>I will now assume that $x\ge 0$; otherwise both sums are zero.</p>
+
+<h3>$\sum_{k\ge 0}\min(k,x\dot{-}k)$</h3>
+
+<p>First, I replace the infinity sum by a finite one: as seen above, if
+$k\gt x$, $\min(k,x\dot{-}k)=0$, so</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\ge 0}\min(k,x\dot{-}k) &amp; = \sum_{0\le k \le x}\min(k,x-k)\\\\
+\end{align}
+</div>
+
+
+<p>I then try to remove the $\min$ operator:</p>
+
+<div markdown="0">
+\begin{align}
+k &amp; \le x - k\\\\
+2k &amp; \le x\\\\
+k &amp; \le \frac{x}{2}\\\\
+\end{align}
+</div>
+
+
+<p>so that</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k \le x}\min(k,x-k)
+&amp; = \sum_{0\le k \le \frac{x}{2}} k
+&amp; + \sum_{\frac{x}{2}\lt k \le x} x - k
+\end{align}
+</div>
+
+
+<p>The general idea here is to find a way to eliminate the $k$ terms, by
+shifting each term in the second sum by an equal amount.</p>
+
+<p>At this point, the number of terms in each sum is important: the total
+number of terms is the number of $k$ such that $0\le k\le x$; clearly
+this is $\lfloor x \rfloor + 1$.</p>
+
+<p>The number of terms in the first sum is similarly
+$\lfloor\frac{x}{2}\rfloor + 1$.</p>
+
+<p>The number of terms in the second sum is therefore
+$\lfloor x \rfloor - \lfloor \frac{x}{2} \rfloor$. To find an
+expression for this, it helps to look at integral $x$ first.</p>
+
+<p>If $x=4$, $\lfloor 4 \rfloor - \lfloor \frac{4}{2} \rfloor = 2$.</p>
+
+<p>If $x=5$, $\lfloor 5 \rfloor - \lfloor \frac{5}{2} \rfloor = 5-2 = 3$.</p>
+
+<p>More generally, if $2n\le \lt 2n+1$, there will be $n+1$ terms in the
+first sum, and $n$ in the second. And if $2n-1\le x\le 2n$, there will
+be $n$ terms in each sum.</p>
+
+<p>A first attempt for the number of terms in the second sum is
+$\lfloor \frac{x}{2} \rfloor$, but this only works for $x$ such that
+$2n\le x\lt 2n+1$. But it is easy to see that
+$\lfloor \frac{x+1}{2} \rfloor$ will always work: if
+$2n\le x\lt 2n+1$,
+$\lfloor \frac{x+1}{2} \rfloor = \lfloor\frac{2n+1}{2}\rfloor = n$,
+and if $2n-1\le x\lt 2n$,
+$\lfloor \frac{x+1}{2}\rfloor = \lfloor\frac{2n}{2}\rfloor = n$.</p>
+
+<p>Using this value to "shift" the terms of the second sum:</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{0\le k \le \frac{x}{2}} k
++ \sum_{\frac{x}{2}\lt k \le x} x - k
+&amp; = \sum_{0\le k \le \frac{x}{2}} k
++ \sum_{\frac{x}{2}-\lfloor \frac{x+1}{2}\rfloor\lt k\le x- \lfloor
+\frac{x+1}{2}\rfloor}
+(x-\left\lfloor \frac{x+1}{2}\right\rfloor)-k\\\\
+&amp; = \sum_{0\le k \le \lfloor \frac{x}{2} \rfloor} k
++ \sum_{\frac{x}{2}-\lfloor \frac{x+1}{2}\rfloor\lt k\le \lfloor
+\frac{x}{2}\rfloor}
+(x-\left\lfloor \frac{x+1}{2}\right\rfloor)-k\\\\
+\end{align}
+</div>
+
+
+<p>Now the question is whether the new $k$ in the second sum cancel the
+$k$ in the first sum. Once again, let's check the cases:</p>
+
+<ul>
+<li>if $2n\le x\lt 2n+1$,
+$\frac{x}{2} \gt \lfloor\frac{x+1}{2}\rfloor$, so $k\ge 1$: this
+means the $\lfloor \frac{x}{2}\rfloor$ non-zero $k$ terms of the
+first sum are cancelled by the
+$\lfloor \frac{x+1}{2}\rfloor = \lfloor \frac{x}{2}\rfloor$ non zero
+$k$ terms of the second sum; the zero term can safely be ignored.</li>
+<li>if $2n-1\le x\lt 2n$,
+$\frac{x}{2} \lt \lfloor\frac{x+1}{2}\rfloor$, so $k\ge 0$; this
+means the $\lfloor \frac{x}{2}\rfloor+1$ $k$ terms (including 0) are
+all cancelled by the
+$\lfloor \frac{x+1}{2}\rfloor = \lfloor \frac{x}{2}\rfloor+1$ $k$
+terms of the second sum.</li>
+</ul>
+
+
+<p>So we can safely rewrite the sum as</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{\frac{x}{2} - \lfloor \frac{x+1}{2}\rfloor \lt k \le 
+\lfloor\frac{x}{2}\rfloor}(x-\left\lfloor \frac{x+1}{2}\right\rfloor)\\\\
+\end{align}
+</div>
+
+
+<p>And, as we already know the number of terms is
+$\left\lfloor \frac{x+1}{2}\right\rfloor$, the sum value is</p>
+
+<div markdown="0">
+\begin{align}
+\left\lfloor \frac{x+1}{2}\right\rfloor
+\left(x- \left\lfloor \frac{x+1}{2}\right\rfloor\right)
+\end{align}
+</div>
+
+
+<h4>$\sum_{k\le 0}(x\dot{-}(2k+1))$</h4>
+
+<p>This sum is much easier than the previous one. First I remove the
+$\dot{-}$ operator. I need $2k+1\le x$:</p>
+
+<div markdown="0">
+\begin{align}
+2k+1 &amp; \le x\\\\
+k &amp; \le \frac{x-1}{2}\\\\
+\end{align}
+</div>
+
+
+<p>This gives me $\lfloor \frac{x+1}{2}\rfloor$ number of terms.</p>
+
+<p>So I can extract $x$ and work only on $k$</p>
+
+<div markdown="0">
+\begin{align}
+\left\lfloor \frac{x+1}{2}\right\rfloor(x-1) +
+2 \sum_{0\le k\lt \lfloor \frac{x+1}{2}\rfloor}k 
+&amp; = \left\lfloor \frac{x+1}{2}\right\rfloor(x-1)+
+\left\lfloor\frac{x-1}{2}\right\rfloor\left\lfloor\frac{x+1}{2}\right\rfloor\\\\
+&amp; = \left\lfloor \frac{x+1}{2}\right\rfloor
+(x - 1 - \left\lfloor \frac{x-1}{2}\right\rfloor)\\\\
+&amp; = \left\lfloor \frac{x+1}{2}\right\rfloor
+(x - \left\lfloor \frac{x+1}{2}\right\rfloor)\\\\
+\end{align}
+</div>
+
+
+<p>So the both expressions have the same value.</p>
+
+<h2>Bonus Questions</h2>
+
+<h3>$\vee$ Laws</h3>
+
+<p>I find it easier to work from the basic $\min$ operator, and scale
+that up to $\vee$ (the formulas can always be derived mechanically
+from the underlying algebra).</p>
+
+<p>$\min$ is an associative and commutative operator, is distributive
+with addition, and its neutral element is $\infty$.</p>
+
+<p>I will not repeat the full list of formulas; the book has them
+already.</p>
+
+<h3>Undefined infinite sums</h3>
+
+<p>An undefined sum, according to (2.59), is one in which both the
+positive sum and the negative sums are unbounded.</p>
+
+<p>I define $K^+$ as $\{k\in K| a_k \gt 0\}$ and $K^-$ as
+$\{k\in K| a_k\lt 0\}$.</p>
+
+<p>The point about unbounded sums is that, even if I drop a large number
+of terms, there are always enough remaining terms to add up to an
+arbitrary amount.</p>
+
+<p>For instance, given $n$ even and $E_n=K^+\setminus F_{n-1}$,
+it is always true that I can find $E'_n\subset E_n$ such that</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\in E'_n}a_k \ge A^+ - \sum_{k\in F_{n-1}}a_k\\\\
+\end{align}
+</div>
+
+
+<p>So if I define $F_n = F_{n-1} \cup E'_n$, $\sum_{k\in F_n}a_k \ge A^+$.</p>
+
+<p>And when $n$ is odd, with $O_n=K^-\setminus F_{n-1}$, I can always
+find a subset $O'_n\subset O_n$ such that</p>
+
+<div markdown="0">
+\begin{align}
+\sum_{k\in O'_n}a_k \le \sum_{k\in F_{n-1}}a_k - A^-\\\\
+\end{align}
+</div>
+
+
+<p>(with $K^-$, the $a_k$ are smaller than zero, so the sum can be
+arbitrarily small).</p>
+
+<p>If I define $F_n = F_{n-1} \cup O'_n$, $\sum_{k\in F_n}a_k \le A^-$.</p>
+
+<p>As I could not do the other bonus questions, this completes Chapter 2.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Homework Exercises]]></title>
@@ -1258,257 +1756,6 @@ together the symmetry they lack on their own.</p>
 
 <p>OK, that was not entirely bad (two small mistakes, both about negative
 numbers blindness). Next step, the basic exercises.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Concrete Mathematics Chapter 2 Notes]]></title>
-    <link href="http://blog.wakatta.jp/blog/2012/02/27/concrete-mathematics-chapter-2-notes/"/>
-    <updated>2012-02-27T10:54:00+09:00</updated>
-    <id>http://blog.wakatta.jp/blog/2012/02/27/concrete-mathematics-chapter-2-notes</id>
-    <content type="html"><![CDATA[<p>After a long but busy silence, I have now a few notes on the second
-chapter, Sums. As with
-<a href="/blog/2012/01/06/concrete-mathematics-chapter-1-notes/">Chapter 1</a>,
-these are nothing revolutionary; just some clarifications of the
-points that were not obvious to me, as well as other, random
-observations.</p>
-
-<!--more-->
-
-
-<p>Overall, this chapter felt less overwhelming than the first, despite
-being much longer and introducing very powerful techniques. I have yet
-to do the exercises, though, so I may still revise this judgement.</p>
-
-<h3>Notation</h3>
-
-<p>The authors mentions that the Sigma-notation is "... impressive to
-family and friends". I can confirm that assessment.</p>
-
-<p>The remark on keeping bounds simple actually goes beyond resisting
-"premature optimisation", that is, removing terms just because they
-are equal to zero. Sometimes, it is worth adding a zero term if it
-simplifies the bounds. Such a trick is used in solving
-$\sum_{1\le j\lt k\le n} \frac{1}{k-j}$, and I'll get back to this
-point when I go over this solution.</p>
-
-<p>The Iverson notation (or Iversonian) is a very useful tool, as is the
-general Sigma-notation. About the latter, it already simplifies
-variable changes a lot, but I found it useful (and less error prone)
-to always write the variable change on the right margin (for instance
-as $k \leftarrow k+1$) and to keep that change as the only one in a
-given line of the rewrite; otherwise, no matter how trivial the
-change, any error I make at that time will be hard to locate (I know;
-I tried).</p>
-
-<h3>Sums and Recurrence</h3>
-
-<p>First we see how easy it is to use the repertoire method to build
-solutions to common (or slightly generalised) sums. The only problem
-with the repertoire method is it requires a well furnished repertoire
-of solutions to basic recurrences; I'm sure I would never have come up
-with the radix-change solution to the generalised Josephus
-problem. And given that there is an infinite number of functions one
-could try, a more directed method is sometimes necessary.</p>
-
-<p>This section also shows how to turn some recurrence equations (such as
-the Tower of Hanoi one) into a sum; this method involve a choice
-($s_1$ can be any non-zero value), which could either simplify or
-complicate the solution. I haven't done the exercises yet, so I don't
-know to what extent the choice is obvious or tricky.</p>
-
-<p>Finally it shows how to turn a recurrence expressed as a sum of all
-the previous values into a simpler recurrence by computing the
-difference between two successive values. This is one instance of a
-more general simplification using a linear combination of a few
-successive values.</p>
-
-<h3>Manipulation of Sums</h3>
-
-<p>Unsurprisingly, sums have the same basic properties as common
-additions: distributive, associative and commutative laws. Only the
-latter is really tricky, as it involves a change to the index
-variable. As mentioned above, I found useful to make such changes
-really clear and isolated in any reasoning.</p>
-
-<p>With these laws confirmed, it is possible to build the first method
-for solving sums: the perturbation method. It is very simple, and
-while it does not always work, when it does it is very quick.</p>
-
-<h3>Multiple Sums</h3>
-
-<p>This is perhaps the first section where I had to slow down; basically
-multiple sums are not different from simple sums, and manipulations
-are defined by the distributive law, but index variable changes
-(especially the rocky road variety) require special attention. This,
-combined with "obvious" simplifications (obvious to the authors, and
-sometimes in retrospect to the reader as well), gave me some
-difficulties.</p>
-
-<p>For instance, the solution to</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le j\lt k\le n} \frac{1}{k-j}
-\end{align}
-</div>
-
-
-<p>The index variable change $k \leftarrow k+j$ is explained as a
-specific instance of the simplification of $k+f(j)$; more perplexing
-are the ranges for $j$ and $k$ when the sum is replaced by a sum of sum:</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le k\le n} \sum_{1\le j \le n-k} \frac{1}{k}
-\end{align}
-</div>
-
-
-<p>The range for $j$ is built from $1\le j$ and $k+j\le n$, so there is
-nothing really strange here.</p>
-
-<p>The range for $k$, however, looks like a typo: certainly the authors
-meant $1\le k\lt n$. A margin graffiti confirms the range, but it does
-not really explain it.</p>
-
-<p>The fact is, it is safe to let $k\le n$ here, because the sum over $j$
-when $k=n$ is zero: not only the expression
-$\sum_{1\le j \le k-n = 0} \frac{1}{k}$ is zero because there is no
-$j$ that can satisfies the range predicate, but the closed form
-of this sum, $\frac{k-n}{k}$, is also zero when $k=n$.</p>
-
-<p>With the closed form checked, it is safe to add extra terms to
-simplify the range of $k$.</p>
-
-<p>What happens if you don't see this possible simplification? As
-expected, the answer remains the same:</p>
-
-<div markdown="0">
-\begin{align}
-\sum_{1\le k\lt n} \sum_{1\le j \le n-k} \frac{1}{k} &amp; = \sum_{1\le k\lt n} \frac{n-k}{k}\\\\
-&amp; = \sum_{1\le k\lt n} \frac{n}{k} - \sum_{1\le k\lt n} \frac{k}{k}\\\\
-&amp; = \sum_{1\le k\lt n} \frac{n}{k} - (n-1)\\\\
-&amp; = \sum_{1\le k\lt n} \frac{n}{k} + \frac{n}{n} - n\\\\
-&amp; = \sum_{1\le k\le n} \frac{n}{k} - n\\\\
-&amp; = nH_n - n\\\\
-\end{align}
-</div>
-
-
-<p>So to expend on the original advice of keeping the bounds as simple as
-possible: sometimes it is possible to extend the bounds (in order to
-simplify them), as long as the extra terms in closed form evaluate to
-zero. If the extra terms are still defined as sums, just checking that
-the range is empty might not be enough.</p>
-
-<h3>General Methods</h3>
-
-<p>A cool and fun section on the various ways to solve a given sum.</p>
-
-<p>Method 0 is to look it up. This book, written before the rise of
-Internet (I remember Internet in the early 1990's; most of it was still
-indexed manually on the CERN index pages...), suggests a few books as
-resources.</p>
-
-<p>Fortunately, some of them have migrated to the
-<a href="https://oeis.org/">Web</a>, which is a more suitable tool than books for
-such knowledge; the combination of searches and instant updates is
-hard to beat (a book remains best for a content that is mostly linear
-and somewhat independent of time; a novel, or textbook, for
-instance. References are better on Internet, free if possible, for
-a subscription otherwise).</p>
-
-<p>Method 1 is guessing then proving; proving in fact should be a
-complement for all the other methods (except perhaps Method 0). Having
-two independents proofs is always good.</p>
-
-<p>Method 2 is the perturbation method. In this section example, we see
-how an apparent failure can still be exploited by being imaginative.</p>
-
-<p>Method 3 is the repertoire method. In this chapter it is usually much
-simpler than in the first.</p>
-
-<p>Method 4 uses calculus to get a first approximation, then uses other
-methods to solve the equations for the error function.</p>
-
-<p>Method 5 is a clever rewriting of the problem into a sum of sums;
-like the repertoire method but unlike the others, it requires some
-intuition to find a solution (perhaps more than the repertoire
-method); I have bad memories of trying such a method to solve problems
-at university, always somehow ending up right where I started. I guess
-I will try other methods if I can.</p>
-
-<p>Method 6 is the topic of the next section; method 7 is for another
-chapter.</p>
-
-<h3>Finite and Infinite Calculus</h3>
-
-<p>This section was surprising and exciting, but not really that
-complex. It really is a matter of adapting regular calculus reflexes to the
-finite version. I have to see how it works in practice.</p>
-
-<p>One thing that is causing me some trouble is the falling-power version
-of the law of exponents:</p>
-
-<div markdown="0">
-\begin{align}
-x^{\underline{m+n}} &amp; = x^{\underline m}(x-m)^{\underline n}\\\\
-\end{align}
-</div>
-
-
-<p>While the rule is easy to prove and to remember, it is less easy than
-the general one to recognise in practice; I failed to see it when it
-came up in the solution to</p>
-
-<div markdown="0">
-\begin{align}
-\Sigma xH_x\delta x\\\\
-\end{align}
-</div>
-
-
-<p>Worse, even the explanation in the book, I had to write it down, play
-with it, before seeing it.</p>
-
-<p>So I'm thinking about a notation that would bring out the rule more
-clearly, an extension of the <em>shift operator</em> $E$:</p>
-
-<div markdown="0">
-\begin{align}
-E_k f(x) &amp; = f(x-k)\\\\
-\end{align}
-</div>
-
-
-<p>This would turn the exponent law into</p>
-
-<div markdown="0">
-\begin{align}
-x^{\underline{m+n}} &amp; = x^{\underline m} E_m x^{\underline n}\\\\
-\end{align}
-</div>
-
-
-<p>Whether this is useful, or whether I'll get used to the original
-notation anyway, we'll see in the exercises...</p>
-
-<h3>Infinite Sums</h3>
-
-<p>The last section is about infinite sums. The authors quite sensibly
-restrict the scope to absolutely convergent sums, which have the
-advantage that the three basic laws and the manipulations they allow
-are still valid.</p>
-
-<p>Once again, this was not overly difficult; the only point I had
-trouble understanding was the existence of the subsets $F_j$ such that
-$\sum_{k\in F_j} a_{j,k} \gt (A/A')A_j$ when
-$\sum_{j\in G} A_j = A' \gt A$. But this last equation means that
-$A/A' \lt 1$, so $(A/A')A_j \lt A_j$. The first equation is therefore
-just a consequence of the fact that $A_j$ is a least upper bound.</p>
-
-<p>Next post, the warmups.</p>
 ]]></content>
   </entry>
   

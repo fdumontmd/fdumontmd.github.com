@@ -460,7 +460,7 @@ find a subset $O'_n\subset O_n$ such that
 
 <div markdown="0">
 \begin{align}
-\sum_{k\in O'_n}a_k \le \sum_{k\in F_{n-1}}a_k - A^-\\\\
+\sum_{k\in O'_n}a_k \le A^- - \sum_{k\in F_{n-1}}a_k\\\\
 \end{align}
 </div>
 

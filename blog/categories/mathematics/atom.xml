@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-05-05T19:56:29+09:00</updated>
+  <updated>2012-05-05T23:23:10+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -497,7 +497,7 @@ find a subset $O'_n\subset O_n$ such that</p>
 
 <div markdown="0">
 \begin{align}
-\sum_{k\in O'_n}a_k \le \sum_{k\in F_{n-1}}a_k - A^-\\\\
+\sum_{k\in O'_n}a_k \le A^- - \sum_{k\in F_{n-1}}a_k\\\\
 \end{align}
 </div>
 

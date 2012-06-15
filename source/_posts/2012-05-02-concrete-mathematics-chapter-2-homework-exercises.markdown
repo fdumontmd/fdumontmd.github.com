@@ -23,7 +23,7 @@ soon the exams and bonus (at least the ones I could do) exercises.
 
 ### $2T_n = nT_{n-1}+3\cdot n!$
 
-This exercise is not tricky in anyway; just follow the method and
+This exercise is not tricky in any way; just follow the method and
 the result is guaranteed.
 
 The recurrence equations are

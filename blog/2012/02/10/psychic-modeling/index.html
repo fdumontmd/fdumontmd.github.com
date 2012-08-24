@@ -20,7 +20,7 @@ Skiena entertains, edifies and educates his readers with so called
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -79,12 +79,14 @@ MathJax.Hub.Config({
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -262,33 +264,13 @@ time the paper was written, so I have some margin.</p>
 they do); I include them to keep the implementation mostly
 self-contained.</p>
 
-<figure class='code'><figcaption><span>Support functions  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">product</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
-</span><span class='line'><span class="nf">combi</span> <span class="n">n</span> <span class="n">c</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fact</span> <span class="n">n</span><span class="p">)</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="p">(</span><span class="n">fact</span> <span class="n">c</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">c</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">remainingNumbers</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">union</span> <span class="kt">[]</span> <span class="n">js</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>fact</code> is just the factorial; <code>combi</code> computes the binomial
 coefficient, and <code>remainingNumbers</code> is just the union of all the
 passed $j$-subsets.</p>
 
-<figure class='code'><figcaption><span>Generating Combinations  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">genCombi</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
-</span><span class='line'><span class="nf">genCombi</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
-</span><span class='line'><span class="nf">genCombi</span> <span class="n">k</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">l</span><span class="kt">:</span><span class="n">cs</span> <span class="o">|</span> <span class="n">cs</span> <span class="ow">&lt;-</span> <span class="n">genCombi</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">ls</span><span class="p">]</span> <span class="o">++</span>
-</span><span class='line'>                    <span class="n">genCombi</span> <span class="n">k</span> <span class="n">ls</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>genCombi k s</code> generates the $k$-subsets of $s$.</p>
 
@@ -296,17 +278,7 @@ passed $j$-subsets.</p>
 
 <p>These are simple implementations of the formula above.</p>
 
-<figure class='code'><figcaption><span>Lower Bound Estimates  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">(</span><span class="n">combi</span> <span class="n">k</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span>
-</span><span class='line'>                            <span class="p">(</span><span class="n">combi</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">|</span> <span class="n">i</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="n">l</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
-</span><span class='line'><span class="nf">lowerBound</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">combi</span> <span class="n">n</span> <span class="n">j</span><span class="p">)</span> <span class="o">/</span>
-</span><span class='line'>                     <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>ticketCover</code> just implements the coverage estimate I defined above
 (the one that uses $k$); <code>lowerBound</code> computes the lower bound for a
@@ -318,27 +290,7 @@ single win.</p>
 their intersection, and define sufficient coverage as the cover being
 larger than $l$.</p>
 
-<figure class='code'><figcaption><span>Defining Coverage  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">cover</span> <span class="n">l1</span> <span class="n">l2</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">intersect</span> <span class="n">l1</span> <span class="n">l2</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">coveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
-</span><span class='line'><span class="nf">notCoveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">notCoveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
-</span><span class='line'><span class="nf">notCoveredBatch</span> <span class="n">l</span> <span class="n">ts</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="n">notCovered</span> <span class="n">l</span><span class="p">)</span> <span class="n">js</span> <span class="n">ts</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>cover</code> implements the cover definition; <code>coveredP</code> and <code>notCoveredP</code>
 are predicates that check for (or against) sufficient coverage.</p>
@@ -351,19 +303,7 @@ cover after selecting a ticket, and to check solutions.</p>
 a ticket. This function is used to compare potential tickets and
 select the one with the best (i.e. largest) coverage.</p>
 
-<figure class='code'><figcaption><span>Checking the estimates  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">checkFormula</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">candidates</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
-</span><span class='line'>      <span class="n">ticket</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">k</span><span class="p">]</span>
-</span><span class='line'>      <span class="n">covered</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">ticket</span><span class="p">)</span> <span class="n">candidates</span>
-</span><span class='line'>  <span class="kr">in</span> <span class="n">length</span> <span class="n">covered</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>checkFormula</code> computes the size of the coverage of a single ticket;
 it can be used to confirm the value of <code>ticketCover</code> above (and as far
@@ -376,25 +316,7 @@ generating function; it then gets one ticket at a time, computes the
 $j$-subsets not covered yet, and repeat until the remaining
 $j$-subsets set becomes empty.</p>
 
-<figure class='code'><figcaption><span>Solution Loop  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">solve</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">gc</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">jtuples</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
-</span><span class='line'>  <span class="kr">in</span> <span class="n">loop</span> <span class="n">jtuples</span>
-</span><span class='line'> <span class="kr">where</span> <span class="n">loop</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
-</span><span class='line'>       <span class="n">loop</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
-</span><span class='line'>         <span class="n">t</span> <span class="ow">&lt;-</span> <span class="n">gc</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span>
-</span><span class='line'>         <span class="n">ts</span> <span class="ow">&lt;-</span> <span class="n">loop</span> <span class="o">$</span> <span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span>
-</span><span class='line'>         <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">ts</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The <code>solve</code> function expects the candidate generation function to be a
 monad; this is to make it possible to use random number generators.</p>
@@ -407,19 +329,7 @@ have what is really the simplest greedy algorithm: when a new ticket
 is needed, get the one that has the best coverage among all the
 possible tickets:</p>
 
-<figure class='code'><figcaption><span>Naive Ticket Selection  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidate</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
-</span><span class='line'>      <span class="n">tickets</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">k</span> <span class="n">numbers</span>
-</span><span class='line'>      <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
-</span><span class='line'>  <span class="kr">in</span> <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>So for each $j$-subsets set, generate all the $k$-subsets, and compare
 their coverage.</p>
@@ -440,43 +350,11 @@ are $k$-subsets rather than $j$-subsets themselves.</p>
 <p>I first need a function to generate a random combination. I&#8217;m using a
 method derived from Knuth (no reference as I don&#8217;t have Volume 4 just yet).</p>
 
-<figure class='code'><figcaption><span>Sample Generation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">sample</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
-</span><span class='line'><span class="nf">sample</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
-</span><span class='line'><span class="nf">sample</span> <span class="n">k</span> <span class="n">ds</span> <span class="ow">=</span> <span class="kr">do</span>
-</span><span class='line'>  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">sample</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ds</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">p</span> <span class="ow">&lt;-</span> <span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span> <span class="n">ds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">ds</span><span class="o">!!</span><span class="n">p</span>
-</span><span class='line'>  <span class="kr">if</span> <span class="n">not</span> <span class="p">(</span><span class="n">t</span> <span class="p">`</span><span class="n">elem</span><span class="p">`</span> <span class="n">s</span><span class="p">)</span>
-</span><span class='line'>    <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
-</span><span class='line'>    <span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">head</span> <span class="n">ds</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The generating function is very similar to the naive one</p>
 
-<figure class='code'><figcaption><span>Randomised Generating Function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidateRandom</span> <span class="n">beta</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
-</span><span class='line'>  <span class="n">tickets</span> <span class="ow">&lt;-</span> <span class="n">replicateM</span> <span class="n">beta</span> <span class="p">(</span><span class="n">sample</span> <span class="n">k</span> <span class="n">numbers</span><span class="p">)</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
-</span><span class='line'>  <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The only difference is the <code>tickets</code> candidate set: the naive function
 generates them all; the randomised one selects $\beta$ randomly.</p>
@@ -819,7 +697,7 @@ rewrite my solution in C, and focus on performance.</p>
         <a class="basic-alignment left" href="/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/" title="Previous Post: Concrete Mathematics Chapter 1 Exam Problems">&laquo; Concrete Mathematics Chapter 1 Exam Problems</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/02/13/psychic-modeling-fast-version/" title="next Post: Psychic Modeling (fast version)">Psychic Modeling (fast version) &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2012/02/13/psychic-modeling-fast-version/" title="Next Post: Psychic Modeling (fast version)">Psychic Modeling (fast version) &raquo;</a>
       
     </p>
   </footer>
@@ -881,12 +759,12 @@ rewrite my solution in C, and focus on performance.</p>
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -936,7 +814,6 @@ rewrite my solution in C, and focus on performance.</p>
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -952,7 +829,6 @@ rewrite my solution in C, and focus on performance.</p>
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

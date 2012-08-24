@@ -19,7 +19,7 @@ indexing, advanced group queries, and MapReduce. Once again, the contrast with R
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -61,12 +61,14 @@ indexing, advanced group queries, and MapReduce. Once again, the contrast with R
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -213,34 +215,11 @@ invoking the <code>collStats</code> command.</p>
 <p>The <code>finalize</code> function is very simple: rename the attribute <code>count</code>
 to <code>total</code>:</p>
 
-<figure class='code'><figcaption><span>finalize function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">finalize</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">{</span> <span class="nx">total</span><span class="o">:</span> <span class="nx">value</span><span class="p">.</span><span class="nx">count</span> <span class="p">};</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>To use it, just add the <code>finalize</code> attribute to the <code>mapReduce</code> command:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">results</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">({</span>
-</span><span class='line'>    <span class="nx">mapReduce</span><span class="o">:</span> <span class="s1">&#39;phones&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">map</span><span class="o">:</span> <span class="nx">map</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">reduce</span><span class="o">:</span> <span class="nx">reduce</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">finalize</span><span class="o">:</span> <span class="nx">finalize</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">out</span><span class="o">:</span> <span class="s1">&#39;phones.report&#39;</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Finally, I can check  the result with <code>db.phones.report.find()</code>:</p>
 
@@ -543,7 +522,7 @@ driver:</p>
         <a class="basic-alignment left" href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/" title="Previous Post: Seven Databases in Seven Weeks MongoDB Day 1">&laquo; Seven Databases in Seven Weeks MongoDB Day 1</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/" title="next Post: Seven Databases in Seven Weeks MongoDB Day 3">Seven Databases in Seven Weeks MongoDB Day 3 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/" title="Next Post: Seven Databases in Seven Weeks MongoDB Day 3">Seven Databases in Seven Weeks MongoDB Day 3 &raquo;</a>
       
     </p>
   </footer>
@@ -651,12 +630,12 @@ driver:</p>
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -698,7 +677,6 @@ driver:</p>
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -714,7 +692,6 @@ driver:</p>
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

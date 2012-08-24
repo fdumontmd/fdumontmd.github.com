@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -113,19 +115,7 @@
 
 <p>I implements a List Monad, and creates a list of pairs where the first element is smaller than the second. In Haskell, this is what it would look like:</p>
 
-<figure class='code'><figcaption><span>List Monad example  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">do</span> <span class="n">x</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span>
-</span><span class='line'>   <span class="n">y</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span>
-</span><span class='line'>   <span class="kr">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">y</span>
-</span><span class='line'>     <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
-</span><span class='line'>     <span class="kr">else</span> <span class="n">fail</span> <span class="s">&quot;Not a valid pair&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Haskell&#8217;s notation for functions is especially useful here. Note how the Java codes forces me to tie <code>MakePair1</code> and <code>MakePair2</code>, while the Haskell equivalent seems to have no special construct whatsoever (the do notation hides the underlying anonymous functions).</p>
 
@@ -446,7 +436,7 @@
         <a class="basic-alignment left" href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/" title="Previous Post: Seven Languages in Seven Weeks Haskell Day 3">&laquo; Seven Languages in Seven Weeks Haskell Day 3</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/" title="next Post: Nice tool: Quick Sequence Diagram Editor">Nice tool: Quick Sequence Diagram Editor &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/" title="Next Post: Nice tool: Quick Sequence Diagram Editor">Nice tool: Quick Sequence Diagram Editor &raquo;</a>
       
     </p>
   </footer>
@@ -552,12 +542,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -599,7 +589,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -615,7 +604,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

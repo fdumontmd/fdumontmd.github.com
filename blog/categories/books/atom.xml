@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Books | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/books/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-08-24T22:59:16+09:00</updated>
+  <updated>2012-08-25T00:13:40+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -1112,60 +1112,7 @@ model. Then I initialise <code>p0Denom</code> and <code>p1Denom</code> with <cod
 explained above; finally I check the <code>bag</code> flag to know what to add to
 either denominators.</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>new trainingNB0  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">trainNB0</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">,</span> <span class="n">trainCategory</span><span class="p">,</span> <span class="n">bag</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">numTrainDocs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">)</span>
-</span><span class='line'><span class="n">numWords</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span><span class='line'><span class="n">pAbusive</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainCategory</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">)</span>
-</span><span class='line'><span class="n">p0Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">);</span> <span class="n">p1Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">)</span>
-</span><span class='line'><span class="n">p0Denom</span> <span class="o">=</span> <span class="n">numWords</span><span class="p">;</span> <span class="n">p1Denom</span> <span class="o">=</span> <span class="n">numWords</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">trainCategory</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">p1Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">p1Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">p1Denom</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">p0Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">p0Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">p0Denom</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'><span class="n">p1Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p1Num</span><span class="o">/</span><span class="p">(</span><span class="n">p1Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
-</span><span class='line'><span class="n">p0Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p0Num</span><span class="o">/</span><span class="p">(</span><span class="n">p0Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
-</span><span class='line'><span class="k">return</span> <span class="n">p0Vect</span><span class="p">,</span> <span class="n">p1Vect</span><span class="p">,</span> <span class="n">pAbusive</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>Liquid error: can't convert Array into String</p>
 
 <h2>Evaluation</h2>
 

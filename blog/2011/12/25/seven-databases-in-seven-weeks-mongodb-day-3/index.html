@@ -19,7 +19,7 @@ explore MongoDB&#8217;s approach to the CAP theorem. Like PostgreSQL, MongoDB ha
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -71,12 +71,14 @@ explore MongoDB&#8217;s approach to the CAP theorem. Like PostgreSQL, MongoDB ha
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -178,25 +180,13 @@ is ready to run the queries.</p>
 but I assume the authors meant the one in England. I create a <code>centre</code>
 variable to be used in the queries.</p>
 
-<figure class='code'><figcaption><span>Finding London  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">london</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">findOne</span><span class="p">(</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;London&#39;</span><span class="p">,</span> <span class="nx">country</span><span class="o">:</span> <span class="s1">&#39;GB&#39;</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">location</span><span class="o">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">centre</span> <span class="o">=</span> <span class="p">[</span><span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">longitude</span><span class="p">,</span> <span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">latitude</span><span class="p">];</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>As indicated in the documentation, I have to measure distances in
 radians. For this I need to know the
 <a href="http://en.wikipedia.org/wiki/Earth_radius">Earth Radius</a> in miles.</p>
 
-<figure class='code'><figcaption><span>Earth Radius and Range  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">earthRadius</span> <span class="o">=</span> <span class="mi">3959</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">range</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Finally I can run my queries. I have a few options:</p>
 
@@ -205,19 +195,7 @@ radians. For this I need to know the
 <p>I can pass the <code>spherical: true</code> option to the <code>geoNear</code> command. By
 default, the query will only return 100 results.</p>
 
-<figure class='code'><figcaption><span>geoNear  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">(</span>
-</span><span class='line'>    <span class="p">{</span> <span class="nx">geoNear</span><span class="o">:</span> <span class="s2">&quot;cities&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">near</span><span class="o">:</span> <span class="nx">centre</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">spherical</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">maxDistance</span><span class="o">:</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span> <span class="p">}</span> <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>As it turns out, there are far more cities in this range. A circle of
 500 miles radius around London includes much of Western Europe:</p>
@@ -228,40 +206,14 @@ default, the query will only return 100 results.</p>
 <p>To get unlimited results, I set the number of possible results to the
 number of cities:</p>
 
-<figure class='code'><figcaption><span>unlimited geoNear  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">(</span>
-</span><span class='line'>    <span class="p">{</span> <span class="nx">geoNear</span><span class="o">:</span> <span class="s2">&quot;cities&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">near</span><span class="o">:</span> <span class="nx">centre</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">spherical</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">num</span><span class="o">:</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">count</span><span class="p">(),</span>
-</span><span class='line'>      <span class="nx">maxDistance</span><span class="o">:</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span> <span class="p">}</span> <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4><code>$within</code> operator</h4>
 
 <p>Alternatively, I can use the <code>$within</code> operator. I get the spherical
 behaviour by specifying a <code>centerSphere</code>:</p>
 
-<figure class='code'><figcaption><span>$within  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
-</span><span class='line'>    <span class="p">{</span> <span class="nx">location</span><span class="o">:</span>
-</span><span class='line'>      <span class="p">{</span> <span class="nx">$within</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">$centerSphere</span><span class="o">:</span> <span class="p">[</span><span class="nx">centre</span><span class="p">,</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span><span class="p">]</span>
-</span><span class='line'>      <span class="p">}}})</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>This query will return cities within the range, just like the
 unlimited <code>geoNear</code> one.</p>
@@ -474,7 +426,7 @@ reason about.</p>
         <a class="basic-alignment left" href="/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/" title="Previous Post: Seven Databases in Seven Weeks MongoDB Day 2">&laquo; Seven Databases in Seven Weeks MongoDB Day 2</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/" title="next Post: Seven Databases in Seven Weeks Neo4j Day 1">Seven Databases in Seven Weeks Neo4j Day 1 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/" title="Next Post: Seven Databases in Seven Weeks Neo4j Day 1">Seven Databases in Seven Weeks Neo4j Day 1 &raquo;</a>
       
     </p>
   </footer>
@@ -582,12 +534,12 @@ reason about.</p>
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -633,7 +585,6 @@ reason about.</p>
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -649,7 +600,6 @@ reason about.</p>
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

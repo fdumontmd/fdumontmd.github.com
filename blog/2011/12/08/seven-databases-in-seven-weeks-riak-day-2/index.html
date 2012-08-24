@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -133,63 +135,7 @@
 
 <p>An actual SQL solution would be much simpler, would run fully in the database (no need for a script to create the initial data), and would deliver the data long before you&#8217;d be done coding and debugging the Javascript Mapreduce code.</p>
 
-<figure class='code'><figcaption><span>A real SQL solution  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="c1">-- SQL supports composite primary key, which this problem maps well to</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">hotel</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">floor</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">room</span>  <span class="nb">int</span>  <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">capacity</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">style</span> <span class="nb">char</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="k">CHECK</span> <span class="p">(</span><span class="n">style</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;queen&#39;</span><span class="p">,</span> <span class="s1">&#39;king&#39;</span><span class="p">,</span> <span class="s1">&#39;suite&#39;</span><span class="p">)</span> <span class="p">),</span>
-</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">floor</span><span class="p">,</span> <span class="n">room</span><span class="p">)</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- a simple function to provide a easy to use random range</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">FUNCTION</span> <span class="n">random</span><span class="p">(</span><span class="nb">numeric</span><span class="p">,</span> <span class="nb">numeric</span><span class="p">)</span>
-</span><span class='line'><span class="k">RETURNS</span> <span class="nb">numeric</span> <span class="k">AS</span>
-</span><span class='line'><span class="err">$$</span>
-</span><span class='line'>   <span class="k">SELECT</span> <span class="p">(</span><span class="err">$</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="err">$</span><span class="mi">2</span> <span class="o">-</span> <span class="err">$</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">random</span><span class="p">())::</span><span class="nb">numeric</span><span class="p">;</span>
-</span><span class='line'><span class="err">$$</span> <span class="k">LANGUAGE</span> <span class="s1">&#39;sql&#39;</span> <span class="k">VOLATILE</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- using generate_series and the random function above</span>
-</span><span class='line'><span class="c1">-- to fill all the rooms, in pure PostgreSQL </span>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">hotel</span> <span class="p">(</span><span class="n">floor</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">capacity</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">SELECT</span> <span class="n">f</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="p">(</span><span class="nb">ARRAY</span><span class="p">[</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;queen&#39;</span><span class="p">,</span> <span class="s1">&#39;king&#39;</span><span class="p">,</span> <span class="s1">&#39;suite&#39;</span><span class="p">])[</span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)],</span> <span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span> <span class="k">FROM</span>
-</span><span class='line'>    <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span> <span class="k">AS</span> <span class="n">f</span><span class="p">,</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span> <span class="k">AS</span> <span class="n">r</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- the basic query</span>
-</span><span class='line'><span class="k">SELECT</span> <span class="n">style</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">capacity</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">hotel</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">style</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">-- same query with filter</span>
-</span><span class='line'><span class="k">SELECT</span> <span class="n">style</span><span class="p">,</span> <span class="k">SUM</span><span class="p">(</span><span class="n">capacity</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">hotel</span> <span class="k">WHERE</span> <span class="n">floor</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">style</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>It does not help that actually testing the code on Riak, I had to wait about 10 seconds while PostgreSQL answer was immediate. Of course, I have 3 instances of Riak on a single machine, which is certainly not a typical setup.</p>
 
@@ -287,23 +233,7 @@
 
 <p>The first step is to map the original data to an array of capacity indexed by floor. What has not been seen so far is how to get the <code>key</code> of an object, but it is just another property (directly in <code>v</code>, not in the <code>values</code> array):</p>
 
-<figure class='code'><figcaption><span>Mapping data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">parsed_data</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">values</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">floor</span> <span class="o">=</span> <span class="o">~~</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">);</span>
-</span><span class='line'>  <span class="nx">data</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">=</span> <span class="nx">parsed_data</span><span class="p">.</span><span class="nx">capacity</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">data</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>A quick test:</p>
 
@@ -353,35 +283,7 @@
 
 <p>Ok, looking good. Now the <code>reduce</code> part. It is strictly identical to the book&#8217;s <code>reduce</code> function, but I just renamed some variables to make it clear what is being iterated over:</p>
 
-<figure class='code'><figcaption><span>Reducing data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">totals</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">floor</span> <span class="k">in</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span> <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="p">)</span>
-</span><span class='line'>        <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">floor</span><span class="p">];</span>
-</span><span class='line'>      <span class="k">else</span>
-</span><span class='line'>        <span class="nx">totals</span><span class="p">[</span><span class="nx">floor</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">floor</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">totals</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing:</p>
 
@@ -886,7 +788,7 @@
         <a class="basic-alignment left" href="/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/" title="Previous Post: Seven Databases in Seven Weeks Riak Day 1">&laquo; Seven Databases in Seven Weeks Riak Day 1</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/" title="next Post: Seven Databases in Seven Weeks Riak Day 3">Seven Databases in Seven Weeks Riak Day 3 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/" title="Next Post: Seven Databases in Seven Weeks Riak Day 3">Seven Databases in Seven Weeks Riak Day 3 &raquo;</a>
       
     </p>
   </footer>
@@ -994,12 +896,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -1041,7 +943,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -1057,7 +958,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

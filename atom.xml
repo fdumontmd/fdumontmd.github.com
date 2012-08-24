@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-08-24T22:59:16+09:00</updated>
+  <updated>2012-08-25T00:13:40+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -1112,53 +1112,7 @@ model. Then I initialise <code>p0Denom</code> and <code>p1Denom</code> with <cod
 explained above; finally I check the <code>bag</code> flag to know what to add to
 either denominators.</p>
 
-<figure class='code'><figcaption><span>new trainingNB0  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">trainNB0</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">,</span> <span class="n">trainCategory</span><span class="p">,</span> <span class="n">bag</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">numTrainDocs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">numWords</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span><span class='line'>    <span class="n">pAbusive</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainCategory</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">p0Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">);</span> <span class="n">p1Num</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">numWords</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">p0Denom</span> <span class="o">=</span> <span class="n">numWords</span><span class="p">;</span> <span class="n">p1Denom</span> <span class="o">=</span> <span class="n">numWords</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numTrainDocs</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">trainCategory</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">p1Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">p1Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">p1Denom</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">p0Num</span> <span class="o">+=</span> <span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">bag</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">p0Denom</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trainMatrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">p0Denom</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="n">p1Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p1Num</span><span class="o">/</span><span class="p">(</span><span class="n">p1Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
-</span><span class='line'>    <span class="n">p0Vect</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">p0Num</span><span class="o">/</span><span class="p">(</span><span class="n">p0Denom</span><span class="o">+</span><span class="n">numWords</span><span class="p">))</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">p0Vect</span><span class="p">,</span> <span class="n">p1Vect</span><span class="p">,</span> <span class="n">pAbusive</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h2>Evaluation</h2>
 
@@ -1411,23 +1365,11 @@ and the <code>uniqueObject</code> step has been replaced by <code>dedup</code>.<
 
 <p>Here are the updated relevant portions:</p>
 
-<figure class='code'><figcaption><span>/band Route  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">membersQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;bands&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">bandName</span><span class="o">+</span><span class="s1">&#39;&quot;]]&#39;</span>
-</span><span class='line'>             <span class="o">+</span> <span class="s1">&#39;.out(&quot;member&quot;).in(&quot;member&quot;).dedup.name&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>and</p>
 
-<figure class='code'><figcaption><span>/artist Route  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">rolesQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;artists&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">artistName</span><span class="o">+</span><span class="s1">&#39;&quot;]].out(&quot;plays&quot;).role.dedup&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nx">bandsQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;artists&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">artistName</span><span class="o">+</span><span class="s1">&#39;&quot;]].in(&quot;member&quot;).name.dedup&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h2>Exercises</h2>
 
@@ -1447,37 +1389,12 @@ provided; the purpose of this exercise is to use this information.</p>
 <p>I load the start and end dates into their own key in Redis. The key
 format are <code>from:bandName:artistName</code> and <code>to:bandName:artistName</code>.</p>
 
-<p>First I take the data from the relevant columns:</p>
-
-<figure class='code'><figcaption><span>Extracting Data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span>
-</span><span class='line'>  <span class="nx">artist</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-</span><span class='line'>  <span class="nx">band</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-</span><span class='line'>  <span class="nx">roles</span> <span class="o">=</span> <span class="nx">buildRoles</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span>
-</span><span class='line'>  <span class="nx">from</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-</span><span class='line'>  <span class="nx">to</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>First I take the data from the relevant columns:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Then, if they&#8217;re not empty, I create the keys in Redis:</p>
 
-<figure class='code'><figcaption><span>Updating Redis  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">from</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nx">redis_client</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;from:&#39;</span> <span class="o">+</span> <span class="nx">band</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artist</span><span class="p">,</span> <span class="nx">from</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">to</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nx">redis_client</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;to:&#39;</span> <span class="o">+</span> <span class="nx">band</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artist</span><span class="p">,</span> <span class="nx">to</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>CouchDB</h4>
 
@@ -1488,65 +1405,11 @@ to figure out how to modify the <code>populate_couch.js</code> script
 <p>Eventually, I just reused the <code>roleBatch</code> (therefore renamed
 <code>artistInfoBatch</code>) to retrieve the roles, from and to information.</p>
 
-<figure class='code'><figcaption><span>Retrieving the Information  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">artistInfoBatch</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'><span class="nx">artists</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">artistName</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">artistInfoBatch</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span>
-</span><span class='line'>    <span class="s1">&#39;smembers&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;artist:&#39;</span> <span class="o">+</span> <span class="nx">bandName</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artistName</span>
-</span><span class='line'>  <span class="p">]);</span>
-</span><span class='line'>  <span class="nx">artistInfoBatch</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span>
-</span><span class='line'>    <span class="s1">&#39;get&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;from:&#39;</span> <span class="o">+</span> <span class="nx">bandName</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artistName</span>
-</span><span class='line'>  <span class="p">]);</span>
-</span><span class='line'>  <span class="nx">artistInfoBatch</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span>
-</span><span class='line'>    <span class="s1">&#39;get&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;to:&#39;</span> <span class="o">+</span> <span class="nx">bandName</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artistName</span>
-</span><span class='line'>  <span class="p">]);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The putting it in CouchDB is trivial:</p>
 
-<figure class='code'><figcaption><span>Building Documents  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">artists</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span> <span class="kd">function</span><span class="p">(</span><span class="nx">artistName</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">artist</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">artistName</span><span class="p">,</span> <span class="nx">role</span> <span class="o">:</span> <span class="nx">artistInfo</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">]</span> <span class="p">},</span>
-</span><span class='line'>      <span class="nx">from</span> <span class="o">=</span> <span class="nx">artistInfo</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">],</span>
-</span><span class='line'>      <span class="nx">to</span> <span class="o">=</span> <span class="nx">artistInfo</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">];</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">from</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">artist</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">from</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">to</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">artist</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">to</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">artistDocs</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">artist</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>Neo4j</h4>
 
@@ -1560,52 +1423,12 @@ it still took me more time to understand how to use them).</p>
 does not support adding properties to relationships, but it was easy
 enough to modify this library to add this feature.</p>
 
-<figure class='code'><figcaption><span>Relationship properties  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">neo4jClient</span><span class="p">.</span><span class="nx">createRelationship</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fromNode</span><span class="p">,</span> <span class="nx">toNode</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">,</span> <span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">fromPath</span> <span class="o">=</span> <span class="p">(</span><span class="nx">fromNode</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^.*?\/db\/data\//</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
-</span><span class='line'>      <span class="nx">rel</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">to</span><span class="o">:</span> <span class="nx">toNode</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="nx">type</span> <span class="p">};</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">rel</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">props</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">neo4jClient</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
-</span><span class='line'>    <span class="p">[</span><span class="nx">fromPath</span><span class="p">,</span> <span class="s1">&#39;relationships&#39;</span><span class="p">],</span> <span class="nx">rel</span><span class="p">,</span> <span class="nx">callback</span>
-</span><span class='line'>  <span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>then the relevant properties can be passed to the function above in
 the <code>graph_sync.js</code> script:</p>
 
-<figure class='code'><figcaption><span>Passing from and to properties  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">props</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'><span class="nx">progress</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;progress&#39;</span><span class="p">,</span> <span class="s1">&#39;artist&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">artist</span><span class="p">.</span><span class="nx">from</span><span class="p">)</span>
-</span><span class='line'>  <span class="nx">props</span><span class="p">.</span><span class="nx">from</span> <span class="o">=</span> <span class="nx">artist</span><span class="p">.</span><span class="nx">from</span><span class="p">;</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">artist</span><span class="p">.</span><span class="nx">to</span><span class="p">)</span>
-</span><span class='line'>  <span class="nx">props</span><span class="p">.</span><span class="nx">to</span> <span class="o">=</span> <span class="nx">artist</span><span class="p">.</span><span class="nx">to</span><span class="p">;</span>
-</span><span class='line'><span class="nx">relate</span><span class="p">(</span><span class="nx">bandNode</span><span class="p">.</span><span class="nx">self</span><span class="p">,</span> <span class="nx">artistNode</span><span class="p">.</span><span class="nx">self</span><span class="p">,</span> <span class="s1">&#39;member&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>  <span class="nx">progress</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;progress&#39;</span><span class="p">,</span> <span class="s1">&#39;member&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="p">},</span> <span class="nx">props</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>Using the new data</h4>
 
@@ -1658,43 +1481,7 @@ object with two properties: <code>columns</code> is an array of column names, an
 <code>data</code> is an array of arrays (each one being a row). To convert them
 to an array of objects, I use the following code:</p>
 
-<figure class='code'><figcaption><span>Convert Table data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">convertGremlinTable</span><span class="p">(</span><span class="nx">table</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">fromTableToObject</span><span class="p">(</span><span class="nx">table</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">].</span><span class="nx">columns</span><span class="p">,</span> <span class="nx">table</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">].</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">fromTableToObject</span><span class="p">(</span><span class="nx">columns</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">res</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">columns</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span>
-</span><span class='line'>                <span class="nx">obj</span><span class="p">[</span><span class="nx">columns</span><span class="p">[</span><span class="nx">j</span><span class="p">]]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">];</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nx">res</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">res</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The rest of the code is just the nested Node.js event functions, and
 the formatting using the <a href="http://mustache.github.com/"><code>mustache</code></a>
@@ -3192,69 +2979,11 @@ module did not.</p>
 with the same name as the band&#8217;s key: if it does, I add a link to the
 dedicated streaming port, passing the key as parameter:</p>
 
-<figure class='code'><figcaption><span>Adding Sample Link  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">mongoClient</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">mongodb</span><span class="p">.</span><span class="nx">GridStore</span><span class="p">.</span><span class="nx">exist</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="nx">bandKey</span> <span class="o">+</span> <span class="s1">&#39;.mp3&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">exist</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">exist</span><span class="p">)</span>
-</span><span class='line'>      <span class="nx">body</span> <span class="o">+=</span> <span class="s1">&#39;&lt;a href=&quot;http://&#39;</span><span class="o">+</span><span class="nx">host</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nx">streamPort</span><span class="o">+</span><span class="s1">&#39;?band=&quot;&gt;Sample&lt;/a&gt;&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Then, I create a new <code>http</code> server to send the music:</p>
 
-<figure class='code'><figcaption><span>Streaming Files from GridFS  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">band</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="kc">true</span><span class="p">).</span><span class="nx">query</span><span class="p">.</span><span class="nx">band</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">mongoClient</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">gs</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">mongodb</span><span class="p">.</span><span class="nx">GridStore</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="nx">band</span><span class="o">+</span><span class="s1">&#39;.mp3&#39;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">gs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">gs</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;streaming...&quot;</span><span class="p">);</span>
-</span><span class='line'>            <span class="nx">response</span><span class="p">.</span><span class="nx">writeHeader</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>                <span class="s1">&#39;Content-type&#39;</span><span class="o">:</span> <span class="s1">&#39;audio/mpeg, audio/x-mpeg, audio/x-mpeg-3, audio/mpeg3&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="c1">// magic headers to stream mp3...</span>
-</span><span class='line'>                <span class="s1">&#39;X-Pad&#39;</span><span class="o">:</span> <span class="s1">&#39;avoid browser bug&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="s1">&#39;Cache-Control&#39;</span><span class="o">:</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="s1">&#39;Content-Length&#39;</span><span class="o">:</span> <span class="nx">gs</span><span class="p">.</span><span class="nx">length</span><span class="p">});</span>
-</span><span class='line'><span class="c1">// cannot use gridstore streams; somehow file always</span>
-</span><span class='line'><span class="c1">// truncated - load in memory instead</span>
-</span><span class='line'><span class="c1">//            gs.stream(true).pipe(response);</span>
-</span><span class='line'>            <span class="nx">gs</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">gs</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'>                <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
-</span><span class='line'>                <span class="nx">db</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
-</span><span class='line'>            <span class="p">});</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="nx">streamPort</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The only problem I had (but it took me a while to figure it out) was
 that the stream support in the MongoDB client for GridFS content is
@@ -4808,107 +4537,7 @@ the best&#8217;s, the new ticket becomes the best as well.</p>
 best uncovered set, and if there are any remaining $j$-subsets to
 find, we loop.</p>
 
-<figure class='code'><figcaption><span>solve  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">void</span> <span class="nf">solve</span><span class="p">(</span><span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">j</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">UINT</span> <span class="n">r</span> <span class="o">=</span> <span class="n">combi</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">UINT</span> <span class="o">*</span><span class="n">work</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">BETA</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">show_set</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">r</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">UINT</span> <span class="n">d</span> <span class="o">=</span> <span class="n">funion</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">bc</span> <span class="o">=</span> <span class="n">bits_count</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">UINT</span> <span class="n">digits</span><span class="p">[</span><span class="n">bc</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="n">digits</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span> <span class="o">&amp;</span> <span class="o">-</span><span class="n">d</span><span class="p">;</span>
-</span><span class='line'>            <span class="n">d</span> <span class="o">&amp;=</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">UINT</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">best_remaining</span><span class="p">,</span> <span class="n">best_pos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
-</span><span class='line'>        <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="n">r</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">BETA</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="n">UINT</span> <span class="n">new_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
-</span><span class='line'>            <span class="n">UINT</span> <span class="n">new_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">new_ticket</span><span class="p">,</span>
-</span><span class='line'>                                             <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">new_remaining</span> <span class="o">&lt;</span> <span class="n">best_remaining</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">new_ticket</span><span class="p">;</span>
-</span><span class='line'>                <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">new_remaining</span><span class="p">;</span>
-</span><span class='line'>                <span class="n">best_pos</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">show_set</span><span class="p">(</span><span class="n">best_ticket</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">best_remaining</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">memcpy</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">(</span><span class="n">best_pos</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="n">best_remaining</span><span class="p">);</span>
-</span><span class='line'>        <span class="n">r</span> <span class="o">=</span> <span class="n">best_remaining</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">free</span><span class="p">(</span><span class="n">work</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4><code>init</code></h4>
 
@@ -4920,64 +4549,14 @@ not size of the not yet covered set of $j$-subsets.</p>
 <p>If all tickets had to be generated randomly, 0 could be passed instead
 of a ticket to keep all $j$-subsets.</p>
 
-<figure class='code'><figcaption><span>init  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">init</span><span class="p">(</span><span class="n">UINT</span> <span class="n">c</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">w</span><span class="p">[])</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">UINT</span> <span class="n">v</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">c</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">v</span> <span class="o">&amp;</span> <span class="n">k</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">l</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">v</span> <span class="o">=</span> <span class="n">next_perm</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4><code>check_cover</code></h4>
 
 <p><code>check_cover</code> has a similar design as <code>init</code>, but reads the
 $j$-subsets from the work memory <code>from</code> instead of generating them.</p>
 
-<figure class='code'><figcaption><span>check_cover  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">check_cover</span><span class="p">(</span><span class="n">UINT</span> <span class="n">r</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">t</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">from</span><span class="p">[],</span> <span class="n">UINT</span> <span class="n">to</span><span class="p">[])</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">t</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">l</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">to</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4><code>sample</code></h4>
 
@@ -4985,53 +4564,13 @@ $j$-subsets from the work memory <code>from</code> instead of generating them.</
 based on the same algorithm); here the <code>digits</code> array plays the role
 that <code>ds</code> played in the Haskell version.</p>
 
-<figure class='code'><figcaption><span>sample  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">sample</span><span class="p">(</span><span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">ds</span><span class="p">[])</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">UINT</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ds</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">UINT</span> <span class="n">p</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">randomR</span><span class="p">(</span><span class="n">n</span><span class="p">)];</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">&amp;</span> <span class="n">s</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">ds</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">else</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">p</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4><code>next_perm</code></h4>
 
 <p>The <code>next_perm</code> is from <a href="http://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation">Bit Twiddling Hacks</a>, and explained <a href="http://www.alexbowe.com/generating-binary-permutations-in-popcount-or">here</a>.</p>
 
-<figure class='code'><figcaption><span>next_perm  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">next_perm</span><span class="p">(</span><span class="n">UINT</span> <span class="n">v</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">v</span> <span class="o">|</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(((</span><span class="o">~</span><span class="n">t</span> <span class="o">&amp;</span> <span class="o">-~</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">__builtin_ctz</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>Compiling and running</h4>
 
@@ -5658,33 +5197,13 @@ time the paper was written, so I have some margin.</p>
 they do); I include them to keep the implementation mostly
 self-contained.</p>
 
-<figure class='code'><figcaption><span>Support functions  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">product</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
-</span><span class='line'><span class="nf">combi</span> <span class="n">n</span> <span class="n">c</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fact</span> <span class="n">n</span><span class="p">)</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="p">(</span><span class="n">fact</span> <span class="n">c</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">c</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">remainingNumbers</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">union</span> <span class="kt">[]</span> <span class="n">js</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>fact</code> is just the factorial; <code>combi</code> computes the binomial
 coefficient, and <code>remainingNumbers</code> is just the union of all the
 passed $j$-subsets.</p>
 
-<figure class='code'><figcaption><span>Generating Combinations  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">genCombi</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
-</span><span class='line'><span class="nf">genCombi</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
-</span><span class='line'><span class="nf">genCombi</span> <span class="n">k</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">l</span><span class="kt">:</span><span class="n">cs</span> <span class="o">|</span> <span class="n">cs</span> <span class="ow">&lt;-</span> <span class="n">genCombi</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">ls</span><span class="p">]</span> <span class="o">++</span>
-</span><span class='line'>                    <span class="n">genCombi</span> <span class="n">k</span> <span class="n">ls</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>genCombi k s</code> generates the $k$-subsets of $s$.</p>
 
@@ -5692,17 +5211,7 @@ passed $j$-subsets.</p>
 
 <p>These are simple implementations of the formula above.</p>
 
-<figure class='code'><figcaption><span>Lower Bound Estimates  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">(</span><span class="n">combi</span> <span class="n">k</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span>
-</span><span class='line'>                            <span class="p">(</span><span class="n">combi</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">|</span> <span class="n">i</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="n">l</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
-</span><span class='line'><span class="nf">lowerBound</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">combi</span> <span class="n">n</span> <span class="n">j</span><span class="p">)</span> <span class="o">/</span>
-</span><span class='line'>                     <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>ticketCover</code> just implements the coverage estimate I defined above
 (the one that uses $k$); <code>lowerBound</code> computes the lower bound for a
@@ -5714,27 +5223,7 @@ single win.</p>
 their intersection, and define sufficient coverage as the cover being
 larger than $l$.</p>
 
-<figure class='code'><figcaption><span>Defining Coverage  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">cover</span> <span class="n">l1</span> <span class="n">l2</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">intersect</span> <span class="n">l1</span> <span class="n">l2</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">coveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
-</span><span class='line'><span class="nf">notCoveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">notCoveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
-</span><span class='line'><span class="nf">notCoveredBatch</span> <span class="n">l</span> <span class="n">ts</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="n">notCovered</span> <span class="n">l</span><span class="p">)</span> <span class="n">js</span> <span class="n">ts</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>cover</code> implements the cover definition; <code>coveredP</code> and <code>notCoveredP</code>
 are predicates that check for (or against) sufficient coverage.</p>
@@ -5747,19 +5236,7 @@ cover after selecting a ticket, and to check solutions.</p>
 a ticket. This function is used to compare potential tickets and
 select the one with the best (i.e. largest) coverage.</p>
 
-<figure class='code'><figcaption><span>Checking the estimates  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">checkFormula</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">candidates</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
-</span><span class='line'>      <span class="n">ticket</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">k</span><span class="p">]</span>
-</span><span class='line'>      <span class="n">covered</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">ticket</span><span class="p">)</span> <span class="n">candidates</span>
-</span><span class='line'>  <span class="kr">in</span> <span class="n">length</span> <span class="n">covered</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>checkFormula</code> computes the size of the coverage of a single ticket;
 it can be used to confirm the value of <code>ticketCover</code> above (and as far
@@ -5772,25 +5249,7 @@ generating function; it then gets one ticket at a time, computes the
 $j$-subsets not covered yet, and repeat until the remaining
 $j$-subsets set becomes empty.</p>
 
-<figure class='code'><figcaption><span>Solution Loop  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">solve</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">gc</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">jtuples</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
-</span><span class='line'>  <span class="kr">in</span> <span class="n">loop</span> <span class="n">jtuples</span>
-</span><span class='line'> <span class="kr">where</span> <span class="n">loop</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
-</span><span class='line'>       <span class="n">loop</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
-</span><span class='line'>         <span class="n">t</span> <span class="ow">&lt;-</span> <span class="n">gc</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span>
-</span><span class='line'>         <span class="n">ts</span> <span class="ow">&lt;-</span> <span class="n">loop</span> <span class="o">$</span> <span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span>
-</span><span class='line'>         <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">ts</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The <code>solve</code> function expects the candidate generation function to be a
 monad; this is to make it possible to use random number generators.</p>
@@ -5803,19 +5262,7 @@ have what is really the simplest greedy algorithm: when a new ticket
 is needed, get the one that has the best coverage among all the
 possible tickets:</p>
 
-<figure class='code'><figcaption><span>Naive Ticket Selection  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidate</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
-</span><span class='line'>      <span class="n">tickets</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">k</span> <span class="n">numbers</span>
-</span><span class='line'>      <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
-</span><span class='line'>  <span class="kr">in</span> <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>So for each $j$-subsets set, generate all the $k$-subsets, and compare
 their coverage.</p>
@@ -5836,43 +5283,11 @@ are $k$-subsets rather than $j$-subsets themselves.</p>
 <p>I first need a function to generate a random combination. I&#8217;m using a
 method derived from Knuth (no reference as I don&#8217;t have Volume 4 just yet).</p>
 
-<figure class='code'><figcaption><span>Sample Generation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">sample</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
-</span><span class='line'><span class="nf">sample</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
-</span><span class='line'><span class="nf">sample</span> <span class="n">k</span> <span class="n">ds</span> <span class="ow">=</span> <span class="kr">do</span>
-</span><span class='line'>  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">sample</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ds</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">p</span> <span class="ow">&lt;-</span> <span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span> <span class="n">ds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">ds</span><span class="o">!!</span><span class="n">p</span>
-</span><span class='line'>  <span class="kr">if</span> <span class="n">not</span> <span class="p">(</span><span class="n">t</span> <span class="p">`</span><span class="n">elem</span><span class="p">`</span> <span class="n">s</span><span class="p">)</span>
-</span><span class='line'>    <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
-</span><span class='line'>    <span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">head</span> <span class="n">ds</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The generating function is very similar to the naive one</p>
 
-<figure class='code'><figcaption><span>Randomised Generating Function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidateRandom</span> <span class="n">beta</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
-</span><span class='line'>  <span class="n">tickets</span> <span class="ow">&lt;-</span> <span class="n">replicateM</span> <span class="n">beta</span> <span class="p">(</span><span class="n">sample</span> <span class="n">k</span> <span class="n">numbers</span><span class="p">)</span>
-</span><span class='line'>  <span class="kr">let</span> <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
-</span><span class='line'>  <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The only difference is the <code>tickets</code> candidate set: the naive function
 generates them all; the randomised one selects $\beta$ randomly.</p>
@@ -6710,24 +6125,7 @@ the matching records are returned.</p>
 
 <p>To monitor for conflicts, I have the following design document:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
-</span><span class='line'>   <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/filters&quot;</span><span class="p">,</span>
-</span><span class='line'>   <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;3-ec032384bf365d3caef0ed91185ae45a&quot;</span><span class="p">,</span>
-</span><span class='line'>   <span class="s2">&quot;filters&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>       <span class="s2">&quot;by_country&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc, req) { return doc.country == req.query.country; }&quot;</span><span class="p">,</span>
-</span><span class='line'>       <span class="s2">&quot;conflicts&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc, req) { return doc._conflicts; }&quot;</span>
-</span><span class='line'>   <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>With that, I can then listen for changes, keeping only the conflicts:</p>
 
@@ -6878,111 +6276,7 @@ back into the buffer), and parse each line as a JSON object.</p>
 <p>The format of each parsed object is different: each change is in its
 own object, so there is no <code>results</code> attribute any more.</p>
 
-<figure class='code'><figcaption><span>watch_changes_continuous.js  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">http_options</span> <span class="o">=</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="nx">host</span><span class="o">:</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">port</span><span class="o">:</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">db</span> <span class="o">+</span> <span class="s1">&#39;/_changes&#39;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s1">&#39;?feed=continuous&amp;include_docs=true&amp;since=&#39;</span> <span class="o">+</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">last_seq</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">processLine</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">line</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">line</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">line</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">output</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="c1">// don&#39;t emit last_seq</span>
-</span><span class='line'>            <span class="c1">// watcher.last_seq not used in this code</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">output</span><span class="p">.</span><span class="nx">last_seq</span><span class="p">)</span>
-</span><span class='line'>                <span class="nx">watcher</span><span class="p">.</span><span class="nx">last_seq</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">last_seq</span><span class="p">;</span>
-</span><span class='line'>            <span class="k">else</span>
-</span><span class='line'>                <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">output</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">line</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">checkForData</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">buffer</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">lines</span> <span class="o">=</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;\n&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="c1">// if the last character is line return</span>
-</span><span class='line'>    <span class="c1">// use the last line; otherwise put it back</span>
-</span><span class='line'>    <span class="c1">// into the buffer to be completed later</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;\n&#39;</span><span class="p">)</span>
-</span><span class='line'>        <span class="nx">buffer</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-</span><span class='line'>    <span class="k">else</span>
-</span><span class='line'>        <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">lines</span><span class="p">.</span><span class="nx">pop</span><span class="p">()</span>
-</span><span class='line'>    <span class="c1">// process the remaining lines one at a time</span>
-</span><span class='line'>    <span class="nx">lines</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">processLine</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">buffer</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">http_options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">res</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">chunk</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">buffer</span> <span class="o">+=</span> <span class="nx">chunk</span><span class="p">;</span>
-</span><span class='line'>        <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">checkForData</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>    <span class="nx">res</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">checkForData</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'><span class="p">})</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h3>Continuous watcher implementation</h3>
 
@@ -7001,28 +6295,7 @@ to test this I must use the <code>music-repl</code> database.</p>
 and for each revision it contains, emit that revision mapped to the
 document <code>_id</code>:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
-</span><span class='line'>   <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/conflicts&quot;</span><span class="p">,</span>
-</span><span class='line'>   <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;4-1f5c35d83a4cfc7783d60f665946dc6d&quot;</span><span class="p">,</span>
-</span><span class='line'>   <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="s2">&quot;javascript&quot;</span><span class="p">,</span>
-</span><span class='line'>   <span class="s2">&quot;views&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>       <span class="s2">&quot;conflicts&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>           <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc) { (doc._conflicts || []).forEach(function(rev) { emit(rev, doc._id); }); }&quot;</span>
-</span><span class='line'>       <span class="p">}</span>
-</span><span class='line'>   <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing it:</p>
 
@@ -7124,51 +6397,11 @@ grouping, as explained
 <code>releasedate</code> of each album to create a key array
 <code>[year, month, date]</code>, and a value of <code>1</code> (1 for each album):</p>
 
-<figure class='code'><figcaption><span>Album by Date  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;releasedate&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">album</span><span class="p">.</span><span class="nx">releasedate</span><span class="p">);</span>
-</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                    <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="p">[</span><span class="nx">d</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">(),</span>
-</span><span class='line'>                               <span class="nx">d</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">(),</span>
-</span><span class='line'>                               <span class="nx">d</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()];</span>
-</span><span class='line'>                    <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>                <span class="p">}</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>As I intend to use grouping, I also need a reduce function:</p>
 
-<figure class='code'><figcaption><span>Reduce Function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Each document in the view is now a date as an array, with a single
 number for the record made that date (there are as many identical keys
@@ -7249,19 +6482,7 @@ group by day (<code>group=true</code> or <code>group_level=3</code>, as above), 
 <p>The code is essentially the same as the one mapping names to ids, but
 here it associates <code>random</code> to <code>name</code>.</p>
 
-<figure class='code'><figcaption><span>Random Artist  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h3>Random artist URL</h3>
 
@@ -7295,31 +6516,7 @@ the nested structure of the original document.</p>
 
 <h4>Random Album</h4>
 
-<figure class='code'><figcaption><span>Random Album  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">album</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
-</span><span class='line'>                <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
-</span><span class='line'>                <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing:</p>
 
@@ -7363,43 +6560,7 @@ the nested structure of the original document.</p>
 
 <h4>Random Track</h4>
 
-<figure class='code'><figcaption><span>Random Track  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                        <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">track</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
-</span><span class='line'>                        <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                  <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                  <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
-</span><span class='line'>                        <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>                    <span class="p">}</span>
-</span><span class='line'>                <span class="p">});</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing:</p>
 
@@ -7445,53 +6606,7 @@ the nested structure of the original document.</p>
 
 <h4>Random Tag</h4>
 
-<figure class='code'><figcaption><span>Random Tag  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;tags&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                        <span class="nx">track</span><span class="p">.</span><span class="nx">tags</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;idstr&#39;</span> <span class="k">in</span> <span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                                <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
-</span><span class='line'>                                <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                          <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                          <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                          <span class="nx">tag</span><span class="o">:</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">idstr</span> <span class="p">};</span>
-</span><span class='line'>                                <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>                            <span class="p">}</span>
-</span><span class='line'>                        <span class="p">});</span>
-</span><span class='line'>                    <span class="p">}</span>
-</span><span class='line'>                <span class="p">});</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing:</p>
 
@@ -9299,96 +8414,22 @@ OS X Lion, there is no JDK 1.5 (only 1.6), so I always update pom.xml
 to set the <code>source</code> and <code>target</code> configuration options to something
 meaningful:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;build&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'><span class="nt">&lt;/build&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>Add ANTLR plugin</h4>
 
 <p>I create a property for the ANTLR version, as I will need for both the
 ANTLR plugin and the jar:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;properties&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;antlr.version&gt;</span>3.4<span class="nt">&lt;/antlr.version&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/properties&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Then I add the plugin declaration</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.antlr<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>antlr3-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;version&gt;</span>${antlr.version}<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;goals&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>antlr<span class="nt">&lt;/goal&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/goals&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Finally I add the dependency to the ANTLR runtime:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;groupId&gt;</span>org.antlr<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>antlr-runtime<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>${antlr.version}<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'><span class="nt">&lt;/dependencies&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>At this stage, Eclipse is upset because the lifecycle configuration
 <code>org.antlr:antlr3-maven-plugin:3.4:antlr</code> is not covered. But as we&#8217;re
@@ -9407,42 +8448,7 @@ it is possible to declare what goes into the generated jar. As it is
 self-contained, it is also possible to declare a main class (not done
 below as I did not have a main class yet):</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;descriptorRefs&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;descriptorRef&gt;</span>jar-with-dependencies<span class="nt">&lt;/descriptorRef&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/descriptorRefs&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;id&gt;</span>make-assembly<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;goals&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>attached<span class="nt">&lt;/goal&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/goals&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>Tuning the Eclipse project</h4>
 
@@ -9498,48 +8504,7 @@ are kept up-to-date.</p>
 <code>pom.xml</code>, then it is possible to automatically add the relevant
 source folders to Eclipse:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.codehaus.mojo<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>build-helper-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;version&gt;</span>1.7<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;id&gt;</span>add-antlr-source<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;phase&gt;</span>generate-sources<span class="nt">&lt;/phase&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;goals&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>add-source<span class="nt">&lt;/goal&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/goals&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;sources&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;source&gt;</span>src/main/antlr3<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;source&gt;</span>target/generated-sources/antlr3<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/sources&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>To use it, another connector is necessary, but it is found directly in
 the m2e Marketplace.</p>

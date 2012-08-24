@@ -21,7 +21,7 @@ Maven plugin &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,12 +63,14 @@ Maven plugin &hellip;">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -152,96 +154,22 @@ OS X Lion, there is no JDK 1.5 (only 1.6), so I always update pom.xml
 to set the <code>source</code> and <code>target</code> configuration options to something
 meaningful:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;build&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'><span class="nt">&lt;/build&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>Add ANTLR plugin</h4>
 
 <p>I create a property for the ANTLR version, as I will need for both the
 ANTLR plugin and the jar:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;properties&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;antlr.version&gt;</span>3.4<span class="nt">&lt;/antlr.version&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/properties&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Then I add the plugin declaration</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.antlr<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>antlr3-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;version&gt;</span>${antlr.version}<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;goals&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>antlr<span class="nt">&lt;/goal&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/goals&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Finally I add the dependency to the ANTLR runtime:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;groupId&gt;</span>org.antlr<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;artifactId&gt;</span>antlr-runtime<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;version&gt;</span>${antlr.version}<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'><span class="nt">&lt;/dependencies&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>At this stage, Eclipse is upset because the lifecycle configuration
 <code>org.antlr:antlr3-maven-plugin:3.4:antlr</code> is not covered. But as we&#8217;re
@@ -260,42 +188,7 @@ it is possible to declare what goes into the generated jar. As it is
 self-contained, it is also possible to declare a main class (not done
 below as I did not have a main class yet):</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>maven-assembly-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;descriptorRefs&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;descriptorRef&gt;</span>jar-with-dependencies<span class="nt">&lt;/descriptorRef&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/descriptorRefs&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;id&gt;</span>make-assembly<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;goals&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>attached<span class="nt">&lt;/goal&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/goals&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>Tuning the Eclipse project</h4>
 
@@ -351,48 +244,7 @@ are kept up-to-date.</p>
 <code>pom.xml</code>, then it is possible to automatically add the relevant
 source folders to Eclipse:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.codehaus.mojo<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>build-helper-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;version&gt;</span>1.7<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;id&gt;</span>add-antlr-source<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;phase&gt;</span>generate-sources<span class="nt">&lt;/phase&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;goals&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;goal&gt;</span>add-source<span class="nt">&lt;/goal&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/goals&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;sources&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;source&gt;</span>src/main/antlr3<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;source&gt;</span>target/generated-sources/antlr3<span class="nt">&lt;/source&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/sources&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>To use it, another connector is necessary, but it is found directly in
 the m2e Marketplace.</p>
@@ -468,7 +320,7 @@ adjust it to your own need, then install it locally.</p>
         <a class="basic-alignment left" href="/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/" title="Previous Post: Concrete Mathematics Chapter 1 Homework Exercises Part 1">&laquo; Concrete Mathematics Chapter 1 Homework Exercises Part 1</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/" title="next Post: Concrete Mathematics Chapter 1 Homework Exercises Part 2">Concrete Mathematics Chapter 1 Homework Exercises Part 2 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/" title="Next Post: Concrete Mathematics Chapter 1 Homework Exercises Part 2">Concrete Mathematics Chapter 1 Homework Exercises Part 2 &raquo;</a>
       
     </p>
   </footer>
@@ -518,12 +370,12 @@ adjust it to your own need, then install it locally.</p>
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -565,7 +417,6 @@ adjust it to your own need, then install it locally.</p>
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -581,7 +432,6 @@ adjust it to your own need, then install it locally.</p>
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

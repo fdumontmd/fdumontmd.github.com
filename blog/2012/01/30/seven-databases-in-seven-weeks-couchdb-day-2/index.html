@@ -19,7 +19,7 @@ more general MapReduce support. It is another fairly short day, as much of &hell
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -61,12 +61,14 @@ more general MapReduce support. It is another fairly short day, as much of &hell
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -160,51 +162,11 @@ grouping, as explained
 <code>releasedate</code> of each album to create a key array
 <code>[year, month, date]</code>, and a value of <code>1</code> (1 for each album):</p>
 
-<figure class='code'><figcaption><span>Album by Date  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;releasedate&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">album</span><span class="p">.</span><span class="nx">releasedate</span><span class="p">);</span>
-</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                    <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="p">[</span><span class="nx">d</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">(),</span>
-</span><span class='line'>                               <span class="nx">d</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">(),</span>
-</span><span class='line'>                               <span class="nx">d</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()];</span>
-</span><span class='line'>                    <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>                <span class="p">}</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>As I intend to use grouping, I also need a reduce function:</p>
 
-<figure class='code'><figcaption><span>Reduce Function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Each document in the view is now a date as an array, with a single
 number for the record made that date (there are as many identical keys
@@ -285,19 +247,7 @@ group by day (<code>group=true</code> or <code>group_level=3</code>, as above), 
 <p>The code is essentially the same as the one mapping names to ids, but
 here it associates <code>random</code> to <code>name</code>.</p>
 
-<figure class='code'><figcaption><span>Random Artist  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h3>Random artist URL</h3>
 
@@ -331,31 +281,7 @@ the nested structure of the original document.</p>
 
 <h4>Random Album</h4>
 
-<figure class='code'><figcaption><span>Random Album  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">album</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;random&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">album</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
-</span><span class='line'>                <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
-</span><span class='line'>                <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing:</p>
 
@@ -399,43 +325,7 @@ the nested structure of the original document.</p>
 
 <h4>Random Track</h4>
 
-<figure class='code'><figcaption><span>Random Track  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                        <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">track</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
-</span><span class='line'>                        <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                  <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                  <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span> <span class="p">};</span>
-</span><span class='line'>                        <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>                    <span class="p">}</span>
-</span><span class='line'>                <span class="p">});</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing:</p>
 
@@ -481,53 +371,7 @@ the nested structure of the original document.</p>
 
 <h4>Random Tag</h4>
 
-<figure class='code'><figcaption><span>Random Tag  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">doc</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;albums&#39;</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">doc</span><span class="p">.</span><span class="nx">albums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;tracks&#39;</span> <span class="k">in</span> <span class="nx">album</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">album</span><span class="p">.</span><span class="nx">tracks</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="k">in</span> <span class="nx">track</span> <span class="o">&amp;&amp;</span> <span class="s1">&#39;tags&#39;</span> <span class="k">in</span> <span class="nx">track</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                        <span class="nx">track</span><span class="p">.</span><span class="nx">tags</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;idstr&#39;</span> <span class="k">in</span> <span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                                <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">random</span><span class="p">,</span>
-</span><span class='line'>                                <span class="nx">value</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">by</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                          <span class="nx">album</span><span class="o">:</span> <span class="nx">album</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                          <span class="nx">track</span><span class="o">:</span> <span class="nx">track</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-</span><span class='line'>                                          <span class="nx">tag</span><span class="o">:</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">idstr</span> <span class="p">};</span>
-</span><span class='line'>                                <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>                            <span class="p">}</span>
-</span><span class='line'>                        <span class="p">});</span>
-</span><span class='line'>                    <span class="p">}</span>
-</span><span class='line'>                <span class="p">});</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing:</p>
 
@@ -622,7 +466,7 @@ the nested structure of the original document.</p>
         <a class="basic-alignment left" href="/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/" title="Previous Post: Seven Databases in Seven Weeks CouchDB Day 1">&laquo; Seven Databases in Seven Weeks CouchDB Day 1</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/" title="next Post: Seven Databases in Seven Weeks CouchDB Day 3">Seven Databases in Seven Weeks CouchDB Day 3 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/" title="Next Post: Seven Databases in Seven Weeks CouchDB Day 3">Seven Databases in Seven Weeks CouchDB Day 3 &raquo;</a>
       
     </p>
   </footer>
@@ -730,12 +574,12 @@ the nested structure of the original document.</p>
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -777,7 +621,6 @@ the nested structure of the original document.</p>
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -793,7 +636,6 @@ the nested structure of the original document.</p>
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

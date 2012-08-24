@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -119,15 +121,8 @@
 
 <p>That one is very easy. The web site has a dedicated <a href="http://clojure.org/macros">page</a> with the common macros. The source code is available for each. <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/defmacro"><code>defmacro</code></a> is actually a macro, and its source code is, well, let&#8217;s just say I&#8217;m happy someone else wrote it. And yes, it is a macro that writes macros.</p>
 
-<p>To expand the code of macros, I wrote this small function to recursively expand macro definitions:</p>
-
-<figure class='code'><figcaption><span>rec-expand function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">rec-expand</span> <span class="p">[</span><span class="nv">lst</span><span class="p">]</span>
-</span><span class='line'>          <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">seq? </span><span class="nv">lst</span><span class="p">)</span> <span class="p">(</span><span class="nb">map </span><span class="nv">rec-expand</span> <span class="p">(</span><span class="nb">macroexpand </span><span class="nv">lst</span><span class="p">))</span> <span class="nv">lst</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>To expand the code of macros, I wrote this small function to recursively expand macro definitions:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Without it, it is difficult to see deeply into the code:</p>
 
@@ -173,15 +168,7 @@
 
 <p>One first example is a simple reimplementation of <code>(iterate inc n)</code>:</p>
 
-<figure class='code'><figcaption><span>upfrom  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">upfrom</span> <span class="p">[</span><span class="nv">n</span><span class="p">]</span>
-</span><span class='line'>    <span class="s">&quot;[n, n+1, n+2, ....&quot;</span>
-</span><span class='line'>    <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nb">cons </span><span class="nv">n</span> <span class="p">(</span><span class="nf">upfrom</span> <span class="p">(</span><span class="nb">inc </span><span class="nv">n</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing it:</p>
 
@@ -193,17 +180,7 @@
 
 <p>A bit more interesting, perhaps, is a Fibonacci sequence not using <code>map</code>:</p>
 
-<figure class='code'><figcaption><span>Fibonacci sequence  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">fibs</span> <span class="p">[</span><span class="nv">a</span> <span class="nv">b</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Fibonacci sequence starting with a, b, ...&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">lazy-seq</span> <span class="p">(</span><span class="nb">cons </span><span class="nv">a</span> <span class="p">(</span><span class="nf">fibs</span> <span class="nv">b</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">a</span> <span class="nv">b</span><span class="p">)))))</span>
-</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">fib</span> <span class="p">(</span><span class="nf">fibs</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Computing the 20 first Fibonacci numbers:</p>
 
@@ -229,15 +206,7 @@
 
 <p>This makes macros shorter and easier to read.</p>
 
-<figure class='code'><figcaption><span>extended unless  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defmacro </span><span class="nv">unless</span>
-</span><span class='line'>  <span class="p">([</span><span class="nv">test</span> <span class="nv">body</span><span class="p">]</span> <span class="o">`</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="nv">~test</span><span class="p">)</span> <span class="nv">~body</span><span class="p">))</span>
-</span><span class='line'>  <span class="p">([</span><span class="nv">test</span> <span class="nv">body</span> <span class="nv">alt</span><span class="p">]</span> <span class="o">`</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="nv">~test</span><span class="p">)</span> <span class="nv">~body</span> <span class="nv">~alt</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing it:</p>
 
@@ -257,35 +226,11 @@
 
 <h3>Using defrecord and defprotocol</h3>
 
-<p>Ok, I&#8217;m not very inspired by this exercise. I was thinking of doing the classic shape class hierarchy, but finally settled for an employee protocol:</p>
+<p>Ok, I&#8217;m not very inspired by this exercise. I was thinking of doing the classic shape class hierarchy, but finally settled for an employee protocol:
+Liquid error: can&#8217;t convert Array into String</p>
 
-<figure class='code'><figcaption><span>Employee protocol  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defprotocol</span> <span class="nv">Employee</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">e</span> <span class="nv">h</span><span class="p">])</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">e</span> <span class="nv">a</span><span class="p">]))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The first implementation is a manager, which is modeled according to things I&#8217;ve heard about other companies, not mine, where managers are hard-working and have to be pulled from their desk to be fed:</p>
-
-<figure class='code'><figcaption><span>Manager implementation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defrecord</span> <span class="nv">Manager</span> <span class="p">[</span><span class="nv">hobby</span><span class="p">]</span>
-</span><span class='line'>  <span class="nv">Employee</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">h</span><span class="p">]</span>
-</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Working &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours then &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours of &quot;</span> <span class="nv">hobby</span><span class="p">)))</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">a</span><span class="p">]</span>
-</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;You are too modest. You deserve &quot;</span> <span class="p">(</span><span class="nb">* </span><span class="mf">1.1</span> <span class="nv">a</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>The first implementation is a manager, which is modeled according to things I&#8217;ve heard about other companies, not mine, where managers are hard-working and have to be pulled from their desk to be fed:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing the manager:</p>
 
@@ -307,23 +252,8 @@
 </span><span class='line'>nil</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Of course we need people to actually do something:</p>
-
-<figure class='code'><figcaption><span>Worker implemenation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="nf">defrecord</span> <span class="nv">Worker</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="nv">Employee</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">work</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">h</span><span class="p">]</span>
-</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Working &quot;</span> <span class="nv">h</span> <span class="s">&quot; hours then &quot;</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">h</span> <span class="mi">2</span><span class="p">)</span> <span class="s">&quot; hours overtime&quot;</span><span class="p">)))</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">get-raise</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">a</span><span class="p">]</span>
-</span><span class='line'>    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;There is an economic crisis. Be happy with &quot;</span> <span class="p">(</span><span class="nb">* </span><span class="mf">0.1</span> <span class="nv">a</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Of course we need people to actually do something:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Testing the worker:</p>
 
@@ -396,7 +326,7 @@
         <a class="basic-alignment left" href="/blog/2011/11/11/haskell-foldr-as-foldl/" title="Previous Post: Haskell: foldr as foldl">&laquo; Haskell: foldr as foldl</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/" title="next Post: Seven Languages in Seven Weeks Clojure Day 3">Seven Languages in Seven Weeks Clojure Day 3 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/" title="Next Post: Seven Languages in Seven Weeks Clojure Day 3">Seven Languages in Seven Weeks Clojure Day 3 &raquo;</a>
       
     </p>
   </footer>
@@ -502,12 +432,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -549,7 +479,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -565,7 +494,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

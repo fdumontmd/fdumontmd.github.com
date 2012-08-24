@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -343,13 +345,7 @@
 
 <p>This is simple with list comprehensions. A way to ensure that only one of (black, blue) and (blue, black) is available is to filter the pairs so that the first element is smaller or equal than the second one.</p>
 
-<figure class='code'><figcaption><span>Colour pairs  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">let</span> <span class="n">colours</span> <span class="ow">=</span><span class="p">[</span><span class="s">&quot;black&quot;</span><span class="p">,</span> <span class="s">&quot;white&quot;</span><span class="p">,</span> <span class="s">&quot;blue&quot;</span><span class="p">,</span> <span class="s">&quot;yellow&quot;</span><span class="p">,</span> <span class="s">&quot;red&quot;</span><span class="p">]</span>
-</span><span class='line'><span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">|</span> <span class="n">x</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span> <span class="n">y</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">y</span><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>produces (reindented for readability):</p>
 
@@ -371,11 +367,7 @@
 
 <p>Nothing simpler:</p>
 
-<figure class='code'><figcaption><span>Multiplication table  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="p">)</span> <span class="o">|</span> <span class="n">x</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">11</span><span class="p">],</span> <span class="n">y</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">11</span><span class="p">]]</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>produces (reindented for readability):</p>
 
@@ -407,37 +399,7 @@
 
 <p>For this one, the code can be a bit simpler than Prolog&#8217;s. The reason is that Prolog does not really have a different or not-equal operator: it has to use positive facts and cannot infer the relation is commutative. In Haskell, the list comprehension can have guards that are arbitrary boolean expressions, so we need to state only once that two states have different colours.</p>
 
-<figure class='code'><figcaption><span>Map-colouring problem  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">let</span> <span class="n">colours</span> <span class="ow">=</span> <span class="p">[</span><span class="s">&quot;red&quot;</span><span class="p">,</span> <span class="s">&quot;green&quot;</span><span class="p">,</span> <span class="s">&quot;blue&quot;</span><span class="p">]</span>
-</span><span class='line'><span class="p">[(</span><span class="n">alabama</span><span class="p">,</span> <span class="n">mississippi</span><span class="p">,</span> <span class="n">georgia</span><span class="p">,</span> <span class="n">tennessee</span><span class="p">,</span> <span class="n">florida</span><span class="p">)</span> <span class="o">|</span>
-</span><span class='line'>  <span class="n">alabama</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">mississippi</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">georgia</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">tennessee</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">florida</span> <span class="ow">&lt;-</span> <span class="n">colours</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">mississippi</span> <span class="o">/=</span> <span class="n">tennessee</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">mississippi</span> <span class="o">/=</span> <span class="n">alabama</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">alabama</span> <span class="o">/=</span> <span class="n">tennessee</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">alabama</span> <span class="o">/=</span> <span class="n">georgia</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">alabama</span> <span class="o">/=</span> <span class="n">florida</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">georgia</span> <span class="o">/=</span> <span class="n">florida</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">georgia</span> <span class="o">/=</span> <span class="n">tennessee</span><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>produces (reindented for readability):</p>
 
@@ -504,7 +466,7 @@
         <a class="basic-alignment left" href="/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/" title="Previous Post: Seven Languages in Seven Weeks Clojure Day 3">&laquo; Seven Languages in Seven Weeks Clojure Day 3</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/" title="next Post: Seven Languages in Seven Weeks Haskell Day 2">Seven Languages in Seven Weeks Haskell Day 2 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/" title="Next Post: Seven Languages in Seven Weeks Haskell Day 2">Seven Languages in Seven Weeks Haskell Day 2 &raquo;</a>
       
     </p>
   </footer>
@@ -610,12 +572,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -657,7 +619,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -673,7 +634,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

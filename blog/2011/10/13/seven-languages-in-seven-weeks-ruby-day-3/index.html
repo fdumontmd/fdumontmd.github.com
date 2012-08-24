@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -241,29 +243,7 @@
 
 <p>As an alternative, the code below creates the methods during the initialization of the instance. There could (should?) be an easier way, but I could not find one. The new methods are added to the singleton class, so each instance has its own set.</p>
 
-<figure class='code'><figcaption><span>Using define_method rather than method_missing  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CsvRow</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@headers</span> <span class="o">=</span> <span class="n">h</span>
-</span><span class='line'>    <span class="vi">@row</span> <span class="o">=</span> <span class="n">r</span>
-</span><span class='line'>    <span class="n">singleton</span> <span class="o">=</span> <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span><span class="p">;</span> <span class="nb">self</span><span class="p">;</span> <span class="k">end</span>
-</span><span class='line'>    <span class="n">h</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">singleton</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:define_method</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span> <span class="p">{</span> <span class="n">r</span><span class="o">[</span><span class="n">h</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="o">]</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The code uses the <code>send</code> method because <code>define_method</code> must be used from within the class (it is a private method), but when I open the class I change the scope and loose access to the original parameters <code>h</code> and <code>r</code>.</p>
 
@@ -422,7 +402,7 @@
         <a class="basic-alignment left" href="/blog/2011/10/13/kyogen-traditional-japanese-slapstick/" title="Previous Post: Kyogen - Traditional Japanese Slapstick">&laquo; Kyogen - Traditional Japanese Slapstick</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/" title="next Post: Seven Languages in Seven Weeks Io Day 1">Seven Languages in Seven Weeks Io Day 1 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/" title="Next Post: Seven Languages in Seven Weeks Io Day 1">Seven Languages in Seven Weeks Io Day 1 &raquo;</a>
       
     </p>
   </footer>
@@ -528,12 +508,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -575,7 +555,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -591,7 +570,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

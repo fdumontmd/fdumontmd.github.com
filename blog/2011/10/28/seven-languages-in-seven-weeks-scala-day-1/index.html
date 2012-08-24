@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -113,59 +115,11 @@
 
 <p>The first thing we learn about Scala is that it is &#8220;strongly typed.&#8221; This is not a very helpful description, as the <a href="http://en.wikipedia.org/wiki/Strong_typing">definition</a> is fairly loose. And the proof offered by the author that the language is strongly typed is strange:</p>
 
-<figure class='code'><figcaption><span>Scala is strongly typed?  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="mi">4</span> <span class="o">*</span> <span class="s">&quot;abc&quot;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">console</span><span class="o">&gt;:</span><span class="mi">8</span><span class="k">:</span> <span class="kt">error:</span> <span class="kt">overloaded</span> <span class="kt">method</span> <span class="kt">value</span> <span class="kt">*</span> <span class="kt">with</span> <span class="kt">alternatives:</span>
-</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span><span class="nc">Double</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Float</span><span class="o">)</span><span class="nc">Float</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span><span class="nc">Long</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="nc">Int</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Char</span><span class="o">)</span><span class="nc">Int</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Short</span><span class="o">)</span><span class="nc">Int</span> <span class="o">&lt;</span><span class="n">and</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Byte</span><span class="o">)</span><span class="nc">Int</span>
-</span><span class='line'> <span class="n">cannot</span> <span class="n">be</span> <span class="n">applied</span> <span class="n">to</span> <span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="nc">String</span><span class="o">)</span>
-</span><span class='line'>              <span class="mi">4</span> <span class="o">*</span> <span class="s">&quot;abc&quot;</span>
-</span><span class='line'>                <span class="o">^</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>So a string cannot be multiplied by a number? By this standard, <a href="http://en.wikipedia.org/wiki/C_%28programming_language%29">C</a> is strongly typed as well:</p>
 
-<figure class='code'><figcaption><span>What about C?  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span><span class="n">str</span> <span class="o">=</span> <span class="s">&quot;abc&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">str</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -179,8 +133,7 @@
 
 <p>A more useful definition than strong typing, is whether a type system is expressive: what do types of expressions tell about how the expressions can be combined, and what to expect when these expressions are evaluated. From this perspective, C types are unexpressive (barely above assembly language), Java&#8217;s much better, <a href="http://caml.inria.fr/ocaml/">OCaml</a>, and <a href="http://haskell.org/haskellwiki/Haskell">Haskell</a> better still, and <a href="http://coq.inria.fr/">Coq</a> and other dependently-typed languages are perhaps the most expressive of all.</p>
 
-<blockquote><p>A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute.</p><footer><strong>Benjamin C. Pierce, Types and Programming Languages,</strong><cite><a href='http://www.cis.upenn.edu/~bcpierce/tapl/'>www.cis.upenn.edu/~bcpierce/&hellip;</a></cite></footer></blockquote>
-
+<p>Liquid error: undefined method `lstrip&#8217; for #&lt;Array:0x007fcf4f24e1d8></p>
 
 <p>From this perspective, type expressivity is a static (i.e. compile time) feature only. The dynamic equivalent is a type is a tag, i.e. the runtime information about what operations a value supports, so it is impossible to prove any behaviour as impossible before running the program.</p>
 
@@ -194,35 +147,11 @@
 
 <p>The syntax for the definition of functions (that is, methods that return a value) is somewhat strange, as it requires an equal sign:</p>
 
-<figure class='code'><figcaption><span>Function definition  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">my_fun</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Procedures (methods that return nothing) only need one when they are defined as returning <code>Unit</code> (which is <code>void</code> for Scala):</p>
 
-<figure class='code'><figcaption><span>Function definition  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">my_proc</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="n">str</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="n">my_proc2</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="n">str</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Nothing overly complex, and if I believe the error message (&#8220;warning: Detected apparent refinement of Unit; are you missing an &#8216;=&#8217; sign?&#8221;), the reason for this syntax is to support other constructs. Still, I had this error a few times as I wrote my code, before I finally internalized the rule.</p>
 
@@ -1047,7 +976,7 @@
         <a class="basic-alignment left" href="/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/" title="Previous Post: It has been a bad year for geniuses...">&laquo; It has been a bad year for geniuses...</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/" title="next Post: Seven Languages in Seven Weeks Scala Day 2">Seven Languages in Seven Weeks Scala Day 2 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/" title="Next Post: Seven Languages in Seven Weeks Scala Day 2">Seven Languages in Seven Weeks Scala Day 2 &raquo;</a>
       
     </p>
   </footer>
@@ -1153,12 +1082,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -1200,7 +1129,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -1216,7 +1144,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

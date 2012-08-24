@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/11/haskell-foldr-as-foldl">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/11/haskell-foldr-as-foldl/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -111,27 +113,11 @@
 
 <p>I&#8217;ll start again from a standard definition for both functions. First <code>foldr</code>:</p>
 
-<figure class='code'><figcaption><span>foldr  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="ow">::</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
-</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
-</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span> <span class="p">(</span><span class="n">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Then <code>foldl</code>:</p>
 
-<figure class='code'><figcaption><span>foldl  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
-</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
-</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">f</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span> <span class="n">b</span><span class="p">)</span> <span class="n">bs</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h2>Derivation</h2>
 
@@ -139,19 +125,10 @@
 
 <p>I first reorganize the arguments order a bit, putting <code>a</code> at the end:</p>
 
-<figure class='code'><figcaption><span>foldr_alt basic equation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="n">a</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
-
-<p>The base case is once again <code>id</code>:</p>
-
-<figure class='code'><figcaption><span>foldr_alt on empty list  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">id</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>The base case is once again <code>id</code>:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>and is trivially true:</p>
 
@@ -163,13 +140,8 @@
 </span><span class='line'>             == (foldr_alt f []) a -- by definition of foldr_alt</span></code></pre></td></tr></table></div></figure>
 
 
-<p>The recursive case is not surprising either:</p>
-
-<figure class='code'><figcaption><span>foldr_alt on non empty list  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>The recursive case is not surprising either:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>It follows from the induction hypothesis: given <code>foldr f a bs == foldr_alt f bs a</code>, then <code>foldr f a (b:bs) == foldr_alt f (b:bs) a</code></p>
 
@@ -189,27 +161,15 @@
 
 <p>The initial value for the accumulator must be the identity of the composition function, that is, <code>id</code>.</p>
 
-<figure class='code'><figcaption><span>accumulator version of foldr_alt  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>foldr_acc</code> is once again easy to define. The base case:</p>
 
-<figure class='code'><figcaption><span>foldr_acc base case  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">acc</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>For the recursive case, notice that <code>f b</code> is composed with the <em>rest</em> of the function to the right. As the accumulator represents the previous part of the function, <code>f b</code> will be composed with this accumulator to the left:</p>
 
-<figure class='code'><figcaption><span>foldr_acc recursive case  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="p">(</span><span class="n">acc</span> <span class="o">.</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">))</span> <span class="n">bs</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The proof is less straightforward; I am not very familiar with equational reasoning, so maybe something simpler is possible. Note that in this proof, I need the list argument to be finite.</p>
 
@@ -251,15 +211,8 @@
 
 <p>The fact that the equation only holds for list of finite lengths should not be surprising, but might still be a limitation of my proof.</p>
 
-<p>With <code>foldr_acc</code> defined as above, converting to <code>foldl</code> is immediate:</p>
-
-<figure class='code'><figcaption><span>foldr as foldl  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">go</span> <span class="n">id</span> <span class="n">bs</span>
-</span><span class='line'>  <span class="kr">where</span> <span class="n">go</span> <span class="n">acc</span> <span class="n">b</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">acc</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span> <span class="n">x</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>With <code>foldr_acc</code> defined as above, converting to <code>foldl</code> is immediate:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>If I rename <code>acc</code> to <code>g</code>, and move <code>x</code> to the parameter list (uncurrying the <code>go</code> function), I get the original definition.</p>
 
@@ -312,7 +265,7 @@
         <a class="basic-alignment left" href="/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/" title="Previous Post: Seven Languages in Seven Weeks Clojure Day 1">&laquo; Seven Languages in Seven Weeks Clojure Day 1</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/" title="next Post: Seven Languages in Seven Weeks Clojure Day 2">Seven Languages in Seven Weeks Clojure Day 2 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/" title="Next Post: Seven Languages in Seven Weeks Clojure Day 2">Seven Languages in Seven Weeks Clojure Day 2 &raquo;</a>
       
     </p>
   </footer>
@@ -362,12 +315,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -409,7 +362,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -425,7 +377,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

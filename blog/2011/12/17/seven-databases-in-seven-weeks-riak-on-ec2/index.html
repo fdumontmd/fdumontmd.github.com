@@ -20,7 +20,7 @@ do it then due to poor network connectivity and lack &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -62,12 +62,14 @@ do it then due to poor network connectivity and lack &hellip;">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -377,59 +379,11 @@ intuitive sense: <code>Volume*(High - Low)/2</code></p>
 <p>I need to keep both the date and the amount, so my map function will
 keep both items in a data structured indexed by month:</p>
 
-<figure class='code'><figcaption><span>Dollar Traded by Month  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">month</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">pair</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">pair</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">pair</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Then when reducing, I can compare the traded amount and keep the best:</p>
 
-<figure class='code'><figcaption><span>Highest by month  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">month</span> <span class="k">in</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">])</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">][</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">?</span>
-</span><span class='line'>  <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span>
-</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">month</span><span class="p">]</span> <span class="o">=</span> <span class="nx">item</span><span class="p">[</span><span class="nx">month</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">})</span>
-</span><span class='line'>  <span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>To test the whole, I can use the following command, then copy and
 paste the query, and execute with <code>Ctrl-D</code>. The command below is run on
@@ -510,49 +464,14 @@ would forget the date. By keeping both data items (the date and the
 volume traded in dollar) in the same object, I can reduce a list of
 such objects to a single item and still retain all the relevant information.</p>
 
-<p>The mapping function creates just a pair object from the data:</p>
-
-<figure class='code'><figcaption><span>Dollar Traded by Day  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">keyData</span><span class="p">,</span> <span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Riak</span><span class="p">.</span><span class="nx">mapValuesJson</span><span class="p">(</span><span class="nx">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Volume</span> <span class="o">*</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">High</span> <span class="o">-</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Low</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">obj</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>The mapping function creates just a pair object from the data:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The reducing function retains the best date by volume traded in dollar
 for each batch. It is simpler than the previous one as the values are
 simple (i.e. not indexed):</p>
 
-<figure class='code'><figcaption><span>Highest ever  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">arg</span><span class="p">){</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span> <span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">item</span><span class="p">){</span>
-</span><span class='line'>             <span class="k">if</span><span class="p">(</span><span class="nx">acc</span><span class="p">)</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="p">(</span><span class="nx">acc</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">item</span><span class="p">[</span><span class="s1">&#39;traded&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">item</span> <span class="o">:</span> <span class="nx">acc</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>             <span class="k">else</span> <span class="p">{</span> <span class="nx">acc</span> <span class="o">=</span> <span class="nx">item</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>             <span class="k">return</span> <span class="nx">acc</span><span class="p">;</span>
-</span><span class='line'>            <span class="p">})</span>
-</span><span class='line'>         <span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>And the query:</p>
 
@@ -645,7 +564,7 @@ simple (i.e. not indexed):</p>
         <a class="basic-alignment left" href="/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/" title="Previous Post: Seven Databases in Seven Weeks HBase Day 3">&laquo; Seven Databases in Seven Weeks HBase Day 3</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/" title="next Post: Seven Databases in Seven Weeks MongoDB Day 1">Seven Databases in Seven Weeks MongoDB Day 1 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/" title="Next Post: Seven Databases in Seven Weeks MongoDB Day 1">Seven Databases in Seven Weeks MongoDB Day 1 &raquo;</a>
       
     </p>
   </footer>
@@ -753,12 +672,12 @@ simple (i.e. not indexed):</p>
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -800,7 +719,6 @@ simple (i.e. not indexed):</p>
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -816,7 +734,6 @@ simple (i.e. not indexed):</p>
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

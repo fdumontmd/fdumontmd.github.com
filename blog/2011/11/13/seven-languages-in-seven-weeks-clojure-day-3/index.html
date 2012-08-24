@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -135,151 +137,11 @@
 
 <p>Finally, <code>bank-balances</code> prints the balance of all accounts.</p>
 
-<figure class='code'><figcaption><span>Accounts simulation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">check-balance</span> <span class="p">[</span><span class="nv">b</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Check that the balance of account is not negative&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">&lt;= </span><span class="mi">0</span> <span class="nv">b</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">make-account</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="s">&quot;Create a new account&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">r</span> <span class="p">(</span><span class="nb">ref </span><span class="mi">0</span><span class="p">)]</span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">set-validator!</span> <span class="nv">r</span> <span class="nv">check-balance</span><span class="p">)</span>
-</span><span class='line'>      <span class="nv">r</span><span class="p">))</span>  
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">credit</span> <span class="p">[</span><span class="nv">account,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Add amount to account&#39;s balance&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">alter </span><span class="nv">account</span> <span class="nv">+</span> <span class="nv">amount</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">debit</span> <span class="p">[</span><span class="nv">account,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Debit amount from account&#39;s balance&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">alter </span><span class="nv">account</span> <span class="nv">-</span> <span class="nv">amount</span><span class="p">))</span>
-</span><span class='line'>  
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">balance</span> <span class="p">[</span><span class="nv">account</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Return balance of account&quot;</span>
-</span><span class='line'>  <span class="nv">@account</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">make-bank</span> <span class="p">[</span><span class="nv">n</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Create a bank of n accounts&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">vec</span> <span class="p">(</span><span class="nf">repeatedly</span> <span class="nv">n</span> <span class="nv">make-account</span><span class="p">)))</span>
-</span><span class='line'>  
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-credit</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Add amount to acc_num&#39;s balance&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">credit</span> <span class="p">(</span><span class="nb">nth </span><span class="nv">bank</span> <span class="nv">acc_num</span><span class="p">)</span> <span class="nv">amount</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-debit</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Debit amount from acc_num&#39;s balance&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">debit</span> <span class="p">(</span><span class="nb">nth </span><span class="nv">bank</span> <span class="nv">acc_num</span><span class="p">)</span> <span class="nv">amount</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-balance</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Return the balance of acc_num&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">balance</span> <span class="p">(</span><span class="nb">nth </span><span class="nv">bank</span> <span class="nv">acc_num</span><span class="p">)))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-transfer</span> <span class="p">[</span><span class="nv">bank,</span> <span class="nv">acc_num1,</span> <span class="nv">acc_num2,</span> <span class="nv">amount</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Transfer amount from acc_num1 to acc_num2 in bank&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">dosync </span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">bank-credit</span> <span class="nv">bank</span> <span class="nv">acc_num2</span> <span class="nv">amount</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">bank-debit</span> <span class="nv">bank</span> <span class="nv">acc_num1</span> <span class="nv">amount</span><span class="p">)))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">bank-balances</span> <span class="p">[</span><span class="nv">bank</span><span class="p">]</span>
-</span><span class='line'>  <span class="s">&quot;Show the balance of all accounts&quot;</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="p">(</span><span class="nb">count </span><span class="nv">bank</span><span class="p">)]</span>
-</span><span class='line'>      <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Account &quot;</span> <span class="nv">i</span> <span class="s">&quot;: &quot;</span> <span class="p">(</span><span class="nf">bank-balance</span> <span class="nv">bank</span> <span class="nv">i</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The test code:</p>
 
-<figure class='code'><figcaption><span>Test code  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="c1">;; create the bank</span>
-</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">bank</span> <span class="p">(</span><span class="nf">make-bank</span> <span class="mi">3</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; put some money in</span>
-</span><span class='line'><span class="p">(</span><span class="nb">dosync </span><span class="p">(</span><span class="nf">bank-credit</span> <span class="nv">bank</span> <span class="mi">0</span> <span class="mi">100</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; show the balances</span>
-</span><span class='line'><span class="p">(</span><span class="nf">bank-balances</span> <span class="nv">bank</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; a first transfer</span>
-</span><span class='line'><span class="p">(</span><span class="nb">dosync </span><span class="p">(</span><span class="nf">bank-transfer</span> <span class="nv">bank</span> <span class="mi">0</span> <span class="mi">1</span> <span class="mi">75</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; show the balances</span>
-</span><span class='line'><span class="p">(</span><span class="nf">bank-balances</span> <span class="nv">bank</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; not enough fund, so it will fail</span>
-</span><span class='line'><span class="p">(</span><span class="nb">dosync </span><span class="p">(</span><span class="nf">bank-transfer</span> <span class="nv">bank</span> <span class="mi">0</span> <span class="mi">2</span> <span class="mi">75</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">;; and indeed, the balances have not changed</span>
-</span><span class='line'><span class="p">(</span><span class="nf">bank-balances</span> <span class="nv">bank</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>When input into the repl, the test code gives the following output:</p>
 
@@ -345,103 +207,17 @@
 
 <p>Finally, the <code>try-to-sit</code> function checks the number of free chairs: if none, the customer just leaves. Otherwise, the customer sits in a chair (signaling it&#8217;s intent to get a haircut by sending <code>get-haircut</code> to the <code>barber</code>), and the count of free chairs is decreased. I tried to print a statement when a customer leaves because there is no chair, but there were too many such messages so I commented it out.</p>
 
-<figure class='code'><figcaption><span>Barber problem, part 1  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">barber</span> <span class="p">(</span><span class="nb">agent </span><span class="mi">0</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">waiting-room</span> <span class="p">(</span><span class="nf">atom</span> <span class="mi">3</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">get-haircut</span> <span class="p">[</span><span class="nv">count</span><span class="p">]</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">waiting-room</span> <span class="nv">inc</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">println </span><span class="s">&quot;Start haircut&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="mi">20</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">inc </span><span class="nv">count</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">try-to-sit</span> <span class="p">[</span><span class="nv">count</span><span class="p">]</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">== </span><span class="nv">count</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">do</span>
-</span><span class='line'>          <span class="c1">;;(println &quot;No free chairs. The customer leaves&quot;)</span>
-</span><span class='line'>          <span class="nv">count</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">(</span><span class="nf">do</span>
-</span><span class='line'>          <span class="p">(</span><span class="nb">println </span><span class="s">&quot;Sit in waiting room&quot;</span><span class="p">)</span>
-</span><span class='line'>          <span class="p">(</span><span class="nb">send </span><span class="nv">barber</span> <span class="nv">get-haircut</span><span class="p">)</span>
-</span><span class='line'>          <span class="p">(</span><span class="nb">dec </span><span class="nv">count</span><span class="p">))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>When a new customer walks in, it will try to sit in a free chair. This is done in the <code>new-customer</code> function.</p>
 
 <p>The <code>shop-loop</code> is a tail recursive loop that initiates a <code>new-customer</code> at random intervals. It runs until after at least <code>max</code> milliseconds.</p>
 
-<figure class='code'><figcaption><span>Barber problem, part 2  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">new-customer</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">waiting-room</span> <span class="nv">try-to-sit</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">shop-loop</span> <span class="p">[</span><span class="nv">max</span><span class="p">]</span>
-</span><span class='line'>  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">orig</span> <span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)]</span>
-</span><span class='line'>      <span class="p">(</span><span class="nb">loop </span><span class="p">[]</span>
-</span><span class='line'>          <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">&lt; </span><span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)</span> <span class="nv">orig</span><span class="p">)</span> <span class="nv">max</span><span class="p">)</span>
-</span><span class='line'>              <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">next</span> <span class="p">(</span><span class="nb">+ </span><span class="mi">10</span> <span class="p">(</span><span class="nb">rand </span><span class="mi">20</span><span class="p">))]</span>
-</span><span class='line'>                  <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="nv">next</span><span class="p">)</span>
-</span><span class='line'>                  <span class="p">(</span><span class="nf">new-customer</span><span class="p">)</span>
-</span><span class='line'>                  <span class="p">(</span><span class="nf">recur</span><span class="p">))</span>
-</span><span class='line'>              <span class="nv">max</span><span class="p">))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Finally we get to the main function. First <code>init</code> is defined to help reset the values of atoms and agents. Then <code>start</code> will indeed reset all values, then run <code>shop-loop</code> in a <code>future</code>, wait the required amount of time, and finally get the current value of <code>barber</code> (which might not have fully finished). My first version tried to run <code>shop-loop</code> on a dedicated agent, but that was for some reason blocking on the <code>barber</code> agent, so I used a <code>future</code> instead.</p>
 
-<figure class='code'><figcaption><span>Barber problem, part 3  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">init</span> <span class="p">[</span><span class="nv">_</span> <span class="nv">v</span><span class="p">]</span> <span class="nv">v</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">(</span><span class="k">defn </span><span class="nv">start</span> <span class="p">[</span><span class="nv">max</span><span class="p">]</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">println </span><span class="s">&quot;starting&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nb">send </span><span class="nv">barber</span> <span class="nv">init</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">swap!</span> <span class="nv">waiting-room</span> <span class="nv">init</span> <span class="mi">3</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">future</span> <span class="p">(</span><span class="nf">shop-loop</span> <span class="nv">max</span><span class="p">))</span>
-</span><span class='line'>  <span class="p">(</span><span class="nf">Thread/sleep</span> <span class="nv">max</span><span class="p">)</span>
-</span><span class='line'>  <span class="nv">@barber</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>With this implementation, the barber performed 458 hair cuts (500 was the theoretical maximum).</p>
 
@@ -500,7 +276,7 @@
         <a class="basic-alignment left" href="/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/" title="Previous Post: Seven Languages in Seven Weeks Clojure Day 2">&laquo; Seven Languages in Seven Weeks Clojure Day 2</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/" title="next Post: Seven Languages in Seven Weeks Haskell Day 1">Seven Languages in Seven Weeks Haskell Day 1 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/" title="Next Post: Seven Languages in Seven Weeks Haskell Day 1">Seven Languages in Seven Weeks Haskell Day 1 &raquo;</a>
       
     </p>
   </footer>
@@ -550,12 +326,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -597,7 +373,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -613,7 +388,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

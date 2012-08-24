@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -113,13 +115,8 @@
 
 <p>Lazy evaluation is something very unique (among the lazy languages, only Haskell is somewhat mainstream). Clojure has lazy lists, which is cool, but lazy evaluation applies to everything. A piece of data can refer to itself in its definition, as long as the part that is needed can be evaluated before the part it depends on.</p>
 
-<p>For instance, a canonical definition of the Fibonacci sequence is</p>
-
-<figure class='code'><figcaption><span>Fibonacci sequence  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">fibs</span> <span class="ow">=</span> <span class="mi">1</span><span class="kt">:</span><span class="mi">1</span><span class="kt">:</span><span class="n">zipWith</span> <span class="p">(</span><span class="o">+</span><span class="p">)</span> <span class="n">fibs</span> <span class="p">(</span><span class="n">tail</span> <span class="n">fibs</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>For instance, a canonical definition of the Fibonacci sequence is
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The <code>fibs</code> list is the list of Fibonacci numbers. It starts with 1, 1, then the list of itself summed with its own tail&#8230; but the 3rd number depends on the first and the second, so its ok. By the time we need to compute the 4th, the 3rd is already known, and so on.</p>
 
@@ -850,7 +847,7 @@
         <a class="basic-alignment left" href="/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/" title="Previous Post: Seven Languages in Seven Weeks Haskell Day 1">&laquo; Seven Languages in Seven Weeks Haskell Day 1</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/" title="next Post: Seven Languages in Seven Weeks Haskell Day 3">Seven Languages in Seven Weeks Haskell Day 3 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/" title="Next Post: Seven Languages in Seven Weeks Haskell Day 3">Seven Languages in Seven Weeks Haskell Day 3 &raquo;</a>
       
     </p>
   </footer>
@@ -956,12 +953,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -1003,7 +1000,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -1019,7 +1015,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

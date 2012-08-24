@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -115,19 +117,7 @@
 
 <p>Installing then extensions that are needed for this book is easier with 9.1. Just using <a href="http://www.postgresql.org/docs/current/static/sql-createextension.html"><code>CREATE EXTENSION</code></a>:</p>
 
-<figure class='code'><figcaption><span>Installing Extensions  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">tablefunc</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">dict_xsyn</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">fuzzystrmatch</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">pg_trgm</span><span class="p">;</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="k">cube</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Removing them is done with the command <a href="http://www.postgresql.org/docs/current/static/sql-dropextension.html"><code>DROP EXTENSION</code></a>.</p>
 
@@ -135,37 +125,7 @@
 
 <p>The code to create and fills the <code>events</code> table:</p>
 
-<figure class='code'><figcaption><span>Creating and filling the events table  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">events</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">event_id</span> <span class="nb">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">title</span> <span class="nb">text</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">starts</span> <span class="k">timestamp</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">ends</span> <span class="k">timestamp</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">venue_id</span> <span class="nb">integer</span><span class="p">,</span>
-</span><span class='line'>  <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">REFERENCES</span> <span class="n">venues</span> <span class="p">(</span><span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span>
-</span><span class='line'><span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;My Book Signing&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-15 17:30:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-15 19:30:00&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-</span><span class='line'>       <span class="p">(</span><span class="s1">&#39;April Fools Day&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-04-01 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-04-01 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">),</span>
-</span><span class='line'>       <span class="p">(</span><span class="s1">&#39;Christmas Day&#39;</span><span class="p">,</span>   <span class="s1">&#39;2012-12-25 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-12-25 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h3>On indexes</h3>
 
@@ -473,11 +433,7 @@
 
 <h3>Add a new column</h3>
 
-<figure class='code'><figcaption><span>Add a new column to `venues`  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">venues</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">active</span> <span class="nb">boolean</span> <span class="k">DEFAULT</span> <span class="k">TRUE</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Checking that is is now there:</p>
 
@@ -586,7 +542,7 @@
         <a class="basic-alignment left" href="/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/" title="Previous Post: New Book: Seven Databases in Seven Weeks">&laquo; New Book: Seven Databases in Seven Weeks</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/" title="next Post: Seven Databases in Seven Weeks PostgreSQL Day 2">Seven Databases in Seven Weeks PostgreSQL Day 2 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/" title="Next Post: Seven Databases in Seven Weeks PostgreSQL Day 2">Seven Databases in Seven Weeks PostgreSQL Day 2 &raquo;</a>
       
     </p>
   </footer>
@@ -694,12 +650,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -741,7 +697,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -757,7 +712,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

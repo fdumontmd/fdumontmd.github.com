@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -175,37 +177,7 @@
 
 <p>Testing the code:</p>
 
-<figure class='code'><figcaption><span>Testing Module dictionary  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">dictionary</span><span class="p">).</span>
-</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">dictionary</span><span class="p">}</span>
-</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">D</span> <span class="o">=</span> <span class="p">[{</span><span class="n">erlang</span><span class="p">,</span> <span class="s">&quot;a functional language&quot;</span><span class="p">},</span> <span class="p">{</span><span class="n">ruby</span><span class="p">,</span> <span class="s">&quot;an OO language&quot;</span><span class="p">},</span> <span class="p">{</span><span class="n">java</span><span class="p">,</span> <span class="s">&quot;a soso language&quot;</span><span class="p">}].</span>
-</span><span class='line'><span class="p">[{</span><span class="n">erlang</span><span class="p">,</span><span class="s">&quot;a functional language&quot;</span><span class="p">},</span>
-</span><span class='line'> <span class="p">{</span><span class="n">ruby</span><span class="p">,</span><span class="s">&quot;an OO language&quot;</span><span class="p">},</span>
-</span><span class='line'> <span class="p">{</span><span class="n">java</span><span class="p">,</span><span class="s">&quot;a soso language&quot;</span><span class="p">}]</span>
-</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">dictionary</span><span class="p">:</span><span class="n">lookup</span><span class="p">(</span><span class="n">erlang</span><span class="p">,</span> <span class="nv">D</span><span class="p">).</span>
-</span><span class='line'><span class="s">&quot;a functional language&quot;</span>
-</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nn">dictionary</span><span class="p">:</span><span class="n">lookup</span><span class="p">(</span><span class="n">java</span><span class="p">,</span> <span class="nv">D</span><span class="p">).</span>
-</span><span class='line'><span class="s">&quot;a soso language&quot;</span>
-</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="nn">dictionary</span><span class="p">:</span><span class="n">lookup</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nv">D</span><span class="p">).</span>
-</span><span class='line'><span class="n">false</span>
-</span><span class='line'><span class="mi">6</span><span class="o">&gt;</span> <span class="nn">dictionary</span><span class="p">:</span><span class="n">lookup_alt</span><span class="p">(</span><span class="n">erlang</span><span class="p">,</span> <span class="nv">D</span><span class="p">).</span>
-</span><span class='line'><span class="p">{</span><span class="n">erlang</span><span class="p">,</span><span class="s">&quot;a functional language&quot;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h3>Computing prices</h3>
 
@@ -231,31 +203,7 @@
 
 <p>Testing both functions, they return the same answer (always a good thing for functions meant to have identical meaning):</p>
 
-<figure class='code'><figcaption><span>Testing Module price  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">price</span><span class="p">).</span>
-</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">price</span><span class="p">}</span>
-</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">Items</span> <span class="o">=</span> <span class="p">[{</span><span class="n">processor</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">200</span><span class="p">},</span> <span class="p">{</span><span class="nb">memory</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">100</span><span class="p">},</span> <span class="p">{</span><span class="n">screen</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">},</span> <span class="p">{</span><span class="n">drive</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">150</span><span class="p">}].</span>
-</span><span class='line'><span class="p">[{</span><span class="n">processor</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">200</span><span class="p">},</span>
-</span><span class='line'> <span class="p">{</span><span class="nb">memory</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">100</span><span class="p">},</span>
-</span><span class='line'> <span class="p">{</span><span class="n">screen</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">},</span>
-</span><span class='line'> <span class="p">{</span><span class="n">drive</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">150</span><span class="p">}]</span>
-</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">price</span><span class="p">:</span><span class="n">compute_map</span><span class="p">(</span><span class="nv">Items</span><span class="p">).</span>
-</span><span class='line'><span class="p">[{</span><span class="n">processor</span><span class="p">,</span><span class="mi">1000</span><span class="p">},{</span><span class="nb">memory</span><span class="p">,</span><span class="mi">400</span><span class="p">},{</span><span class="n">screen</span><span class="p">,</span><span class="mi">1000</span><span class="p">},{</span><span class="n">drive</span><span class="p">,</span><span class="mi">450</span><span class="p">}]</span>
-</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nn">price</span><span class="p">:</span><span class="n">compute_lc</span><span class="p">(</span><span class="nv">Items</span><span class="p">).</span>
-</span><span class='line'><span class="p">[{</span><span class="n">processor</span><span class="p">,</span><span class="mi">1000</span><span class="p">},{</span><span class="nb">memory</span><span class="p">,</span><span class="mi">400</span><span class="p">},{</span><span class="n">screen</span><span class="p">,</span><span class="mi">1000</span><span class="p">},{</span><span class="n">drive</span><span class="p">,</span><span class="mi">450</span><span class="p">}]</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h3>Playing Tic-Tac-Toe</h3>
 
@@ -401,29 +349,7 @@
 
 <p>Testing is a bit tedious, because of the way the board is defined. First a winner on either diagonal is checked, then a draw, then an unfinished game:</p>
 
-<figure class='code'><figcaption><span>Testing Module tictactoe  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">tictactoe</span><span class="p">).</span>
-</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">tictactoe</span><span class="p">}</span>
-</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">tictactoe</span><span class="p">:</span><span class="n">check</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">]).</span>
-</span><span class='line'><span class="n">x</span>
-</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">tictactoe</span><span class="p">:</span><span class="n">check</span><span class="p">([</span><span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">n</span><span class="p">]).</span>
-</span><span class='line'><span class="n">x</span>
-</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nn">tictactoe</span><span class="p">:</span><span class="n">check</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">]).</span>
-</span><span class='line'><span class="n">cat</span>
-</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="nn">tictactoe</span><span class="p">:</span><span class="n">check</span><span class="p">([</span><span class="n">o</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">n</span><span class="p">]).</span>
-</span><span class='line'><span class="n">no_winner</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h2>Wrapping Up Day 2</h2>
 
@@ -478,7 +404,7 @@
         <a class="basic-alignment left" href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/" title="Previous Post: Seven Languages in Seven Weeks Erlang Day 1">&laquo; Seven Languages in Seven Weeks Erlang Day 1</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" title="next Post: Seven Languages in Seven Weeks Erlang Day 3">Seven Languages in Seven Weeks Erlang Day 3 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" title="Next Post: Seven Languages in Seven Weeks Erlang Day 3">Seven Languages in Seven Weeks Erlang Day 3 &raquo;</a>
       
     </p>
   </footer>
@@ -584,12 +510,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -631,7 +557,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -647,7 +572,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

@@ -20,7 +20,7 @@ Java, the de &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -62,12 +62,14 @@ Java, the de &hellip;">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -187,21 +189,7 @@ just a variant of what is already in the book.</p>
 
 <p>Invoking the <code>put_many</code> function then checking the insert:</p>
 
-<figure class='code'><figcaption><span>Testing put_many  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">put_many</span> <span class="s1">&#39;wiki&#39;</span><span class="p">,</span> <span class="s1">&#39;Some title&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>  <span class="s2">&quot;text:&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;Some article text&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s2">&quot;revision:author&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jschmoe&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s2">&quot;revision:comment&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;no comment&quot;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">get</span> <span class="s1">&#39;wiki&#39;</span><span class="p">,</span> <span class="s1">&#39;Some title&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>generates</p>
 
@@ -268,7 +256,7 @@ the loaded data.</p>
         <a class="basic-alignment left" href="/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/" title="Previous Post: Seven Databases in Seven Weeks Riak Day 3">&laquo; Seven Databases in Seven Weeks Riak Day 3</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/" title="next Post: Seven Databases in Seven Weeks HBase Day 2">Seven Databases in Seven Weeks HBase Day 2 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/" title="Next Post: Seven Databases in Seven Weeks HBase Day 2">Seven Databases in Seven Weeks HBase Day 2 &raquo;</a>
       
     </p>
   </footer>
@@ -376,12 +364,12 @@ the loaded data.</p>
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -423,7 +411,6 @@ the loaded data.</p>
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -439,7 +426,6 @@ the loaded data.</p>
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

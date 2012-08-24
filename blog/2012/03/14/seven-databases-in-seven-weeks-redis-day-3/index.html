@@ -21,7 +21,7 @@ it to an end. Today is less &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,12 +63,14 @@ it to an end. Today is less &hellip;">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -218,23 +220,11 @@ and the <code>uniqueObject</code> step has been replaced by <code>dedup</code>.<
 
 <p>Here are the updated relevant portions:</p>
 
-<figure class='code'><figcaption><span>/band Route  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">membersQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;bands&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">bandName</span><span class="o">+</span><span class="s1">&#39;&quot;]]&#39;</span>
-</span><span class='line'>             <span class="o">+</span> <span class="s1">&#39;.out(&quot;member&quot;).in(&quot;member&quot;).dedup.name&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>and</p>
 
-<figure class='code'><figcaption><span>/artist Route  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">rolesQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;artists&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">artistName</span><span class="o">+</span><span class="s1">&#39;&quot;]].out(&quot;plays&quot;).role.dedup&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nx">bandsQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;artists&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">artistName</span><span class="o">+</span><span class="s1">&#39;&quot;]].in(&quot;member&quot;).name.dedup&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h2>Exercises</h2>
 
@@ -254,37 +244,12 @@ provided; the purpose of this exercise is to use this information.</p>
 <p>I load the start and end dates into their own key in Redis. The key
 format are <code>from:bandName:artistName</code> and <code>to:bandName:artistName</code>.</p>
 
-<p>First I take the data from the relevant columns:</p>
-
-<figure class='code'><figcaption><span>Extracting Data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span>
-</span><span class='line'>  <span class="nx">artist</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-</span><span class='line'>  <span class="nx">band</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-</span><span class='line'>  <span class="nx">roles</span> <span class="o">=</span> <span class="nx">buildRoles</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span>
-</span><span class='line'>  <span class="nx">from</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-</span><span class='line'>  <span class="nx">to</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>First I take the data from the relevant columns:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Then, if they&#8217;re not empty, I create the keys in Redis:</p>
 
-<figure class='code'><figcaption><span>Updating Redis  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">from</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nx">redis_client</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;from:&#39;</span> <span class="o">+</span> <span class="nx">band</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artist</span><span class="p">,</span> <span class="nx">from</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">to</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nx">redis_client</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;to:&#39;</span> <span class="o">+</span> <span class="nx">band</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artist</span><span class="p">,</span> <span class="nx">to</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>CouchDB</h4>
 
@@ -295,65 +260,11 @@ to figure out how to modify the <code>populate_couch.js</code> script
 <p>Eventually, I just reused the <code>roleBatch</code> (therefore renamed
 <code>artistInfoBatch</code>) to retrieve the roles, from and to information.</p>
 
-<figure class='code'><figcaption><span>Retrieving the Information  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">artistInfoBatch</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'><span class="nx">artists</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">artistName</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">artistInfoBatch</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span>
-</span><span class='line'>    <span class="s1">&#39;smembers&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;artist:&#39;</span> <span class="o">+</span> <span class="nx">bandName</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artistName</span>
-</span><span class='line'>  <span class="p">]);</span>
-</span><span class='line'>  <span class="nx">artistInfoBatch</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span>
-</span><span class='line'>    <span class="s1">&#39;get&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;from:&#39;</span> <span class="o">+</span> <span class="nx">bandName</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artistName</span>
-</span><span class='line'>  <span class="p">]);</span>
-</span><span class='line'>  <span class="nx">artistInfoBatch</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span>
-</span><span class='line'>    <span class="s1">&#39;get&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s1">&#39;to:&#39;</span> <span class="o">+</span> <span class="nx">bandName</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nx">artistName</span>
-</span><span class='line'>  <span class="p">]);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The putting it in CouchDB is trivial:</p>
 
-<figure class='code'><figcaption><span>Building Documents  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">artists</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span> <span class="kd">function</span><span class="p">(</span><span class="nx">artistName</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">artist</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">artistName</span><span class="p">,</span> <span class="nx">role</span> <span class="o">:</span> <span class="nx">artistInfo</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">]</span> <span class="p">},</span>
-</span><span class='line'>      <span class="nx">from</span> <span class="o">=</span> <span class="nx">artistInfo</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">],</span>
-</span><span class='line'>      <span class="nx">to</span> <span class="o">=</span> <span class="nx">artistInfo</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">];</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">from</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">artist</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">from</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">to</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">artist</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">to</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">artistDocs</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">artist</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>Neo4j</h4>
 
@@ -367,52 +278,12 @@ it still took me more time to understand how to use them).</p>
 does not support adding properties to relationships, but it was easy
 enough to modify this library to add this feature.</p>
 
-<figure class='code'><figcaption><span>Relationship properties  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">neo4jClient</span><span class="p">.</span><span class="nx">createRelationship</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fromNode</span><span class="p">,</span> <span class="nx">toNode</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">,</span> <span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">fromPath</span> <span class="o">=</span> <span class="p">(</span><span class="nx">fromNode</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^.*?\/db\/data\//</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
-</span><span class='line'>      <span class="nx">rel</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">to</span><span class="o">:</span> <span class="nx">toNode</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="nx">type</span> <span class="p">};</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">rel</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">props</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">neo4jClient</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
-</span><span class='line'>    <span class="p">[</span><span class="nx">fromPath</span><span class="p">,</span> <span class="s1">&#39;relationships&#39;</span><span class="p">],</span> <span class="nx">rel</span><span class="p">,</span> <span class="nx">callback</span>
-</span><span class='line'>  <span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>then the relevant properties can be passed to the function above in
 the <code>graph_sync.js</code> script:</p>
 
-<figure class='code'><figcaption><span>Passing from and to properties  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">props</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'><span class="nx">progress</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;progress&#39;</span><span class="p">,</span> <span class="s1">&#39;artist&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">artist</span><span class="p">.</span><span class="nx">from</span><span class="p">)</span>
-</span><span class='line'>  <span class="nx">props</span><span class="p">.</span><span class="nx">from</span> <span class="o">=</span> <span class="nx">artist</span><span class="p">.</span><span class="nx">from</span><span class="p">;</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">artist</span><span class="p">.</span><span class="nx">to</span><span class="p">)</span>
-</span><span class='line'>  <span class="nx">props</span><span class="p">.</span><span class="nx">to</span> <span class="o">=</span> <span class="nx">artist</span><span class="p">.</span><span class="nx">to</span><span class="p">;</span>
-</span><span class='line'><span class="nx">relate</span><span class="p">(</span><span class="nx">bandNode</span><span class="p">.</span><span class="nx">self</span><span class="p">,</span> <span class="nx">artistNode</span><span class="p">.</span><span class="nx">self</span><span class="p">,</span> <span class="s1">&#39;member&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>  <span class="nx">progress</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;progress&#39;</span><span class="p">,</span> <span class="s1">&#39;member&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="p">},</span> <span class="nx">props</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h4>Using the new data</h4>
 
@@ -465,43 +336,7 @@ object with two properties: <code>columns</code> is an array of column names, an
 <code>data</code> is an array of arrays (each one being a row). To convert them
 to an array of objects, I use the following code:</p>
 
-<figure class='code'><figcaption><span>Convert Table data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">convertGremlinTable</span><span class="p">(</span><span class="nx">table</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">fromTableToObject</span><span class="p">(</span><span class="nx">table</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">].</span><span class="nx">columns</span><span class="p">,</span> <span class="nx">table</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">].</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">fromTableToObject</span><span class="p">(</span><span class="nx">columns</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">res</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">columns</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span>
-</span><span class='line'>                <span class="nx">obj</span><span class="p">[</span><span class="nx">columns</span><span class="p">[</span><span class="nx">j</span><span class="p">]]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">];</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nx">res</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">res</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The rest of the code is just the nested Node.js event functions, and
 the formatting using the <a href="http://mustache.github.com/"><code>mustache</code></a>
@@ -1999,69 +1834,11 @@ module did not.</p>
 with the same name as the band&#8217;s key: if it does, I add a link to the
 dedicated streaming port, passing the key as parameter:</p>
 
-<figure class='code'><figcaption><span>Adding Sample Link  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">mongoClient</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">mongodb</span><span class="p">.</span><span class="nx">GridStore</span><span class="p">.</span><span class="nx">exist</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="nx">bandKey</span> <span class="o">+</span> <span class="s1">&#39;.mp3&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">exist</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">exist</span><span class="p">)</span>
-</span><span class='line'>      <span class="nx">body</span> <span class="o">+=</span> <span class="s1">&#39;&lt;a href=&quot;http://&#39;</span><span class="o">+</span><span class="nx">host</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nx">streamPort</span><span class="o">+</span><span class="s1">&#39;?band=&quot;&gt;Sample&lt;/a&gt;&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Then, I create a new <code>http</code> server to send the music:</p>
 
-<figure class='code'><figcaption><span>Streaming Files from GridFS  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">band</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="kc">true</span><span class="p">).</span><span class="nx">query</span><span class="p">.</span><span class="nx">band</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">mongoClient</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">gs</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">mongodb</span><span class="p">.</span><span class="nx">GridStore</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="nx">band</span><span class="o">+</span><span class="s1">&#39;.mp3&#39;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">gs</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">gs</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;streaming...&quot;</span><span class="p">);</span>
-</span><span class='line'>            <span class="nx">response</span><span class="p">.</span><span class="nx">writeHeader</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>                <span class="s1">&#39;Content-type&#39;</span><span class="o">:</span> <span class="s1">&#39;audio/mpeg, audio/x-mpeg, audio/x-mpeg-3, audio/mpeg3&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="c1">// magic headers to stream mp3...</span>
-</span><span class='line'>                <span class="s1">&#39;X-Pad&#39;</span><span class="o">:</span> <span class="s1">&#39;avoid browser bug&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="s1">&#39;Cache-Control&#39;</span><span class="o">:</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="s1">&#39;Content-Length&#39;</span><span class="o">:</span> <span class="nx">gs</span><span class="p">.</span><span class="nx">length</span><span class="p">});</span>
-</span><span class='line'><span class="c1">// cannot use gridstore streams; somehow file always</span>
-</span><span class='line'><span class="c1">// truncated - load in memory instead</span>
-</span><span class='line'><span class="c1">//            gs.stream(true).pipe(response);</span>
-</span><span class='line'>            <span class="nx">gs</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">gs</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'>                <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
-</span><span class='line'>                <span class="nx">db</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
-</span><span class='line'>            <span class="p">});</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="nx">streamPort</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The only problem I had (but it took me a while to figure it out) was
 that the stream support in the MongoDB client for GridFS content is
@@ -2721,7 +2498,7 @@ to reading it.</p>
         <a class="basic-alignment left" href="/blog/2012/03/10/concrete-mathematics-chapter-2-basics/" title="Previous Post: Concrete Mathematics Chapter 2 Basics">&laquo; Concrete Mathematics Chapter 2 Basics</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/" title="next Post: Seven Databases in Seven Weeks Wrapping Up">Seven Databases in Seven Weeks Wrapping Up &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/" title="Next Post: Seven Databases in Seven Weeks Wrapping Up">Seven Databases in Seven Weeks Wrapping Up &raquo;</a>
       
     </p>
   </footer>
@@ -2829,12 +2606,12 @@ to reading it.</p>
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -2876,7 +2653,6 @@ to reading it.</p>
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -2892,7 +2668,6 @@ to reading it.</p>
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

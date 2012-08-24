@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -117,37 +119,12 @@
 
 <p>Not as challenging an exercise as <a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">yesterday&#8217;s</a>. Still, it shows how light and easy to use Scala&#8217;s anonymous functions are.</p>
 
-<p>A first version with the <code>foldLeft</code> method:</p>
-
-<figure class='code'><figcaption><span>foldLeft  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">list</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;three&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">java.lang.String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="n">one</span><span class="o">,</span> <span class="n">two</span><span class="o">,</span> <span class="n">three</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="n">list</span><span class="o">.</span><span class="n">foldLeft</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">{(</span><span class="n">sum</span><span class="o">,</span> <span class="n">s</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">size</span> <span class="o">}</span>
-</span><span class='line'><span class="n">sum</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">11</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>A first version with the <code>foldLeft</code> method:
+Liquid error: can&#8217;t convert Array into String</p>
 
 <p>A second version with the <code>/:</code> operator. The anonymous function is of course strictly identical.</p>
 
-<figure class='code'><figcaption><span>foldLeft operator  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">list</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;three&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">java.lang.String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="n">one</span><span class="o">,</span> <span class="n">two</span><span class="o">,</span> <span class="n">three</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="o">(</span><span class="mi">0</span> <span class="o">/:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{(</span><span class="n">sum</span><span class="o">,</span> <span class="n">s</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">size</span> <span class="o">}</span>
-</span><span class='line'><span class="n">sum</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">11</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <h3>Censor trait</h3>
 
@@ -155,33 +132,11 @@
 
 <p>Java String comes with a method that seems to do just what is needed here: <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/lang/String.html#replaceAll%28java.lang.String,%20java.lang.String%29"><code>replaceAll</code></a>.</p>
 
-<figure class='code'><figcaption><span>replaceAll  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;one two three&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;TWO&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="n">res1</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">one</span> <span class="nc">TWO</span> <span class="n">three</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
-
-
-<figure class='code'><figcaption><span>replaceAll, word boundaries  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;she sells shells&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;\\bshe\\b&quot;</span><span class="o">,</span> <span class="s">&quot;the lady&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="n">res2</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">the</span> <span class="n">lady</span> <span class="n">sells</span> <span class="n">shells</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span>replaceAll, case insensitive  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;She sells shells&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;(?i)\\bshe\\b&quot;</span><span class="o">,</span> <span class="s">&quot;the lady&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="n">res3</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">the</span> <span class="n">lady</span> <span class="n">sells</span> <span class="n">shells</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>As seen in the last two examples, the first argument is actually a regular expression. For a while, I toyed with the idea of using Scala&#8217;s <a href="http://www.scala-lang.org/api/current/scala/util/matching/Regex.html"><code>Regex.replaceAllIn</code></a>, so I could check whether the match was capitalized or all upper case and insert the replacement word with identical case, as Emacs does. But this is a whole lot more work, and generic code can only handle a few cases (all lower case, all upper case and capitalized) satisfactorily.</p>
 
@@ -578,7 +533,7 @@
         <a class="basic-alignment left" href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/" title="Previous Post: Seven Languages in Seven Weeks Scala Day 1">&laquo; Seven Languages in Seven Weeks Scala Day 1</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/" title="next Post: Seven Languages in Seven Weeks Scala Day 3">Seven Languages in Seven Weeks Scala Day 3 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/" title="Next Post: Seven Languages in Seven Weeks Scala Day 3">Seven Languages in Seven Weeks Scala Day 3 &raquo;</a>
       
     </p>
   </footer>
@@ -684,12 +639,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -731,7 +686,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -747,7 +701,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

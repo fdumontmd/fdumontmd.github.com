@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +60,14 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.wakatta.jp" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
+  
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -113,71 +115,13 @@
 
 <p>Scala chose to solve this by making XML part of the language. This means that the following fragment (from Burak&#8217;s draft <a href="http://burak.emir.googlepages.com/scalaxbook.docbk.html">scala xml book</a>, linked to from <a href="http://www.scala-lang.org/node/131">A Tour of Scala: XML Processing</a>):</p>
 
-<figure class='code'><figcaption><span>Scala and XML  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">labPhoneBook</span> <span class="k">=</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="n">phonebook</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="n">descr</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="nc">This</span> <span class="n">is</span> <span class="n">the</span> <span class="o">&lt;</span><span class="n">b</span><span class="o">&gt;</span><span class="n">phonebook</span><span class="o">&lt;/</span><span class="n">b</span><span class="o">&gt;</span> <span class="n">of</span> <span class="n">the</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;http://acme.org&quot;</span><span class="o">&gt;</span><span class="nc">ACME</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">corporation</span><span class="o">.</span>
-</span><span class='line'>      <span class="o">&lt;/</span><span class="n">descr</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="n">entry</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="nc">Burak</span> <span class="nc">Emir</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="n">phone</span> <span class="n">where</span><span class="o">=</span><span class="s">&quot;work&quot;</span><span class="o">&gt;+</span><span class="mi">41</span> <span class="mi">21</span> <span class="mi">693</span> <span class="mi">68</span> <span class="mi">67</span><span class="o">&lt;/</span><span class="n">phone</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;/</span><span class="n">entry</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;/</span><span class="n">phonebook</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="n">labPhoneBook</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>stores an XML fragment, not a string, in <code>labPhoneBook</code>.</p>
 
 <p>Braces can be used to insert Scala code directly into the XML:</p>
 
-<figure class='code'><figcaption><span>Scala: dynamic XML  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">name</span> <span class="k">=</span> <span class="s">&quot;Fred&quot;</span>
-</span><span class='line'><span class="n">name</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="nc">Fred</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">fragment</span> <span class="k">=</span> <span class="o">&lt;</span><span class="n">blog</span><span class="o">&gt;</span>
-</span><span class='line'>     <span class="o">|</span> <span class="o">&lt;</span><span class="n">post</span><span class="o">&gt;</span>
-</span><span class='line'>     <span class="o">|</span> <span class="o">&lt;</span><span class="n">author</span><span class="o">&gt;{</span><span class="n">name</span><span class="o">}&lt;/</span><span class="n">author</span><span class="o">&gt;</span>
-</span><span class='line'>     <span class="o">|</span> <span class="o">&lt;/</span><span class="n">post</span><span class="o">&gt;</span>
-</span><span class='line'>     <span class="o">|</span> <span class="o">&lt;/</span><span class="n">blog</span><span class="o">&gt;</span>
-</span><span class='line'><span class="n">fragment</span><span class="k">:</span> <span class="kt">scala.xml.Elem</span> <span class="o">=</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">blog</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">post</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">author</span><span class="o">&gt;</span><span class="nc">Fred</span><span class="o">&lt;/</span><span class="n">author</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">post</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">blog</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The interactive Scala shell recognizes XML fragments, so it knew the expression was not complete until <code>&lt;/blog&gt;</code>. Very, very nice.</p>
 
@@ -202,35 +146,7 @@
 </ul>
 
 
-<figure class='code'><figcaption><span>Displaying links  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.util.matching.Regex</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">val</span> <span class="n">linkPattern</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Regex</span><span class="o">(</span><span class="s">&quot;&quot;&quot;&lt;a +href=\&quot;([^\&quot;]+)\&quot;[^&gt;]*&gt;&quot;&quot;&quot;</span><span class="o">,</span> <span class="s">&quot;link&quot;</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">object</span> <span class="nc">PageLoader</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">getPageSize</span><span class="o">(</span><span class="n">url</span> <span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">text</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromURL</span><span class="o">(</span><span class="n">url</span><span class="o">).</span><span class="n">mkString</span>
-</span><span class='line'>    <span class="o">((</span><span class="nc">Set</span><span class="o">()</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">/:</span> <span class="n">linkPattern</span><span class="o">.</span><span class="n">findAllIn</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="n">matchData</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">md</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">s</span> <span class="o">+</span> <span class="n">md</span><span class="o">.</span><span class="n">group</span><span class="o">(</span><span class="s">&quot;link&quot;</span><span class="o">)</span> <span class="o">}</span> <span class="n">foreach</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">link</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">url</span> <span class="o">+</span> <span class="s">&quot; =&gt; &quot;</span> <span class="o">+</span> <span class="n">link</span><span class="o">)</span> <span class="o">}</span>
-</span><span class='line'>    <span class="n">text</span><span class="o">.</span><span class="n">length</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The code to add the links to a Set is not the simplest I could think of, but it is the simplest that worked. The problem I have is that the collections methods other return iterators, but I cannot simply build a new collection from an interator. I guess there must be a simpler way, but right now it is eluding me.</p>
 
@@ -720,74 +636,7 @@
 
 <p>As I was doing the exercises, I found a few dark corners, most notably about collections and iterators.</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">Welcome</span> <span class="n">to</span> <span class="nc">Scala</span> <span class="n">version</span> <span class="mf">2.9</span><span class="o">.</span><span class="mf">1.f</span><span class="n">inal</span> <span class="o">(</span><span class="nc">Java</span> <span class="nc">HotSpot</span><span class="o">(</span><span class="nc">TM</span><span class="o">)</span> <span class="mi">64</span><span class="o">-</span><span class="nc">Bit</span> <span class="nc">Server</span> <span class="nc">VM</span><span class="o">,</span> <span class="nc">Java</span> <span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_26</span><span class="o">).</span>
-</span><span class='line'><span class="nc">Type</span> <span class="n">in</span> <span class="n">expressions</span> <span class="n">to</span> <span class="n">have</span> <span class="n">them</span> <span class="n">evaluated</span><span class="o">.</span>
-</span><span class='line'><span class="nc">Type</span> <span class="k">:</span><span class="kt">help</span> <span class="kt">for</span> <span class="kt">more</span> <span class="kt">information.</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">scala&gt;</span> <span class="kt">import</span> <span class="kt">scala.util.matching.Regex</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">scala.util.matching.Regex</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">re</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Regex</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="n">re</span><span class="k">:</span> <span class="kt">scala.util.matching.Regex</span> <span class="o">=</span> <span class="n">a</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">str</span> <span class="k">=</span> <span class="s">&quot;abracadabra&quot;</span>
-</span><span class='line'><span class="n">str</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">abracadabra</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">matches</span> <span class="k">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findAllIn</span><span class="o">(</span><span class="n">str</span><span class="o">).</span><span class="n">matchData</span>
-</span><span class='line'><span class="n">matches</span><span class="k">:</span> <span class="kt">java.lang.Object</span> <span class="kt">with</span> <span class="kt">Iterator</span><span class="o">[</span><span class="kt">scala.util.matching.Regex.Match</span><span class="o">]</span> <span class="k">=</span> <span class="n">non</span><span class="o">-</span><span class="n">empty</span> <span class="n">iterator</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="n">matches</span> <span class="n">foreach</span> <span class="o">{</span><span class="n">md</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">md</span><span class="o">)}</span>
-</span><span class='line'><span class="n">a</span>
-</span><span class='line'><span class="n">a</span>
-</span><span class='line'><span class="n">a</span>
-</span><span class='line'><span class="n">a</span>
-</span><span class='line'><span class="n">a</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">matches</span><span class="o">.</span><span class="n">size</span><span class="o">)</span>
-</span><span class='line'><span class="mi">0</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The code just finds regular expression matches in a string, prints each of them, them prints how many it found (at least that&#8217;s what I expected it would do).</p>
 
@@ -844,7 +693,7 @@
         <a class="basic-alignment left" href="/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/" title="Previous Post: Seven Languages in Seven Weeks Scala Day 2">&laquo; Seven Languages in Seven Weeks Scala Day 2</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/" title="next Post: Seven Languages in Seven Weeks Erlang Day 1">Seven Languages in Seven Weeks Erlang Day 1 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/" title="Next Post: Seven Languages in Seven Weeks Erlang Day 1">Seven Languages in Seven Weeks Erlang Day 1 &raquo;</a>
       
     </p>
   </footer>
@@ -950,12 +799,12 @@
 </section>
 
 <section>
-  <h1>Github Repos</h1>
+  <h1>GitHub Repos</h1>
   <ul id="gh_repos">
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/fdumontmd">@fdumontmd</a> on Github
+  <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
     $.domReady(function(){
@@ -997,7 +846,6 @@
 </footer>
   
 
-<div class="tex2jax_ignore">
 <script type="text/javascript">
       var disqus_shortname = 'wakatta-blog';
       
@@ -1013,7 +861,6 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-</div>
 
 
 

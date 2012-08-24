@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-05-05T23:23:10+09:00</updated>
+  <updated>2012-08-24T21:58:39+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -532,7 +532,7 @@ soon the exams and bonus (at least the ones I could do) exercises.</p>
 
 <h3>$2T_n = nT_{n-1}+3\cdot n!$</h3>
 
-<p>This exercise is not tricky in anyway; just follow the method and
+<p>This exercise is not tricky in any way; just follow the method and
 the result is guaranteed.</p>
 
 <p>The recurrence equations are</p>

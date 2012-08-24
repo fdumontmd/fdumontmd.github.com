@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-05-05T23:23:10+09:00</updated>
+  <updated>2012-08-24T21:58:39+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -522,7 +522,7 @@ apparently found my blog, read it and posted a nice comment on
 <a href="http://sevenweeks.org/">his blog</a>.</p>
 
 <p>Now I have no choice but to urge all my three readers (that includes
-you, Mom) to go and by this great book. Even if you already own a
+you, Mom) to go and buy this great book. Even if you already own a
 copy.</p>
 ]]></content>
   </entry>
@@ -548,7 +548,7 @@ soon the exams and bonus (at least the ones I could do) exercises.</p>
 
 <h3>$2T_n = nT_{n-1}+3\cdot n!$</h3>
 
-<p>This exercise is not tricky in anyway; just follow the method and
+<p>This exercise is not tricky in any way; just follow the method and
 the result is guaranteed.</p>
 
 <p>The recurrence equations are</p>
@@ -6440,12 +6440,88 @@ geometry was to blame.</p>
 and $\theta$, $\theta + 30^{\circ}$, then for any two pairs of
 half-lines from the two zigs to intersect, their angles must be
 between $0^{\circ}$ and $180^{\circ}$. Taken together, these
-constraints give $0^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.</p>
+constraints give $30^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.</p>
+
+<p><strong>Update: The original version of this post had a lower bound of
+$0$. Thanks to Taishot for pointing out the error</strong></p>
 
 <p>This means there cannot be more than $5$ such pairs (and to be honest,
 I would have said 4, but the book says it&#8217;s indeed 5).</p>
 
 <h3>Recurrence Equations</h3>
+
+<p>Using the repertoire method, solve the recurrence equations</p>
+
+<div markdown="0">
+\begin{align}
+h(1) &amp; = \alpha&#92;&#92;
+h(2n+j) &amp; = 4h(n) + \gamma_j n + \beta_j&#92;&#92;
+\end{align}
+</div>
+
+
+<p>The general form of $h(n)$ is</p>
+
+<div markdown="0">
+\begin{align}
+h(n) &amp; = \alpha A(n) + \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma_0 C_0(n) + \gamma_1 C_1(n)&#92;&#92;
+\end{align}
+</div>
+
+
+<p>We get three of these functions directly by solving</p>
+
+<div markdown="0">
+\begin{align}
+h(1) &amp; = \alpha&#92;&#92;
+h(2n+j) &amp; = 4h(n) + \beta_j&#92;&#92;
+h(2^m+b_m\cdots b_0) &amp; = (1\beta_{b_m}\cdots\beta_{b_0})_4&#92;&#92;
+\end{align}
+</div>
+
+
+<p>So we have a solution for $A(n)$, $B_0(n)$ and $B_1(n)$.</p>
+
+<p>Setting $h(n) = n$</p>
+
+<div markdown="0">
+\begin{align}
+\alpha &amp; = 1&#92;&#92;
+2n+j &amp; = 4n + \gamma_j n + \beta_j&#92;&#92;
+\beta_j &amp; = j&#92;&#92;
+\gamma_j &amp; = -2&#92;&#92;
+\end{align}
+</div>
+
+
+<p>which gives the equation $n = A(n) + B_1(n) -2(C_0(n) + C_1(n))$.</p>
+
+<p>Setting $h(n) = n^2$</p>
+
+<div markdown="0">
+\begin{align}
+\alpha &amp; = 1&#92;&#92;
+4n^2 + 4jn + j &amp; = 4n^2 + \gamma_j n + \beta_j&#92;&#92;
+\beta_j &amp; = j&#92;&#92;
+\gamma_j &amp; = 4j&#92;&#92;
+\end{align}
+</div>
+
+
+<p>which gives the  equation $n^2 = A(n) + B_1(n) + 4C_1(n)$</p>
+
+<p>The latest gives us $C_1(n) = (n^2 - A(n) - B_1(n))/4$. To solve for
+$C_0$, one can either replace the value of $C_1$ in the equation for
+$h(n) = n$ above, or, equivalently, add twice that equation to the one
+for $h(n) = n^2$, which eliminates $C_1(n)$:</p>
+
+<div markdown="0">
+\begin{align}
+2n + n^2 &amp; = 3A(n) + 3B_1(n) -4C_0(n)&#92;&#92;
+C_0(n) &amp; = \frac{3A(n) + 3B_1(n) - n^2 - 2n}{4}&#92;&#92;
+\end{align}
+</div>
+
 
 <h3>Good and Bad Persons in Josephus Problem</h3>
 

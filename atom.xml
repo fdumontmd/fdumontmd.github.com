@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-08-24T21:58:39+09:00</updated>
+  <updated>2012-08-24T22:59:16+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -6443,7 +6443,7 @@ between $0^{\circ}$ and $180^{\circ}$. Taken together, these
 constraints give $30^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.</p>
 
 <p><strong>Update: The original version of this post had a lower bound of
-$0$. Thanks to Taishot for pointing out the error</strong></p>
+$0$. Thanks to Tailshot for pointing out the error</strong></p>
 
 <p>This means there cannot be more than $5$ such pairs (and to be honest,
 I would have said 4, but the book says it&#8217;s indeed 5).</p>

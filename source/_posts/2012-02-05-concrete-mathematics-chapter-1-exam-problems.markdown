@@ -258,7 +258,10 @@ But if we have two zigs with half-lines angles $\phi$, $\phi + 30^{\circ}$
 and $\theta$, $\theta + 30^{\circ}$, then for any two pairs of
 half-lines from the two zigs to intersect, their angles must be
 between $0^{\circ}$ and $180^{\circ}$. Taken together, these
-constraints give $0^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.
+constraints give $30^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.
+
+__Update: The original version of this post had a lower bound of
+$0$. Thanks to Taishot for pointing out the error__
 
 This means there cannot be more than $5$ such pairs (and to be honest,
 I would have said 4, but the book says it's indeed 5).

@@ -268,7 +268,72 @@ I would have said 4, but the book says it's indeed 5).
 
 ### Recurrence Equations
 
+Using the repertoire method, solve the recurrence equations
 
+<div markdown="0">
+\begin{align}
+h(1) &amp; = \alpha\\\\
+h(2n+j) &amp; = 4h(n) + \gamma_j n + \beta_j\\\\
+\end{align}
+</div>
+
+The general form of $h(n)$ is
+
+<div markdown="0">
+\begin{align}
+h(n) &amp; = \alpha A(n) + \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma_0 C_0(n) + \gamma_1 C_1(n)\\\\
+\end{align}
+</div>
+
+We get three of these functions directly by solving
+
+<div markdown="0">
+\begin{align}
+h(1) &amp; = \alpha\\\\
+h(2n+j) &amp; = 4h(n) + \beta_j\\\\
+h(2^m+b_m\cdots b_0) &amp; = (1\beta_{b_m}\cdots\beta_{b_0})_4\\\\
+\end{align}
+</div>
+
+So we have a solution for $A(n)$, $B_0(n)$ and $B_1(n)$.
+
+Setting $h(n) = n$
+
+<div markdown="0">
+\begin{align}
+\alpha &amp; = 1\\\\
+2n+j &amp; = 4n + \gamma_j n + \beta_j\\\\
+\beta_j &amp; = j\\\\
+\gamma_j &amp; = -2\\\\
+\end{align}
+</div>
+
+which gives the equation $n = A(n) + B_1(n) -2(C_0(n) + C_1(n))$.
+
+Setting $h(n) = n^2$
+
+<div markdown="0">
+\begin{align}
+\alpha &amp; = 1\\\\
+4n^2 + 4jn + j &amp; = 4n^2 + \gamma_j n + \beta_j\\\\
+\beta_j &amp; = j\\\\
+\gamma_j &amp; = 4j\\\\
+\end{align}
+</div>
+
+which gives the  equation $n^2 = A(n) + B_1(n) + 4C_1(n)$
+
+The latest gives us $C_1(n) = (n^2 - A(n) - B_1(n))/4$. To solve for
+$C_0$, one can either replace the value of $C_1$ in the equation for
+$h(n) = n$ above, or, equivalently, add twice that equation to the one
+for $h(n) = n^2$, which eliminates $C_1(n)$:
+
+<div markdown="0">
+\begin{align}
+2n + n^2 &amp; = 3A(n) + 3B_1(n) -4C_0(n)\\\\
+C_0(n) &amp; = \frac{3A(n) + 3B_1(n) - n^2 - 2n}{4}\\\\
+\end{align}
+</div>
 
 ### Good and Bad Persons in Josephus Problem
 

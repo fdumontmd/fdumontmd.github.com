@@ -14,5 +14,5 @@ apparently found my blog, read it and posted a nice comment on
 [his blog](http://sevenweeks.org/).
 
 Now I have no choice but to urge all my three readers (that includes
-you, Mom) to go and by this great book. Even if you already own a
+you, Mom) to go and buy this great book. Even if you already own a
 copy.

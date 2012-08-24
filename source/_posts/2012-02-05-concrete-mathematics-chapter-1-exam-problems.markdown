@@ -261,7 +261,7 @@ between $0^{\circ}$ and $180^{\circ}$. Taken together, these
 constraints give $30^{\circ} \lt |\phi - \theta| \lt 150^{\circ}$.
 
 __Update: The original version of this post had a lower bound of
-$0$. Thanks to Taishot for pointing out the error__
+$0$. Thanks to Tailshot for pointing out the error__
 
 This means there cannot be more than $5$ such pairs (and to be honest,
 I would have said 4, but the book says it's indeed 5).

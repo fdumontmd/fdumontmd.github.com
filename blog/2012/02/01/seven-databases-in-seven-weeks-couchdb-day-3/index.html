@@ -250,7 +250,24 @@ the matching records are returned.</p>
 
 <p>To monitor for conflicts, I have the following design document:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/filters&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;3-ec032384bf365d3caef0ed91185ae45a&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;filters&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>       <span class="s2">&quot;by_country&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc, req) { return doc.country == req.query.country; }&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s2">&quot;conflicts&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc, req) { return doc._conflicts; }&quot;</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>With that, I can then listen for changes, keeping only the conflicts:</p>
 
@@ -401,7 +418,111 @@ back into the buffer), and parse each line as a JSON object.</p>
 <p>The format of each parsed object is different: each change is in its
 own object, so there is no <code>results</code> attribute any more.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>watch_changes_continuous.js  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">http_options</span> <span class="o">=</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">host</span><span class="o">:</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">port</span><span class="o">:</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">db</span> <span class="o">+</span> <span class="s1">&#39;/_changes&#39;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s1">&#39;?feed=continuous&amp;include_docs=true&amp;since=&#39;</span> <span class="o">+</span> <span class="nx">watcher</span><span class="p">.</span><span class="nx">last_seq</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">processLine</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">line</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">line</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">line</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">output</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// don&#39;t emit last_seq</span>
+</span><span class='line'>            <span class="c1">// watcher.last_seq not used in this code</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">output</span><span class="p">.</span><span class="nx">last_seq</span><span class="p">)</span>
+</span><span class='line'>                <span class="nx">watcher</span><span class="p">.</span><span class="nx">last_seq</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">last_seq</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>                <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">output</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">line</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">checkForData</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">buffer</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">lines</span> <span class="o">=</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;\n&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// if the last character is line return</span>
+</span><span class='line'>    <span class="c1">// use the last line; otherwise put it back</span>
+</span><span class='line'>    <span class="c1">// into the buffer to be completed later</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;\n&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="nx">buffer</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>        <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">lines</span><span class="p">.</span><span class="nx">pop</span><span class="p">()</span>
+</span><span class='line'>    <span class="c1">// process the remaining lines one at a time</span>
+</span><span class='line'>    <span class="nx">lines</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">processLine</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">buffer</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">http_options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">res</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">chunk</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">buffer</span> <span class="o">+=</span> <span class="nx">chunk</span><span class="p">;</span>
+</span><span class='line'>        <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">checkForData</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="nx">res</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">checkForData</span><span class="p">(</span><span class="nx">buffer</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">watcher</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Continuous watcher implementation</h3>
 
@@ -420,7 +541,28 @@ to test this I must use the <code>music-repl</code> database.</p>
 and for each revision it contains, emit that revision mapped to the
 document <code>_id</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/conflicts&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;4-1f5c35d83a4cfc7783d60f665946dc6d&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;language&quot;</span><span class="o">:</span> <span class="s2">&quot;javascript&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="s2">&quot;views&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>       <span class="s2">&quot;conflicts&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>           <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc) { (doc._conflicts || []).forEach(function(rev) { emit(rev, doc._id); }); }&quot;</span>
+</span><span class='line'>       <span class="p">}</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Testing it:</p>
 

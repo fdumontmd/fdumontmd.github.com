@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Algorithms | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/algorithms/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-08-25T00:13:40+09:00</updated>
+  <updated>2012-09-01T10:31:37+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -137,7 +137,112 @@ the best's, the new ticket becomes the best as well.</p>
 best uncovered set, and if there are any remaining $j$-subsets to
 find, we loop.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>solve  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">void</span> <span class="nf">solve</span><span class="p">(</span><span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">j</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">UINT</span> <span class="n">r</span> <span class="o">=</span> <span class="n">combi</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+</span><span class='line'><span class="n">UINT</span> <span class="o">*</span><span class="n">work</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">BETA</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">show_set</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">r</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">d</span> <span class="o">=</span> <span class="n">funion</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">bc</span> <span class="o">=</span> <span class="n">bits_count</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">digits</span><span class="p">[</span><span class="n">bc</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">digits</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="o">-</span><span class="n">d</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">d</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="o">=</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">best_remaining</span><span class="p">,</span> <span class="n">best_pos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="n">r</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">BETA</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">new_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">new_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">new_ticket</span><span class="p">,</span>
+</span><span class='line'>                                         <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">new_remaining</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">best_remaining</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">new_ticket</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">new_remaining</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">best_pos</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">show_set</span><span class="p">(</span><span class="n">best_ticket</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">best_remaining</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">memcpy</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">(</span><span class="n">best_pos</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="n">best_remaining</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">r</span> <span class="o">=</span> <span class="n">best_remaining</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">free</span><span class="p">(</span><span class="n">work</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h4><code>init</code></h4>
 
@@ -149,14 +254,74 @@ not size of the not yet covered set of $j$-subsets.</p>
 <p>If all tickets had to be generated randomly, 0 could be passed instead
 of a ticket to keep all $j$-subsets.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>init  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">init</span><span class="p">(</span><span class="n">UINT</span> <span class="n">c</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">w</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="n">UINT</span> <span class="n">v</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">c</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">v</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">k</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">v</span> <span class="o">=</span> <span class="n">next_perm</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h4><code>check_cover</code></h4>
 
 <p><code>check_cover</code> has a similar design as <code>init</code>, but reads the
 $j$-subsets from the work memory <code>from</code> instead of generating them.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>check_cover  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">check_cover</span><span class="p">(</span><span class="n">UINT</span> <span class="n">r</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">t</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">from</span><span class="p">[],</span> <span class="n">UINT</span> <span class="n">to</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">r</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">t</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">to</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h4><code>sample</code></h4>
 
@@ -164,13 +329,63 @@ $j$-subsets from the work memory <code>from</code> instead of generating them.</
 based on the same algorithm); here the <code>digits</code> array plays the role
 that <code>ds</code> played in the Haskell version.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>sample  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">sample</span><span class="p">(</span><span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">ds</span><span class="p">[])</span> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">UINT</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ds</span><span class="p">);</span>
+</span><span class='line'><span class="n">UINT</span> <span class="n">p</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">randomR</span><span class="p">(</span><span class="n">n</span><span class="p">)];</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">ds</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">p</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h4><code>next_perm</code></h4>
 
 <p>The <code>next_perm</code> is from <a href="http://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation">Bit Twiddling Hacks</a>, and explained <a href="http://www.alexbowe.com/generating-binary-permutations-in-popcount-or">here</a>.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>next_perm  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">next_perm</span><span class="p">(</span><span class="n">UINT</span> <span class="n">v</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">v</span> <span class="o">|</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(((</span><span class="o">~</span><span class="n">t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="o">-~</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="p">(</span><span class="n">__builtin_ctz</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h4>Compiling and running</h4>
 
@@ -794,13 +1009,39 @@ time the paper was written, so I have some margin.</p>
 they do); I include them to keep the implementation mostly
 self-contained.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Support functions  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">product</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'><span class="nf">combi</span> <span class="n">n</span> <span class="n">c</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fact</span> <span class="n">n</span><span class="p">)</span> <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">div</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">fact</span> <span class="n">c</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">c</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">remainingNumbers</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">union</span> <span class="kt">[]</span> <span class="n">js</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><code>fact</code> is just the factorial; <code>combi</code> computes the binomial
 coefficient, and <code>remainingNumbers</code> is just the union of all the
 passed $j$-subsets.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Generating Combinations  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">genCombi</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">genCombi</span> <span class="n">k</span> <span class="p">(</span><span class="n">l</span><span class="kt">:</span><span class="n">ls</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">l</span><span class="kt">:</span><span class="n">cs</span> <span class="o">|</span> <span class="n">cs</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">genCombi</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">ls</span><span class="p">]</span> <span class="o">++&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>                <span class="n">genCombi</span> <span class="n">k</span> <span class="n">ls</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><code>genCombi k s</code> generates the $k$-subsets of $s$.</p>
 
@@ -808,7 +1049,30 @@ passed $j$-subsets.</p>
 
 <p>These are simple implementations of the formula above.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Lower Bound Estimates  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">(</span><span class="n">combi</span> <span class="n">k</span> <span class="n">i</span><span class="p">)</span> <span class="o">*&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>                        <span class="p">(</span><span class="n">combi</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">))</span> <span class="o">|</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="p">[</span><span class="n">l</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">lowerBound</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">combi</span> <span class="n">n</span> <span class="n">j</span><span class="p">)</span> <span class="o">/&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>                 <span class="p">(</span><span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">ticketCover</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><code>ticketCover</code> just implements the coverage estimate I defined above
 (the one that uses $k$); <code>lowerBound</code> computes the lower bound for a
@@ -820,7 +1084,26 @@ single win.</p>
 their intersection, and define sufficient coverage as the cover being
 larger than $l$.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Defining Coverage  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">cover</span> <span class="n">l1</span> <span class="n">l2</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">intersect</span> <span class="n">l1</span> <span class="n">l2</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="ow">=</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span>
+</span><span class='line'><span class="nf">notCoveredP</span> <span class="n">l</span> <span class="n">t</span> <span class="n">j</span> <span class="ow">=</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">cover</span> <span class="n">t</span> <span class="n">j</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">notCoveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span><span class='line'><span class="nf">notCoveredBatch</span> <span class="n">l</span> <span class="n">ts</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="n">notCovered</span> <span class="n">l</span><span class="p">)</span> <span class="n">js</span> <span class="n">ts</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span> <span class="ow">=</span> <span class="n">length</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">t</span><span class="p">)</span> <span class="n">js</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><code>cover</code> implements the cover definition; <code>coveredP</code> and <code>notCoveredP</code>
 are predicates that check for (or against) sufficient coverage.</p>
@@ -833,7 +1116,24 @@ cover after selecting a ticket, and to check solutions.</p>
 a ticket. This function is used to compare potential tickets and
 select the one with the best (i.e. largest) coverage.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Checking the estimates  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">checkFormula</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">candidates</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">ticket</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">k</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">covered</span> <span class="ow">=</span> <span class="n">filter</span> <span class="p">(</span><span class="n">coveredP</span> <span class="n">l</span> <span class="n">ticket</span><span class="p">)</span> <span class="n">candidates</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kr">in</span> <span class="n">length</span> <span class="n">covered</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><code>checkFormula</code> computes the size of the coverage of a single ticket;
 it can be used to confirm the value of <code>ticketCover</code> above (and as far
@@ -846,7 +1146,32 @@ generating function; it then gets one ticket at a time, computes the
 $j$-subsets not covered yet, and repeat until the remaining
 $j$-subsets set becomes empty.</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Solution Loop  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">solve</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">gc</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">jtuples</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">j</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>  <span class="kr">in</span> <span class="n">loop</span> <span class="n">jtuples</span>
+</span><span class='line'> <span class="kr">where</span> <span class="n">loop</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="n">loop</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>     <span class="n">t</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">gc</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span>
+</span><span class='line'>     <span class="n">ts</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">loop</span> <span class="o">$</span> <span class="n">notCovered</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span>
+</span><span class='line'>     <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">ts</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>The <code>solve</code> function expects the candidate generation function to be a
 monad; this is to make it possible to use random number generators.</p>
@@ -859,7 +1184,24 @@ have what is really the simplest greedy algorithm: when a new ticket
 is needed, get the one that has the best coverage among all the
 possible tickets:</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Naive Ticket Selection  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidate</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">tickets</span> <span class="ow">=</span> <span class="n">genCombi</span> <span class="n">k</span> <span class="n">numbers</span>
+</span><span class='line'>  <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kr">in</span> <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>So for each $j$-subsets set, generate all the $k$-subsets, and compare
 their coverage.</p>
@@ -880,11 +1222,49 @@ are $k$-subsets rather than $j$-subsets themselves.</p>
 <p>I first need a function to generate a random combination. I'm using a
 method derived from Knuth (no reference as I don't have Volume 4 just yet).</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Sample Generation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">sample</span> <span class="mi">0</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+</span><span class='line'><span class="nf">sample</span> <span class="n">k</span> <span class="n">ds</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">s</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">sample</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ds</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">p</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">-</span> <span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span> <span class="n">ds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">ds</span><span class="o">!!</span><span class="n">p</span>
+</span><span class='line'>  <span class="kr">if</span> <span class="n">not</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">elem</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">s</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">head</span> <span class="n">ds</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>The generating function is very similar to the naive one</p>
 
-<p>Liquid error: can't convert Array into String</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Randomised Generating Function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">getCandidateRandom</span> <span class="n">beta</span> <span class="n">n</span> <span class="n">k</span> <span class="n">j</span> <span class="n">l</span> <span class="n">js</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">numbers</span> <span class="ow">=</span> <span class="n">remainingNumbers</span> <span class="n">js</span>
+</span><span class='line'>  <span class="n">tickets</span> <span class="ow">&lt;-</span> <span class="n">replicateM</span> <span class="n">beta</span> <span class="p">(</span><span class="n">sample</span> <span class="n">k</span> <span class="n">numbers</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">ticketsScore</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">t</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">coverageScore</span> <span class="n">l</span> <span class="n">t</span> <span class="n">js</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="n">tickets</span>
+</span><span class='line'>  <span class="n">return</span> <span class="o">$</span> <span class="n">snd</span> <span class="o">$</span> <span class="n">maximumBy</span> <span class="p">(</span><span class="n">comparing</span> <span class="n">fst</span><span class="p">)</span> <span class="n">ticketsScore</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>The only difference is the <code>tickets</code> candidate set: the naive function
 generates them all; the randomised one selects $\beta$ randomly.</p>

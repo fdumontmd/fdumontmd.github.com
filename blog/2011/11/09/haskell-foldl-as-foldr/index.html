@@ -130,12 +130,29 @@
 
 <p>First <code>foldl</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldl  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">f</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span> <span class="n">b</span><span class="p">)</span> <span class="n">bs</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>foldl</code> is tail recursive: it uses the <code>a</code> parameter as an accumulator.</p>
 
-<p>Then <code>foldr</code>:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>Then <code>foldr</code>:</p>
+
+<figure class='code'><figcaption><span>foldr  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="ow">::</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span> <span class="p">(</span><span class="n">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>foldr</code> is body recursive. This is why it is lazy and able to work on infinite list. If the function <code>f</code> is a constructor that is lazy in it&#8217;s second argument, then it is possible to examine some of the output before evaluating the recursive call.</p>
 
@@ -143,7 +160,19 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>I define a pair of data types to play the role of the function <code>f</code>. That way, I can look at the structure of calls. I need two because <code>foldl</code> and <code>foldr</code> have different types for <code>f</code></p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Helper Data Types  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">data</span> <span class="kt">Fl</span> <span class="n">b</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">Fl</span> <span class="n">b</span><span class="p">)</span> <span class="kt">:&lt;</span> <span class="n">b</span> <span class="o">|</span> <span class="kt">El</span>
+</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">Fr</span> <span class="n">b</span> <span class="ow">=</span> <span class="n">b</span> <span class="kt">:&gt;</span> <span class="p">(</span><span class="kt">Fr</span> <span class="n">b</span><span class="p">)</span> <span class="o">|</span> <span class="kt">Er</span>
+</span><span class='line'>  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>Fl</code> is a data type whose constructor <code>:&lt;</code> can be used in <code>foldl</code>. <code>Fr</code> has constructor <code>:&gt;</code> and can be used in <code>foldr</code>.</p>
 
@@ -223,11 +252,19 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>First, I introduce a new function, <code>foldl_alt</code>, that is supposed to implement <code>foldl</code>. The definition of <code>foldl_alt</code> is then rewritten until <code>foldr</code> appears:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldl_alt basic equation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>First, let&#8217;s handle the base case:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldl_alt on empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">id</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>This is easily shown true:</p>
 
@@ -239,8 +276,15 @@ Liquid error: can&#8217;t convert Array into String</p>
 </span><span class='line'>             == (foldl_alt f []) a -- by definition of foldl_alt</span></code></pre></td></tr></table></div></figure>
 
 
-<p>The recursive case is simple as well (by induction):
-Liquid error: can&#8217;t convert Array into String</p>
+<p>The recursive case is simple as well (by induction):</p>
+
+<figure class='code'><figcaption><span>foldl_alt on non empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">f&#39;</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">f&#39;</span> <span class="ow">=</span> <span class="n">flip</span> <span class="n">f</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Assuming <code>foldl f a bs == foldl_alt f bs a</code>, let&#8217;s show by induction that <code>foldl f a (b:bs) == foldl_alt f (b:bs) a</code>:</p>
 
@@ -260,7 +304,15 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>So <code>foldl_alt</code> as currently defined is identical to <code>foldl</code>. The recursive case can be further rewritten as:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldl_alt on non empty list, second version  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">comp&#39;</span> <span class="p">(</span><span class="n">f&#39;</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">f&#39;</span>    <span class="ow">=</span> <span class="n">flip</span> <span class="n">f</span>
+</span><span class='line'>        <span class="n">comp&#39;</span> <span class="ow">=</span> <span class="n">flip</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Here the composition operator is replaced by <code>comp'</code>, which just takes its argument in reversed order. This is done to show the similarity of this current <code>foldl_alt</code> with the recursive case of <code>foldr</code>. Indeed, <code>foldl_alt f</code> is identical to <code>foldr m id</code> for some function <code>m</code> (for Mystery):</p>
 
@@ -310,7 +362,11 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>For the same reason, I replace the <code>a</code> above by <code>x</code>, as I need <code>a</code> to represent the original <code>a</code> parameter (once again I could use <code>a</code> for both). This gives:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldl as foldr  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="n">b</span> <span class="n">g</span> <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">g</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span> <span class="n">b</span><span class="p">))</span> <span class="n">id</span> <span class="n">bs</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Ok, that was long. I hope it was clear (or clearer).</p>
 

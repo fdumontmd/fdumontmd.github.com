@@ -189,8 +189,33 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Querying it:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>Querying it:</p>
+
+<figure class='code'><figcaption><span>Querying the book knowledge base  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">book</span><span class="p">(</span><span class="s-Atom">andy_hunt</span><span class="p">,</span> <span class="nv">B</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">programming_ruby</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">pragmatic_thinking_and_learning</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">pragmatic_unit_testing</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">B</span> <span class="o">=</span> <span class="s-Atom">practices_of_an_agile_developer</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The <code>a</code> after the first answer is the command to display all the solutions.</p>
 
@@ -248,11 +273,49 @@ Liquid error: can&#8217;t convert Array into String</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Then finding all the known guitar players is just:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>Then finding all the known guitar players is just:</p>
 
-<p>Not an exercise, but just to highlight the similarity with the relational model, here is a kind of join:
-Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Guitar Players  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">plays</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="s-Atom">guitar</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">jimmy_hendrix</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">eric_clapton</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">jimmy_page</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">neil_young</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not an exercise, but just to highlight the similarity with the relational model, here is a kind of join:</p>
+
+<figure class='code'><figcaption><span>Rock Piano Players  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">style</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="s-Atom">rock</span><span class="p">),</span> <span class="nf">plays</span><span class="p">(</span><span class="nv">A</span><span class="p">,</span> <span class="s-Atom">piano</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">A</span> <span class="o">=</span> <span class="s-Atom">jerry_lee_lewis</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>And this wraps up Day 1.</p>
 </div>

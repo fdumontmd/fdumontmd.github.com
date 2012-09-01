@@ -115,7 +115,19 @@
 
 <p>I implements a List Monad, and creates a list of pairs where the first element is smaller than the second. In Haskell, this is what it would look like:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>List Monad example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">do</span> <span class="n">x</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span>
+</span><span class='line'>   <span class="n">y</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span>
+</span><span class='line'>   <span class="kr">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">y</span>
+</span><span class='line'>     <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'>     <span class="kr">else</span> <span class="n">fail</span> <span class="s">&quot;Not a valid pair&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Haskell&#8217;s notation for functions is especially useful here. Note how the Java codes forces me to tie <code>MakePair1</code> and <code>MakePair2</code>, while the Haskell equivalent seems to have no special construct whatsoever (the do notation hides the underlying anonymous functions).</p>
 

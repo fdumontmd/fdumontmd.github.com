@@ -119,9 +119,15 @@
 
 <h3>Io is typed</h3>
 
-<p>Trying to evaluate
-Liquid error: can&#8217;t convert Array into String
-generates an error:</p>
+<p>Trying to evaluate</p>
+
+<figure class='code'><figcaption><span>Testing typing  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="mf">1</span> <span class="o">+</span> <span class="s">&quot;one&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>generates an error:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -135,14 +141,35 @@ generates an error:</p>
 
 <h3>False values</h3>
 
-<p>0 and the empty strings are both true, while <code>nil</code> is false:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>0 and the empty strings are both true, while <code>nil</code> is false:</p>
+
+<figure class='code'><figcaption><span>Testing false  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="mf">0</span> <span class="n">and</span> <span class="no">true</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">true</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="s">&quot;&quot;</span> <span class="n">and</span> <span class="no">true</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">true</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="no">nil</span> <span class="n">and</span> <span class="no">true</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Slots in an object</h3>
 
-<p>The method <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/slotNames"><code>slotNames</code></a> gives the list of slots:
-Liquid error: can&#8217;t convert Array into String
-returns</p>
+<p>The method <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/slotNames"><code>slotNames</code></a> gives the list of slots:</p>
+
+<figure class='code'><figcaption><span>Listing slots  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Object</span> <span class="n">slotNames</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>returns</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>==&gt; list(serializedSlotsWithNames, isNil, serialized, relativeDoFile, prependProto, pause, &lt;, futureSend, contextWithSlot, return, @, currentCoro, break, isIdenticalTo, ancestorWithSlot, getSlot, setSlotWithType, method, evalArgAndReturnNil, lazySlot, resend, isTrue, isKindOf, asSimpleString, while, setProtos, shallowCopy, init, removeProto, proto, stopStatus, clone, actorRun, serializedSlots, setSlot, removeAllSlots, handleActorException, become, apropos, hasSlot, -, doFile, doString, uniqueId, setIsActivatable, print, &lt;=, launchFile, doRelativeFile, thisLocalContext, type, write, isLaunchScript, ifNonNil, &gt;, thisContext, removeSlot, block, writeln, perform, doMessage, @@, switch, evalArg, list, deprecatedWarning, for, ?, ifError, try, asString, asyncSend, coroDo, do, performWithArgList, yield, argIsActivationRecord, slotNames, hasLocalSlot, wait, message, argIsCall, isActivatable, println, !=, foreachSlot, not, inlineMethod, .., coroDoLater, loop, ancestors, raiseIfError, newSlot, and, appendProto, cloneWithoutInit, slotSummary, continue, setProto, super, hasProto, ifNonNilEval, justSerialized, if, ==, or, protos, &gt;=, returnIfNonNil, , uniqueHexId, removeAllProtos, slotValues, coroFor, coroWith, actorProcessQueue, thisMessage, ifNil, memorySize, returnIfError, hasDirtySlot, slotDescriptionMap, updateSlot, compare, ownsSlots, evalArgAndReturnSelf, getLocalSlot, in, markClean, isError, ifNilEval)</span></code></pre></td></tr></table></div></figure>
@@ -163,13 +190,63 @@ returns</p>
 
 <p>The difference between <code>updateSlot</code> and <code>setSlot</code> is simple: <code>setSlot</code> creates and set the value of a slot, whereas <code>updateSlot</code> only updates the value of an <em>existing</em> slot.</p>
 
-<p><code>newSlot</code> is the same as <code>setSlot</code>, but it creates a setter method:
-Liquid error: can&#8217;t convert Array into String</p>
+<p><code>newSlot</code> is the same as <code>setSlot</code>, but it creates a setter method:</p>
+
+<figure class='code'><figcaption><span>Assignment operators  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Vehicle</span> <span class="o">:=</span> <span class="n">Object</span> <span class="k">clone</span>
+</span><span class='line'><span class="o">==&gt;</span>  <span class="n">Vehicle_0x7fc3dbeb7110</span><span class="err">:</span>
+</span><span class='line'>  <span class="n">type</span>             <span class="o">=</span> <span class="s">&quot;Vehicle&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Vehicle</span> <span class="n">description</span> <span class="o">:=</span> <span class="s">&quot;a fast car&quot;</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">a</span> <span class="n">fast</span> <span class="n">car</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Vehicle</span> <span class="n">slotNames</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">list</span><span class="o">(</span><span class="n">description</span><span class="o">,</span> <span class="n">type</span><span class="o">)</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Ferrari</span> <span class="o">:=</span> <span class="n">Vehicle</span> <span class="k">clone</span>
+</span><span class='line'><span class="o">==&gt;</span>  <span class="n">Ferrari_0x7fc3dbe4f2e0</span><span class="err">:</span>
+</span><span class='line'>  <span class="n">type</span>             <span class="o">=</span> <span class="s">&quot;Ferrari&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Ferrari</span> <span class="n">colour</span> <span class="o">::=</span> <span class="s">&quot;red&quot;</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">red</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Ferrari</span> <span class="n">slotNames</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">list</span><span class="o">(</span><span class="n">setColour</span><span class="o">,</span> <span class="n">type</span><span class="o">,</span> <span class="n">colour</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Execute the code in a slot given its name</h3>
 
-<p>The <code>getSlot</code> method returns the value for the named slot. Apparently if the value is a method, this calls the method as well, if there are no arguments (otherwise the method object is returned):
-Liquid error: can&#8217;t convert Array into String</p>
+<p>The <code>getSlot</code> method returns the value for the named slot. Apparently if the value is a method, this calls the method as well, if there are no arguments (otherwise the method object is returned):</p>
+
+<figure class='code'><figcaption><span>Executing method by name  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Object</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;isNil&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">false</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="no">nil</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;isNil&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="no">true</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">Object</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;compare&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">Object_compare</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Wrapping up day 1</h2>
 

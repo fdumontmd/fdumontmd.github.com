@@ -113,11 +113,27 @@
 
 <p>I&#8217;ll start again from a standard definition for both functions. First <code>foldr</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldr  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="ow">::</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span> <span class="p">(</span><span class="n">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Then <code>foldl</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldl  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">a</span>
+</span><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">f</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span> <span class="n">b</span><span class="p">)</span> <span class="n">bs</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Derivation</h2>
 
@@ -125,10 +141,19 @@
 
 <p>I first reorganize the arguments order a bit, putting <code>a</code> at the end:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldr_alt basic equation  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>The base case is once again <code>id</code>:
-Liquid error: can&#8217;t convert Array into String</p>
+
+<p>The base case is once again <code>id</code>:</p>
+
+<figure class='code'><figcaption><span>foldr_alt on empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">id</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>and is trivially true:</p>
 
@@ -140,8 +165,13 @@ Liquid error: can&#8217;t convert Array into String</p>
 </span><span class='line'>             == (foldr_alt f []) a -- by definition of foldr_alt</span></code></pre></td></tr></table></div></figure>
 
 
-<p>The recursive case is not surprising either:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>The recursive case is not surprising either:</p>
+
+<figure class='code'><figcaption><span>foldr_alt on non empty list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>It follows from the induction hypothesis: given <code>foldr f a bs == foldr_alt f bs a</code>, then <code>foldr f a (b:bs) == foldr_alt f (b:bs) a</code></p>
 
@@ -161,15 +191,27 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The initial value for the accumulator must be the identity of the composition function, that is, <code>id</code>.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>accumulator version of foldr_alt  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>foldr_acc</code> is once again easy to define. The base case:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldr_acc base case  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">acc</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>For the recursive case, notice that <code>f b</code> is composed with the <em>rest</em> of the function to the right. As the accumulator represents the previous part of the function, <code>f b</code> will be composed with this accumulator to the left:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldr_acc recursive case  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="p">(</span><span class="n">acc</span> <span class="o">.</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">))</span> <span class="n">bs</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The proof is less straightforward; I am not very familiar with equational reasoning, so maybe something simpler is possible. Note that in this proof, I need the list argument to be finite.</p>
 
@@ -211,8 +253,15 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The fact that the equation only holds for list of finite lengths should not be surprising, but might still be a limitation of my proof.</p>
 
-<p>With <code>foldr_acc</code> defined as above, converting to <code>foldl</code> is immediate:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>With <code>foldr_acc</code> defined as above, converting to <code>foldl</code> is immediate:</p>
+
+<figure class='code'><figcaption><span>foldr as foldl  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">go</span> <span class="n">id</span> <span class="n">bs</span>
+</span><span class='line'>  <span class="kr">where</span> <span class="n">go</span> <span class="n">acc</span> <span class="n">b</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">acc</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span> <span class="n">x</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>If I rename <code>acc</code> to <code>g</code>, and move <code>x</code> to the parameter list (uncurrying the <code>go</code> function), I get the original definition.</p>
 

@@ -214,7 +214,45 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>Starting the supervised process is now simple:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Using the Supervised Translator  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">translate_service_sup</span><span class="p">).</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">translate_service_sup</span><span class="p">}</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">start_service</span><span class="p">().</span>
+</span><span class='line'><span class="n">start_service</span>
+</span><span class='line'><span class="nv">Starting</span><span class="p">...</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">38</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">}</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;casa&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="s">&quot;house&quot;</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;que&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Starting</span><span class="p">...</span>
+</span><span class='line'><span class="s">&quot;I do not understand&quot;</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;casa&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="s">&quot;house&quot;</span>
+</span><span class='line'><span class="mi">6</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;que&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Starting</span><span class="p">...</span>
+</span><span class='line'><span class="s">&quot;I do not understand&quot;</span>
+</span><span class='line'><span class="mi">7</span><span class="o">&gt;</span> <span class="nn">translate_service_sup</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;que&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="o">**</span> <span class="n">exception</span> <span class="nb">exit</span><span class="p">:</span> <span class="n">shutdown</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>As seen above, the translator chokes on an unknown word, but is restarted immediately. However, if the process dies too often (here, more than once per minute), the supervisor kills it definitively.</p>
 
@@ -331,7 +369,61 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>With these defined, it is possible to run two monitored services and attach them to different atoms:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing the Doctor  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nv">DocRev</span> <span class="o">=</span> <span class="nn">doctor</span><span class="p">:</span><span class="n">start</span><span class="p">(</span><span class="k">fun</span> <span class="nn">roulette</span><span class="p">:</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">revolver</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">33</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">DocTrans</span> <span class="o">=</span> <span class="nn">doctor</span><span class="p">:</span><span class="n">start</span><span class="p">(</span><span class="k">fun</span> <span class="nn">translate_service</span><span class="p">:</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">translator</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">translator</span><span class="p">.</span>
+</span><span class='line'><span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">36</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="mi">6</span><span class="o">&gt;</span> <span class="nn">translate_service</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="n">translator</span><span class="p">,</span> <span class="s">&quot;casa&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">revolver</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">34</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">10</span><span class="p">,</span><span class="mi">31</span><span class="p">,</span><span class="mi">0</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="s">&quot;house&quot;</span>
+</span><span class='line'><span class="mi">7</span><span class="o">&gt;</span> <span class="nn">translate_service</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="n">translator</span><span class="p">,</span> <span class="s">&quot;que&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">translator</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">37</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="s">&quot;que&quot;</span><span class="p">,</span><span class="n">not_understood</span><span class="p">,</span>
+</span><span class='line'>                                                  <span class="n">received_at</span><span class="p">,</span>
+</span><span class='line'>                                                  <span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="mi">31</span><span class="p">,</span><span class="mi">0</span><span class="p">}}.</span><span class="s">&quot;I do not understand&quot;</span>
+</span><span class='line'> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">translator</span><span class="p">.</span>
+</span><span class='line'><span class="mi">8</span><span class="o">&gt;</span> <span class="nn">translate_service</span><span class="p">:</span><span class="n">translate</span><span class="p">(</span><span class="n">translator</span><span class="p">,</span> <span class="s">&quot;casa&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="s">&quot;house&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Both services are restarted properly when dying.</p>
 
@@ -441,7 +533,59 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>To test the new code, I have written it so that the inner <code>loop</code> will die after 3 restarts of the monitored process:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Self monitoring Doctor  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">doctor_2</span><span class="p">:</span><span class="n">start</span><span class="p">(</span><span class="k">fun</span> <span class="nn">roulette</span><span class="p">:</span><span class="n">loop</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">revolver</span><span class="p">).</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">33</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">revolver</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">35</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">11</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">30</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">revolver</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">38</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">11</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">32</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="n">revolver</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">40</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">11</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">34</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">The</span> <span class="n">process</span> <span class="p">{</span><span class="n">out</span><span class="p">,</span><span class="n">revolver</span><span class="p">}</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">34</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">running</span><span class="p">,</span><span class="n">out_of</span><span class="p">,</span><span class="n">time</span><span class="p">,</span>
+</span><span class='line'>                                                      <span class="p">{</span><span class="mi">11</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">34</span><span class="p">}}.</span> <span class="nv">Restarting</span>
+</span><span class='line'><span class="p">.</span><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>As seen at the third call to <code>revolver ! 3</code>, after restarting the process, the monitor dies, then is restarted and attaches to the already running <code>revolver</code> process.</p>
 
@@ -631,15 +775,171 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>The basic doctoring still works:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing the Monitored Doctor  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">doctor</span><span class="p">:</span><span class="n">start</span><span class="p">().</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">start</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">doctor</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="n">doctor</span><span class="p">.</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">36</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">1</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The <code>doctor</code> can be killed; <code>monitor</code> will restart it:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing the Monitored Doctor 2  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="n">doctor</span> <span class="o">!</span> <span class="n">die</span><span class="p">.</span>
+</span><span class='line'><span class="n">die</span>
+</span><span class='line'><span class="nv">Aaargh</span><span class="p">...</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">33</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">doctor</span><span class="p">,</span><span class="n">died</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">47</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">doctor</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">doctor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="o">**</span> <span class="n">exception</span> <span class="nn">error</span><span class="p">:</span> <span class="p">{</span><span class="n">doctor</span><span class="p">,</span><span class="n">died</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">47</span><span class="p">}}</span>
+</span><span class='line'><span class="mi">6</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">43</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">56</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">7</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Finally, <code>monitor</code> can also be killed; it is restarted by <code>doctor</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing the Monitored Doctor 3  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">8</span><span class="o">&gt;</span> <span class="nb">monitor</span> <span class="o">!</span> <span class="n">die</span><span class="p">.</span>
+</span><span class='line'><span class="n">die</span>
+</span><span class='line'><span class="nv">Aaargh</span><span class="p">...</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">35</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="nb">monitor</span><span class="p">,</span><span class="n">died</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">44</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">doctor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="n">doctor</span><span class="p">.</span>
+</span><span class='line'><span class="mi">9</span><span class="o">&gt;</span> <span class="n">doctor</span> <span class="o">!</span> <span class="n">die</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Aaargh</span><span class="p">...</span>
+</span><span class='line'><span class="n">die</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">doctor</span><span class="p">,</span><span class="n">died</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">47</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">doctor</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">doctor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">10</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="n">bang</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">The</span> <span class="n">process</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">52</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">died</span> <span class="n">with</span> <span class="n">reason</span> <span class="p">{</span><span class="n">roulette</span><span class="p">,</span><span class="n">die</span><span class="p">,</span><span class="n">at</span><span class="p">,{</span><span class="mi">21</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">51</span><span class="p">}}.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="nb">monitor</span><span class="p">...</span>
+</span><span class='line'><span class="n">reattaching</span> <span class="n">to</span> <span class="n">running</span> <span class="n">process</span> <span class="nb">monitor</span><span class="p">.</span>
+</span><span class='line'><span class="nv">Looking</span> <span class="n">for</span> <span class="n">revolver</span><span class="p">...</span>
+</span><span class='line'><span class="nv">Creating</span> <span class="ow">and</span> <span class="n">monitoring</span> <span class="n">process</span><span class="p">,</span> <span class="n">attaching</span> <span class="n">to</span> <span class="n">atom</span> <span class="n">revolver</span><span class="p">.</span>
+</span><span class='line'><span class="mi">11</span><span class="o">&gt;</span> <span class="n">revolver</span> <span class="o">!</span> <span class="mi">1</span><span class="p">.</span>
+</span><span class='line'><span class="n">click</span><span class="p">.</span>
+</span><span class='line'><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Logging messages to a file</h3>
 

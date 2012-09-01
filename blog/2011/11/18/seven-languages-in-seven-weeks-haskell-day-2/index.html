@@ -115,8 +115,13 @@
 
 <p>Lazy evaluation is something very unique (among the lazy languages, only Haskell is somewhat mainstream). Clojure has lazy lists, which is cool, but lazy evaluation applies to everything. A piece of data can refer to itself in its definition, as long as the part that is needed can be evaluated before the part it depends on.</p>
 
-<p>For instance, a canonical definition of the Fibonacci sequence is
-Liquid error: can&#8217;t convert Array into String</p>
+<p>For instance, a canonical definition of the Fibonacci sequence is</p>
+
+<figure class='code'><figcaption><span>Fibonacci sequence  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">fibs</span> <span class="ow">=</span> <span class="mi">1</span><span class="kt">:</span><span class="mi">1</span><span class="kt">:</span><span class="n">zipWith</span> <span class="p">(</span><span class="o">+</span><span class="p">)</span> <span class="n">fibs</span> <span class="p">(</span><span class="n">tail</span> <span class="n">fibs</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The <code>fibs</code> list is the list of Fibonacci numbers. It starts with 1, 1, then the list of itself summed with its own tail&#8230; but the 3rd number depends on the first and the second, so its ok. By the time we need to compute the 4th, the 3rd is already known, and so on.</p>
 

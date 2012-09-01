@@ -243,7 +243,29 @@
 
 <p>As an alternative, the code below creates the methods during the initialization of the instance. There could (should?) be an easier way, but I could not find one. The new methods are added to the singleton class, so each instance has its own set.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Using define_method rather than method_missing  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CsvRow</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@headers</span> <span class="o">=</span> <span class="n">h</span>
+</span><span class='line'>    <span class="vi">@row</span> <span class="o">=</span> <span class="n">r</span>
+</span><span class='line'>    <span class="n">singleton</span> <span class="o">=</span> <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span><span class="p">;</span> <span class="nb">self</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>    <span class="n">h</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">singleton</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:define_method</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span> <span class="p">{</span> <span class="n">r</span><span class="o">[</span><span class="n">h</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The code uses the <code>send</code> method because <code>define_method</code> must be used from within the class (it is a private method), but when I open the class I change the scope and loose access to the original parameters <code>h</code> and <code>r</code>.</p>
 

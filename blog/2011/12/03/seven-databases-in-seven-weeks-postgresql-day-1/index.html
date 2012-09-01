@@ -117,7 +117,19 @@
 
 <p>Installing then extensions that are needed for this book is easier with 9.1. Just using <a href="http://www.postgresql.org/docs/current/static/sql-createextension.html"><code>CREATE EXTENSION</code></a>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Installing Extensions  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">tablefunc</span><span class="p">;</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">dict_xsyn</span><span class="p">;</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">fuzzystrmatch</span><span class="p">;</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">pg_trgm</span><span class="p">;</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="k">cube</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Removing them is done with the command <a href="http://www.postgresql.org/docs/current/static/sql-dropextension.html"><code>DROP EXTENSION</code></a>.</p>
 
@@ -125,7 +137,37 @@
 
 <p>The code to create and fills the <code>events</code> table:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Creating and filling the events table  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">events</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">event_id</span> <span class="nb">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">title</span> <span class="nb">text</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">starts</span> <span class="k">timestamp</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">ends</span> <span class="k">timestamp</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">venue_id</span> <span class="nb">integer</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">venue_id</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">REFERENCES</span> <span class="n">venues</span> <span class="p">(</span><span class="n">venue_id</span><span class="p">)</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span>
+</span><span class='line'><span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;My Book Signing&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-15 17:30:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-15 19:30:00&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+</span><span class='line'>       <span class="p">(</span><span class="s1">&#39;April Fools Day&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-04-01 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-04-01 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">),</span>
+</span><span class='line'>       <span class="p">(</span><span class="s1">&#39;Christmas Day&#39;</span><span class="p">,</span>   <span class="s1">&#39;2012-12-25 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-12-25 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>On indexes</h3>
 
@@ -433,7 +475,11 @@
 
 <h3>Add a new column</h3>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Add a new column to `venues`  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">venues</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">active</span> <span class="nb">boolean</span> <span class="k">DEFAULT</span> <span class="k">TRUE</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Checking that is is now there:</p>
 

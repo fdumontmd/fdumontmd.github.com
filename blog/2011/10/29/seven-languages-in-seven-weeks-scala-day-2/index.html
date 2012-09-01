@@ -119,12 +119,37 @@
 
 <p>Not as challenging an exercise as <a href="/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/">yesterday&#8217;s</a>. Still, it shows how light and easy to use Scala&#8217;s anonymous functions are.</p>
 
-<p>A first version with the <code>foldLeft</code> method:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>A first version with the <code>foldLeft</code> method:</p>
+
+<figure class='code'><figcaption><span>foldLeft  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">list</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;three&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">java.lang.String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="n">one</span><span class="o">,</span> <span class="n">two</span><span class="o">,</span> <span class="n">three</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="n">list</span><span class="o">.</span><span class="n">foldLeft</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">{(</span><span class="n">sum</span><span class="o">,</span> <span class="n">s</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">size</span> <span class="o">}</span>
+</span><span class='line'><span class="n">sum</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">11</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>A second version with the <code>/:</code> operator. The anonymous function is of course strictly identical.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>foldLeft operator  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">list</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;three&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">java.lang.String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="n">one</span><span class="o">,</span> <span class="n">two</span><span class="o">,</span> <span class="n">three</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="o">(</span><span class="mi">0</span> <span class="o">/:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{(</span><span class="n">sum</span><span class="o">,</span> <span class="n">s</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">size</span> <span class="o">}</span>
+</span><span class='line'><span class="n">sum</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">11</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Censor trait</h3>
 
@@ -132,11 +157,33 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Java String comes with a method that seems to do just what is needed here: <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/lang/String.html#replaceAll%28java.lang.String,%20java.lang.String%29"><code>replaceAll</code></a>.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>replaceAll  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;one two three&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;TWO&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">res1</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">one</span> <span class="nc">TWO</span> <span class="n">three</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+
+
+<figure class='code'><figcaption><span>replaceAll, word boundaries  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;she sells shells&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;\\bshe\\b&quot;</span><span class="o">,</span> <span class="s">&quot;the lady&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">res2</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">the</span> <span class="n">lady</span> <span class="n">sells</span> <span class="n">shells</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>replaceAll, case insensitive  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;She sells shells&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;(?i)\\bshe\\b&quot;</span><span class="o">,</span> <span class="s">&quot;the lady&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">res3</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">the</span> <span class="n">lady</span> <span class="n">sells</span> <span class="n">shells</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>As seen in the last two examples, the first argument is actually a regular expression. For a while, I toyed with the idea of using Scala&#8217;s <a href="http://www.scala-lang.org/api/current/scala/util/matching/Regex.html"><code>Regex.replaceAllIn</code></a>, so I could check whether the match was capitalized or all upper case and insert the replacement word with identical case, as Emacs does. But this is a whole lot more work, and generic code can only handle a few cases (all lower case, all upper case and capitalized) satisfactorily.</p>
 

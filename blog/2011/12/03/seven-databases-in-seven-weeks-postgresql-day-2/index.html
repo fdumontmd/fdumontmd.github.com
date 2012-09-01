@@ -117,16 +117,49 @@
 
 <p>I have a small peeve with the book so far: all too often the authors rely on implicit column ordering when manipulating data. I happen to have a different order for the columns of <code>events</code> (which was created as an exercise <a href="/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/">yesterday</a>), so many <code>INSERT</code> examples no longer work.</p>
 
-<p>But in general, it is good to specify the columns in an <code>INSERT</code>, as in:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>But in general, it is good to specify the columns in an <code>INSERT</code>, as in:</p>
+
+<figure class='code'><figcaption><span>INSERT with explicit columns  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Your Favorite Band&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 21:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-06 23:00&#39;</span><span class="p">,</span> <span class="p">(</span>
+</span><span class='line'>      <span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Crystal Ballroom&#39;</span> <span class="p">)</span>
+</span><span class='line'>  <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>And to create &#8216;My Place&#8217;:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>INSERT My Place  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">countries</span> <span class="p">(</span><span class="n">country_code</span><span class="p">,</span> <span class="n">country_name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;jp&#39;</span><span class="p">,</span> <span class="s1">&#39;Japan&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">cities</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;Shinjuku&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">venues</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">,</span> <span class="n">country_code</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;My Place&#39;</span><span class="p">,</span> <span class="s1">&#39;private&#39;</span><span class="p">,</span> <span class="s1">&#39;160-0022&#39;</span><span class="p">,</span> <span class="s1">&#39;jp&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Finally, to add the new events:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>INSERT new events  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">venue_id</span><span class="p">)</span> <span class="k">VALUES</span>
+</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Steven King&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 21:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 23:00:00&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Powell&#39;&#39;s Books&#39;</span><span class="p">)),</span>
+</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Dinner with Mom&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 18:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-26 20:30:00&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">SELECT</span> <span class="n">venue_id</span> <span class="k">FROM</span> <span class="n">venues</span> <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;My Place&#39;</span><span class="p">)),</span>
+</span><span class='line'>  <span class="p">(</span><span class="s1">&#39;Valentine&#39;&#39;s Day&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;2012-02-14 23:59:00&#39;</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>This way, there is never any ambiguity as to what is inserted.</p>
 
@@ -230,7 +263,21 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Ok, this is not very fancy. But with numeric data, window functions are more powerful. Lets say we collect daily measures into a new table:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Window function example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">observation</span> <span class="p">(</span>
+</span><span class='line'>   <span class="k">day</span> <span class="k">timestamp</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+</span><span class='line'>   <span class="n">measure</span> <span class="nb">int</span> <span class="k">NOT</span> <span class="k">NULL</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">observation</span> <span class="p">(</span><span class="k">day</span><span class="p">,</span> <span class="n">measure</span><span class="p">)</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="nb">date</span> <span class="s1">&#39;2011-12-01&#39;</span> <span class="k">AS</span> <span class="k">day</span><span class="p">,</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)::</span><span class="nb">int</span> <span class="k">as</span> <span class="n">measure</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>We could use the usual aggregate functions, for instance <code>AVG</code> and <code>SUM</code>:</p>
 
@@ -248,7 +295,15 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>We have pretty much all the details. If there&#8217;s any trend, we would not see it. But with window functions, it is possible to compute running averages (and actually, two different ones):</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Window function example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="k">day</span><span class="p">,</span> <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">2</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">2</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">short_avg</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">AVG</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">5</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="mi">5</span> <span class="n">FOLLOWING</span><span class="p">)</span> <span class="k">as</span> <span class="n">long_avg</span><span class="p">,</span>
+</span><span class='line'>  <span class="k">SUM</span><span class="p">(</span><span class="n">measure</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="k">day</span><span class="p">)</span> <span class="k">as</span> <span class="n">running_sum</span> <span class="k">FROM</span> <span class="n">observation</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>(results omitted because they are too long). Here, the <code>AVG(measure)</code> is applied to a window of either 5 rows for <code>short_avg</code> or 11 rows for <code>long_avg</code>, and there&#8217;s a running sum in <code>running_sum</code>.</p>
 
@@ -258,7 +313,15 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p><a href="http://www.postgresql.org/docs/current/static/sql-createrule.html">Rules</a> are very useful as well. Here&#8217;s how I&#8217;d implement the <code>INSERT</code> on <code>holidays</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>INSERT on holidays  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">insert_holidays</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">INSERT</span> <span class="k">TO</span> <span class="n">holidays</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
+</span><span class='line'>  <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">events</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">values</span> <span class="p">(</span><span class="k">NEW</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="nb">date</span><span class="o">+</span><span class="nb">interval</span> <span class="s1">&#39;23 hour 59 minutes&#39;</span><span class="p">,</span> <span class="k">NEW</span><span class="p">.</span><span class="n">colors</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Note the syntax to manipulate dates and timestamp. It is fairly readable and compact enough.</p>
 
@@ -274,7 +337,13 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <h3>DELETE Rule</h3>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>DELETE rule on venues  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">RULE</span> <span class="n">delete_venue</span> <span class="k">AS</span> <span class="k">ON</span> <span class="k">DELETE</span> <span class="k">TO</span> <span class="n">venues</span> <span class="k">DO</span> <span class="k">INSTEAD</span>
+</span><span class='line'>  <span class="k">UPDATE</span> <span class="n">venues</span> <span class="k">SET</span> <span class="n">active</span> <span class="o">=</span> <span class="k">false</span> <span class="k">WHERE</span> <span class="n">venue_id</span> <span class="o">=</span> <span class="k">OLD</span><span class="p">.</span><span class="n">venue_id</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>With this rule in place, deleting from <code>venues</code> now set the <code>active</code> flag to false:</p>
 
@@ -304,7 +373,27 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The documentation for <a href="http://www.postgresql.org/docs/current/static/tablefunc.html"><code>crosstab</code></a> has already an example for using <a href="http://www.postgresql.org/docs/current/static/functions-srf.html"><code>generate_series</code></a>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>generate_series in crosstab  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
+</span><span class='line'><span class="s1">&#39;SELECT extract(year from starts) as year,</span>
+</span><span class='line'><span class="s1">extract(month from starts) as month, count(*) FROM events</span>
+</span><span class='line'><span class="s1">GROUP BY year, month&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 12) m&#39;</span>
+</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
+</span><span class='line'><span class="k">year</span> <span class="nb">int</span><span class="p">,</span>
+</span><span class='line'><span class="n">jan</span> <span class="nb">int</span><span class="p">,</span> <span class="n">feb</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mar</span> <span class="nb">int</span><span class="p">,</span> <span class="n">apr</span> <span class="nb">int</span><span class="p">,</span> <span class="n">may</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jun</span> <span class="nb">int</span><span class="p">,</span> <span class="n">jul</span> <span class="nb">int</span><span class="p">,</span> <span class="n">aug</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sep</span> <span class="nb">int</span><span class="p">,</span> <span class="n">oct</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nov</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dec</span> <span class="nb">int</span>
+</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">YEAR</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The output remains the same:</p>
 
@@ -324,7 +413,27 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>The hardest, perhaps, is to find how to convince PostgreSQL to apply <a href="http://www.postgresql.org/docs/current/static/functions-math.html#FUNCTIONS-MATH-FUNC-TABLE"><code>div</code></a> to the passed arguments, but a bit of type declaration using <code>::</code> does the trick. Also, <code>crosstab</code> is not overly smart, so the <code>month</code> and <code>week</code> columns must be in order, otherwise the counts for the two February (one in 2012 and one in 2013) are different:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Weekly pivot  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">crosstab</span><span class="p">(</span>
+</span><span class='line'><span class="s1">&#39;SELECT extract(month from starts) as month, </span>
+</span><span class='line'><span class="s1"> div(extract (day from starts)::int, 7) + 1 as week, count(*) FROM events</span>
+</span><span class='line'><span class="s1">GROUP BY month, week ORDER BY month, week&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;SELECT m FROM generate_series(1, 5) m&#39;</span>
+</span><span class='line'><span class="p">)</span> <span class="k">AS</span> <span class="p">(</span>
+</span><span class='line'><span class="k">month</span> <span class="nb">int</span><span class="p">,</span>
+</span><span class='line'><span class="n">week_1</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_2</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_3</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_4</span> <span class="nb">int</span><span class="p">,</span> <span class="n">week_5</span> <span class="nb">int</span>
+</span><span class='line'><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">MONTH</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The query produces:</p>
 

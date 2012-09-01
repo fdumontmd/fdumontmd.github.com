@@ -119,13 +119,47 @@
 
 <h3>Print the contents of an array of sixteen numbers, 4 numbers at a time</h3>
 
-<p>First, without <code>each_slice</code>:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>First, without <code>each_slice</code>:</p>
+
+<figure class='code'><figcaption><span>Slicing, the hard way  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">print_slices</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">slice</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">acc</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="n">arr</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">acc</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">acc</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="n">slice</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="n">acc</span>
+</span><span class='line'>      <span class="n">acc</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="n">acc</span> <span class="k">if</span> <span class="n">acc</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The implementation is simple enough, the values are accumulated until there&#8217;s enough. I&#8217;m using the <code>p</code> printing command because neither <code>puts</code> nor <code>print</code> do exactly what I need: <code>puts</code> prints each element on a different line; <code>print</code> does not add a newline.</p>
 
-<p>Then, the easy (and natural way):
-Liquid error: can&#8217;t convert Array into String</p>
+<p>Then, the easy (and natural way):</p>
+
+<figure class='code'><figcaption><span>Slicing the righ way  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">print_each_slice</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">slice</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">arr</span><span class="o">.</span><span class="n">each_slice</span><span class="p">(</span><span class="n">slice</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="nb">p</span> <span class="n">a</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Better initializer method for Tree</h3>
 
@@ -201,16 +235,33 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>self.build</code> takes the list of Trees; if there&#8217;s only one, it is our root. Otherwise, it creates a new root, using the list of Trees as children.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String
-produces</p>
+<figure class='code'><figcaption><span>Building a Tree  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">test_hash</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;grandpa&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;dad&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;child 1&#39;</span> <span class="o">=&gt;</span> <span class="p">{},</span> <span class="s1">&#39;child 2&#39;</span> <span class="o">=&gt;</span> <span class="p">{}},</span>
+</span><span class='line'>    <span class="s1">&#39;uncle&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;child 3&#39;</span> <span class="o">=&gt;</span> <span class="p">{},</span> <span class="s1">&#39;child 4&#39;</span> <span class="o">=&gt;</span> <span class="p">{}</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Tree</span><span class="o">::</span><span class="n">build</span><span class="p">(</span><span class="n">test_hash</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>#&lt;Tree:0x007fb9599119b8 @children=[#&lt;Tree:0x007fb9599142d0 @children=[#&lt;Tree:0x007fb959914488 @children=[], @name="child 1"&gt;, #&lt;Tree:0x007fb9599142f8 @children=[], @name="child 2"&gt;], @name="dad"&gt;, #&lt;Tree:0x007fb959911a08 @children=[#&lt;Tree:0x007fb959914190 @children=[], @name="child 3"&gt;, #&lt;Tree:0x007fb959911a58 @children=[], @name="child 4"&gt;], @name="uncle"&gt;], @name="grandpa"&gt; </span></code></pre></td></tr></table></div></figure>
 
 
-<p>while
-Liquid error: can&#8217;t convert Array into String
-produces</p>
+<p>while</p>
+
+<figure class='code'><figcaption><span>Building a Tree part 2  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Tree</span><span class="o">::</span><span class="n">build</span><span class="p">(</span><span class="n">test_hash</span><span class="o">[</span><span class="s1">&#39;grandpa&#39;</span><span class="o">]</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>produces</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>#&lt;Tree:0x007ff891895300 @children=[#&lt;Tree:0x007ff891895698 @children=[#&lt;Tree:0x007ff891895828 @children=[], @name="child 1"&gt;, #&lt;Tree:0x007ff8918956c0 @children=[], @name="child 2"&gt;], @name="dad"&gt;, #&lt;Tree:0x007ff891895350 @children=[#&lt;Tree:0x007ff8918954b8 @children=[], @name="child 3"&gt;, #&lt;Tree:0x007ff8918953c8 @children=[], @name="child 4"&gt;], @name="uncle"&gt;], @name="root"&gt; </span></code></pre></td></tr></table></div></figure>

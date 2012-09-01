@@ -189,7 +189,21 @@ just a variant of what is already in the book.</p>
 
 <p>Invoking the <code>put_many</code> function then checking the insert:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing put_many  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">put_many</span> <span class="s1">&#39;wiki&#39;</span><span class="p">,</span> <span class="s1">&#39;Some title&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s2">&quot;text:&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;Some article text&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;revision:author&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jschmoe&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;revision:comment&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;no comment&quot;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;wiki&#39;</span><span class="p">,</span> <span class="s1">&#39;Some title&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>generates</p>
 

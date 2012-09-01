@@ -184,7 +184,24 @@ from the official website was very useful to me in clarifying this aspect.</p>
 book did not work. It generated an error in MongoDB 2.0.2 (the latest
 at the time of writing).</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s1">&#39;exports.foods&#39;</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">$not</span> <span class="o">:</span> <span class="p">{</span> <span class="nx">name</span> <span class="o">:</span> <span class="s1">&#39;burgers&#39;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">_id</span> <span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">name</span> <span class="o">:</span> <span class="mi">1</span> <span class="p">}</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The error is</p>
 
@@ -197,7 +214,10 @@ at the time of writing).</p>
 it seems $not cannot be applied to a (implicit) equal operator. So the
 book code should be using <code>$ne</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span> <span class="p">{</span> <span class="s1">&#39;exports.foods.name&#39;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$ne</span><span class="o">:</span> <span class="s1">&#39;burgers&#39;</span> <span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>It does not help that the online shell (accessible from the &#8216;Try it
 out&#8217; link on <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>) does
@@ -249,13 +269,19 @@ same.</p>
 
 <p>The <code>tojson</code> function can display (and pretty-print) JSON documents:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">tojson</span><span class="p">({</span> <span class="s2">&quot;hello&quot;</span><span class="o">:</span> <span class="s2">&quot;world&quot;</span> <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Find a town by case insensitive regular expression search</h3>
 
 <p>This would be the <code>i</code> option to the regular expression:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">towns</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="sr">/new/i</span><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Find all cities whose names contain an ‘e’, and are famous for food or beer.</h3>
 
@@ -263,11 +289,29 @@ same.</p>
 <a href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24in"><code>$in</code></a>
 operator:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">towns</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span> <span class="o">:</span> <span class="sr">/e/</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">famous_for</span> <span class="o">:</span>
+</span><span class='line'>      <span class="p">{</span> <span class="nx">$in</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;food&#39;</span><span class="p">,</span> <span class="s1">&#39;beer&#39;</span><span class="p">]</span> <span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>or the equivalent but verbose:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">towns</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="sr">/e/</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">$or</span><span class="o">:</span> <span class="p">[{</span><span class="nx">famous_for</span> <span class="o">:</span> <span class="s1">&#39;food&#39;</span><span class="p">},</span>
+</span><span class='line'>            <span class="p">{</span><span class="nx">famous_for</span><span class="o">:</span> <span class="s1">&#39;beer&#39;</span><span class="p">}</span> <span class="p">]</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Find all countries that do not export tasty bacon</h3>
 
@@ -276,17 +320,48 @@ operator:</p>
 should not come as a surprise that it is used here as well, but with
 the dreaded <code>$not</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span><span class="s1">&#39;exports.foods&#39;</span><span class="o">:</span>
+</span><span class='line'>     <span class="p">{</span> <span class="nx">$not</span><span class="o">:</span>
+</span><span class='line'>       <span class="p">{</span><span class="nx">$elemMatch</span><span class="o">:</span>
+</span><span class='line'>        <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;bacon&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">tasty</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span> <span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>produces</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span> <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="s2">&quot;ca&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;Canada&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">{</span> <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="s2">&quot;mx&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;Mexico&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>(I had not deleted Canada from the database).</p>
 
 <p>The seemingly equivalent</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">countries</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">$not</span><span class="o">:</span>
+</span><span class='line'>      <span class="p">{</span><span class="s1">&#39;exports.foods&#39;</span><span class="o">:</span>
+</span><span class='line'>       <span class="p">{</span> <span class="nx">$elemMatch</span><span class="o">:</span>
+</span><span class='line'>         <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;bacon&#39;</span><span class="p">,</span>
+</span><span class='line'>           <span class="nx">tasty</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span> <span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>will not work. It does not return anything. See above my findings on <code>$not</code>.</p>
 
@@ -306,7 +381,16 @@ launch the <code>mongo</code> shell command:</p>
 <p>Like for the database, a collection is created just by inserting
 something in it:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">articles</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Frederic&#39;</span><span class="p">,</span> <span class="nx">email</span><span class="o">:</span> <span class="s1">&#39;my@email.org&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">creation</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span>
+</span><span class='line'>      <span class="nx">test</span><span class="o">:</span> <span class="s1">&#39;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&#39;</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h4>Update the article with an array of comments</h4>
 
@@ -315,13 +399,71 @@ something in it:</p>
 I can specify just what I need to update, not the whole document as in
 Riak:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">articles</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span><span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">&quot;4ef3c78c7d67f191b06653e4&quot;</span><span class="p">)</span> <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="nx">$set</span><span class="o">:</span> <span class="p">{</span> <span class="nx">comments</span><span class="o">:</span>
+</span><span class='line'>             <span class="p">[</span> <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Me too&#39;</span><span class="p">},</span>
+</span><span class='line'>               <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Me three&#39;</span><span class="p">},</span>
+</span><span class='line'>               <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;I know all your secret&#39;</span> <span class="p">}</span> <span class="p">]</span>
+</span><span class='line'>           <span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>I can check the inserted value with <code>db.articles.findOne()</code> (without
 arguments it returns the first element in the collection, and pretty
 prints it):</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">&quot;4ef3c78c7d67f191b06653e4&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="s2">&quot;comments&quot;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                        <span class="s2">&quot;author&quot;</span> <span class="o">:</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;Me too&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                        <span class="s2">&quot;author&quot;</span> <span class="o">:</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;Me three&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                        <span class="s2">&quot;author&quot;</span> <span class="o">:</span> <span class="s2">&quot;Carol&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;I know all your secrets&quot;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>        <span class="p">],</span>
+</span><span class='line'>        <span class="s2">&quot;creation&quot;</span> <span class="o">:</span> <span class="nx">ISODate</span><span class="p">(</span><span class="s2">&quot;2011-12-23T00:13:00.636Z&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="s2">&quot;email&quot;</span> <span class="o">:</span> <span class="s2">&quot;my@email.org&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;Frederic&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;test&quot;</span> <span class="o">:</span> <span class="s2">&quot;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Tomorrow will cover indexing, and more advanced uses of the data (such
 as MapReduce).</p>

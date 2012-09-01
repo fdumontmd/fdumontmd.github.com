@@ -180,13 +180,25 @@ is ready to run the queries.</p>
 but I assume the authors meant the one in England. I create a <code>centre</code>
 variable to be used in the queries.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Finding London  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">london</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">findOne</span><span class="p">(</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;London&#39;</span><span class="p">,</span> <span class="nx">country</span><span class="o">:</span> <span class="s1">&#39;GB&#39;</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">location</span><span class="o">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">centre</span> <span class="o">=</span> <span class="p">[</span><span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">longitude</span><span class="p">,</span> <span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">latitude</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>As indicated in the documentation, I have to measure distances in
 radians. For this I need to know the
 <a href="http://en.wikipedia.org/wiki/Earth_radius">Earth Radius</a> in miles.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Earth Radius and Range  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">earthRadius</span> <span class="o">=</span> <span class="mi">3959</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">range</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Finally I can run my queries. I have a few options:</p>
 
@@ -195,7 +207,19 @@ radians. For this I need to know the
 <p>I can pass the <code>spherical: true</code> option to the <code>geoNear</code> command. By
 default, the query will only return 100 results.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>geoNear  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">geoNear</span><span class="o">:</span> <span class="s2">&quot;cities&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">near</span><span class="o">:</span> <span class="nx">centre</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">spherical</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">maxDistance</span><span class="o">:</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>As it turns out, there are far more cities in this range. A circle of
 500 miles radius around London includes much of Western Europe:</p>
@@ -206,14 +230,40 @@ default, the query will only return 100 results.</p>
 <p>To get unlimited results, I set the number of possible results to the
 number of cities:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>unlimited geoNear  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">geoNear</span><span class="o">:</span> <span class="s2">&quot;cities&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">near</span><span class="o">:</span> <span class="nx">centre</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">spherical</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">num</span><span class="o">:</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">count</span><span class="p">(),</span>
+</span><span class='line'>      <span class="nx">maxDistance</span><span class="o">:</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span> <span class="p">}</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h4><code>$within</code> operator</h4>
 
 <p>Alternatively, I can use the <code>$within</code> operator. I get the spherical
 behaviour by specifying a <code>centerSphere</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>$within  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">location</span><span class="o">:</span>
+</span><span class='line'>      <span class="p">{</span> <span class="nx">$within</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$centerSphere</span><span class="o">:</span> <span class="p">[</span><span class="nx">centre</span><span class="p">,</span> <span class="nx">range</span><span class="o">/</span><span class="nx">earthRadius</span><span class="p">]</span>
+</span><span class='line'>      <span class="p">}}})</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>This query will return cities within the range, just like the
 unlimited <code>geoNear</code> one.</p>

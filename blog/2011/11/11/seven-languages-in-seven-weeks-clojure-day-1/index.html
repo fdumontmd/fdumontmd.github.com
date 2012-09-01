@@ -125,43 +125,172 @@
 
 <p>Nothing special here, the function <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/count"><code>count</code></a> works on all collections, including strings.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Define function big  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="k">defn </span><span class="nv">big</span>
+</span><span class='line'>             <span class="s">&quot;Is string st longer than n characters?&quot;</span>
+</span><span class='line'>             <span class="p">[</span><span class="nv">st</span> <span class="nv">n</span><span class="p">]</span>
+</span><span class='line'>             <span class="p">(</span><span class="nb">&gt; </span><span class="p">(</span><span class="nb">count </span><span class="nv">st</span><span class="p">)</span> <span class="nv">n</span><span class="p">))</span>
+</span><span class='line'><span class="o">#</span><span class="ss">&#39;user/big</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Testing:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Test function big  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">big</span> <span class="s">&quot;hello&quot;</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="nv">false</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">big</span> <span class="s">&quot;hello&quot;</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'><span class="nv">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Define function collection-type</h3>
 
 <p>Using only functions and concepts seen so far, a first implementation using map. First I use the repl to get the class of these containers:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>class of containers  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="p">())</span>
+</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">PersistentList$EmptyList</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">PersistentList</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="p">[])</span>
+</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">PersistentVector</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="p">{})</span>
+</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">PersistentArrayMap</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>So the empty list has a different class from a non-empty list.</p>
 
-<p>Now I can map these classes to the proper symbol:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>Now I can map these classes to the proper symbol:</p>
 
-<p>With this, getting the right answer is as simple as:
-Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>mapping classes to symbols  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">col-classes</span> <span class="p">{(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">())</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="p">[])</span> <span class="nv">:vector,</span> <span class="p">(</span><span class="nb">class </span><span class="p">{})</span> <span class="nv">:map</span><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this, getting the right answer is as simple as:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">col-classes</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">()))</span>
+</span><span class='line'><span class="nv">:list</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">col-classes</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+</span><span class='line'><span class="nv">:list</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">col-classes</span> <span class="p">(</span><span class="nb">class </span><span class="p">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">]))</span>
+</span><span class='line'><span class="nv">:vector</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">col-classes</span> <span class="p">(</span><span class="nb">class </span><span class="p">{</span><span class="nv">:one</span> <span class="s">&quot;one&quot;</span><span class="p">}))</span>
+</span><span class='line'><span class="nv">:map</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>So the function can be written as:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Define function collection-type  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="k">defn </span><span class="nv">collection-type</span>
+</span><span class='line'>             <span class="s">&quot;Return either :list, :vector or :map, depending of the type of col.&quot;</span>
+</span><span class='line'>             <span class="p">[</span><span class="nv">col</span><span class="p">]</span>
+</span><span class='line'>             <span class="p">({(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">())</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="p">[])</span> <span class="nv">:vector,</span> <span class="p">(</span><span class="nb">class </span><span class="p">{})</span> <span class="nv">:map</span><span class="p">}</span> <span class="p">(</span><span class="nb">class </span><span class="nv">col</span><span class="p">)))</span>
+</span><span class='line'><span class="o">#</span><span class="ss">&#39;user/collection-type</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Testing it on literal values:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Test function collection-type  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="p">())</span>
+</span><span class='line'><span class="nv">:list</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="o">&#39;</span><span class="p">())</span>
+</span><span class='line'><span class="nv">:list</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">))</span>
+</span><span class='line'><span class="nv">:list</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">])</span>
+</span><span class='line'><span class="nv">:vector</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="p">{</span><span class="nv">:one</span> <span class="s">&quot;one&quot;</span><span class="p">})</span>
+</span><span class='line'><span class="nv">:map</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Interesting, perhaps, but there must be a better way. Using type predicates (<a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/list?"><code>list?</code></a>, <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/map?"><code>map?</code></a> and <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/vector?"><code>vector?</code></a>), and the already seen <a href="http://clojure.org/special_forms#Special%20Forms--(if%20test%20then%20else?"><code>if</code></a>):</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>collection-type, predicate edition  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="n">user</span><span class="o">=&gt;</span> <span class="p">(</span><span class="n">defn</span> <span class="n">collection</span><span class="o">-</span><span class="n">type</span>
+</span><span class='line'>             <span class="s">&quot;Return either :list, :vector or :map, depending of the type of col.&quot;</span>
+</span><span class='line'>             <span class="p">[</span><span class="n">col</span><span class="p">]</span>
+</span><span class='line'>             <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="n">list</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">list</span>
+</span><span class='line'>                 <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="n">map</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">map</span>
+</span><span class='line'>                     <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="n">vector</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">vector</span><span class="p">))))</span>
+</span><span class='line'><span class="err">#&#39;</span><span class="n">user</span><span class="o">/</span><span class="n">collection</span><span class="o">-</span><span class="n">type</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Testing output is not repeated, as it is identical to the one above.</p>
 
 <p>These nested <code>if</code>&#8217;s are ugly. Fortunately, Lisp has a kind of generalized <code>switch</code>, called <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/cond"><code>cond</code></a>. So the definition above is equivalent to</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>collection-type, cond predicate edition  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="n">user</span><span class="o">=&gt;</span> <span class="p">(</span><span class="n">defn</span> <span class="n">collection</span><span class="o">-</span><span class="n">type</span>
+</span><span class='line'>             <span class="s">&quot;Return either :list, :vector or :map, depending of the type of col.&quot;</span>
+</span><span class='line'>             <span class="p">[</span><span class="n">col</span><span class="p">]</span>
+</span><span class='line'>             <span class="p">(</span><span class="k">cond</span> <span class="p">(</span><span class="n">list</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">list</span>
+</span><span class='line'>                   <span class="p">(</span><span class="n">map</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">map</span>
+</span><span class='line'>                   <span class="p">(</span><span class="n">vector</span><span class="err">?</span> <span class="n">col</span><span class="p">)</span> <span class="p">:</span><span class="n">vector</span><span class="p">))</span>
+</span><span class='line'><span class="err">#&#39;</span><span class="n">user</span><span class="o">/</span><span class="n">collection</span><span class="o">-</span><span class="n">type</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Now this is clean and elegant.</p>
 
@@ -169,11 +298,35 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>One thing to note: the <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/cons"><code>cons</code></a> function does not return a list, but a sequence (this is unlike <code>cons</code> in all the other Lisps):</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>cons is not a team player  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">cons </span><span class="mi">1</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">2</span> <span class="mi">3</span><span class="p">))</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">class </span><span class="p">(</span><span class="nb">cons </span><span class="mi">1</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">2</span> <span class="mi">3</span><span class="p">)))</span>
+</span><span class='line'><span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">Cons</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">list?</span> <span class="p">(</span><span class="nb">cons </span><span class="mi">1</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">2</span> <span class="mi">3</span><span class="p">)))</span>
+</span><span class='line'><span class="nv">false</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">seq? </span><span class="p">(</span><span class="nb">cons </span><span class="mi">1</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">2</span> <span class="mi">3</span><span class="p">)))</span>
+</span><span class='line'><span class="nv">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Fortunately, <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/assoc"><code>assoc</code></a> is better behaved:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>assoc  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="p">(</span><span class="nb">assoc </span> <span class="p">{</span><span class="nv">:two</span> <span class="mi">2</span><span class="p">}</span> <span class="nv">:one</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="nv">:map</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>I like the idea of a collection&#8217;s type not changing when I add element, so the behaviour of <code>cons</code> is something I will have to watch for (or find the better way that must exist).</p>
 

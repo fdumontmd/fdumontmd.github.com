@@ -119,7 +119,31 @@
 
 <p>Erlang is also a purely functional language, with little to no updates (there are updatable stores, but you really have to look for them). Variables can be assigned a value only once, using a mechanism similar to unification (further assignments are valid only to the extend that both sides are identical, or the left hand is an unassigned variable).</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Erlang: assignment  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Eshell</span> <span class="nv">V5</span><span class="p">.</span><span class="mi">8</span><span class="p">.</span><span class="mi">5</span>  <span class="p">(</span><span class="n">abort</span> <span class="n">with</span> <span class="err">^</span><span class="nv">G</span><span class="p">)</span>
+</span><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nv">V</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">V</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nv">V</span> <span class="o">=</span> <span class="mi">4</span><span class="p">.</span>
+</span><span class='line'><span class="o">**</span> <span class="n">exception</span> <span class="nn">error</span><span class="p">:</span> <span class="n">no</span> <span class="n">match</span> <span class="k">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="n">value</span> <span class="mi">4</span>
+</span><span class='line'><span class="mi">4</span><span class="o">&gt;</span> <span class="nv">V</span> <span class="o">=</span> <span class="nv">X</span><span class="p">.</span>
+</span><span class='line'><span class="o">*</span> <span class="mi">1</span><span class="p">:</span> <span class="n">variable</span> <span class="n">&#39;X&#39;</span> <span class="n">is</span> <span class="n">unbound</span>
+</span><span class='line'><span class="mi">5</span><span class="o">&gt;</span> <span class="nv">X</span> <span class="o">=</span> <span class="nv">V</span><span class="p">.</span>
+</span><span class='line'><span class="mi">3</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Erlang recursion</h2>
 
@@ -236,7 +260,21 @@
 
 <p>Testing the module:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing Module cw  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">cw</span><span class="p">:</span><span class="n">count_words</span><span class="p">(</span><span class="s">&quot;   a  lot   of   space   &quot;</span><span class="p">).</span>
+</span><span class='line'><span class="mi">4</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">cw</span><span class="p">:</span><span class="n">count_words</span><span class="p">(</span><span class="s">&quot;not a lot of space&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="mi">5</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">cw</span><span class="p">:</span><span class="n">count_words</span><span class="p">(</span><span class="s">&quot;word&quot;</span><span class="p">).</span>
+</span><span class='line'><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Counting to 10</h3>
 
@@ -274,7 +312,47 @@
 
 <p>The code is more generic than strictly required (which is always good):</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing Module count  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">count</span><span class="p">:</span><span class="n">count_to_10</span><span class="p">().</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">4</span>
+</span><span class='line'><span class="mi">5</span>
+</span><span class='line'><span class="mi">6</span>
+</span><span class='line'><span class="mi">7</span>
+</span><span class='line'><span class="mi">8</span>
+</span><span class='line'><span class="mi">9</span>
+</span><span class='line'><span class="mi">10</span>
+</span><span class='line'><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">count</span><span class="p">:</span><span class="n">count_to</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">4</span>
+</span><span class='line'><span class="mi">5</span>
+</span><span class='line'><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Matching input</h3>
 
@@ -302,7 +380,25 @@
 
 <p>The code recognizes the input as requested. Everything else will generate an error.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing Module check  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">check</span><span class="p">).</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">check</span><span class="p">}</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nn">check</span><span class="p">:</span><span class="n">print_result</span><span class="p">(</span><span class="n">success</span><span class="p">).</span>
+</span><span class='line'><span class="n">success</span>
+</span><span class='line'><span class="n">ok</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">check</span><span class="p">:</span><span class="n">print_result</span><span class="p">({</span><span class="n">error</span><span class="p">,</span> <span class="s">&quot;Something went wrong!&quot;</span><span class="p">}).</span>
+</span><span class='line'><span class="nv">Error</span><span class="p">:</span> <span class="nv">Something</span> <span class="n">went</span> <span class="n">wrong</span><span class="o">!</span>
+</span><span class='line'><span class="n">ok</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>And so we conclude Day 1.</p>
 </div>

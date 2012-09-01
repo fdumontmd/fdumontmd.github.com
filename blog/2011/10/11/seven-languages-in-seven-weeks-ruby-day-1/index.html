@@ -119,40 +119,75 @@
 
 <h3>Print the string &#8220;Hello, world&#8221;</h3>
 
-<p>That should be easy enough. The simplest solution is to use <code>puts</code>:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>That should be easy enough. The simplest solution is to use <code>puts</code>:</p>
 
-<p>The difference between <code>puts</code> and <code>print</code> is that the former adds a new line, while the latter does not. So, a less natural way would be:
-Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Hello, World  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Hello, world&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The difference between <code>puts</code> and <code>print</code> is that the former adds a new line, while the latter does not. So, a less natural way would be:</p>
+
+<figure class='code'><figcaption><span>Hello, World done wrong  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">print</span> <span class="s2">&quot;Hello, world/n&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Finally, <code>p</code> is used to inspect its argument, so it is not usable in this context: as the argument is a string, <code>p</code> would print it enclosed with double quotes.</p>
 
 <h3>In “Hello, Ruby,” find the index of the word “Ruby.”</h3>
 
-<p>The <a href="http://www.ruby-doc.org/core-1.9.2/String.html#method-i-index">index</a> method on the <a href="http://www.ruby-doc.org/core-1.9.2/String.html">String</a> class is just what we need:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>The <a href="http://www.ruby-doc.org/core-1.9.2/String.html#method-i-index">index</a> method on the <a href="http://www.ruby-doc.org/core-1.9.2/String.html">String</a> class is just what we need:</p>
+
+<figure class='code'><figcaption><span>Hello, Ruby  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="s2">&quot;Hello, Ruby&quot;</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;Ruby&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The <code>index</code> method is actually more flexible, and regular expressions can be used as well.</p>
 
 <h3>Print your name ten times</h3>
 
-<p>The most natural way is to use the <a href="http://www.ruby-doc.org/core-1.9.2/Integer.html#method-i-times">times</a> from the <a href="http://www.ruby-doc.org/core-1.9.2/Integer.html">Integer</a> class:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>The most natural way is to use the <a href="http://www.ruby-doc.org/core-1.9.2/Integer.html#method-i-times">times</a> from the <a href="http://www.ruby-doc.org/core-1.9.2/Integer.html">Integer</a> class:</p>
+
+<figure class='code'><figcaption><span>Hello, many times  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">10</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Frederic&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>This produces just what is needed. Alternatives will be looked at in the next exercise.</p>
 
 <h3>Print the string “This is sentence number i,” with i changing from 1 to 10</h3>
 
-<p>Once again, I could use the <code>times</code> method:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>Once again, I could use the <code>times</code> method:</p>
+
+<figure class='code'><figcaption><span>Counting sentences  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">10</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="o">|</span> <span class="n">i</span> <span class="o">|</span> <span class="nb">puts</span> <span class="s2">&quot;This is sentence number </span><span class="si">#{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The problem this time is that the range is from 0 to 9, so I have to add 1 to the variable before printing it.</p>
 
-<p><a href="http://www.ruby-doc.org/core-1.9.2/Range.html">Ranges</a> can be used as well:
-Liquid error: can&#8217;t convert Array into String</p>
+<p><a href="http://www.ruby-doc.org/core-1.9.2/Range.html">Ranges</a> can be used as well:</p>
 
-<p>Alternatively, I could build an enumerator using the <a href="http://www.ruby-doc.org/core-1.9.2/Integer.html#method-i-upto">upto</a> method:
-Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Counting over range  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span> <span class="n">i</span> <span class="o">|</span> <span class="nb">puts</span> <span class="s2">&quot;This is sentence number </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Alternatively, I could build an enumerator using the <a href="http://www.ruby-doc.org/core-1.9.2/Integer.html#method-i-upto">upto</a> method:</p>
+
+<figure class='code'><figcaption><span>Counting over enumerator  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span> <span class="n">i</span> <span class="o">|</span> <span class="nb">puts</span> <span class="s2">&quot;This is sentence number </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>In these last two the index variable ranges over the correct values.</p>
 

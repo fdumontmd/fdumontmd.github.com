@@ -215,11 +215,34 @@ invoking the <code>collStats</code> command.</p>
 <p>The <code>finalize</code> function is very simple: rename the attribute <code>count</code>
 to <code>total</code>:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>finalize function  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">finalize</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span> <span class="nx">total</span><span class="o">:</span> <span class="nx">value</span><span class="p">.</span><span class="nx">count</span> <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>To use it, just add the <code>finalize</code> attribute to the <code>mapReduce</code> command:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">results</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">runCommand</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">mapReduce</span><span class="o">:</span> <span class="s1">&#39;phones&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">map</span><span class="o">:</span> <span class="nx">map</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">reduce</span><span class="o">:</span> <span class="nx">reduce</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">finalize</span><span class="o">:</span> <span class="nx">finalize</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">out</span><span class="o">:</span> <span class="s1">&#39;phones.report&#39;</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Finally, I can check  the result with <code>db.phones.report.find()</code>:</p>
 

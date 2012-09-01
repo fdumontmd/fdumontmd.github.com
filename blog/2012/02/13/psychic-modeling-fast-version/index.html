@@ -252,7 +252,107 @@ the best&#8217;s, the new ticket becomes the best as well.</p>
 best uncovered set, and if there are any remaining $j$-subsets to
 find, we loop.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>solve  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">void</span> <span class="nf">solve</span><span class="p">(</span><span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">j</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">r</span> <span class="o">=</span> <span class="n">combi</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="o">*</span><span class="n">work</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">BETA</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">show_set</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">r</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">d</span> <span class="o">=</span> <span class="n">funion</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">work</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">bc</span> <span class="o">=</span> <span class="n">bits_count</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">digits</span><span class="p">[</span><span class="n">bc</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">digits</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span> <span class="o">&amp;</span> <span class="o">-</span><span class="n">d</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">d</span> <span class="o">&amp;=</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">UINT</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">best_remaining</span><span class="p">,</span> <span class="n">best_pos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">best_ticket</span><span class="p">,</span> <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="n">r</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">BETA</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">UINT</span> <span class="n">new_ticket</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">digits</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">UINT</span> <span class="n">new_remaining</span> <span class="o">=</span> <span class="n">check_cover</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">new_ticket</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">new_remaining</span> <span class="o">&lt;</span> <span class="n">best_remaining</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">best_ticket</span> <span class="o">=</span> <span class="n">new_ticket</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">best_remaining</span> <span class="o">=</span> <span class="n">new_remaining</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">best_pos</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">show_set</span><span class="p">(</span><span class="n">best_ticket</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">best_remaining</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">memcpy</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">work</span><span class="o">+</span><span class="p">(</span><span class="n">best_pos</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">UINT</span><span class="p">)</span> <span class="o">*</span> <span class="n">best_remaining</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">r</span> <span class="o">=</span> <span class="n">best_remaining</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">free</span><span class="p">(</span><span class="n">work</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h4><code>init</code></h4>
 
@@ -264,14 +364,64 @@ not size of the not yet covered set of $j$-subsets.</p>
 <p>If all tickets had to be generated randomly, 0 could be passed instead
 of a ticket to keep all $j$-subsets.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>init  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">init</span><span class="p">(</span><span class="n">UINT</span> <span class="n">c</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">w</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">v</span> <span class="o">=</span> <span class="n">first_perm</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">c</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">v</span> <span class="o">&amp;</span> <span class="n">k</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">v</span> <span class="o">=</span> <span class="n">next_perm</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h4><code>check_cover</code></h4>
 
 <p><code>check_cover</code> has a similar design as <code>init</code>, but reads the
 $j$-subsets from the work memory <code>from</code> instead of generating them.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>check_cover  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">check_cover</span><span class="p">(</span><span class="n">UINT</span> <span class="n">r</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">l</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">t</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">from</span><span class="p">[],</span> <span class="n">UINT</span> <span class="n">to</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">UINT</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">bits_count</span><span class="p">(</span><span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">t</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">l</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">to</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">from</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h4><code>sample</code></h4>
 
@@ -279,13 +429,53 @@ $j$-subsets from the work memory <code>from</code> instead of generating them.</
 based on the same algorithm); here the <code>digits</code> array plays the role
 that <code>ds</code> played in the Haskell version.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>sample  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">sample</span><span class="p">(</span><span class="n">UINT</span> <span class="n">k</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">n</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">ds</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ds</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">p</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">randomR</span><span class="p">(</span><span class="n">n</span><span class="p">)];</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">&amp;</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">ds</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">p</span> <span class="o">|</span> <span class="n">s</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h4><code>next_perm</code></h4>
 
 <p>The <code>next_perm</code> is from <a href="http://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation">Bit Twiddling Hacks</a>, and explained <a href="http://www.alexbowe.com/generating-binary-permutations-in-popcount-or">here</a>.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>next_perm  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">UINT</span> <span class="nf">next_perm</span><span class="p">(</span><span class="n">UINT</span> <span class="n">v</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UINT</span> <span class="n">t</span> <span class="o">=</span> <span class="n">v</span> <span class="o">|</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(((</span><span class="o">~</span><span class="n">t</span> <span class="o">&amp;</span> <span class="o">-~</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">__builtin_ctz</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h4>Compiling and running</h4>
 

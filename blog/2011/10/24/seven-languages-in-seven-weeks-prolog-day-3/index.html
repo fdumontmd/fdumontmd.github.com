@@ -251,10 +251,67 @@
 
 <p>This was clearly tedious to write (I wrote a few Emacs functions to do the job). I will show a better (I think) way below.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Sudoko test  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">sudoku</span><span class="p">([</span><span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">5</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">4</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">],</span>
+</span><span class='line'>       <span class="nv">Solution</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Solution</span> <span class="o">=</span> <span class="p">[</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">]</span> <span class="s-Atom">?</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Note: I found a few implementations missing the <code>fd_labeling</code> clause, which causes the test above to return:
-Liquid error: can&#8217;t convert Array into String</p>
+
+<p>Note: I found a few implementations missing the <code>fd_labeling</code> clause, which causes the test above to return:</p>
+
+<figure class='code'><figcaption><span>Sudoko test without fd_labeling  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">sudoku</span><span class="p">([</span><span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">5</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">4</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">],</span>
+</span><span class='line'>       <span class="nv">Solution</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Solution</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">3</span><span class="p">(</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">25</span><span class="p">(</span><span class="m">4</span><span class="p">..</span><span class="m">5</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">47</span><span class="p">(</span><span class="m">4</span><span class="p">..</span><span class="m">5</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="m">2</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">83</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">105</span><span class="p">(</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="m">7</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">191</span><span class="p">(</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">213</span><span class="p">(</span><span class="m">7</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">235</span><span class="p">(</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">257</span><span class="p">(</span><span class="m">6</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">343</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">365</span><span class="p">(</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">),</span><span class="m">1</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">401</span><span class="p">(</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">423</span><span class="p">(</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="p">),</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">509</span><span class="p">(</span><span class="m">1</span><span class="p">..</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">8</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">531</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">4</span><span class="p">..</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">553</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="p">..</span><span class="m">5</span><span class="s-Atom">:</span><span class="m">7</span><span class="p">..</span><span class="m">8</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">575</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">597</span><span class="p">(</span><span class="m">1</span><span class="p">..</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">619</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">641</span><span class="p">(</span><span class="m">1</span><span class="p">..</span><span class="m">3</span><span class="s-Atom">:</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">),</span><span class="m">9</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">677</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">699</span><span class="p">(</span><span class="m">1</span><span class="p">..</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">721</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">743</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">7</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="m">5</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">807</span><span class="p">(</span><span class="m">1</span><span class="p">..</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">829</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">7</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">851</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">873</span><span class="p">(</span><span class="m">1</span><span class="p">..</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="m">3</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">909</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="p">..</span><span class="m">5</span><span class="s-Atom">:</span><span class="m">7</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">931</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">953</span><span class="p">(</span><span class="m">1</span><span class="p">..</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">975</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">997</span><span class="p">(</span><span class="m">1</span><span class="p">..</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1019</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">4</span><span class="p">..</span><span class="m">5</span><span class="s-Atom">:</span><span class="m">7</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1041</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">..</span><span class="m">7</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1063</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1127</span><span class="p">(</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1149</span><span class="p">(</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="m">5</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1185</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">7</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1207</span><span class="p">(</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">7</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="m">5</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1243</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="m">3</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1293</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1315</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">4</span><span class="s-Atom">:</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1337</span><span class="p">(</span><span class="m">1</span><span class="p">..</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1359</span><span class="p">(</span><span class="m">1</span><span class="s-Atom">:</span><span class="m">4</span><span class="p">),</span><span class="m">8</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1423</span><span class="p">(</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1445</span><span class="p">(</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1467</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">5</span><span class="p">..</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">8</span><span class="p">..</span><span class="m">9</span><span class="p">),</span><span class="m">1</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1503</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">6</span><span class="p">),</span><span class="m">3</span><span class="p">,</span><span class="k">_</span><span class="s-Atom">#</span><span class="m">1547</span><span class="p">(</span><span class="m">2</span><span class="s-Atom">:</span><span class="m">6</span><span class="s-Atom">:</span><span class="m">9</span><span class="p">)]</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="m">1</span> <span class="s-Atom">ms</span><span class="p">)</span> <span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Utility predicates</h3>
 
@@ -376,43 +433,169 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p><code>maplist</code> is just the same as the <code>map</code> function found in many functional programming language.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>maplist: apply sort to each sublist in a list  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">maplist</span><span class="p">(</span><span class="s-Atom">sort</span><span class="p">,</span> <span class="p">[[</span><span class="m">3</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">],</span> <span class="p">[</span><span class="m">7</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">8</span><span class="p">],</span> <span class="p">[</span><span class="m">6</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">]],</span> <span class="nv">O</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">O</span> <span class="o">=</span> <span class="p">[[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">],[</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">9</span><span class="p">],[</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">]]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>maplist_</code> is the same, but called only for side effects.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>maplist_: output each element  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">maplist_</span><span class="p">(</span><span class="s-Atom">print</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]).</span>
+</span><span class='line'><span class="m">123</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">true</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>maplistidx</code> is the same as <code>maplist</code> again, but additionally passes the index (position within the list) to the predicate.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>maplistidx  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">maplistidx</span><span class="p">(</span><span class="s-Atom">const</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="p">[</span><span class="m">4</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">],</span> <span class="nv">O</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">O</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>subtract</code> generalizes <code>delete</code>: it removes all the elements of a list from another one.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>subtract  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">subtract</span><span class="p">([</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">10</span><span class="p">],</span> <span class="p">[</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">],</span> <span class="nv">O</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">O</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">10</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>transpose</code> is a matrix transposition predicate. It uses <code>head</code> and <code>tail</code> to split a list.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>transpose  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">transpose</span><span class="p">([[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">],</span> <span class="p">[</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">]],</span> <span class="nv">O</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">O</span> <span class="o">=</span> <span class="p">[[</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">],[</span><span class="m">2</span><span class="p">,</span><span class="m">5</span><span class="p">],[</span><span class="m">3</span><span class="p">,</span><span class="m">6</span><span class="p">]]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>make_var</code> makes a list of <code>N</code> vars</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>make_var  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">make_var</span><span class="p">(</span><span class="m">5</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>take</code> is similar to the <code>take</code> function in Haskell: it split a list in two, the prefix being up to <code>N</code> elements long.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>take  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">take</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">],</span> <span class="nv">T</span><span class="p">,</span> <span class="nv">R</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">R</span> <span class="o">=</span> <span class="p">[</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+</span><span class='line'><span class="nv">T</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>chunk</code> splits a list into chunks of size <code>N</code>.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>chunk  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">chunk</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">9</span><span class="p">],</span> <span class="nv">O</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">O</span> <span class="o">=</span> <span class="p">[[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">],[</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">],[</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">9</span><span class="p">]]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><code>make_line</code> create a list of length <code>N</code>, and set each element to <code>Char</code>.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>make_line: creating and printing a line of &#8216;-&#8217;  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">make_line</span><span class="p">(</span><span class="m">20</span><span class="p">,</span> <span class="s-Atom">&#39;-&#39;</span><span class="p">,</span> <span class="nv">O</span><span class="p">),</span> <span class="nf">maplist_</span><span class="p">(</span><span class="s-Atom">print</span><span class="p">,</span> <span class="nv">O</span><span class="p">),</span> <span class="s-Atom">nl</span><span class="p">.</span>
+</span><span class='line'><span class="s-Atom">--------------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">O</span> <span class="o">=</span> <span class="p">[</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">,</span><span class="s-Atom">-</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Finally, <code>make_range</code> creates a list with elements ranging from 1 to <code>N</code></p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>make_range  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">make_range</span><span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">10</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Pretty printing Sudoku solutions</h3>
 
@@ -482,13 +665,121 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>First, a test to show what the output looks like:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Sudoku Pretty Printer  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="nv">GNU</span> <span class="nv">Prolog</span> <span class="m">1</span><span class="p">.</span><span class="m">4</span><span class="p">.</span><span class="m">0</span>
+</span><span class='line'><span class="nv">By</span> <span class="nv">Daniel</span> <span class="nv">Diaz</span>
+</span><span class='line'><span class="nv">Copyright</span> <span class="p">(</span><span class="nv">C</span><span class="p">)</span> <span class="m">1999</span><span class="o">-</span><span class="m">2011</span> <span class="nv">Daniel</span> <span class="nv">Diaz</span>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">consult</span><span class="p">(</span><span class="s-Atom">&#39;utils&#39;</span><span class="p">).</span>
+</span><span class='line'><span class="p">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">consult</span><span class="p">(</span><span class="s-Atom">&#39;sudoku_book&#39;</span><span class="p">).</span>
+</span><span class='line'><span class="p">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">consult</span><span class="p">(</span><span class="s-Atom">&#39;sudoku_print&#39;</span><span class="p">).</span>
+</span><span class='line'><span class="p">....</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">sudoku</span><span class="p">([</span><span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">5</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">4</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">],</span>
+</span><span class='line'>       <span class="nv">Solution</span><span class="p">),</span> <span class="nf">sudoku_print</span><span class="p">(</span><span class="nv">Solution</span><span class="p">).</span>
+</span><span class='line'><span class="s-Atom">----------------------</span>
+</span><span class='line'><span class="p">|</span><span class="m">8</span> <span class="m">5</span> <span class="m">4</span> <span class="p">|</span><span class="m">2</span> <span class="m">1</span> <span class="m">9</span> <span class="p">|</span><span class="m">7</span> <span class="m">6</span> <span class="m">3</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">3</span> <span class="m">9</span> <span class="m">7</span> <span class="p">|</span><span class="m">8</span> <span class="m">6</span> <span class="m">5</span> <span class="p">|</span><span class="m">4</span> <span class="m">2</span> <span class="m">1</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">2</span> <span class="m">6</span> <span class="m">1</span> <span class="p">|</span><span class="m">4</span> <span class="m">7</span> <span class="m">3</span> <span class="p">|</span><span class="m">9</span> <span class="m">8</span> <span class="m">5</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">----------------------</span>
+</span><span class='line'><span class="p">|</span><span class="m">7</span> <span class="m">8</span> <span class="m">5</span> <span class="p">|</span><span class="m">1</span> <span class="m">2</span> <span class="m">6</span> <span class="p">|</span><span class="m">3</span> <span class="m">9</span> <span class="m">4</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">6</span> <span class="m">4</span> <span class="m">9</span> <span class="p">|</span><span class="m">5</span> <span class="m">3</span> <span class="m">8</span> <span class="p">|</span><span class="m">1</span> <span class="m">7</span> <span class="m">2</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">1</span> <span class="m">3</span> <span class="m">2</span> <span class="p">|</span><span class="m">9</span> <span class="m">4</span> <span class="m">7</span> <span class="p">|</span><span class="m">8</span> <span class="m">5</span> <span class="m">6</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">----------------------</span>
+</span><span class='line'><span class="p">|</span><span class="m">9</span> <span class="m">2</span> <span class="m">6</span> <span class="p">|</span><span class="m">3</span> <span class="m">8</span> <span class="m">4</span> <span class="p">|</span><span class="m">5</span> <span class="m">1</span> <span class="m">7</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">5</span> <span class="m">1</span> <span class="m">3</span> <span class="p">|</span><span class="m">7</span> <span class="m">9</span> <span class="m">2</span> <span class="p">|</span><span class="m">6</span> <span class="m">4</span> <span class="m">8</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">4</span> <span class="m">7</span> <span class="m">8</span> <span class="p">|</span><span class="m">6</span> <span class="m">5</span> <span class="m">1</span> <span class="p">|</span><span class="m">2</span> <span class="m">3</span> <span class="m">9</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">----------------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Solution</span> <span class="o">=</span> <span class="p">[</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">]</span> <span class="s-Atom">?</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>First the various modules have to be loaded (GNU Prolog does not have a module system, so this is tedious). Then the solver is run on a hard problem (from <a href="http://www.sudoku.ws/hard.htm">this</a> site), and finally pretty printed. As usual, Prolog then lists the variables introduced in the query, here only <code>Solution</code>.</p>
 
 <p>Pretty printing a 6x6 (dummy) board works as well:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>A 6x6 board  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">make_line</span><span class="p">(</span><span class="m">36</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="nv">L</span><span class="p">),</span> <span class="nf">sudoku_print_</span><span class="p">(</span><span class="m">6</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="nv">L</span><span class="p">).</span>
+</span><span class='line'><span class="s-Atom">---------------</span>
+</span><span class='line'><span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------------</span>
+</span><span class='line'><span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------------</span>
+</span><span class='line'><span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span><span class="m">1</span> <span class="m">1</span> <span class="m">1</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The code is fairly simple; the major difficulty is to find names for the various segments that are printed.</p>
 
@@ -692,11 +983,59 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>With the code above, it is already possible to compute solutions. Here is a partial list of the 8 Queens boards:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>queens solver  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">queens</span><span class="p">(</span><span class="m">8</span><span class="p">,</span> <span class="nv">Sol</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Sol</span> <span class="o">=</span> <span class="p">[</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Sol</span> <span class="o">=</span> <span class="p">[</span><span class="m">5</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Sol</span> <span class="o">=</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Sol</span> <span class="o">=</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">1</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Sol</span> <span class="o">=</span> <span class="p">[</span><span class="m">5</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Sol</span> <span class="o">=</span> <span class="p">[</span><span class="m">4</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">2</span><span class="p">]</span> <span class="s-Atom">?</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="m">3</span> <span class="s-Atom">ms</span><span class="p">)</span> <span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>and a complete list of the 4 Queens boards (there&#8217;s only two):</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>4 queens solutions  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">queens</span><span class="p">(</span><span class="m">4</span><span class="p">,</span> <span class="nv">Sol</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Sol</span> <span class="o">=</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Sol</span> <span class="o">=</span> <span class="p">[</span><span class="m">2</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h4>Formatting Predicates</h4>
 
@@ -733,11 +1072,153 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Finally, <code>run_queens</code> provide a top level predicate that computes then render each solution board. Here are the two boards from the 4 Queens problem:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>4 Queens boards  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">run_queens</span><span class="p">(</span><span class="m">4</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'><span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">true</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'><span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">---------</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">true</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="m">1</span> <span class="s-Atom">ms</span><span class="p">)</span> <span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>and the first two boards from the 8 Queens problem:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>8 Queens - first 2 boards  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">run_queens</span><span class="p">(</span><span class="m">8</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">true</span> <span class="s-Atom">?</span> <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'><span class="p">|</span><span class="nv">Q</span><span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">true</span> <span class="s-Atom">?</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="m">2</span> <span class="s-Atom">ms</span><span class="p">)</span> <span class="s-Atom">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h4>Wrapping up n Queens problem</h4>
 
@@ -829,11 +1310,125 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>Now the Sudoku solver can be used on the old 4x4 problem:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing new Sudoku solver on 4x4 problem  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="nv">GNU</span> <span class="nv">Prolog</span> <span class="m">1</span><span class="p">.</span><span class="m">4</span><span class="p">.</span><span class="m">0</span>
+</span><span class='line'><span class="nv">By</span> <span class="nv">Daniel</span> <span class="nv">Diaz</span>
+</span><span class='line'><span class="nv">Copyright</span> <span class="p">(</span><span class="nv">C</span><span class="p">)</span> <span class="m">1999</span><span class="o">-</span><span class="m">2011</span> <span class="nv">Daniel</span> <span class="nv">Diaz</span>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">consult</span><span class="p">(</span><span class="s-Atom">&#39;utils&#39;</span><span class="p">).</span>
+</span><span class='line'><span class="p">....</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">consult</span><span class="p">(</span><span class="s-Atom">&#39;sudoku&#39;</span><span class="p">).</span>
+</span><span class='line'><span class="p">....</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">consult</span><span class="p">(</span><span class="s-Atom">&#39;sudoku_print&#39;</span><span class="p">).</span>
+</span><span class='line'><span class="p">....</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">sudoku</span><span class="p">([</span><span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span>
+</span><span class='line'>             <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>             <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>             <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">],</span>
+</span><span class='line'>             <span class="nv">Solution</span><span class="p">),</span> <span class="nf">sudoku_print</span><span class="p">(</span><span class="nv">Solution</span><span class="p">).</span>
+</span><span class='line'><span class="s-Atom">-----------</span>
+</span><span class='line'><span class="p">|</span><span class="m">4</span> <span class="m">1</span> <span class="p">|</span><span class="m">2</span> <span class="m">3</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">2</span> <span class="m">3</span> <span class="p">|</span><span class="m">4</span> <span class="m">1</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------</span>
+</span><span class='line'><span class="p">|</span><span class="m">1</span> <span class="m">2</span> <span class="p">|</span><span class="m">3</span> <span class="m">4</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">3</span> <span class="m">4</span> <span class="p">|</span><span class="m">1</span> <span class="m">2</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">-----------</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Solution</span> <span class="o">=</span> <span class="p">[</span><span class="m">4</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="s-Atom">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>as well as on 8x8 (hard) problems:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing new Sudoku solver on 8x8 problem  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='prolog'><span class='line'><span class="p">|</span> <span class="s-Atom">?-</span> <span class="nf">sudoku</span><span class="p">([</span><span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">9</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="k">_</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">5</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">8</span><span class="p">,</span>
+</span><span class='line'>        <span class="m">4</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="k">_</span><span class="p">],</span>
+</span><span class='line'>       <span class="nv">Solution</span><span class="p">),</span> <span class="nf">sudoku_print</span><span class="p">(</span><span class="nv">Solution</span><span class="p">).</span>
+</span><span class='line'><span class="s-Atom">----------------------</span>
+</span><span class='line'><span class="p">|</span><span class="m">8</span> <span class="m">5</span> <span class="m">4</span> <span class="p">|</span><span class="m">2</span> <span class="m">1</span> <span class="m">9</span> <span class="p">|</span><span class="m">7</span> <span class="m">6</span> <span class="m">3</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">3</span> <span class="m">9</span> <span class="m">7</span> <span class="p">|</span><span class="m">8</span> <span class="m">6</span> <span class="m">5</span> <span class="p">|</span><span class="m">4</span> <span class="m">2</span> <span class="m">1</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">2</span> <span class="m">6</span> <span class="m">1</span> <span class="p">|</span><span class="m">4</span> <span class="m">7</span> <span class="m">3</span> <span class="p">|</span><span class="m">9</span> <span class="m">8</span> <span class="m">5</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">----------------------</span>
+</span><span class='line'><span class="p">|</span><span class="m">7</span> <span class="m">8</span> <span class="m">5</span> <span class="p">|</span><span class="m">1</span> <span class="m">2</span> <span class="m">6</span> <span class="p">|</span><span class="m">3</span> <span class="m">9</span> <span class="m">4</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">6</span> <span class="m">4</span> <span class="m">9</span> <span class="p">|</span><span class="m">5</span> <span class="m">3</span> <span class="m">8</span> <span class="p">|</span><span class="m">1</span> <span class="m">7</span> <span class="m">2</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">1</span> <span class="m">3</span> <span class="m">2</span> <span class="p">|</span><span class="m">9</span> <span class="m">4</span> <span class="m">7</span> <span class="p">|</span><span class="m">8</span> <span class="m">5</span> <span class="m">6</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">----------------------</span>
+</span><span class='line'><span class="p">|</span><span class="m">9</span> <span class="m">2</span> <span class="m">6</span> <span class="p">|</span><span class="m">3</span> <span class="m">8</span> <span class="m">4</span> <span class="p">|</span><span class="m">5</span> <span class="m">1</span> <span class="m">7</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">5</span> <span class="m">1</span> <span class="m">3</span> <span class="p">|</span><span class="m">7</span> <span class="m">9</span> <span class="m">2</span> <span class="p">|</span><span class="m">6</span> <span class="m">4</span> <span class="m">8</span> <span class="p">|</span>
+</span><span class='line'><span class="p">|</span><span class="m">4</span> <span class="m">7</span> <span class="m">8</span> <span class="p">|</span><span class="m">6</span> <span class="m">5</span> <span class="m">1</span> <span class="p">|</span><span class="m">2</span> <span class="m">3</span> <span class="m">9</span> <span class="p">|</span>
+</span><span class='line'><span class="s-Atom">----------------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Solution</span> <span class="o">=</span> <span class="p">[</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">9</span><span class="p">]</span> <span class="s-Atom">?</span> <span class="nf">a</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="m">1</span> <span class="s-Atom">ms</span><span class="p">)</span> <span class="s-Atom">no</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Wrapping Day 3 and Prolog</h2>
 

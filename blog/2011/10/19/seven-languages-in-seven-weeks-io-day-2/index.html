@@ -119,41 +119,131 @@
 
 <p>I change the exercise a bit: I defined the fibonacci sequence for Number, and it uses the number it is called on as the argument. So I compute <code>40 fib</code> rather than <code>fib(40)</code>. For this reason I have to use <code>self</code> when I want to refer to the original argument explicitly.</p>
 
-<p>The recursive (and slow) method translated directly from the definition:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>The recursive (and slow) method translated directly from the definition:</p>
 
-<p>For the iterative method, I&#8217;m using a intermediate function with accumulators to build the result (I have easier time thinking in functional than imperative terms):
-Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Fibonacci sequence, recursive  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="k">if</span> <span class="o">(</span><span class="n">self</span> <span class="o">&lt;</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="o">((</span><span class="n">self</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span> <span class="n">fib</span> <span class="o">+</span> <span class="o">(</span><span class="n">self</span> <span class="o">-</span> <span class="mf">2</span><span class="o">)</span> <span class="n">fib</span><span class="o">)))</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Finally, an iterative imperative method, with explicit looping (the iteration starts at 2 because the <code>for</code> method iterates up to and including the upper bound):
-Liquid error: can&#8217;t convert Array into String</p>
+
+<p>For the iterative method, I&#8217;m using a intermediate function with accumulators to build the result (I have easier time thinking in functional than imperative terms):</p>
+
+<figure class='code'><figcaption><span>Fibonacci sequence, iterative functional  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fibrec</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mf">1</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">fibrec</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">,</span> <span class="n">n</span><span class="o">-</span><span class="mf">1</span><span class="o">)))</span>
+</span><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">fibrec</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="n">self</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, an iterative imperative method, with explicit looping (the iteration starts at 2 because the <code>for</code> method iterates up to and including the upper bound):</p>
+
+<figure class='code'><figcaption><span>Fibonacci sequence, iterative imperative  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">a</span> <span class="o">:=</span> <span class="mf">1</span>
+</span><span class='line'>  <span class="n">b</span> <span class="o">:=</span> <span class="mf">1</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="n">self</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">c</span> <span class="o">:=</span> <span class="n">b</span>
+</span><span class='line'>      <span class="n">b</span> <span class="o">:=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</span><span class='line'>      <span class="n">a</span> <span class="o">:=</span> <span class="n">c</span>
+</span><span class='line'>  <span class="o">)</span>
+</span><span class='line'>  <span class="n">b</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Change <code>/</code> to return 0 when divided by 0</h3>
 
-<p>First I save the original definition of <code>/</code>, then I update the operator slot with the new definition:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>First I save the original definition of <code>/</code>, then I update the operator slot with the new definition:</p>
+
+<figure class='code'><figcaption><span>Redefining division  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">oldDiv</span> <span class="o">:=</span> <span class="n">Number</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">Number</span> <span class="n">updateSlot</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">,</span> <span class="k">method</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span>  <span class="n">oldDiv</span><span class="o">(</span><span class="n">d</span><span class="o">))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Add up all the numbers in a two dimensional array</h3>
 
-<p>Assuming the array is implemented as a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List"><code>List</code></a> of list, the following invocation will sum the numbers:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>Assuming the array is implemented as a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List"><code>List</code></a> of list, the following invocation will sum the numbers:</p>
+
+<figure class='code'><figcaption><span>Summing over nested lists  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">arr</span> <span class="o">:=</span> <span class="n">list</span><span class="o">(</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">4</span><span class="o">,</span><span class="mf">5</span><span class="o">,</span><span class="mf">6</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">7</span><span class="o">,</span><span class="mf">8</span><span class="o">,</span><span class="mf">9</span><span class="o">))</span>
+</span><span class='line'><span class="n">arr</span> <span class="n">reduce</span><span class="o">(</span><span class="n">xs</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">xs</span> <span class="o">+</span> <span class="o">(</span><span class="n">x</span> <span class="n">reduce</span><span class="o">(+,</span> <span class="mf">0</span><span class="o">)),</span> <span class="mf">0</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The initial value is supplied explicitly; otherwise <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/reduce"><code>reduce</code></a> would use the first value, which is not a number but a list.</p>
 
-<p>Alternatively (and much shorter):
-Liquid error: can&#8217;t convert Array into String</p>
+<p>Alternatively (and much shorter):</p>
+
+<figure class='code'><figcaption><span>Summing over nested lists, the easy way  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">arr</span> <span class="o">:=</span> <span class="n">list</span><span class="o">(</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">4</span><span class="o">,</span><span class="mf">5</span><span class="o">,</span><span class="mf">6</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">7</span><span class="o">,</span><span class="mf">8</span><span class="o">,</span><span class="mf">9</span><span class="o">))</span>
+</span><span class='line'><span class="n">arr</span> <span class="n">flatten</span> <span class="n">reduce</span><span class="o">(+)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>Define <code>myAverage</code></h3>
 
-<p>Using the <code>reduce</code> method, it is easy to compute the sum of a list. The <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/size"><code>size</code></a> method can then be used to compute the average:
-Liquid error: can&#8217;t convert Array into String
-If the list is empty, the <code>reduce</code> method returns <code>nil</code>, so we get an exception (as <code>nil</code> does not respond to the <code>/</code> method). But this is consistent with the existing <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/average"><code>average</code></a> method.</p>
+<p>Using the <code>reduce</code> method, it is easy to compute the sum of a list. The <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/size"><code>size</code></a> method can then be used to compute the average:</p>
+
+<figure class='code'><figcaption><span>Reimplementing average  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">List</span> <span class="n">myAverage</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">self</span> <span class="n">reduce</span><span class="o">(+)</span> <span class="o">/</span> <span class="n">self</span> <span class="n">size</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If the list is empty, the <code>reduce</code> method returns <code>nil</code>, so we get an exception (as <code>nil</code> does not respond to the <code>/</code> method). But this is consistent with the existing <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/average"><code>average</code></a> method.</p>
 
 <h4>Throwing Exception</h4>
 
 <p>Technically, this solution already raises an <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Exception"><code>Exception</code></a> when one of the elements is not a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Number"><code>Number</code></a>, but here is how I would implement explicit type checking:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Reimplementing average  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">OperatorTable</span> <span class="n">addOperator</span><span class="o">(</span><span class="s">&quot;+?&quot;</span><span class="o">,</span> <span class="mf">3</span><span class="o">)</span>
+</span><span class='line'><span class="n">Number</span> <span class="o">+</span><span class="err">?</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">num</span><span class="o">,</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">num</span> <span class="n">hasProto</span><span class="o">(</span><span class="n">Number</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">self</span> <span class="o">+</span> <span class="n">num</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">Exception</span> <span class="n">raise</span><span class="o">(</span><span class="s">&quot;Not a number&quot;</span><span class="o">)))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">List</span> <span class="n">myAverage</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">self</span> <span class="n">reduce</span><span class="o">(+</span><span class="err">?</span><span class="o">)</span> <span class="o">/</span> <span class="n">self</span> <span class="n">size</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">,</span> <span class="s">&quot;hello&quot;</span><span class="o">)</span> <span class="n">myAverage</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>I am using a new operator, <code>+?</code>, with the same priority as <code>+</code>, and explicitly check the prototype with <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/hasProto"><code>hasProto</code></a>.</p>
 
@@ -161,18 +251,61 @@ If the list is empty, the <code>reduce</code> method returns <code>nil</code>, s
 
 <p>First I clone a specialization of <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List"><code>List</code></a> as the implementation to the two dimensional array.</p>
 
-<p>The initialization simply creates then grows the internal lists to the appropriate size, and stores the original parameters as slots:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>The initialization simply creates then grows the internal lists to the appropriate size, and stores the original parameters as slots:</p>
 
-<p>The accessor methods can use the dimension slots to check for out of bound access:
-Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Two dimensional arrays, initialization  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="o">:=</span> <span class="n">List</span> <span class="k">clone</span>
+</span><span class='line'><span class="n">dim2</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">d</span> <span class="o">:=</span> <span class="n">Dim2</span> <span class="k">clone</span> <span class="n">setSize</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="n">map</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">list</span><span class="o">()</span> <span class="n">setSize</span><span class="o">(</span><span class="n">y</span><span class="o">))</span>
+</span><span class='line'>  <span class="n">d</span> <span class="n">newSlot</span><span class="o">(</span><span class="s">&quot;x&quot;</span><span class="o">,</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">d</span> <span class="n">newSlot</span><span class="o">(</span><span class="s">&quot;y&quot;</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">d</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The accessor methods can use the dimension slots to check for out of bound access:</p>
+
+<figure class='code'><figcaption><span>Two dimensional array, accessor methods  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">checkBounds</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">xg</span><span class="o">,</span> <span class="n">yg</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">xg</span> <span class="n">or</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">yg</span> <span class="n">or</span> <span class="n">xg</span> <span class="o">&lt;</span> <span class="mf">0</span> <span class="n">or</span> <span class="n">yg</span> <span class="o">&lt;</span> <span class="mf">0</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">raise</span><span class="o">(</span><span class="s">&quot;Indexes out of bound&quot;</span><span class="o">)))</span>
+</span><span class='line'><span class="n">Dim2</span> <span class="n">get</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">checkBounds</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span> <span class="n">at</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="n">at</span><span class="o">(</span><span class="n">y</span><span class="o">))</span>
+</span><span class='line'><span class="n">Dim2</span> <span class="n">set</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">v</span><span class="o">,</span> <span class="n">checkBounds</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span> <span class="n">at</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="n">atPut</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span> <span class="n">d</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The method <code>checkBounds</code> guarantees an exception is raised if the position parameters are not within bounds. The method <code>get</code> simply invokes <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/at"><code>at</code></a> twice to get at the data; <code>set</code> first locate the right sub list with <code>at</code>, then update the correct value with <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/atPut"><code>atPut</code></a>, and finally returns the updated array.</p>
 
 <h3>Two-dimensional list transpose method</h3>
 
-<p>With <code>Dim2</code> defined as above, the <code>transpose</code> method is trivial:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>With <code>Dim2</code> defined as above, the <code>transpose</code> method is trivial:</p>
+
+<figure class='code'><figcaption><span>Two-dimensional list transpose method  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">transpose</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">d</span> <span class="o">:=</span> <span class="n">dim2</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="n">x</span><span class="o">-</span><span class="mf">1</span><span class="o">,</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="n">y</span><span class="o">-</span><span class="mf">1</span><span class="o">,</span> <span class="n">d</span> <span class="n">set</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">get</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">))</span>
+</span><span class='line'>  <span class="n">d</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Just initialize a new array, swapping the dimensions, then iterate over both dimensions, swapping the parameters for the <code>get</code> and the <code>set</code> methods.</p>
 
@@ -182,22 +315,87 @@ Liquid error: can&#8217;t convert Array into String</p>
 
 <p>However, the default <code>asString</code> returns the same representation as for regular nested lists. In order to read the object from the string, <code>asString</code> has to be overridden to emit something specific.</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Two-dimensional array asString  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">asString</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="o">:=</span> <span class="s">&quot;twodim(&quot;</span> <span class="n">asMutable</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">x</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">y</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">foreach</span><span class="o">(</span><span class="n">l</span><span class="o">,</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">);</span> <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="n">l</span> <span class="n">asString</span><span class="o">))</span>
+</span><span class='line'>  <span class="n">buf</span> <span class="n">appendSeq</span><span class="o">(</span><span class="s">&quot;)&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">buf</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>With this defined, a two dimensional list has a unique representation:
-Liquid error: can&#8217;t convert Array into String</p>
 
-<p>With this in place, I can define a <code>twodim</code> function that creates an instance of <code>Dim2</code> and fills it with the passed data:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>With this defined, a two dimensional list has a unique representation:</p>
+
+<figure class='code'><figcaption><span>asString example  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">dim2</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this in place, I can define a <code>twodim</code> function that creates an instance of <code>Dim2</code> and fills it with the passed data:</p>
+
+<figure class='code'><figcaption><span>twodim method  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">twodim</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">d</span> <span class="o">:=</span> <span class="n">dim2</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="n">x</span><span class="o">-</span><span class="mf">1</span><span class="o">,</span> <span class="n">d</span> <span class="n">atPut</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">call</span> <span class="n">sender</span> <span class="n">doMessage</span><span class="o">(</span><span class="n">call</span> <span class="n">message</span> <span class="n">argAt</span><span class="o">(</span><span class="n">i</span><span class="o">+</span><span class="mf">2</span><span class="o">)))</span>
+</span><span class='line'>  <span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The <code>twodim</code> method is not defined on <code>Dim2</code>, but globally, so that the content of a string representing a <code>Dim2</code> instance can be parsed in any context.</p>
 
 <p>With this in place, the object can be serialized and unserialized, using the <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/doString"><code>doString</code></a> method (which evaluates the string in the target context):</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Testing serialization  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">d</span> <span class="o">:=</span> <span class="n">dim2</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">))</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="k">for</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="n">d</span> <span class="n">set</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="o">)))</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="k">doString</span><span class="o">(</span><span class="n">d</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>So the last step is to store the string representation in a file, and read from it:
-Liquid error: can&#8217;t convert Array into String</p>
+
+<p>So the last step is to store the string representation in a file, and read from it:</p>
+
+<figure class='code'><figcaption><span>Writing to a file  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">d</span> <span class="o">:=</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
+</span><span class='line'><span class="n">f</span> <span class="o">:=</span> <span class="n">File</span> <span class="n">with</span><span class="o">(</span><span class="s">&quot;foo.txt&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">remove</span>
+</span><span class='line'><span class="n">f</span> <span class="n">openForUpdating</span>
+</span><span class='line'><span class="n">f</span> <span class="n">write</span><span class="o">(</span><span class="n">d</span> <span class="n">asString</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">close</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Unsurprisingly, the content of the file is</p>
 
@@ -207,8 +405,23 @@ Liquid error: can&#8217;t convert Array into String</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Reading is just as simple:
-Liquid error: can&#8217;t convert Array into String</p>
+<p>Reading is just as simple:</p>
+
+<figure class='code'><figcaption><span>Reading from a file  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">f</span> <span class="o">:=</span> <span class="n">File</span> <span class="n">with</span><span class="o">(</span><span class="s">&quot;foo.txt&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">openForReading</span>
+</span><span class='line'><span class="n">d1</span> <span class="o">:=</span> <span class="k">doString</span><span class="o">(</span><span class="n">f</span> <span class="n">readLine</span><span class="o">)</span>
+</span><span class='line'><span class="n">f</span> <span class="n">close</span>
+</span><span class='line'><span class="n">d1</span>
+</span><span class='line'><span class="n">d</span> <span class="o">==</span> <span class="n">d1</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The original <code>Dim2</code> instance is equal to the unserialized one. I did not really expected that (I didn&#8217;t write any comparison code for the new object), but Io provided a sensible implementation anyway.</p>
 

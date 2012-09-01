@@ -121,7 +121,11 @@
 
 <p>First, let&#8217;s look a bit more at the fist index introduced today:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Text Pattern index  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span> <span class="k">ON</span> <span class="n">movies</span> <span class="p">(</span><span class="n">title</span> <span class="n">text_pattern_ops</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The book states that is creates an index for pattern matching. Think about it for a few seconds, try to imagine what it would look like&#8230; Yes, the solution is not trivial, so being able to index for pattern matching sounds like magic. Or pixie dust. But does it work?</p>
 
@@ -159,7 +163,13 @@
 
 <p>Ok, not quite there yet. But that&#8217;s normal. We are not using the column directly, so an index on the original values is not going to work. However PostgreSQL has a very nice feature called functional index: it is possible to create an index on the result of a function. Let&#8217;s drop the original index and create one with <code>lower(title)</code> as the indexed value:</p>
 
-<p>Liquid error: can&#8217;t convert Array into String</p>
+<figure class='code'><figcaption><span>Case insensitive Pattern index  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">DROP</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span><span class="p">;</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span> <span class="k">ON</span> <span class="n">movies</span> <span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> <span class="n">text_pattern_ops</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Does it look better now?</p>
 

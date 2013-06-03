@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2012-09-01T10:31:37+09:00</updated>
+  <updated>2013-06-04T07:17:43+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -4386,7 +4386,7 @@ x^{\overline{m+n}} &amp; = x\cdots(x+m-1)(x+m)\cdots(x+m+n-1)&#92;&#92;
 <div markdown="0">
 \begin{align}
 1 = x^{\overline{-n+n}} &amp; = x^{\overline{-n}} (x-n)^\overline{n}&#92;&#92;
-x^{\overline{-1}} &amp; = \frac{1}{(x-n)^\overline{n}}&#92;&#92;
+x^{\overline{-n}} &amp; = \frac{1}{(x-n)^\overline{n}}&#92;&#92;
 &amp; = \frac{1}{(x-n)\cdots(x-1)}&#92;&#92;
 &amp; = \frac{1}{(x-1)^{\underline{n}}}&#92;&#92;
 \end{align}

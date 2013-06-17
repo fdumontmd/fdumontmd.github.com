@@ -50,7 +50,7 @@ I will use the notation from the book rather than the paper. The
 problem is defined as this:
 
  * a lottery ticket has $k$ numbers
- * a win requires $j$ numbers from the winning ticket
+ * a win requires $l$ numbers from the winning ticket
  * the psychic visualises $n$ numbers
  * of which $j$ are "guaranteed" to be on the winning ticket.
 

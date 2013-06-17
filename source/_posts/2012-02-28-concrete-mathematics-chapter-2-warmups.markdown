@@ -154,7 +154,7 @@ From there, the value of rising factorials for negative powers follows quickly:
 <div markdown="0">
 \begin{align}
 1 = x^{\overline{-n+n}} &amp; = x^{\overline{-n}} (x-n)^\overline{n}\\\\
-x^{\overline{-1}} &amp; = \frac{1}{(x-n)^\overline{n}}\\\\
+x^{\overline{-n}} &amp; = \frac{1}{(x-n)^\overline{n}}\\\\
 &amp; = \frac{1}{(x-n)\cdots(x-1)}\\\\
 &amp; = \frac{1}{(x-1)^{\underline{n}}}\\\\
 \end{align}

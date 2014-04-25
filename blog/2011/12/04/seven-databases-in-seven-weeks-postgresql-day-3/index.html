@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -121,8 +122,8 @@
 
 <p>First, let&#8217;s look a bit more at the fist index introduced today:</p>
 
-<figure class='code'><figcaption><span>Text Pattern index  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Text Pattern index </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span> <span class="k">ON</span> <span class="n">movies</span> <span class="p">(</span><span class="n">title</span> <span class="n">text_pattern_ops</span><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -163,8 +164,8 @@
 
 <p>Ok, not quite there yet. But that&#8217;s normal. We are not using the column directly, so an index on the original values is not going to work. However PostgreSQL has a very nice feature called functional index: it is possible to create an index on the result of a function. Let&#8217;s drop the original index and create one with <code>lower(title)</code> as the indexed value:</p>
 
-<figure class='code'><figcaption><span>Case insensitive Pattern index  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Case insensitive Pattern index </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">DROP</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span><span class="p">;</span>
 </span><span class='line'><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">movies_title_pattern</span> <span class="k">ON</span> <span class="n">movies</span> <span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> <span class="n">text_pattern_ops</span><span class="p">);</span>
@@ -292,7 +293,7 @@
 <p>Finally, the return value is a <code>setof</code> <code>movies</code>. The meaning is that I will return rows that have the same type as rows from the <code>movies</code> table. If the query was simple, I could just use the <code>SELECT</code> statement as the body for the function, but as I have to chose between queries, I use the <a href=""><code>RETURN NEXT</code></a> command instead. Explanations can be found in the fine PostgreSQL <a href="http://www.postgresql.org/docs/current/static/plpgsql-control-structures.html">manual</a>.</p>
 
 <figure class='code'><figcaption><span>suggestMovies function  (suggest_movies.sql)</span> <a href='/downloads/code/7d7w/postgresql/suggest_movies.sql'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -476,7 +477,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/" >Tweet</a>
   
   
   
@@ -577,7 +578,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -604,7 +605,7 @@
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -634,7 +635,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
   </span>
@@ -654,7 +655,7 @@
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -670,7 +671,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

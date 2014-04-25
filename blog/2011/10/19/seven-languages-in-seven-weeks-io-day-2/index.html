@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -121,16 +122,16 @@
 
 <p>The recursive (and slow) method translated directly from the definition:</p>
 
-<figure class='code'><figcaption><span>Fibonacci sequence, recursive  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Fibonacci sequence, recursive </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="k">if</span> <span class="o">(</span><span class="n">self</span> <span class="o">&lt;</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="o">((</span><span class="n">self</span> <span class="o">-</span> <span class="mf">1</span><span class="o">)</span> <span class="n">fib</span> <span class="o">+</span> <span class="o">(</span><span class="n">self</span> <span class="o">-</span> <span class="mf">2</span><span class="o">)</span> <span class="n">fib</span><span class="o">)))</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>For the iterative method, I&#8217;m using a intermediate function with accumulators to build the result (I have easier time thinking in functional than imperative terms):</p>
 
-<figure class='code'><figcaption><span>Fibonacci sequence, iterative functional  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Fibonacci sequence, iterative functional </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">fibrec</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mf">1</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">fibrec</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">,</span> <span class="n">n</span><span class="o">-</span><span class="mf">1</span><span class="o">)))</span>
 </span><span class='line'><span class="n">Number</span> <span class="n">fib</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">fibrec</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="n">self</span><span class="o">))</span>
@@ -139,8 +140,8 @@
 
 <p>Finally, an iterative imperative method, with explicit looping (the iteration starts at 2 because the <code>for</code> method iterates up to and including the upper bound):</p>
 
-<figure class='code'><figcaption><span>Fibonacci sequence, iterative imperative  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Fibonacci sequence, iterative imperative </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -167,8 +168,8 @@
 
 <p>First I save the original definition of <code>/</code>, then I update the operator slot with the new definition:</p>
 
-<figure class='code'><figcaption><span>Redefining division  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Redefining division </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Number</span> <span class="n">oldDiv</span> <span class="o">:=</span> <span class="n">Number</span> <span class="n">getSlot</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">)</span>
 </span><span class='line'><span class="n">Number</span> <span class="n">updateSlot</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">,</span> <span class="k">method</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="mf">0</span><span class="o">,</span> <span class="mf">0</span><span class="o">,</span>  <span class="n">oldDiv</span><span class="o">(</span><span class="n">d</span><span class="o">))))</span>
@@ -179,8 +180,8 @@
 
 <p>Assuming the array is implemented as a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List"><code>List</code></a> of list, the following invocation will sum the numbers:</p>
 
-<figure class='code'><figcaption><span>Summing over nested lists  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Summing over nested lists </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">arr</span> <span class="o">:=</span> <span class="n">list</span><span class="o">(</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">4</span><span class="o">,</span><span class="mf">5</span><span class="o">,</span><span class="mf">6</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">7</span><span class="o">,</span><span class="mf">8</span><span class="o">,</span><span class="mf">9</span><span class="o">))</span>
 </span><span class='line'><span class="n">arr</span> <span class="n">reduce</span><span class="o">(</span><span class="n">xs</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">xs</span> <span class="o">+</span> <span class="o">(</span><span class="n">x</span> <span class="n">reduce</span><span class="o">(+,</span> <span class="mf">0</span><span class="o">)),</span> <span class="mf">0</span><span class="o">)</span>
@@ -191,8 +192,8 @@
 
 <p>Alternatively (and much shorter):</p>
 
-<figure class='code'><figcaption><span>Summing over nested lists, the easy way  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Summing over nested lists, the easy way </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">arr</span> <span class="o">:=</span> <span class="n">list</span><span class="o">(</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span><span class="mf">2</span><span class="o">,</span><span class="mf">3</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">4</span><span class="o">,</span><span class="mf">5</span><span class="o">,</span><span class="mf">6</span><span class="o">),</span> <span class="n">list</span><span class="o">(</span><span class="mf">7</span><span class="o">,</span><span class="mf">8</span><span class="o">,</span><span class="mf">9</span><span class="o">))</span>
 </span><span class='line'><span class="n">arr</span> <span class="n">flatten</span> <span class="n">reduce</span><span class="o">(+)</span>
@@ -203,8 +204,8 @@
 
 <p>Using the <code>reduce</code> method, it is easy to compute the sum of a list. The <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/List/size"><code>size</code></a> method can then be used to compute the average:</p>
 
-<figure class='code'><figcaption><span>Reimplementing average  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Reimplementing average </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">List</span> <span class="n">myAverage</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span>
@@ -219,8 +220,8 @@
 
 <p>Technically, this solution already raises an <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Exception"><code>Exception</code></a> when one of the elements is not a <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Number"><code>Number</code></a>, but here is how I would implement explicit type checking:</p>
 
-<figure class='code'><figcaption><span>Reimplementing average  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Reimplementing average </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -253,8 +254,8 @@
 
 <p>The initialization simply creates then grows the internal lists to the appropriate size, and stores the original parameters as slots:</p>
 
-<figure class='code'><figcaption><span>Two dimensional arrays, initialization  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Two dimensional arrays, initialization </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -273,8 +274,8 @@
 
 <p>The accessor methods can use the dimension slots to check for out of bound access:</p>
 
-<figure class='code'><figcaption><span>Two dimensional array, accessor methods  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Two dimensional array, accessor methods </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Dim2</span> <span class="n">checkBounds</span> <span class="o">:=</span> <span class="k">method</span><span class="o">(</span><span class="n">xg</span><span class="o">,</span> <span class="n">yg</span><span class="o">,</span> <span class="k">if</span><span class="o">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">xg</span> <span class="n">or</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">yg</span> <span class="n">or</span> <span class="n">xg</span> <span class="o">&lt;</span> <span class="mf">0</span> <span class="n">or</span> <span class="n">yg</span> <span class="o">&lt;</span> <span class="mf">0</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">raise</span><span class="o">(</span><span class="s">&quot;Indexes out of bound&quot;</span><span class="o">)))</span>
@@ -289,8 +290,8 @@
 
 <p>With <code>Dim2</code> defined as above, the <code>transpose</code> method is trivial:</p>
 
-<figure class='code'><figcaption><span>Two-dimensional list transpose method  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Two-dimensional list transpose method </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -315,8 +316,8 @@
 
 <p>However, the default <code>asString</code> returns the same representation as for regular nested lists. In order to read the object from the string, <code>asString</code> has to be overridden to emit something specific.</p>
 
-<figure class='code'><figcaption><span>Two-dimensional array asString  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Two-dimensional array asString </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -337,8 +338,8 @@
 
 <p>With this defined, a two dimensional list has a unique representation:</p>
 
-<figure class='code'><figcaption><span>asString example  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>asString example </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">Io</span><span class="o">&gt;</span> <span class="n">dim2</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">)</span>
 </span><span class='line'><span class="o">==&gt;</span> <span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">,</span> <span class="no">nil</span><span class="o">))</span>
@@ -347,8 +348,8 @@
 
 <p>With this in place, I can define a <code>twodim</code> function that creates an instance of <code>Dim2</code> and fills it with the passed data:</p>
 
-<figure class='code'><figcaption><span>twodim method  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>twodim method </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -363,8 +364,8 @@
 
 <p>With this in place, the object can be serialized and unserialized, using the <a href="http://www.iolanguage.com/scm/io/docs/reference/index.html#/Core/Core/Object/doString"><code>doString</code></a> method (which evaluates the string in the target context):</p>
 
-<figure class='code'><figcaption><span>Testing serialization  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Testing serialization </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -381,8 +382,8 @@
 
 <p>So the last step is to store the string representation in a file, and read from it:</p>
 
-<figure class='code'><figcaption><span>Writing to a file  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Writing to a file </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -400,15 +401,15 @@
 <p>Unsurprisingly, the content of the file is</p>
 
 <figure class='code'><figcaption><span>Serialized Two-dimensional list instance  (foo.txt)</span> <a href='/downloads/code/7l7w/io/foo.txt'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='io'><span class='line'><span class="n">twodim</span><span class="o">(</span><span class="mf">3</span><span class="o">,</span><span class="mf">4</span><span class="o">,</span><span class="n">list</span><span class="o">(</span><span class="mf">0</span><span class="o">,</span> <span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">1</span><span class="o">,</span> <span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">),</span><span class="n">list</span><span class="o">(</span><span class="mf">2</span><span class="o">,</span> <span class="mf">3</span><span class="o">,</span> <span class="mf">4</span><span class="o">,</span> <span class="mf">5</span><span class="o">))</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>Reading is just as simple:</p>
 
-<figure class='code'><figcaption><span>Reading from a file  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Reading from a file </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -432,7 +433,7 @@
 <p>Given the above, the last exercise a walk in the park. Getting the number from the standard input was a bit harder to figure out. For some reason, on Mac OS X, reading from the standard input also displays <code>nil</code>; I guess it is a bug, although not a very serious one.</p>
 
 <figure class='code'><figcaption><span>Guess a Number Game  (guess.io)</span> <a href='/downloads/code/7l7w/io/guess.io'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -506,7 +507,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/" >Tweet</a>
   
   
   
@@ -605,7 +606,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -632,7 +633,7 @@
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -662,7 +663,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
   </span>
@@ -682,7 +683,7 @@
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -698,7 +699,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

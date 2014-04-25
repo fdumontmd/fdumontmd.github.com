@@ -21,13 +21,14 @@ Seven Databases in Seven Weeks. &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -179,7 +180,7 @@ client library.</p>
 <p>The code is simple enough:</p>
 
 <figure class='code'><figcaption><span>simple redis client (RedisFirst.java)</span> <a href='/downloads/code/7d7w/redis/first/RedisFirst.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -229,7 +230,7 @@ client library.</p>
 <p>The <code>pom.xml</code> file:</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/redis/first/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -306,7 +307,7 @@ me to try one writer and two readers.</p>
 <p>First the writer program:</p>
 
 <figure class='code'><figcaption><span>Redis Push (RedisPush.java)</span> <a href='/downloads/code/7d7w/redis/push/RedisPush.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -335,7 +336,7 @@ me to try one writer and two readers.</p>
 jar with <code>MANIFEST.MF</code> (so I can run it from the command line easily):</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/redis/push/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -455,7 +456,7 @@ jar with <code>MANIFEST.MF</code> (so I can run it from the command line easily)
 <p>The reader program:</p>
 
 <figure class='code'><figcaption><span>Redis Pop (RedisPop.java)</span> <a href='/downloads/code/7d7w/redis/pop/RedisPop.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -513,7 +514,7 @@ jar with <code>MANIFEST.MF</code> (so I can run it from the command line easily)
 <p>with its <code>pom.xml</code>:</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/redis/pop/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -725,7 +726,7 @@ client):</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/" >Tweet</a>
   
   
   
@@ -826,7 +827,7 @@ client):</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -853,7 +854,7 @@ client):</p>
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -883,7 +884,7 @@ client):</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
   </span>
@@ -903,7 +904,7 @@ client):</p>
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -919,7 +920,7 @@ client):</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

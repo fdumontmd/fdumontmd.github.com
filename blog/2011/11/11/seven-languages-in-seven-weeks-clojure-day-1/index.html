@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -125,8 +126,8 @@
 
 <p>Nothing special here, the function <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/count"><code>count</code></a> works on all collections, including strings.</p>
 
-<figure class='code'><figcaption><span>Define function big  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Define function big </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -141,8 +142,8 @@
 
 <p>Testing:</p>
 
-<figure class='code'><figcaption><span>Test function big  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Test function big </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -157,8 +158,8 @@
 
 <p>Using only functions and concepts seen so far, a first implementation using map. First I use the repl to get the class of these containers:</p>
 
-<figure class='code'><figcaption><span>class of containers  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>class of containers </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -181,15 +182,15 @@
 
 <p>Now I can map these classes to the proper symbol:</p>
 
-<figure class='code'><figcaption><span>mapping classes to symbols  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>mapping classes to symbols </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="p">(</span><span class="k">def </span><span class="nv">col-classes</span> <span class="p">{(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">())</span> <span class="nv">:list,</span> <span class="p">(</span><span class="nb">class </span><span class="p">[])</span> <span class="nv">:vector,</span> <span class="p">(</span><span class="nb">class </span><span class="p">{})</span> <span class="nv">:map</span><span class="p">})</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>With this, getting the right answer is as simple as:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -210,8 +211,8 @@
 
 <p>So the function can be written as:</p>
 
-<figure class='code'><figcaption><span>Define function collection-type  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Define function collection-type </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -226,8 +227,8 @@
 
 <p>Testing it on literal values:</p>
 
-<figure class='code'><figcaption><span>Test function collection-type  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Test function collection-type </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -252,8 +253,8 @@
 
 <p>Interesting, perhaps, but there must be a better way. Using type predicates (<a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/list?"><code>list?</code></a>, <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/map?"><code>map?</code></a> and <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/vector?"><code>vector?</code></a>), and the already seen <a href="http://clojure.org/special_forms#Special%20Forms--(if%20test%20then%20else?"><code>if</code></a>):</p>
 
-<figure class='code'><figcaption><span>collection-type, predicate edition  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>collection-type, predicate edition </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -274,8 +275,8 @@
 
 <p>These nested <code>if</code>&#8217;s are ugly. Fortunately, Lisp has a kind of generalized <code>switch</code>, called <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/cond"><code>cond</code></a>. So the definition above is equivalent to</p>
 
-<figure class='code'><figcaption><span>collection-type, cond predicate edition  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>collection-type, cond predicate edition </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -298,8 +299,8 @@
 
 <p>One thing to note: the <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/cons"><code>cons</code></a> function does not return a list, but a sequence (this is unlike <code>cons</code> in all the other Lisps):</p>
 
-<figure class='code'><figcaption><span>cons is not a team player  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>cons is not a team player </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -320,8 +321,8 @@
 
 <p>Fortunately, <a href="http://clojure.github.com/clojure/clojure.core-api.html#clojure.core/assoc"><code>assoc</code></a> is better behaved:</p>
 
-<figure class='code'><figcaption><span>assoc  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>assoc </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">collection-type</span> <span class="p">(</span><span class="nb">assoc </span> <span class="p">{</span><span class="nv">:two</span> <span class="mi">2</span><span class="p">}</span> <span class="nv">:one</span> <span class="mi">1</span><span class="p">))</span>
 </span><span class='line'><span class="nv">:map</span>
@@ -367,7 +368,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/" >Tweet</a>
   
   
   
@@ -466,7 +467,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -493,7 +494,7 @@
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -523,7 +524,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
   </span>
@@ -543,7 +544,7 @@
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -559,7 +560,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

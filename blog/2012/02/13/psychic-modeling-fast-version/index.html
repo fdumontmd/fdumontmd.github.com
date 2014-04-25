@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Psychic Modeling (fast version) - Wakatta!</title>
+  <title>Psychic Modeling (Fast Version) - Wakatta!</title>
   <meta name="author" content="Frédéric Dumont">
 
   
@@ -22,13 +22,14 @@ this &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -252,8 +253,8 @@ the best&#8217;s, the new ticket becomes the best as well.</p>
 best uncovered set, and if there are any remaining $j$-subsets to
 find, we loop.</p>
 
-<figure class='code'><figcaption><span>solve  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>solve </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -364,8 +365,8 @@ not size of the not yet covered set of $j$-subsets.</p>
 <p>If all tickets had to be generated randomly, 0 could be passed instead
 of a ticket to keep all $j$-subsets.</p>
 
-<figure class='code'><figcaption><span>init  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>init </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -399,8 +400,8 @@ of a ticket to keep all $j$-subsets.</p>
 <p><code>check_cover</code> has a similar design as <code>init</code>, but reads the
 $j$-subsets from the work memory <code>from</code> instead of generating them.</p>
 
-<figure class='code'><figcaption><span>check_cover  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>check_cover </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -429,8 +430,8 @@ $j$-subsets from the work memory <code>from</code> instead of generating them.</
 based on the same algorithm); here the <code>digits</code> array plays the role
 that <code>ds</code> played in the Haskell version.</p>
 
-<figure class='code'><figcaption><span>sample  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>sample </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -463,8 +464,8 @@ that <code>ds</code> played in the Haskell version.</p>
 
 <p>The <code>next_perm</code> is from <a href="http://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation">Bit Twiddling Hacks</a>, and explained <a href="http://www.alexbowe.com/generating-binary-permutations-in-popcount-or">here</a>.</p>
 
-<figure class='code'><figcaption><span>next_perm  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>next_perm </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -513,7 +514,7 @@ lucky as I&#8217;m not sure I could have debugged such code.</p>
 <h3>Complete Code</h3>
 
 <figure class='code'><figcaption><span>Psychic Modeling Fast Version  (psychic.c)</span> <a href='/downloads/code/algo-design-manual/psychic.c'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -989,7 +990,7 @@ lucky as I&#8217;m not sure I could have debugged such code.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version/" >Tweet</a>
   
   
   
@@ -1044,7 +1045,7 @@ lucky as I&#8217;m not sure I could have debugged such code.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -1071,7 +1072,7 @@ lucky as I&#8217;m not sure I could have debugged such code.</p>
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -1101,7 +1102,7 @@ lucky as I&#8217;m not sure I could have debugged such code.</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
     
@@ -1129,7 +1130,7 @@ lucky as I&#8217;m not sure I could have debugged such code.</p>
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -1145,7 +1146,7 @@ lucky as I&#8217;m not sure I could have debugged such code.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

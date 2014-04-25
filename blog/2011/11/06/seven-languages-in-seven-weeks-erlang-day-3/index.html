@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -129,7 +130,7 @@
 up and running (assuming it dies on unknown words):</p>
 
 <figure class='code'><figcaption><span>Supervised Translation Service  (translate_service_sup.erl)</span> <a href='/downloads/code/7l7w/erlang/translate_service_sup.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -214,8 +215,8 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>Starting the supervised process is now simple:</p>
 
-<figure class='code'><figcaption><span>Using the Supervised Translator  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Using the Supervised Translator </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -272,7 +273,7 @@ up and running (assuming it dies on unknown words):</p>
 <p>The new <code>loop</code> function takes both the function to be spawned and monitored, and the atom to attach it to. Both parameters are kept in the loop as argument.</p>
 
 <figure class='code'><figcaption><span>Improved doctor Module  (doctor.erl)</span> <a href='/downloads/code/7l7w/erlang/doctor.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -322,7 +323,7 @@ up and running (assuming it dies on unknown words):</p>
 <p>The <code>translate_service</code> is slightly modified to die of shame on untranslatable words.</p>
 
 <figure class='code'><figcaption><span>Modified translate_service Module  (translate_service.erl)</span> <a href='/downloads/code/7l7w/erlang/translate_service.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -369,8 +370,8 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>With these defined, it is possible to run two monitored services and attach them to different atoms:</p>
 
-<figure class='code'><figcaption><span>Testing the Doctor  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Testing the Doctor </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -442,7 +443,7 @@ up and running (assuming it dies on unknown words):</p>
 <p>Finally, instead of spawning directly the target function, I use the <code>check_for</code> function to first try to locate a process given the atom; only if this fails would a new process be spawned. The function is not very robust (in particular, if two monitors are trying to restart the process at the same time, one might fail rather than reattaching, because of the order of concurrent evaluation).</p>
 
 <figure class='code'><figcaption><span>Module Doctor_2  (doctor_2.erl)</span> <a href='/downloads/code/7l7w/erlang/doctor_2.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -533,8 +534,8 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>To test the new code, I have written it so that the inner <code>loop</code> will die after 3 restarts of the monitored process:</p>
 
-<figure class='code'><figcaption><span>Self monitoring Doctor  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Self monitoring Doctor </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -600,7 +601,7 @@ up and running (assuming it dies on unknown words):</p>
 <p>First, I&#8217;ve move the function to look for a process by name to its own module; I also make sure that each module has a <code>start</code> function that registers a spawned process, and triggers the initialization process. This function is now the argument to the <code>look_for</code> function, so it no longer has to do the spawning and registering.</p>
 
 <figure class='code'><figcaption><span>Look for process  (look.erl)</span> <a href='/downloads/code/7l7w/erlang/mon_doc/look.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -636,7 +637,7 @@ up and running (assuming it dies on unknown words):</p>
 <p>The <code>doctor</code> module is similar to the original. The differences are that it respond to the <code>die</code> message, also it has a <code>start</code> message that checks for the <code>monitor</code> process. It uses the <code>monitor:start</code> function, as explained above, so that if the <code>monitor</code> has to be started, it will also be properly initialized.</p>
 
 <figure class='code'><figcaption><span>Doctor  (doctor.erl)</span> <a href='/downloads/code/7l7w/erlang/mon_doc/doctor.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -696,7 +697,7 @@ up and running (assuming it dies on unknown words):</p>
 <p>The <code>monitor</code> module is simpler: it only needs to check for the <code>doctor</code> process, running the <code>doctor:start</code> function if needed.</p>
 
 <figure class='code'><figcaption><span>Monitor  (monitor.erl)</span> <a href='/downloads/code/7l7w/erlang/mon_doc/monitor.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -746,7 +747,7 @@ up and running (assuming it dies on unknown words):</p>
 <p>Finally, the slightly modified <code>roulette</code> module (it now has a <code>roulette:start</code> function):</p>
 
 <figure class='code'><figcaption><span>Roulette  (roulette.erl)</span> <a href='/downloads/code/7l7w/erlang/mon_doc/roulette.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -775,8 +776,8 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>The basic doctoring still works:</p>
 
-<figure class='code'><figcaption><span>Testing the Monitored Doctor  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Testing the Monitored Doctor </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -825,8 +826,8 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>The <code>doctor</code> can be killed; <code>monitor</code> will restart it:</p>
 
-<figure class='code'><figcaption><span>Testing the Monitored Doctor 2  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Testing the Monitored Doctor 2 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -875,8 +876,8 @@ up and running (assuming it dies on unknown words):</p>
 
 <p>Finally, <code>monitor</code> can also be killed; it is restarted by <code>doctor</code>:</p>
 
-<figure class='code'><figcaption><span>Testing the Monitored Doctor 3  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Testing the Monitored Doctor 3 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -948,7 +949,7 @@ up and running (assuming it dies on unknown words):</p>
 <p>Rather than echoing the received messages, they are written to disk:</p>
 
 <figure class='code'><figcaption><span>Logging messages  (logger.erl)</span> <a href='/downloads/code/7l7w/erlang/logger.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1028,7 +1029,7 @@ up and running (assuming it dies on unknown words):</p>
 <p>I convert from binary to list because they are slightly easier to work with.</p>
 
 <figure class='code'><figcaption><span>Network aware translate_service  (translate_service.erl)</span> <a href='/downloads/code/7l7w/erlang/trans/translate_service.erl'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1214,7 +1215,7 @@ up and running (assuming it dies on unknown words):</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/" >Tweet</a>
   
   
   
@@ -1313,7 +1314,7 @@ up and running (assuming it dies on unknown words):</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -1340,7 +1341,7 @@ up and running (assuming it dies on unknown words):</p>
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -1370,7 +1371,7 @@ up and running (assuming it dies on unknown words):</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
   </span>
@@ -1390,7 +1391,7 @@ up and running (assuming it dies on unknown words):</p>
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -1406,7 +1407,7 @@ up and running (assuming it dies on unknown words):</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -121,8 +122,8 @@
 
 <p>A first version with the <code>foldLeft</code> method:</p>
 
-<figure class='code'><figcaption><span>foldLeft  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>foldLeft </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -137,8 +138,8 @@
 
 <p>A second version with the <code>/:</code> operator. The anonymous function is of course strictly identical.</p>
 
-<figure class='code'><figcaption><span>foldLeft operator  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>foldLeft operator </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -157,8 +158,8 @@
 
 <p>Java String comes with a method that seems to do just what is needed here: <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/lang/String.html#replaceAll%28java.lang.String,%20java.lang.String%29"><code>replaceAll</code></a>.</p>
 
-<figure class='code'><figcaption><span>replaceAll  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>replaceAll </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;one two three&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="s">&quot;TWO&quot;</span><span class="o">)</span>
 </span><span class='line'><span class="n">res1</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">one</span> <span class="nc">TWO</span> <span class="n">three</span>
@@ -167,8 +168,8 @@
 
 
 
-<figure class='code'><figcaption><span>replaceAll, word boundaries  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>replaceAll, word boundaries </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;she sells shells&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;\\bshe\\b&quot;</span><span class="o">,</span> <span class="s">&quot;the lady&quot;</span><span class="o">)</span>
 </span><span class='line'><span class="n">res2</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">the</span> <span class="n">lady</span> <span class="n">sells</span> <span class="n">shells</span>
@@ -177,8 +178,8 @@
 
 
 
-<figure class='code'><figcaption><span>replaceAll, case insensitive  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>replaceAll, case insensitive </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scala</span><span class="o">&gt;</span> <span class="s">&quot;She sells shells&quot;</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;(?i)\\bshe\\b&quot;</span><span class="o">,</span> <span class="s">&quot;the lady&quot;</span><span class="o">)</span>
 </span><span class='line'><span class="n">res3</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="o">=</span> <span class="n">the</span> <span class="n">lady</span> <span class="n">sells</span> <span class="n">shells</span>
@@ -190,7 +191,7 @@
 <p>The first version iterates over the pairs in the censored words map, and for each one replaces each basic forms of the censored word by the same form of its replacement (the forms being capitalized, lower case and upper case).</p>
 
 <figure class='code'><figcaption><span>Censor, version 1  (censor.scala)</span> <a href='/downloads/code/7l7w/scala/censor.scala'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -246,7 +247,7 @@
 <p>One problem with this version is that there&#8217;s a mutable variable. Using <code>foldLeft</code>, the mutable variable is no longer needed:</p>
 
 <figure class='code'><figcaption><span>Censor, version 2  (censor_fold.scala)</span> <a href='/downloads/code/7l7w/scala/censor_fold.scala'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -292,7 +293,7 @@
 <p>With the code above, the world is now safe from the threat of rude language:</p>
 
 <figure class='code'><figcaption><span>Censor test code  (censor_test.scala)</span> <a href='/downloads/code/7l7w/scala/censor_test.scala'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -358,7 +359,7 @@
 <p>The rest of the code is identical.</p>
 
 <figure class='code'><figcaption><span>Censor, loading from a file  (censor_load.scala)</span> <a href='/downloads/code/7l7w/scala/censor_load.scala'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -512,7 +513,7 @@
 
 
 <figure class='code'><figcaption><span>censor.txt  (censor.txt)</span> <a href='/downloads/code/7l7w/scala/censor.txt'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='text'><span class='line'>shoot   pucky
 </span><span class='line'>darn    bean
@@ -520,7 +521,7 @@
 
 
 <figure class='code'><figcaption><span>censor2.txt  (censor2.txt)</span> <a href='/downloads/code/7l7w/scala/censor2.txt'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='text'><span class='line'>shit    s--t
 </span><span class='line'>damn    d--n
@@ -568,7 +569,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/" >Tweet</a>
   
   
   
@@ -667,7 +668,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -694,7 +695,7 @@
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -724,7 +725,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
   </span>
@@ -744,7 +745,7 @@
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -760,7 +761,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

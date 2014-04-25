@@ -21,13 +21,14 @@ it to an end. Today is less &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -220,8 +221,8 @@ and the <code>uniqueObject</code> step has been replaced by <code>dedup</code>.<
 
 <p>Here are the updated relevant portions:</p>
 
-<figure class='code'><figcaption><span>/band Route  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>/band Route </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">membersQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;bands&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">bandName</span><span class="o">+</span><span class="s1">&#39;&quot;]]&#39;</span>
 </span><span class='line'>             <span class="o">+</span> <span class="s1">&#39;.out(&quot;member&quot;).in(&quot;member&quot;).dedup.name&#39;</span><span class="p">;</span>
@@ -230,8 +231,8 @@ and the <code>uniqueObject</code> step has been replaced by <code>dedup</code>.<
 
 <p>and</p>
 
-<figure class='code'><figcaption><span>/artist Route  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>/artist Route </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">rolesQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;artists&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">artistName</span><span class="o">+</span><span class="s1">&#39;&quot;]].out(&quot;plays&quot;).role.dedup&#39;</span><span class="p">;</span>
 </span><span class='line'><span class="nx">bandsQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;artists&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">artistName</span><span class="o">+</span><span class="s1">&#39;&quot;]].in(&quot;member&quot;).name.dedup&#39;</span><span class="p">;</span>
@@ -258,8 +259,8 @@ format are <code>from:bandName:artistName</code> and <code>to:bandName:artistNam
 
 <p>First I take the data from the relevant columns:</p>
 
-<figure class='code'><figcaption><span>Extracting Data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Extracting Data </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -276,8 +277,8 @@ format are <code>from:bandName:artistName</code> and <code>to:bandName:artistNam
 
 <p>Then, if they&#8217;re not empty, I create the keys in Redis:</p>
 
-<figure class='code'><figcaption><span>Updating Redis  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Updating Redis </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -297,8 +298,8 @@ to figure out how to modify the <code>populate_couch.js</code> script
 <p>Eventually, I just reused the <code>roleBatch</code> (therefore renamed
 <code>artistInfoBatch</code>) to retrieve the roles, from and to information.</p>
 
-<figure class='code'><figcaption><span>Retrieving the Information  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Retrieving the Information </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -333,8 +334,8 @@ to figure out how to modify the <code>populate_couch.js</code> script
 
 <p>The putting it in CouchDB is trivial:</p>
 
-<figure class='code'><figcaption><span>Building Documents  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Building Documents </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -369,8 +370,8 @@ it still took me more time to understand how to use them).</p>
 does not support adding properties to relationships, but it was easy
 enough to modify this library to add this feature.</p>
 
-<figure class='code'><figcaption><span>Relationship properties  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Relationship properties </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -394,8 +395,8 @@ enough to modify this library to add this feature.</p>
 <p>then the relevant properties can be passed to the function above in
 the <code>graph_sync.js</code> script:</p>
 
-<figure class='code'><figcaption><span>Passing from and to properties  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Passing from and to properties </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -467,8 +468,8 @@ object with two properties: <code>columns</code> is an array of column names, an
 <code>data</code> is an array of arrays (each one being a row). To convert them
 to an array of objects, I use the following code:</p>
 
-<figure class='code'><figcaption><span>Convert Table data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Convert Table data </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -512,7 +513,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 <h4>Full Code</h4>
 
 <figure class='code'><figcaption><span> (pre_populate.js)</span> <a href='/downloads/code/7d7w/redis/day3/from-to/pre_populate.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -684,7 +685,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 
 
 <figure class='code'><figcaption><span> (populate_couch.js)</span> <a href='/downloads/code/7d7w/redis/day3/from-to/populate_couch.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1052,7 +1053,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 
 
 <figure class='code'><figcaption><span> (graph_sync.js)</span> <a href='/downloads/code/7d7w/redis/day3/from-to/graph_sync.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1276,7 +1277,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 
 
 <figure class='code'><figcaption><span> (neo4j_caching_client.js)</span> <a href='/downloads/code/7d7w/redis/day3/from-to/neo4j_caching_client.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1490,7 +1491,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 
 
 <figure class='code'><figcaption><span> (bands.js)</span> <a href='/downloads/code/7d7w/redis/day3/from-to/bands.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -2001,8 +2002,8 @@ module did not.</p>
 with the same name as the band&#8217;s key: if it does, I add a link to the
 dedicated streaming port, passing the key as parameter:</p>
 
-<figure class='code'><figcaption><span>Adding Sample Link  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Adding Sample Link </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -2015,8 +2016,8 @@ dedicated streaming port, passing the key as parameter:</p>
 
 <p>Then, I create a new <code>http</code> server to send the music:</p>
 
-<figure class='code'><figcaption><span>Streaming Files from GridFS  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Streaming Files from GridFS </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -2077,7 +2078,7 @@ the response&#8230; Clearly not the best approach, but hey, it works!</p>
 <h4>Full Code</h4>
 
 <figure class='code'><figcaption><span> (bands.js)</span> <a href='/downloads/code/7d7w/redis/day3/mp3/bands.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -2711,7 +2712,7 @@ to reading it.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/" >Tweet</a>
   
   
   
@@ -2812,7 +2813,7 @@ to reading it.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -2839,7 +2840,7 @@ to reading it.</p>
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -2869,7 +2870,7 @@ to reading it.</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
   </span>
@@ -2889,7 +2890,7 @@ to reading it.</p>
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -2905,7 +2906,7 @@ to reading it.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

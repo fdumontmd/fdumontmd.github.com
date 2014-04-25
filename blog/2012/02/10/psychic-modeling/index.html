@@ -20,13 +20,14 @@ Skiena entertains, edifies and educates his readers with so called
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -264,8 +265,8 @@ time the paper was written, so I have some margin.</p>
 they do); I include them to keep the implementation mostly
 self-contained.</p>
 
-<figure class='code'><figcaption><span>Support functions  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Support functions </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -280,8 +281,8 @@ self-contained.</p>
 coefficient, and <code>remainingNumbers</code> is just the union of all the
 passed $j$-subsets.</p>
 
-<figure class='code'><figcaption><span>Generating Combinations  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Generating Combinations </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -298,8 +299,8 @@ passed $j$-subsets.</p>
 
 <p>These are simple implementations of the formula above.</p>
 
-<figure class='code'><figcaption><span>Lower Bound Estimates  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Lower Bound Estimates </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -320,8 +321,8 @@ single win.</p>
 their intersection, and define sufficient coverage as the cover being
 larger than $l$.</p>
 
-<figure class='code'><figcaption><span>Defining Coverage  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Defining Coverage </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -353,8 +354,8 @@ cover after selecting a ticket, and to check solutions.</p>
 a ticket. This function is used to compare potential tickets and
 select the one with the best (i.e. largest) coverage.</p>
 
-<figure class='code'><figcaption><span>Checking the estimates  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Checking the estimates </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -378,8 +379,8 @@ generating function; it then gets one ticket at a time, computes the
 $j$-subsets not covered yet, and repeat until the remaining
 $j$-subsets set becomes empty.</p>
 
-<figure class='code'><figcaption><span>Solution Loop  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Solution Loop </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -409,8 +410,8 @@ have what is really the simplest greedy algorithm: when a new ticket
 is needed, get the one that has the best coverage among all the
 possible tickets:</p>
 
-<figure class='code'><figcaption><span>Naive Ticket Selection  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Naive Ticket Selection </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -442,8 +443,8 @@ are $k$-subsets rather than $j$-subsets themselves.</p>
 <p>I first need a function to generate a random combination. I&#8217;m using a
 method derived from Knuth (no reference as I don&#8217;t have Volume 4 just yet).</p>
 
-<figure class='code'><figcaption><span>Sample Generation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Sample Generation </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -466,8 +467,8 @@ method derived from Knuth (no reference as I don&#8217;t have Volume 4 just yet)
 
 <p>The generating function is very similar to the naive one</p>
 
-<figure class='code'><figcaption><span>Randomised Generating Function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Randomised Generating Function </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -609,7 +610,7 @@ rewrite my solution in C, and focus on performance.</p>
 <h3>Complete code</h3>
 
 <figure class='code'><figcaption><span>Psychic Modeling Implementation (psychic.hs)</span> <a href='/downloads/code/algo-design-manual/psychic.hs'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -809,7 +810,7 @@ rewrite my solution in C, and focus on performance.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/" >Tweet</a>
   
   
   
@@ -864,7 +865,7 @@ rewrite my solution in C, and focus on performance.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -891,7 +892,7 @@ rewrite my solution in C, and focus on performance.</p>
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -921,7 +922,7 @@ rewrite my solution in C, and focus on performance.</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
     
@@ -949,7 +950,7 @@ rewrite my solution in C, and focus on performance.</p>
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -965,7 +966,7 @@ rewrite my solution in C, and focus on performance.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

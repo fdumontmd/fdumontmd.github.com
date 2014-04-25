@@ -19,13 +19,14 @@ explore MongoDB&#8217;s approach to the CAP theorem. Like PostgreSQL, MongoDB ha
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -180,8 +181,8 @@ is ready to run the queries.</p>
 but I assume the authors meant the one in England. I create a <code>centre</code>
 variable to be used in the queries.</p>
 
-<figure class='code'><figcaption><span>Finding London  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Finding London </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">london</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">cities</span><span class="p">.</span><span class="nx">findOne</span><span class="p">(</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;London&#39;</span><span class="p">,</span> <span class="nx">country</span><span class="o">:</span> <span class="s1">&#39;GB&#39;</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">location</span><span class="o">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">);</span>
 </span><span class='line'><span class="kd">var</span> <span class="nx">centre</span> <span class="o">=</span> <span class="p">[</span><span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">longitude</span><span class="p">,</span> <span class="nx">london</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">latitude</span><span class="p">];</span>
@@ -192,8 +193,8 @@ variable to be used in the queries.</p>
 radians. For this I need to know the
 <a href="http://en.wikipedia.org/wiki/Earth_radius">Earth Radius</a> in miles.</p>
 
-<figure class='code'><figcaption><span>Earth Radius and Range  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Earth Radius and Range </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">earthRadius</span> <span class="o">=</span> <span class="mi">3959</span><span class="p">;</span>
 </span><span class='line'><span class="kd">var</span> <span class="nx">range</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
@@ -207,8 +208,8 @@ radians. For this I need to know the
 <p>I can pass the <code>spherical: true</code> option to the <code>geoNear</code> command. By
 default, the query will only return 100 results.</p>
 
-<figure class='code'><figcaption><span>geoNear  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>geoNear </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -230,8 +231,8 @@ default, the query will only return 100 results.</p>
 <p>To get unlimited results, I set the number of possible results to the
 number of cities:</p>
 
-<figure class='code'><figcaption><span>unlimited geoNear  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>unlimited geoNear </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -251,8 +252,8 @@ number of cities:</p>
 <p>Alternatively, I can use the <code>$within</code> operator. I get the spherical
 behaviour by specifying a <code>centerSphere</code>:</p>
 
-<figure class='code'><figcaption><span>$within  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>$within </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -464,7 +465,7 @@ reason about.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/" >Tweet</a>
   
   
   
@@ -565,7 +566,7 @@ reason about.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -592,7 +593,7 @@ reason about.</p>
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -622,7 +623,7 @@ reason about.</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
     
@@ -646,7 +647,7 @@ reason about.</p>
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -662,7 +663,7 @@ reason about.</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

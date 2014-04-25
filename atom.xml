@@ -4,7 +4,7 @@
   <title><![CDATA[Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2013-06-17T11:31:39+09:00</updated>
+  <updated>2014-04-25T13:39:49+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -512,7 +512,7 @@ arbitrarily small).</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Now I'm blushing...]]></title>
+    <title type="html"><![CDATA[Now I'm Blushing...]]></title>
     <link href="http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot/"/>
     <updated>2012-05-02T16:14:00+09:00</updated>
     <id>http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot</id>
@@ -1112,8 +1112,8 @@ model. Then I initialise <code>p0Denom</code> and <code>p1Denom</code> with <cod
 explained above; finally I check the <code>bag</code> flag to know what to add to
 either denominators.</p>
 
-<figure class='code'><figcaption><span>new trainingNB0  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>new trainingNB0 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1411,8 +1411,8 @@ and the <code>uniqueObject</code> step has been replaced by <code>dedup</code>.<
 
 <p>Here are the updated relevant portions:</p>
 
-<figure class='code'><figcaption><span>/band Route  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>/band Route </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">membersQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;bands&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">bandName</span><span class="o">+</span><span class="s1">&#39;&quot;]]&#39;</span>
 </span><span class='line'>             <span class="o">+</span> <span class="s1">&#39;.out(&quot;member&quot;).in(&quot;member&quot;).dedup.name&#39;</span><span class="p">;</span>
@@ -1421,8 +1421,8 @@ and the <code>uniqueObject</code> step has been replaced by <code>dedup</code>.<
 
 <p>and</p>
 
-<figure class='code'><figcaption><span>/artist Route  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>/artist Route </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">rolesQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;artists&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">artistName</span><span class="o">+</span><span class="s1">&#39;&quot;]].out(&quot;plays&quot;).role.dedup&#39;</span><span class="p">;</span>
 </span><span class='line'><span class="nx">bandsQuery</span> <span class="o">=</span> <span class="s1">&#39;g.idx(&quot;artists&quot;)[[&quot;name&quot;:&quot;&#39;</span><span class="o">+</span><span class="nx">artistName</span><span class="o">+</span><span class="s1">&#39;&quot;]].in(&quot;member&quot;).name.dedup&#39;</span><span class="p">;</span>
@@ -1449,8 +1449,8 @@ format are <code>from:bandName:artistName</code> and <code>to:bandName:artistNam
 
 <p>First I take the data from the relevant columns:</p>
 
-<figure class='code'><figcaption><span>Extracting Data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Extracting Data </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1467,8 +1467,8 @@ format are <code>from:bandName:artistName</code> and <code>to:bandName:artistNam
 
 <p>Then, if they&#8217;re not empty, I create the keys in Redis:</p>
 
-<figure class='code'><figcaption><span>Updating Redis  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Updating Redis </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1488,8 +1488,8 @@ to figure out how to modify the <code>populate_couch.js</code> script
 <p>Eventually, I just reused the <code>roleBatch</code> (therefore renamed
 <code>artistInfoBatch</code>) to retrieve the roles, from and to information.</p>
 
-<figure class='code'><figcaption><span>Retrieving the Information  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Retrieving the Information </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1524,8 +1524,8 @@ to figure out how to modify the <code>populate_couch.js</code> script
 
 <p>The putting it in CouchDB is trivial:</p>
 
-<figure class='code'><figcaption><span>Building Documents  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Building Documents </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1560,8 +1560,8 @@ it still took me more time to understand how to use them).</p>
 does not support adding properties to relationships, but it was easy
 enough to modify this library to add this feature.</p>
 
-<figure class='code'><figcaption><span>Relationship properties  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Relationship properties </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1585,8 +1585,8 @@ enough to modify this library to add this feature.</p>
 <p>then the relevant properties can be passed to the function above in
 the <code>graph_sync.js</code> script:</p>
 
-<figure class='code'><figcaption><span>Passing from and to properties  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Passing from and to properties </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1658,8 +1658,8 @@ object with two properties: <code>columns</code> is an array of column names, an
 <code>data</code> is an array of arrays (each one being a row). To convert them
 to an array of objects, I use the following code:</p>
 
-<figure class='code'><figcaption><span>Convert Table data  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Convert Table data </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1703,7 +1703,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 <h4>Full Code</h4>
 
 <figure class='code'><figcaption><span> (pre_populate.js)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/day3/from-to/pre_populate.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1875,7 +1875,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 
 
 <figure class='code'><figcaption><span> (populate_couch.js)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/day3/from-to/populate_couch.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -2243,7 +2243,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 
 
 <figure class='code'><figcaption><span> (graph_sync.js)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/day3/from-to/graph_sync.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -2467,7 +2467,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 
 
 <figure class='code'><figcaption><span> (neo4j_caching_client.js)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/day3/from-to/neo4j_caching_client.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -2681,7 +2681,7 @@ the formatting using the <a href="http://mustache.github.com/"><code>mustache</c
 
 
 <figure class='code'><figcaption><span> (bands.js)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/day3/from-to/bands.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -3192,8 +3192,8 @@ module did not.</p>
 with the same name as the band&#8217;s key: if it does, I add a link to the
 dedicated streaming port, passing the key as parameter:</p>
 
-<figure class='code'><figcaption><span>Adding Sample Link  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Adding Sample Link </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -3206,8 +3206,8 @@ dedicated streaming port, passing the key as parameter:</p>
 
 <p>Then, I create a new <code>http</code> server to send the music:</p>
 
-<figure class='code'><figcaption><span>Streaming Files from GridFS  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Streaming Files from GridFS </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -3268,7 +3268,7 @@ the response&#8230; Clearly not the best approach, but hey, it works!</p>
 <h4>Full Code</h4>
 
 <figure class='code'><figcaption><span> (bands.js)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/day3/mp3/bands.js'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -3942,7 +3942,7 @@ defined for every $m$, and $p$ is indeed a permutation.</p>
 <p>While I found the closed formula for the sum, I could not do it with
 the repertoire method.</p>
 
-<p>Solving the sum is not really difficult (although a little bit than
+<p>Solving the sum is not really difficult (although a little bit more than
 the repertoire method, if you know how to do the latter); one way is
 to solve the positive and negative sums separately (they can be broken
 down to already solved sums); another one is to compute the sum of an
@@ -3995,7 +3995,7 @@ use $R_n = (-1)^n n$ and $R_n = (-1)^n n^2$:</p>
 <div markdown="0">
 \begin{align}
 R_0 &amp; = 0&amp;&amp;\alpha = 0&#92;&#92;
-n &amp; = \beta + \gamma n + \delta n^n - n + 1&#92;&#92;
+n &amp; = \beta + \gamma n + \delta n^2 - n + 1&#92;&#92;
 2n - 1 &amp; = \beta + \gamma n&amp;&amp;\beta = -1, \gamma = 2&#92;&#92;
 \end{align}
 </div>
@@ -4677,7 +4677,7 @@ just a consequence of the fact that $A_j$ is a least upper bound.</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Psychic Modeling (fast version)]]></title>
+    <title type="html"><![CDATA[Psychic Modeling (Fast Version)]]></title>
     <link href="http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version/"/>
     <updated>2012-02-13T20:23:00+09:00</updated>
     <id>http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version</id>
@@ -4808,8 +4808,8 @@ the best&#8217;s, the new ticket becomes the best as well.</p>
 best uncovered set, and if there are any remaining $j$-subsets to
 find, we loop.</p>
 
-<figure class='code'><figcaption><span>solve  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>solve </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -4920,8 +4920,8 @@ not size of the not yet covered set of $j$-subsets.</p>
 <p>If all tickets had to be generated randomly, 0 could be passed instead
 of a ticket to keep all $j$-subsets.</p>
 
-<figure class='code'><figcaption><span>init  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>init </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -4955,8 +4955,8 @@ of a ticket to keep all $j$-subsets.</p>
 <p><code>check_cover</code> has a similar design as <code>init</code>, but reads the
 $j$-subsets from the work memory <code>from</code> instead of generating them.</p>
 
-<figure class='code'><figcaption><span>check_cover  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>check_cover </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -4985,8 +4985,8 @@ $j$-subsets from the work memory <code>from</code> instead of generating them.</
 based on the same algorithm); here the <code>digits</code> array plays the role
 that <code>ds</code> played in the Haskell version.</p>
 
-<figure class='code'><figcaption><span>sample  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>sample </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5019,8 +5019,8 @@ that <code>ds</code> played in the Haskell version.</p>
 
 <p>The <code>next_perm</code> is from <a href="http://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation">Bit Twiddling Hacks</a>, and explained <a href="http://www.alexbowe.com/generating-binary-permutations-in-popcount-or">here</a>.</p>
 
-<figure class='code'><figcaption><span>next_perm  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>next_perm </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5069,7 +5069,7 @@ lucky as I&#8217;m not sure I could have debugged such code.</p>
 <h3>Complete Code</h3>
 
 <figure class='code'><figcaption><span>Psychic Modeling Fast Version  (psychic.c)</span> <a href='http://blog.wakatta.jp/downloads/code/algo-design-manual/psychic.c'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5658,8 +5658,8 @@ time the paper was written, so I have some margin.</p>
 they do); I include them to keep the implementation mostly
 self-contained.</p>
 
-<figure class='code'><figcaption><span>Support functions  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Support functions </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5674,8 +5674,8 @@ self-contained.</p>
 coefficient, and <code>remainingNumbers</code> is just the union of all the
 passed $j$-subsets.</p>
 
-<figure class='code'><figcaption><span>Generating Combinations  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Generating Combinations </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5692,8 +5692,8 @@ passed $j$-subsets.</p>
 
 <p>These are simple implementations of the formula above.</p>
 
-<figure class='code'><figcaption><span>Lower Bound Estimates  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Lower Bound Estimates </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5714,8 +5714,8 @@ single win.</p>
 their intersection, and define sufficient coverage as the cover being
 larger than $l$.</p>
 
-<figure class='code'><figcaption><span>Defining Coverage  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Defining Coverage </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5747,8 +5747,8 @@ cover after selecting a ticket, and to check solutions.</p>
 a ticket. This function is used to compare potential tickets and
 select the one with the best (i.e. largest) coverage.</p>
 
-<figure class='code'><figcaption><span>Checking the estimates  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Checking the estimates </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5772,8 +5772,8 @@ generating function; it then gets one ticket at a time, computes the
 $j$-subsets not covered yet, and repeat until the remaining
 $j$-subsets set becomes empty.</p>
 
-<figure class='code'><figcaption><span>Solution Loop  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Solution Loop </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5803,8 +5803,8 @@ have what is really the simplest greedy algorithm: when a new ticket
 is needed, get the one that has the best coverage among all the
 possible tickets:</p>
 
-<figure class='code'><figcaption><span>Naive Ticket Selection  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Naive Ticket Selection </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5836,8 +5836,8 @@ are $k$-subsets rather than $j$-subsets themselves.</p>
 <p>I first need a function to generate a random combination. I&#8217;m using a
 method derived from Knuth (no reference as I don&#8217;t have Volume 4 just yet).</p>
 
-<figure class='code'><figcaption><span>Sample Generation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Sample Generation </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -5860,8 +5860,8 @@ method derived from Knuth (no reference as I don&#8217;t have Volume 4 just yet)
 
 <p>The generating function is very similar to the naive one</p>
 
-<figure class='code'><figcaption><span>Randomised Generating Function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Randomised Generating Function </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -6003,7 +6003,7 @@ rewrite my solution in C, and focus on performance.</p>
 <h3>Complete code</h3>
 
 <figure class='code'><figcaption><span>Psychic Modeling Implementation (psychic.hs)</span> <a href='http://blog.wakatta.jp/downloads/code/algo-design-manual/psychic.hs'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -6710,7 +6710,7 @@ the matching records are returned.</p>
 
 <p>To monitor for conflicts, I have the following design document:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -6878,8 +6878,8 @@ back into the buffer), and parse each line as a JSON object.</p>
 <p>The format of each parsed object is different: each change is in its
 own object, so there is no <code>results</code> attribute any more.</p>
 
-<figure class='code'><figcaption><span>watch_changes_continuous.js  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>watch_changes_continuous.js </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -7001,7 +7001,7 @@ to test this I must use the <code>music-repl</code> database.</p>
 and for each revision it contains, emit that revision mapped to the
 document <code>_id</code>:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -7124,8 +7124,8 @@ grouping, as explained
 <code>releasedate</code> of each album to create a key array
 <code>[year, month, date]</code>, and a value of <code>1</code> (1 for each album):</p>
 
-<figure class='code'><figcaption><span>Album by Date  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Album by Date </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -7160,8 +7160,8 @@ grouping, as explained
 
 <p>As I intend to use grouping, I also need a reduce function:</p>
 
-<figure class='code'><figcaption><span>Reduce Function  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Reduce Function </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span>
@@ -7249,8 +7249,8 @@ group by day (<code>group=true</code> or <code>group_level=3</code>, as above), 
 <p>The code is essentially the same as the one mapping names to ids, but
 here it associates <code>random</code> to <code>name</code>.</p>
 
-<figure class='code'><figcaption><span>Random Artist  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Random Artist </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -7295,8 +7295,8 @@ the nested structure of the original document.</p>
 
 <h4>Random Album</h4>
 
-<figure class='code'><figcaption><span>Random Album  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Random Album </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -7363,8 +7363,8 @@ the nested structure of the original document.</p>
 
 <h4>Random Track</h4>
 
-<figure class='code'><figcaption><span>Random Track  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Random Track </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -7445,8 +7445,8 @@ the nested structure of the original document.</p>
 
 <h4>Random Tag</h4>
 
-<figure class='code'><figcaption><span>Random Tag  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Random Tag </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -7852,7 +7852,7 @@ a bit faster (105 seconds instead of 155 seconds for the Ruby version
 using <code>hiredis</code>).</p>
 
 <figure class='code'><figcaption><span>Simple ISBN Loader (ISBNLoader.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/isbn/ISBNLoader.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -7939,7 +7939,7 @@ using <code>hiredis</code>).</p>
 (again, the Ruby version is using <code>hiredis</code>).</p>
 
 <figure class='code'><figcaption><span>Pipelined ISBN Loader (ISBNLoader.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/isbn-pipeline/ISBNLoader.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -8301,7 +8301,7 @@ client library.</p>
 <p>The code is simple enough:</p>
 
 <figure class='code'><figcaption><span>simple redis client (RedisFirst.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/first/RedisFirst.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -8351,7 +8351,7 @@ client library.</p>
 <p>The <code>pom.xml</code> file:</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/first/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -8428,7 +8428,7 @@ me to try one writer and two readers.</p>
 <p>First the writer program:</p>
 
 <figure class='code'><figcaption><span>Redis Push (RedisPush.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/push/RedisPush.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -8457,7 +8457,7 @@ me to try one writer and two readers.</p>
 jar with <code>MANIFEST.MF</code> (so I can run it from the command line easily):</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/push/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -8577,7 +8577,7 @@ jar with <code>MANIFEST.MF</code> (so I can run it from the command line easily)
 <p>The reader program:</p>
 
 <figure class='code'><figcaption><span>Redis Pop (RedisPop.java)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/pop/RedisPop.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -8635,7 +8635,7 @@ jar with <code>MANIFEST.MF</code> (so I can run it from the command line easily)
 <p>with its <code>pom.xml</code>:</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='http://blog.wakatta.jp/downloads/code/7d7w/redis/pop/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -9248,7 +9248,7 @@ was both the most difficult exercise and the one where I learned the most.</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[ANTLR3 Maven Plugin - Eclipse setup]]></title>
+    <title type="html"><![CDATA[ANTLR3 Maven Plugin - Eclipse Setup]]></title>
     <link href="http://blog.wakatta.jp/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/"/>
     <updated>2012-01-14T11:25:00+09:00</updated>
     <id>http://blog.wakatta.jp/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup</id>
@@ -9299,7 +9299,7 @@ OS X Lion, there is no JDK 1.5 (only 1.6), so I always update pom.xml
 to set the <code>source</code> and <code>target</code> configuration options to something
 meaningful:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -9333,7 +9333,7 @@ meaningful:</p>
 <p>I create a property for the ANTLR version, as I will need for both the
 ANTLR plugin and the jar:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;properties&gt;</span>
@@ -9344,7 +9344,7 @@ ANTLR plugin and the jar:</p>
 
 <p>Then I add the plugin declaration</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -9373,7 +9373,7 @@ ANTLR plugin and the jar:</p>
 
 <p>Finally I add the dependency to the ANTLR runtime:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -9407,7 +9407,7 @@ it is possible to declare what goes into the generated jar. As it is
 self-contained, it is also possible to declare a main class (not done
 below as I did not have a main class yet):</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -9498,7 +9498,7 @@ are kept up-to-date.</p>
 <code>pom.xml</code>, then it is possible to automatically add the relevant
 source folders to Eclipse:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>

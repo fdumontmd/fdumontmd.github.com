@@ -2,410 +2,420 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/11/a-new-blog-why/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/11/seven-languages-in-seven-weeks-ruby-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/12/seven-languages-in-seven-weeks-ruby-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/13/writing-a-jeckyl-plugin/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/13/kyogen-traditional-japanese-slapstick/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/13/seven-languages-in-seven-weeks-ruby-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/18/seven-languages-in-seven-weeks-io-day-1/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/19/seven-languages-in-seven-weeks-io-day-2/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/20/seven-languages-in-seven-weeks-io-day-3/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/10/21/seven-languages-in-seven-weeks-about-io/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/23/seven-languages-in-seven-weeks-prolog-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/24/seven-languages-in-seven-weeks-prolog-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/25/it-has-been-a-bad-year-for-geniuses-dot-dot-dot/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.wakatta.jp/blog/2011/10/27/the-japanese-have-a-word-for-it-dot-dot-dot-moraigero/
+        </loc>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/28/seven-languages-in-seven-weeks-scala-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/29/seven-languages-in-seven-weeks-scala-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/10/30/seven-languages-in-seven-weeks-scala-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/04/seven-languages-in-seven-weeks-erlang-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/05/seven-languages-in-seven-weeks-erlang-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/06/seven-languages-in-seven-weeks-erlang-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/11/09/haskell-foldl-as-foldr/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/11/seven-languages-in-seven-weeks-clojure-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/11/11/haskell-foldr-as-foldl/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/12/seven-languages-in-seven-weeks-clojure-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/13/seven-languages-in-seven-weeks-clojure-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/17/seven-languages-in-seven-weeks-haskell-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/18/seven-languages-in-seven-weeks-haskell-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/19/seven-languages-in-seven-weeks-haskell-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/11/21/seven-languages-in-seven-weeks-haskell-day-3-dot-5/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/11/26/nice-tool-quick-sequence-diagram-editor/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/11/26/seven-languages-in-seven-weeks-wrap-up/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2011/12/03/new-book-seven-databases-in-seven-weeks/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/03/seven-databases-in-seven-weeks-postgresql-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/04/seven-databases-in-seven-weeks-postgresql-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/08/seven-databases-in-seven-weeks-riak-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/09/seven-databases-in-seven-weeks-riak-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/11/seven-databases-in-seven-weeks-hbase-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/12/seven-databases-in-seven-weeks-hbase-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:39:18+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/15/seven-databases-in-seven-weeks-hbase-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/17/seven-databases-in-seven-weeks-riak-on-ec2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/23/seven-databases-in-seven-weeks-mongodb-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/24/seven-databases-in-seven-weeks-mongodb-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/25/seven-databases-in-seven-weeks-mongodb-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/28/seven-databases-in-seven-weeks-neo4j-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2011/12/30/seven-databases-in-seven-weeks-neo4j-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/01/06/concrete-mathematics-chapter-1-notes/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/01/07/concrete-mathematics-chapter-1-warmups/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/01/09/concrete-mathematics-chapter-1-homework-exercises-part-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/01/14/antlr3-maven-plugin-eclipse-setup/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-chapter-1-homework-exercises-part-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/01/14/concrete-mathematics-repertoire-method/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/01/20/seven-databases-in-seven-weeks-redis-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/01/21/seven-databases-in-seven-weeks-redis-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-1/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/01/30/seven-databases-in-seven-weeks-couchdb-day-2/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/02/01/seven-databases-in-seven-weeks-couchdb-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/02/05/concrete-mathematics-chapter-1-exam-problems/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/02/10/psychic-modeling/</loc>
-        <lastmod>2013-06-17T11:31:10+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/02/13/psychic-modeling-fast-version/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/02/27/concrete-mathematics-chapter-2-notes/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/02/28/concrete-mathematics-chapter-2-warmups/</loc>
-        <lastmod>2013-06-04T07:14:18+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/03/10/concrete-mathematics-chapter-2-basics/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/03/14/seven-databases-in-seven-weeks-redis-day-3/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/03/15/seven-databases-in-seven-weeks-wrapping-up/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/04/09/machine-learning-in-action-naive-bayes/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/05/02/concrete-mathematics-chapter-2-homework-exercises/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/2012/05/02/now-im-blushing-dot-dot-dot/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>
             http://blog.wakatta.jp/blog/2012/05/05/concrete-mathematics-chapter-2-exam-exercises/
         </loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/about/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/blog/archives/</loc>
-        <lastmod>2013-06-17T11:31:10+09:00</lastmod>
+        <lastmod>2014-04-25T13:39:18+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/7languages7weeks/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/books/</loc>
-        <lastmod>2012-08-24T23:08:09+09:00</lastmod>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.wakatta.jp/</loc>
-        <lastmod>2013-06-17T11:31:10+09:00</lastmod>
+        <lastmod>2014-04-25T13:39:18+09:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.wakatta.jp/robots.txt</loc>
+        <lastmod>2014-04-25T13:29:13+09:00</lastmod>
     </url>
 </urlset>

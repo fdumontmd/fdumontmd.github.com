@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Haskell | Wakatta!]]></title>
   <link href="http://blog.wakatta.jp/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://blog.wakatta.jp/"/>
-  <updated>2013-06-17T11:31:39+09:00</updated>
+  <updated>2014-04-25T13:39:49+09:00</updated>
   <id>http://blog.wakatta.jp/</id>
   <author>
     <name><![CDATA[Frédéric Dumont]]></name>
@@ -27,8 +27,8 @@
 
 <p>I'll start again from a standard definition for both functions. First <code>foldr</code>:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="ow">::</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
@@ -38,8 +38,8 @@
 
 <p>Then <code>foldl</code>:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
@@ -53,14 +53,14 @@
 
 <p>I first reorganize the arguments order a bit, putting <code>a</code> at the end:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_alt basic equation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_alt basic equation </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="n">a</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>The base case is once again <code>id</code>:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_alt on empty list  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_alt on empty list </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">id</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
@@ -75,8 +75,8 @@ foldr f a [] == a                  -- by definition of foldr</p>
 <p>```</p>
 
 <p>The recursive case is not surprising either:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_alt on non empty list  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_alt on non empty list </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
@@ -97,22 +97,22 @@ foldr f a (b:bs) == f b (foldr f a bs)           -- by definition of foldr</p>
 
 <p>The initial value for the accumulator must be the identity of the composition function, that is, <code>id</code>.</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>accumulator version of foldr_alt  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>accumulator version of foldr_alt </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><code>foldr_acc</code> is once again easy to define. The base case:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_acc base case  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_acc base case </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">acc</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>For the recursive case, notice that <code>f b</code> is composed with the <em>rest</em> of the function to the right. As the accumulator represents the previous part of the function, <code>f b</code> will be composed with this accumulator to the left:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_acc recursive case  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr_acc recursive case </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">acc</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldr_acc</span> <span class="p">(</span><span class="n">acc</span> <span class="o">.</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">))</span> <span class="n">bs</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
@@ -150,8 +150,8 @@ acc . foldr_alt f (b1:b2:bs) == acc . (f b1) . (foldr_alt f (b2:bs))</p>
 <p>The fact that the equation only holds for list of finite lengths should not be surprising, but might still be a limitation of my proof.</p>
 
 <p>With <code>foldr_acc</code> defined as above, converting to <code>foldl</code> is immediate:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr as foldl  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr as foldl </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr_acc</span> <span class="n">f</span> <span class="n">id</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldl</span> <span class="n">go</span> <span class="n">id</span> <span class="n">bs</span>
 </span><span class='line'>  <span class="kr">where</span> <span class="n">go</span> <span class="n">acc</span> <span class="n">b</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">acc</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span> <span class="n">x</span><span class="p">)</span>
@@ -194,8 +194,8 @@ acc . foldr_alt f (b1:b2:bs) == acc . (f b1) . (foldr_alt f (b2:bs))</p>
 
 <p>First <code>foldl</code>:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
@@ -206,8 +206,8 @@ acc . foldr_alt f (b1:b2:bs) == acc . (f b1) . (foldr_alt f (b2:bs))</p>
 <p><code>foldl</code> is tail recursive: it uses the <code>a</code> parameter as an accumulator.</p>
 
 <p>Then <code>foldr</code>:
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldr </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldr</span> <span class="ow">::</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">a</span>
@@ -221,8 +221,8 @@ acc . foldr_alt f (b1:b2:bs) == acc . (f b1) . (foldr_alt f (b2:bs))</p>
 
 <p>I define a pair of data types to play the role of the function <code>f</code>. That way, I can look at the structure of calls. I need two because <code>foldl</code> and <code>foldr</code> have different types for <code>f</code></p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Helper Data Types  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Helper Data Types </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -303,15 +303,15 @@ acc . foldr_alt f (b1:b2:bs) == acc . (f b1) . (foldr_alt f (b2:bs))</p>
 
 <p>First, I introduce a new function, <code>foldl_alt</code>, that is supposed to implement <code>foldl</code>. The definition of <code>foldl_alt</code> is then rewritten until <code>foldr</code> appears:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt basic equation  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt basic equation </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span> <span class="n">a</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>First, let's handle the base case:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt on empty list  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt on empty list </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">id</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
@@ -326,8 +326,8 @@ foldl f a [] == a                  -- by definition of foldl</p>
 <p>```</p>
 
 <p>The recursive case is simple as well (by induction):
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt on non empty list  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt on non empty list </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl_alt</span> <span class="n">f</span> <span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">foldl_alt</span> <span class="n">f</span> <span class="n">bs</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">f&#39;</span> <span class="n">b</span><span class="p">)</span>
 </span><span class='line'>  <span class="kr">where</span> <span class="n">f&#39;</span> <span class="ow">=</span> <span class="n">flip</span> <span class="n">f</span>
@@ -349,8 +349,8 @@ foldl f a (b:bs) == foldl f (f a b) bs            -- by definition of foldl</p>
 
 <p>So <code>foldl_alt</code> as currently defined is identical to <code>foldl</code>. The recursive case can be further rewritten as:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt on non empty list, second version  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl_alt on non empty list, second version </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -405,8 +405,8 @@ foldl_alt f (b:bs) == comp' (f' b) (foldl_alt f bs)</p>
 
 <p>For the same reason, I replace the <code>a</code> above by <code>x</code>, as I need <code>a</code> to represent the original <code>a</code> parameter (once again I could use <code>a</code> for both). This gives:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl as foldr  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>foldl as foldr </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">foldl</span> <span class="n">f</span> <span class="n">a</span> <span class="n">bs</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="n">b</span> <span class="n">g</span> <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">g</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span> <span class="n">b</span><span class="p">))</span> <span class="n">id</span> <span class="n">bs</span> <span class="n">a</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 

@@ -19,13 +19,14 @@ algorithms in various languages. The ReST API is always available, although &hel
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/">
+  <link rel="canonical" href="http://blog.wakatta.jp/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Wakatta!" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -200,7 +201,7 @@ significantly so. The script is mostly the same size as the original
 one, but much easier to understand (if you know the <code>neo4j</code> gem).</p>
 
 <figure class='code'><figcaption><span> (importer_driver.rb)</span> <a href='/downloads/code/7d7w/neo4j/importer_driver.rb'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -404,7 +405,7 @@ here.</p>
 <code>server-api</code> for Neo4j:</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/neo4j/list_names/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -474,7 +475,7 @@ returns an iterator that extract the names of the underlying node
 iterator:</p>
 
 <figure class='code'><figcaption><span> (ListNames.java)</span> <a href='/downloads/code/7d7w/neo4j/list_names/ListNames.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -566,7 +567,7 @@ iterator:</p>
 complete name of the new plugins (in this case, just one):</p>
 
 <figure class='code'><figcaption><span> (org.neo4j.server.plugins.ServerPlugin)</span> <a href='/downloads/code/7d7w/neo4j/list_names/org.neo4j.server.plugins.ServerPlugin'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='raw'><span class='line'><span class="err">jp.wakatta.ListNames</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -832,7 +833,7 @@ then goes over the <code>family</code> structure a second time to insert the
 relationships.</p>
 
 <figure class='code'><figcaption><span> (family.rb)</span> <a href='/downloads/code/7d7w/neo4j/family.rb'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -969,7 +970,7 @@ these weird exceptions (Java is boring but predictable).</p>
 <code>pom.xml</code>:</p>
 
 <figure class='code'><figcaption><span> (pom.xml)</span> <a href='/downloads/code/7d7w/neo4j/graph_algo/pom.xml'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1103,7 +1104,7 @@ to look up nodes in the BluePrints graph, nor could I use the
 properties of the Neo4j nodes from the BluePrints vertices&#8230;</p>
 
 <figure class='code'><figcaption><span> (GraphAlgorithm.java)</span> <a href='/downloads/code/7d7w/neo4j/graph_algo/GraphAlgorithm.java'>download</a></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1263,7 +1264,7 @@ data was at time very hard to figure out, and the error messages
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.wakatta.jp/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/" data-via="" data-counturl="http://blog.wakatta.jp/blog/2011/12/29/seven-databases-in-seven-weeks-neo4j-day-2/" >Tweet</a>
   
   
   
@@ -1364,7 +1365,7 @@ data was at time very hard to figure out, and the error messages
       </li>
     
       <li class="post">
-        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm blushing...</a>
+        <a href="/blog/2012/05/02/now-im-blushing-dot-dot-dot/">Now I'm Blushing...</a>
       </li>
     
       <li class="post">
@@ -1391,7 +1392,7 @@ data was at time very hard to figure out, and the error messages
   <a href="https://github.com/fdumontmd">@fdumontmd</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -1421,7 +1422,7 @@ data was at time very hard to figure out, and the error messages
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Frédéric Dumont -
+  Copyright &copy; 2014 - Frédéric Dumont -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>
   
   </span>
@@ -1441,7 +1442,7 @@ data was at time very hard to figure out, and the error messages
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -1457,7 +1458,7 @@ data was at time very hard to figure out, and the error messages
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

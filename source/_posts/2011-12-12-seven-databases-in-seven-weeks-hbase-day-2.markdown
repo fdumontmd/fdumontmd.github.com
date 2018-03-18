@@ -101,7 +101,7 @@ Building on Linux should work right away, but Mac OS X (especially 10.7) is slig
 
 To get the library to compile, you need to edit the `build.xml` file and clear the `LDFLAGS` (by default the value is `-Wl,--no-as-needed`, it needs to be empty).
 
-{% include_code hadoop-lzo.patch lang:txt 7d7w/hbase/hadoop-lzo.patch %}
+{% include_code hadoop-lzo.patch lang:text 7d7w/hbase/hadoop-lzo.patch %}
 
 From inside the repository, it can be applied with
 

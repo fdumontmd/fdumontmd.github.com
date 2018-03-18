@@ -72,7 +72,7 @@ defined for every $m$, and $p$ is indeed a permutation.
 While I found the closed formula for the sum, I could not do it with
 the repertoire method.
 
-Solving the sum is not really difficult (although a little bit than
+Solving the sum is not really difficult (although a little bit more than
 the repertoire method, if you know how to do the latter); one way is
 to solve the positive and negative sums separately (they can be broken
 down to already solved sums); another one is to compute the sum of an
@@ -123,7 +123,7 @@ use $R_n = (-1)^n n$ and $R_n = (-1)^n n^2$:
 <div markdown="0">
 \begin{align}
 R_0 &amp; = 0&amp;&amp;\alpha = 0\\\\
-n &amp; = \beta + \gamma n + \delta n^n - n + 1\\\\
+n &amp; = \beta + \gamma n + \delta n^2 - n + 1\\\\
 2n - 1 &amp; = \beta + \gamma n&amp;&amp;\beta = -1, \gamma = 2\\\\
 \end{align}
 </div>

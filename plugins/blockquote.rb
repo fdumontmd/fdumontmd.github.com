@@ -4,14 +4,14 @@
 #
 # Outputs a string with a given attribution as a quote
 #
-#   {% blockquote Bobby Willis http://google.com/search?q=pants the search for bobby's pants %}
+#   {% blockquote Bobby Willis https://google.com/search?q=pants the search for bobby's pants %}
 #   Wheeee!
 #   {% endblockquote %}
 #   ...
 #   <blockquote>
 #     <p>Wheeee!</p>
 #     <footer>
-#     <strong>Bobby Willis</strong><cite><a href="http://google.com/search?q=pants">The Search For Bobby's Pants</a>
+#     <strong>Bobby Willis</strong><cite><a href="https://google.com/search?q=pants">The Search For Bobby's Pants</a>
 #   </blockquote>
 #
 require './plugins/titlecase.rb'

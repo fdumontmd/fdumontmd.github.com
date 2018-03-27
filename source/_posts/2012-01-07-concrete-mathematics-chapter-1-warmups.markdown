@@ -60,11 +60,11 @@ More concisely:
 
 <div markdown="0">
 $$
-\begin{align}
+\begin{aligned}
 T_1 &amp;= 2&amp;&amp;\text{base case}\\\\
 T_n &amp;= T_{n-1} + 1 + T_{n-1} + 1 + T_{n-1}\\\\
 &amp; = 3T_{n-1} + 2&amp;&amp;\text{recurrence equation}
-\end{align}
+\end{aligned}
 $$
 </div>
 
@@ -73,14 +73,14 @@ $T_n + 1= U_n$:
 
 <div markdown="0">
 $$
-\begin{align}
+\begin{aligned}
 U_1 &amp;= T_1 + 1\\\\
 &amp; = 3\\\\
 U_n &amp;= T_n + 1\\\\
 &amp; = 3(U_{n-1} -1) + 3\\\\
 &amp; = 3U_{n-1} - 3 + 3\\\\
 &amp; = 3U_{n-1}
-\end{align}
+\end{aligned}
 $$
 </div>
 
@@ -144,10 +144,10 @@ So the above observation gives a recurrence equation:
 
 <div markdown="0">
 $$
-\begin{align}
+\begin{aligned}
 C_1 &amp;= 2\\\\
 C_n &amp;= C_{n-1} + 2(n-1)
-\end{align}
+\end{aligned}
 $$
 </div>
 
@@ -161,12 +161,12 @@ recurrence equations above can be rewritten as
 
 <div markdown="0">
 $$
-\begin{align}
+\begin{aligned}
 C_n &amp;= 2+\sum_{i=1}^{n}2(i-1)\\\\
 &amp;= 2+2\sum_{i=0}^{n-1}i\\\\
 &amp;= 2+2\frac{n(n-1)}{2}\\\\
 &amp;= n^2-n+2
-\end{align}
+\end{aligned}
 $$
 </div>
 
@@ -194,7 +194,7 @@ Once again, the triangular number sequence is not far:
 
 <div markdown="0">
 $$
-\begin{align}
+\begin{aligned}
 B_i &amp; = 0 &amp;&amp\text{for $1 \le i \lt 3$}\\\\
 B_3 &amp; = 1\\\\
 B_n &amp; = B_{n-1} + n - 2\\\\
@@ -202,7 +202,7 @@ B_n &amp; = B_{n-1} + n - 2\\\\
 &amp; = \sum_{i=0}^{n-2} i\\\\
 &amp; = \frac{(n-1)(n-2)}{2}\\\\
 &amp; = S_{n-2}
-\end{align}
+\end{aligned}
 $$
 </div>
 

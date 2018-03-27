@@ -96,9 +96,11 @@ classes.
 So the correct formula becomes
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \hat{\theta}_{i,j} = \frac{x_i,j+\alpha}{N_j+\alpha d}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 With $\alpha=1$ as a smoothing parameter, the book should have used

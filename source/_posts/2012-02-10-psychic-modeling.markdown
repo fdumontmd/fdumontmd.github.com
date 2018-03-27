@@ -72,9 +72,11 @@ least $l$ numbers (between $l$ and $j$, to be precise) in common with
 the first one, and the rest taken from the $n-j$ other numbers. This gives
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{l \le i \le j} \binom{j}{i} \binom{n-j}{j-i}
-\end{align}
+\end{aligned}
+$$
 </div>
 
 For a given $j$-subset, how many $j$-subsets are within $j-l$ distance
@@ -82,21 +84,25 @@ of the first one? We can choose at most $j-l$ numbers out of the $n-j$
 rest; and complete with numbers from the first subset. This gives
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{j-i} = \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{i}
-\end{align}
+\end{aligned}
+$$
 </div>
 
 It took me a while to confirm it, but the formulas are indeed the
 same:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{i} &amp; = \sum_{0 \le i \le j-l} \binom{n-j}{i} \binom{j}{j-i}\\\\
-&amp; = \sum_{l-j \le i \le 0} \binom{n-j}{-i} \binom{j}{j+i}&amp;&amp;\text{changing the sign of \(i\)}\\\\
+&amp; = \sum_{l-j \le i \le 0} \binom{n-j}{-i} \binom{j}{j+i}&amp;&amp;\text{changing the sign of $i$}\\\\
 &amp; = \sum_{l \le j+i \le j} \binom{n-j}{-i} \binom{j}{j+i}\\\\
-&amp; = \sum_{l \le i \le j} \binom{n-j}{j-i} \binom{j}{i}&amp;&amp;\text{replacing \(j+i\) by \(i\)}\\\\
-\end{align}
+&amp; = \sum_{l \le i \le j} \binom{n-j}{j-i} \binom{j}{i}&amp;&amp;\text{replacing $j+i$ by $i$}\\\\
+\end{aligned}
+$$
 </div>
 
 ### Size of a ticket
@@ -111,9 +117,11 @@ larger size of a ticket to cover more $j$-subsets.
 Restated with a complete ticket, the coverage formula becomes
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{l \le i \le j} \binom{k}{i} \binom{n-k}{j-i}
-\end{align}
+\end{aligned}
+$$
 </div>
 
 This apparent small change actually reduces the lower bound of the

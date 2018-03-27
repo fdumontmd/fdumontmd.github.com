@@ -40,22 +40,26 @@ with and extends the first interpretation.
 It is easy to see that the expression has the same value as $|x|$:
 
 <div markdown="0">
-\begin{align}
-x([x\gt 0] - [x\lt 0]) &amp; = x (1-0)&amp;&amp;\text{when \(x\gt 0\)}\\\\
+$$
+\begin{aligned}
+x([x\gt 0] - [x\lt 0]) &amp; = x (1-0)&amp;&amp;\text{when $x\gt 0$}\\\\
 &amp; = x\\\\
-x([x\gt 0] - [x\lt 0]) &amp; = x (0-1)&amp;&amp;\text{when \(x\lt 0\)}\\\\
+x([x\gt 0] - [x\lt 0]) &amp; = x (0-1)&amp;&amp;\text{when $x\lt 0$}\\\\
 &amp; = -x\\\\
-x([x\gt 0] - [x\lt 0]) &amp; = 0&amp;&amp;\text{when \(x = 0\)}\\\\
-\end{align}
+x([x\gt 0] - [x\lt 0]) &amp; = 0&amp;&amp;\text{when $x = 0$}\\\\
+\end{aligned}
+$$
 </div>
 
 ### Writing out sums
 
 The first one is easy:
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{0\le k\le 5}a_k = a_0+a_1+a_2+a_3+a_4+a_5\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The second one is tricky, is more than one way. One problem is that
@@ -65,9 +69,11 @@ with the book conventions, so I was wrong and had missing terms. The
 right answer is:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{0\le k^2 \le 5}a_k = a_4 + a_1 + a_0 + a_1 + a_4\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 ### Triple Sum
@@ -76,12 +82,14 @@ Here it is important to restrict the bounds as much as possible (but
 no more); otherwise there is a risk of introducing spurious terms.
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{1\le i \lt j \lt k \le n}a_{ijk} &amp; = \sum_{i=1}^2 \sum_{j=i+1}^3 \sum_{k=j+1}^4 a_{ijk}\\\\
 &amp; = \left((a_{123} + a_{124}) + a_{134} \right) + a_{234}\\\\
 &amp; = \sum_{k=3}^4 \sum_{j=2}^{k-1} \sum_{i=1}^{j-1} a_{ijk}\\\\
 &amp; = a_{123}+\left(a_{124} + (a_{134} + a_{234})\right)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The terms appear in the same order, but are grouped in sums differently.
@@ -91,9 +99,11 @@ The terms appear in the same order, but are grouped in sums differently.
 The problem is the step
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{j=1}^n \sum_{k=1}^n = \frac{a_j}{a_k}\sum_{k=1}^n \sum_{k=1}^n \frac{a_k}{a_k}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 $k$ is already bound in the inner sum, so it is invalid to replace $j$
@@ -104,12 +114,14 @@ by $k$ in the outer.
 This can be worked explicitly:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_k [1 \le j \le k \le n] &amp = \sum_k [1 \le j \le n] [j \le k \le n]\\\\
 &amp; = \sum_{j\le k \le n} [1 \le j \le n]\\\\
 &amp; = [1 \le j \le n] \sum_{j\le k \le n} 1\\\\
 &amp; = [1 \le j \le n] (n-j+1)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 ### $\bigtriangledown f(x)$
@@ -117,12 +129,14 @@ This can be worked explicitly:
 The result is not surprising:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \bigtriangledown x^{\overline{m}} &amp; = x^{\overline{m}} - (x-1)^{\overline{m}}\\\\
 &amp; = x(x+1)\cdots(x+m-1) - (x-1)x\cdots(x+m-2)\\\\
 &amp; = x(x+1)\cdots(x+m-2)(x+m-1-(x-1))\\\\
 &amp; = m x^{\overline{m-1}}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So $\bigtriangledown f(x)$ is the difference operator to use with
@@ -142,22 +156,26 @@ powers).
 It is easy to see that $x^{\overline{m+n}} = x^{\overline m}(x+m)^{\overline n}$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 x^{\overline{m+n}} &amp; = x\cdots(x+m-1)(x+m)\cdots(x+m+n-1)\\\\
 &amp; = \left( x\cdots(x+m-1) \right) \left( (x+m)\cdots(x+m+n-1) \right)\\\\
 &amp; = x^{\overline m}(x+m)^{\overline n}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 From there, the value of rising factorials for negative powers follows quickly:
 
 <div markdown="0">
-\begin{align}
-1 = x^{\overline{-n+n}} &amp; = x^{\overline{-n}} (x-n)^\overline{n}\\\\
-x^{\overline{-n}} &amp; = \frac{1}{(x-n)^\overline{n}}\\\\
+$$
+\begin{aligned}
+1 = x^{\overline{-n+n}} &amp; = x^{\overline{-n}} (x-n)^{\overline{n}}\\\\
+x^{\overline{-n}} &amp; = \frac{1}{(x-n)^{\overline{n}}}\\\\
 &amp; = \frac{1}{(x-n)\cdots(x-1)}\\\\
 &amp; = \frac{1}{(x-1)^{\underline{n}}}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 ### Symmetric difference of a product

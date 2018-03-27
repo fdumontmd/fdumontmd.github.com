@@ -48,13 +48,13 @@ By induction:
 
 <div markdown="0">
 $$
-\begin{align}
+\begin{aligned}
 J(5\cdot 2^{m+1}) &amp;= J(2(5\cdot 2^m))\\\\
-&amp;= 2J(5\cdot 2^m) - 1&amp;&amp;\text{as $J(2n) = 2J(n) -1$}\\\\
+&amp;= 2J(5\cdot 2^m) - 1&amp;&amp;\text{as } J(2n) = 2J(n) -1\\\\
 &amp;= 2(2^{m+1}+1) - 1&amp;&amp;\text{induction hypothesis}\\\\
 &amp;= 2\cdot 2^{m+1} + 2 - 1\\\\
 &amp;= 2^{m+2} + 1
-\end{align}
+\end{aligned}
 $$
 </div>
 
@@ -69,13 +69,13 @@ That is, with $2^m > l = (b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2$,we have:
 
 <div markdown="0">
 $$
-\begin{align}
+\begin{aligned}
 A(2^{m}+l) &amp;= A(2^{m}+(b_{m-1}b_{m-2}\cdots b_{1}b_{0})_2)\\\\
 &amp;= 2A(2^{m-1}+(b_{m-1}b_{m-2}\cdots b_{1})_2)\\\\
 &amp;= 2^{2}A(2^{m-2}+(b_{m-1}b_{m-2}\cdots b_{2})_2)\\\\
 &amp;= 2^{3}A(2^{m-3}+(b_{m-1}b_{m-2}\cdots b_{3})_2)\\\\
 &amp;= \cdots
-\end{align}
+\end{aligned}
 $$
 </div>
 

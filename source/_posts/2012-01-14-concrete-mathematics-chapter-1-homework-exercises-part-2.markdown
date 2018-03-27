@@ -24,32 +24,38 @@ $2A(m_1, \cdots, m_{n-1}) + m_n$ moves.
 This leads to the solution,
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 A(m_1, \cdots, m_n) &amp;= \sum_{i=1}^n m_i 2^{n-i}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 which is trivially shown by induction. The base case:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 A(m_1) &amp; = \sum_{i=1}^1 m_i 2^{1-i}\\\\
 &amp; = m_1 2^0\\\\
 &amp; = m_1
-\end{align}
+\end{aligned}
+$$
 </div>
 
 And for larger $n$, assuming
 $A(m_1, \cdots, m_n) = \sum_{i=1}^n m_i 2^{n-i}$,
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 A(m_1, \cdots, m_{n+1}) &amp; = 2A(m_1, \cdots, m_n) +
 m_{n+1}&amp;&amp;\text{by definition}\\\\
 &amp; = 2\sum_{i=1}^n m_i 2^{n-i} + m_{n+1}&amp;&amp;\text{induction hypothesis}\\\\
 &amp; = \sum_{i=1}^{n} m_i 2^{n+1-i} + m_{n+1} 2^{0}\\\\
 &amp; = \sum_{i=1}^{n+1} m_i 2^{n+1-i}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 ### Zig-zag lines
@@ -63,18 +69,22 @@ intersection point.
 This gives the following recurrence equations:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 ZZ_1 &amp; = 2\\\\
 ZZ_n &amp; = ZZ_{n-1} + 9(n-1) + 1\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Using the linearity of the recurrence equation, it is easy to see that
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 ZZ_n &amp; = ZZ_1 + 9S_{n-1} + (n-1)
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Here I used the linearity to compute solutions to both
@@ -86,20 +96,24 @@ $ZZ_1 = ZZ_1 + 9S_0 + 0$. And for other $n$, assuming
 $ZZ_n = ZZ_1 + 9S_{n-1} + (n-1)$
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 ZZ_{n+1} &amp; = ZZ_{n} + 9n + 1&amp;&amp;\text{by definition}\\\\
 &amp; = ZZ_1 + 9S_{n-1} + (n-1) + 9n + 1&amp;&amp;\text{induction hypothesis}\\\\
 &amp; = ZZ_1 + 9(S_{n-1} + n) + (n-1+1)\\\\
 &amp; = ZZ_1 + 9S_n + n
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The formula can also be written as
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 ZZ_n &amp; = \frac{9n^2-7n+2}{2}
-\end{align}
+\end{aligned}
+$$
 </div>
 
 ### Planes cutting cheese
@@ -125,11 +139,13 @@ The recurrence equation for $I(n)$ follow the structure of $J(n)$, but
 with different base cases:
 
 <div markdown="0">
-\begin{align}
-I(2) &amp; = 2&amp;&amp;\text{\(I(1)\) is not defined}\\\\
+$$
+\begin{aligned}
+I(2) &amp; = 2&amp;&amp;\text{$I(1)$ is not defined}\\\\
 I(2n) &amp; = 2I(n) - 1\\\\
 I(2n+1) &amp; = 2I(n) + 1
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Here I generated the first few values to get inspired. I noticed that
@@ -146,24 +162,28 @@ By induction on $m$: the base case is $I(3) = I(3\cdot 2^0 + l) = 1$.
 Assuming $I(3\cdot 2^m + l) = 2l+1$, we have
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 I(3\cdot2^{m+1} + 2l) &amp; = 2I(3\cdot 2^m + l) -1&amp;&amp;\text{by definition}\\\\
 &amp;= 2(2l+1) -1&amp;&amp;\text{induction hypothesis}\\\\
 &amp;= 4l+2-1\\\\
 &amp;= 2(2l)+1\\\\
 I(3\cdot 2^{m+1} + (2l+ 1)) &amp; = 2I(3\cdot 2^m + l) + 1&amp;&amp;\text{by definition}\\\\
 &amp; = 2(2l+1) + 1&amp;&amp;\text{induction hypothesis}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The book solution is defined in terms of $2^m+2^{m-1}+k$, which is
 same:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 2^m+2^{m-1}+k &amp; = 2\cdot 2^{m-1} + 2^{m-1} + k\\\\
 &amp; = 3\cdot 2^{m-1} + k
-\end{align}
+\end{aligned}
+$$
 </div>
 
 with $1 \le m$, while I have $0 \le m$.

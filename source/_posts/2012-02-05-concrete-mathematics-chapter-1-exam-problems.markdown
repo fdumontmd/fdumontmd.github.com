@@ -25,10 +25,12 @@ First, it helps to see that the indices of the recurrence are actually
 $S_n$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 W_{n(n+1)/2}&amp;= W_{S_n}\\\\
 W_{n(n-1)/2}&amp;= W_{S_{n-1}}
-\end{align}
+\end{aligned}
+$$
 </div>
 
 And of course, $S_n = S_{n-1} + n$.
@@ -36,9 +38,11 @@ And of course, $S_n = S_{n-1} + n$.
 Setting $m=S_{n-1}$, we try to show:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 W_{m+n} &amp; \le 2W_{m} + T_n\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Now, obviously, if we have $m+n$ discs, we can move the $m$ top ones
@@ -54,9 +58,11 @@ This is only one possible solution; the optimal one must be equal or
 better, so we have
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 W_{m+n} &amp; \le 2W_m + T_n\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 This is true for any $m+n$ discs, and in particular for
@@ -80,7 +86,8 @@ $(x_j - a_j, 1)$, I need to find $\alpha$ and $\beta$ such that
 $y=\alpha x + \beta$ is true for both points above.
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 0 &amp; = \alpha x_j + \beta \\\\
 \beta &amp; = - \alpha x_j\\\\
 1 &amp; = \alpha (x_j - a_j) - \alpha x_j\\\\
@@ -88,33 +95,38 @@ $y=\alpha x + \beta$ is true for both points above.
 &amp; = - \alpha a_j\\\\
 \alpha &amp; = \frac{-1}{a_j}\\\\
 y &amp; = \frac{x_j - x}{a_j}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 With this given, I can try to find the intersection of lines from
 different zigs, $j$ and $k$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \frac{x_j - x}{a_j} &amp; = \frac{x_k - x}{a_k}\\\\
 a_k (x_j - x) &amp; = a_j (x_k - x)\\\\
 a_k x_j - a_k x &amp; = a_j x_k - a_j x\\\\
 a_k x_j - a_j x_k &amp; = (a_k - a_j) x\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Now, still following the book, I replace $x$ by $t$ with
 $x=x_j - t a_j$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 a_k x_j - a_j x_k &amp; = (a_k - a_j) (x_j - t a_j)\\\\
 a_k x_j - a_j x_k &amp; = a_k x_j - a_j x_j - t a_j a_k + t a_j^2\\\\
 - a_j x_k &amp; = t a_j^ 2 - a_j x_j - t a_j a_k\\\\
-- x_k &amp; = t a_j - x_j -t a_k&amp;&amp;\text{dividing by \(a_j\)}\\\\
+- x_k &amp; = t a_j - x_j -t a_k&amp;&amp;\text{dividing by } a_j\\\\
 x_j - x_k &amp; = t (a_j - a_k)\\\\
 t &amp; = \frac{x_j - x_k}{a_j - a_k}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Somehow, I have a faint memory of such a result; I need to check a
@@ -123,12 +135,14 @@ college math book.
 To complete, I need to show that $y = t$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 y &amp; = \frac{x_j - x}{a_j}\\\\
 &amp; = \frac{x_j - x_j + t a_j}{a_j}\\\\
 &amp; = \frac{t a_j}{a_j}\\\\
 &amp; = t\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So the intersection of any two pair of half-lines from different zigs
@@ -144,93 +158,111 @@ $a_j$ can be of two forms: $n^j$ and $n^j + n^{-n}$. So $a_j - a_k$
 can be one of
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 &amp; n^j - n^k\\\\
 &amp; n^j + n^{-n} - n^k\\\\
 &amp; n^j - n^k - n^{-n}\\\\
 n^j + n^{-n} - n^k - n^{-n} = &amp; n^j - n^k\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So there are three different forms for $a_j - a_k$, which I will
 simply write $n^j - n^k + \epsilon$ where $|\epsilon| \lt 1$.
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k + \epsilon}\\\\
 &amp; = \frac{(n^j - n^k)(n^j + n^k)}{n^j - n^k + \epsilon}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Let's show that $n^j+n^k - 1 \lt t \lt n^j+n^k + 1$: multiply the
 whole inequality by $n^j - n^k + \epsilon$. As
 
 <div markdown"0">
-\begin{align}
+$$
+\begin{aligned}
 n^j - n^k &amp; \ge n\\\\
 &amp; \ge 2\\\\
 &amp; \gt |\epsilon|\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 so $n^j - n^k + \epsilon \gt 0$. Defining
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 N_{jk} &amp; = n^j + n^k\\\\
-N'_{jk} &amp; = n^j - n^k\\\\
-\end{align}
+N\'_{jk} &amp; = n^j - n^k\\\\
+\end{aligned}
+$$
 </div>
 
 the left and right inequalities become
 
 <div markdown="0">
-\begin{align}
-(N_{jk} - 1) (N'_{jk} + \epsilon) &amp; = N_{jk}N'_{jk} - N'_{jk} + \epsilon N_{jk} - \epsilon\\\\
-(N_{jk} + 1) (N'_{jk} + \epsilon) &amp; = N_{jk}N'_{jk} + N'_{jk} + \epsilon N_{jk} + \epsilon\\\\
-\end{align}
+$$
+\begin{aligned}
+(N_{jk} - 1) (N\'_{jk} + \epsilon) &amp; = N_{jk}N\'_{jk} - N\'_{jk} + \epsilon N_{jk} - \epsilon\\\\
+(N_{jk} + 1) (N\'_{jk} + \epsilon) &amp; = N_{jk}N\'_{jk} + N\'_{jk} + \epsilon N_{jk} + \epsilon\\\\
+\end{aligned}
+$$
 </div>
 
-Subtracting $N_{jk}N'_{jk} = (n^j-n^k)(n^j+n^k)$ from the original inequality:
+Subtracting $N_{jk}N\'_{jk} = (n^j-n^k)(n^j+n^k)$ from the original inequality:
 
 <div markdown="0">
-\begin{align}
--N'_{jk}+\epsilon N_jk - \epsilon \lt 0 \lt N'_{jk} + \epsilon N_{jk} + \epsilon\\\\
-\end{align}
+$$
+\begin{aligned}
+-N\'_{jk}+\epsilon N_jk - \epsilon \lt 0 \lt N\'_{jk} + \epsilon N_{jk} + \epsilon\\\\
+\end{aligned}
+$$
 </div>
 
 I need to prove the following inequality
 
 
 <div markdown"0">
-\begin{align}
+$$
+\begin{aligned}
 (n^j - n^k) &amp; \gt |\epsilon| + |\epsilon| (n^j - n^k)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 We already know $|\epsilon| \lt 1$, so looking at the second term (and
 assuming $\epsilon \ne 0$, as this case is trivial)
 
 <div markdown"0">
-\begin{align}
+$$
+\begin{aligned}
 |\epsilon| (n^j-n^k) &amp; = n^{-n} (n^j - n^k)\\\\
 &amp; = n^{j-n} - n^{k-n}\\\\
 &amp;\lt 1\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 and we have
 
 <div markdown"0">
-\begin{align}
+$$
+\begin{aligned}
 n^j - n^k &amp; \ge 2
 &amp; \gt |\epsilon| + |\epsilon (n^j - n^k)|\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So the inequalities are established. $N_{jk}$ can be seen as a number
 in based $n$ where the digits are all zeroes except the $j$ and $k$ ones,
-$N_{jk} = N_{j'k'} \implies j=j', k=k'$, and therefore $t$ uniquely
+$N_{jk} = N_{j\'k\'} \implies j=j\', k=k\'$, and therefore $t$ uniquely
 defines $j$ and $k$ or, two pairs of zigs must have different $t$.
 
 I still need to show that for a given pair, when $t$ is the same, the
@@ -239,9 +271,11 @@ $t$, so two intersections points have the same height. This happens
 for
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 t &amp; = \frac{n^{2j} - n^{2k}}{n^j - n^k}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 which happens when $a_j = n^j$, $a_k = n^k$ and $a_j = n^j + n^{-n}$,
@@ -271,28 +305,34 @@ I would have said 4, but the book says it's indeed 5).
 Using the repertoire method, solve the recurrence equations
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 h(1) &amp; = \alpha\\\\
 h(2n+j) &amp; = 4h(n) + \gamma_j n + \beta_j\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The general form of $h(n)$ is
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 h(n) &amp; = \alpha A(n) + \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma_0 C_0(n) + \gamma_1 C_1(n)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 We get three of these functions directly by solving
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 h(1) &amp; = \alpha\\\\
 h(2n+j) &amp; = 4h(n) + \beta_j\\\\
 h(2^m+b_m\cdots b_0) &amp; = (1\beta_{b_m}\cdots\beta_{b_0})_4\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So we have a solution for $A(n)$, $B_0(n)$ and $B_1(n)$.
@@ -300,12 +340,14 @@ So we have a solution for $A(n)$, $B_0(n)$ and $B_1(n)$.
 Setting $h(n) = n$
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \alpha &amp; = 1\\\\
 2n+j &amp; = 4n + \gamma_j n + \beta_j\\\\
 \beta_j &amp; = j\\\\
 \gamma_j &amp; = -2\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 which gives the equation $n = A(n) + B_1(n) -2(C_0(n) + C_1(n))$.
@@ -313,12 +355,14 @@ which gives the equation $n = A(n) + B_1(n) -2(C_0(n) + C_1(n))$.
 Setting $h(n) = n^2$
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \alpha &amp; = 1\\\\
 4n^2 + 4jn + j &amp; = 4n^2 + \gamma_j n + \beta_j\\\\
 \beta_j &amp; = j\\\\
 \gamma_j &amp; = 4j\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 which gives the  equation $n^2 = A(n) + B_1(n) + 4C_1(n)$
@@ -329,10 +373,12 @@ $h(n) = n$ above, or, equivalently, add twice that equation to the one
 for $h(n) = n^2$, which eliminates $C_1(n)$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 2n + n^2 &amp; = 3A(n) + 3B_1(n) -4C_0(n)\\\\
 C_0(n) &amp; = \frac{3A(n) + 3B_1(n) - n^2 - 2n}{4}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 ### Good and Bad Persons in Josephus Problem

@@ -22,31 +22,37 @@ just follows from the definitions.
 To show that
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{0\le k\lt n}(a_{k+1}-a_k)b_k &amp; = a_n b_n - a_0 b_0 - \sum_{0 \le k \lt n} a_{k+1}(b_{k+1} - b_k)&amp;&amp;n\ge 0\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 I start by rewriting the sum in the right side of the equation:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{0 \le k \lt n} a_{k+1}(b_{k+1} - b_k) &amp; = \sum_{0 \le k \lt n} (a_{k+1}b_{k+1} +  a_{k+1} b_k)\\\\
 &amp; = \sum_{0 \le k \lt n} a_{k+1}b_{k+1} +  \sum_{0 \le k \lt n} a_{k+1} b_k&amp;&amp;\text{associative law}\\\\
 &amp; = \sum_{0 \le k-1 \lt n} a_k b_k +  \sum_{0 \le k \lt n} a_{k+1} b_k&amp;&amp;k\leftarrow k-1\\\\
 &amp; = \sum_{1 \le k \le n} a_k b_k +  \sum_{0 \le k \lt n} a_{k+1} b_k\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 This latest value can now be put back into the original right:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 a_n b_n - a_0 b_0 - \sum_{1 \le k \le n} a_k b_k +  \sum_{0 \le k \lt n} a_{k+1} b_k &amp; = \sum_{0\le k \lt n} a_{k+1} b_k - (a_0 b_0 + \sum_{1 \le k \le n} a_k b_k - a_n b_n)\\\\
 &amp; = \sum_{0\le k \lt n} a_{k+1} b_k - \sum_{0\le k \lt n} a_k b_k\\\\
 &amp; = \sum_{0\le k \lt n} (a_{k+1} b_k - a_k b_k)\\\\
 &amp; = \sum_{0\le k \lt n} (a_{k+1} - a_k) b_k\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 which is indeed the left side of the equation (the but-last step is
@@ -91,10 +97,12 @@ seems obvious, but I just couldn't see it, blinded as I was by$(-1)^k$.
 Expressing the sum as a recurrence is easy:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 R_0 &amp; = 0\\\\
 R_n &amp; = R_{n-1} + (-1)^n n^2\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Also, looking at the first few terms of the sum,
@@ -104,10 +112,12 @@ generalisation of the recurrence above should put the additional
 terms:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 R_0 &amp; = \alpha\\\\
 R_n &amp; = R_{n-1} + (-1)^n \left(\beta + \gamma n + \delta n^2 \right)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 With such a form, plugging in solutions $(-1)^nF(n)$ will
@@ -121,11 +131,13 @@ use $R_n = (-1)^n n$ and $R_n = (-1)^n n^2$:
 #### $R_n = (-1)^n n$
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 R_0 &amp; = 0&amp;&amp;\alpha = 0\\\\
 n &amp; = \beta + \gamma n + \delta n^2 - n + 1\\\\
 2n - 1 &amp; = \beta + \gamma n&amp;&amp;\beta = -1, \gamma = 2\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 which gives $-B(n)+2C(n) = (-1)^n n$.
@@ -133,11 +145,13 @@ which gives $-B(n)+2C(n) = (-1)^n n$.
 #### $R_n = (-1)^n n^2$
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 R_0 &amp; = 0&amp;&amp;\alpha = 0\\\\
 n^2 &amp; = \beta + \gamma n + \delta n^2 - (n-1) ^2\\\\
 2 n^2 - 2n + 1 &amp; = \beta + \gamma n + \delta n^2&amp;&amp;\beta = 1, \gamma = -2, \delta = 2\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 which gives $B(n)-2C(n)+2D(n) = (-1)^n n^2$. Combining with the
@@ -171,22 +185,26 @@ Not overly complicated; at least the introduction of $j$ is not a
 mystery (unlike the next exercise).
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{1\le k\le n}k 2^k &amp; = \sum_{1\le k\le n} 2^k \sum_{1\le j\le k}1\\\\
 &amp; = \sum_{1\le k\le n} \sum_{1\le j\le k} 2^k\\\\
 &amp; = \sum_{1\le j\le k \le n} 2^k\\\\
 &amp; = \sum_{1\le j\le n} \sum_{j\le k\le n}2^k\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The inner sum can be rewritten as
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{j\le k\le n}2^k &amp; = \sum_{1\le k\le n}2^k - \sum_{1\le k\lt j}2^k\\\\
 &amp; = 2^{n+1} - 2 - 2^j + 2\\\\
 &amp; = 2^{n+1} - 2^j\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Here I use the already known
@@ -194,9 +212,11 @@ sum $\sum 2^k$. Putting this last result
 in the original sum
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{1\le j\le n} 2^{n+1} - 2^j &amp; = n2^{n+1} - (2^{n+1} -2)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 ### $\sum_{k=1}^n k^3$
@@ -207,20 +227,24 @@ shorter, and once you see it, much easier). Clearly it works for
 $n=1$, so assuming it does for $n-1$, we have
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 2\sum_{1\le j\le k\le n} jk &amp; = 2\sum_{1\le j\le k\le n-1} jk + 2\sum_{1\le j\le k=n} jk\\\\
 &amp; = \sum_{1\le k\lt n}(k^3+k^2) + 2n\sum_{1\le j\le n} j\\\\
 &amp; = \sum_{1\le k\lt n}(k^3+k^2) + n^2(n+1)\\\\
 &amp; = \sum_{1\le k\lt n}(k^3+k^2) + n^3+n^2\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So the rewrite is correct. At this stage, (2.33) pretty much finishes it:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{1\le k\le n}(k^3+k^2) &amp; = (\sum_{1\le k\le n}k)+\sum_{1\le k\le n}k^2\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 so $\sum_{1\le k\le n}k^3=\frac{n^2(n+1)^2}{4}$.
@@ -242,14 +266,16 @@ For the other equalities, by induction on $m$, and using (2.52) and
 its raising factorial powers equivalent:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 x^{\underline m} &amp; = x^{\underline{m-1}}(x-m+1)\\\\
 &amp; = x^{\underline 1}(x-1)^{\underline{m-1}}\\\\
 &amp; = x(x-1)^{\underline{m-1}}\\\\
 x^{\overline m} &amp; = x^{\overline{m-1}}(x+m-1)\\\\
 &amp; = x^{\overline 1}(x+1)^{\overline{m-1}}\\\\
 &amp; = x(x+1)^{\overline{m-1}}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### Base case $m=0$
@@ -257,11 +283,13 @@ x^{\overline m} &amp; = x^{\overline{m-1}}(x+m-1)\\\\
 They all follow from definition:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 x^{\overline 0} &amp; = 1\\\\
 (-1)^0 (-x)^{\underline 0} &amp; = 1\\\\
 (x+0-1)^{\underline 0} &amp; = 1\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### Other positive $m$
@@ -269,13 +297,15 @@ x^{\overline 0} &amp; = 1\\\\
 Assuming the relations hold for all $k, 0\le k\lt m$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 (-1)^m(-x)^{\underline m} &amp; = -\left((-1)^{m-1}(-x)^{\underline{m-1}}(-x-m+1)\right)\\\\
 &amp; = (x^{\overline{m-1}})(x+m-1)\\\\
 (x+m-1)^{\underline m} &amp; = (x+m-1)^{\underline{m-1}}x\\\\
 &amp; = (x+1+(m-1)-1)^{\underline{m-1}}x\\\\
 &amp; = (x+1)^{\overline{m-1}}x\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### Negative $m$
@@ -284,7 +314,8 @@ Using the recurrence relations derived from (2.52) and its raising
 factorial power equivalent:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 x^{\underline m} &amp; = x^{\underline{(m+1)+(-1)}}\\\\
 &amp; = x^{\underline{-1}}(x+1)^{\underline{m+1}}\\\\
 &amp; = \frac{(x+1)^{\underline{m+1}}}{x+1}\\\\
@@ -295,18 +326,21 @@ x^{\overline m} &amp; = x^{\overline{(m+1)+(-1)}}\\\\
 &amp; = \frac{(x-1)^{\overline{m+1}}}{x-1}\\\\
 &amp; = x^{\overline{m+1}}(x+m+1)^{\overline{-1}}\\\\
 &amp; = \frac{x^{\overline{m+1}}}{x+m}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Assuming the relations hold for all $k, m\lt k\le 0$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 (-1)^m(-x)^{\underline m} &amp; = -\frac{(-1)^{m+1}(-x)^{\underline{m+1}}}{-x-m}\\\\
 &amp; = \frac{x^{\overline{m+1}}}{x+m}\\\\
 (x+m-1)^{\underline m} &amp; = \frac{(x+m)^{\underline{m+1}}}{x+m-1-m}\\\\
 &amp; = \frac{(x-1)^{\overline{m+1}}}{x-1}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So the main difficulties is to derive two equalities from (2.52) (four

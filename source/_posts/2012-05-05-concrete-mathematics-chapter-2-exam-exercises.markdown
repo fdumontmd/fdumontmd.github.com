@@ -31,17 +31,20 @@ solution was fairly simple. I first experimented with
 $\Delta (2k)^{\underline{-1}}$, then found the right expression:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \Delta (2k-2)^{\underline{-1}} &amp; = \frac{1}{2k+1}-\frac{1}{2k-1}\\\\
 &amp; = \frac{2k-1 - 2k - 1}{(2k+1)(2k-1)}\\\\
 &amp; = \frac{-2}{4k^2-1}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 For the sum by parts, I can therefore try to use:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \Delta v &amp; = \frac{1}{4k^2-1}\\\\
 v &amp; = -\frac{1}{2}(2k-2)^{\underline{-1}}\\\\
 Ev &amp; = -\frac{1}{2}(2k)^{\underline{-1}}\\\\
@@ -50,7 +53,8 @@ u &amp; = (-1)^kk\\\\
 &amp; = (-1)^k - 2(k+1)(-1)^k\\\\
 &amp; = (-1)^k(1-2k-2)\\\\
 &amp; = -(-1)^k(2k+1)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The last expression was computed using the product rule for finite difference.
@@ -59,7 +63,8 @@ When I put everything into the sum by parts formula, the various
 blocks felt into place with satisfying "clicks":
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum (-1)^x\frac{x}{4x^2-1}\delta x 
 = &amp; -\frac{1}{2}(-1)^x x(2x-2)^{\underline{-1}} \\\\
 &amp; - \frac{1}{2} \sum (-1)^x (2x+1)(2x)^{\underline{-1}}\delta x\\\\
@@ -69,19 +74,22 @@ blocks felt into place with satisfying "clicks":
 = &amp; (-1)^x \left(\frac{1}{4} - \frac{x}{2(2x-1)} \right) + c\\\\
 = &amp; (-1)^x \left(\frac{4x - 2 - 4x}{4.2.(2x-1)} \right) + c\\\\
 = &amp; -\frac{(-1)^x}{8x-4} + c\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The answer as a function of $n$ is
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{k=1}^{n} (-1)^k\frac{k}{4k^2-1} 
 = &amp; \sum_1^{n+1} (-1)^x\frac{x}{4x^2-1}\delta x\\\\
 = &amp; \left. -\frac{(-1)^x}{8x^4}\right|_1^{n+1}\\\\
 = &amp; -\frac{(-1)^{n+1}}{8n+8-4} - \frac{1}{4}\\\\
 = &amp; \frac{(-1)^n}{8n+4} - \frac{1}{4}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 ### 1050
@@ -97,7 +105,8 @@ $\sum_{a\le k \lt b}k = 1050$.
 Rewriting this in terms of finite calculus is simple enough:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{a\le k \lt b}k &amp; = \sum_a^b x\delta x\\\\
 &amp; = \frac{1}{2}\left(b^{\underline 2} - a^{\underline 2}\right)\\\\
 &amp; = \frac{1}{2}\left(b(b-1) - a(a-1)\right)\\\\
@@ -105,7 +114,8 @@ Rewriting this in terms of finite calculus is simple enough:
 &amp; = \frac{1}{2}\left(b^2-b + ab - a^2 + a - ab\right)\\\\
 &amp; = \frac{1}{2}\left(b(b-1+a) - a(a-1+b)\right)\\\\
 &amp; = \frac{1}{2}(b-a)(b+a-1)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Now, one thing to notice is that if a sum of two integers is even, so is
@@ -115,9 +125,11 @@ product of one even and one odd integers.
 So we are now looking for ways to express 
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 (b-a)(b+a-1)=xy=2.1050=2100=2^2 3 5^2 7\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 as a product with $x$ is even and $y$ odd.
@@ -152,7 +164,8 @@ So the candidate solutions are $a=\frac{1}{2}|x-y|+\frac{1}{2}$ and
 $b=\frac{1}{2}(x+y)+\frac{1}{2}$. Let's check them:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 x \gt y: &amp; 
 (\frac{1}{2}(x+y)+\frac{1}{2} - \frac{1}{2}(x-y)-\frac{1}{2})
 (\frac{1}{2}(x+y)+\frac{1}{2} + \frac{1}{2}(x-y)+\frac{1}{2} - 1)\\\\
@@ -163,7 +176,8 @@ x \lt y: &amp;
 (\frac{1}{2}(x+y)+\frac{1}{2} + \frac{1}{2}(y-x)+\frac{1}{2} - 1)\\\\
 = &amp; (\frac{1}{2}(2x))(\frac{1}{2}(2y))\\\\
 = &amp; xy\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So it all adds up.
@@ -177,25 +191,29 @@ summation.
 #### $\sum_{k\ge 2}(\zeta(k)-1) = 1$
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{k\ge 2}(\zeta(k)-1) 
 &amp; = \sum_{k\ge 2}(\sum_{j\ge 1}\frac{1}{j^k}-1)\\\\
 &amp; = \sum_{k\ge 2}(\sum_{j\ge 2}\frac{1}{j^k})\\\\
 &amp; = \sum_{j\ge 2}\sum_{k\ge 2}\frac{1}{j^k}\\\\
 &amp; = \sum_{j\ge 2}\sum_{k\ge 2}(\frac{1}{j})^k\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The inner sum is a geometric progression:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{k\ge 2}(\frac{1}{j})^k 
 &amp; = \lim_{n\rightarrow \infty}
 \frac{\frac{1}{j^2}-\frac{1}{j^n}}{1-\frac{1}{j}}\\\\
 &amp; = \frac{\frac{1}{j^2}-0}{1-\frac{1}{j}}\\\\
 &amp; = \frac{1}{j(j-1)}
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So we need to solve
@@ -207,20 +225,23 @@ which we already saw as well, and the value is indeed 1.
 Using the same approach:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{k\ge 1}(\zeta(2k)-1) &amp; = \sum_{k\ge 1} 
 (\sum_{j\ge 1}\frac{1}{j^{2k}}-1)\\\\
 &amp; = \sum_{k\ge 1}\sum_{j\ge 2}\frac{1}{j^{2k}}\\\\
 &amp; = \sum_{j\ge 2}\sum_{k\ge 1}\frac{1}{j^{2k}}\\\\
 &amp; = \sum_{j\ge 2}\sum_{k\ge 1}(\frac{1}{j^2})^k\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Once again, we have a geometric progression, just as easy to solve as
 the previous one:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{k\ge 1}(\frac{1}{j^2})^k 
 &amp; = \lim_{n\rightarrow \infty}
 \frac{\frac{1}{j^2}-\frac{1}{j^{2n}}}{1-\frac{1}{j^2}}\\\\
@@ -229,32 +250,37 @@ the previous one:
 &amp; = \frac{1}{(j11)(j+1)}\\\\
 &amp; = \frac{j}{(j-1)j(j+1)}\\\\
 &amp; = j (j-2)^{\underline{-3}}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Now we have $\sum_{j\ge 2} j(j-2)^{\underline{-3}}$, which can be
 summed by parts. I chose:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \Delta v &amp; = (x-2)^{\underline{-3}}\\\\
 v &amp; = -\frac{(x-2)^{\underline{-2}}}{2}\\\\
 Ev &amp; = -\frac{(x-1)^{\underline{-2}}}{2}\\\\
 u &amp; = x\\\\
 \Delta u &amp; = 1\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 and now the sum by part:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_2^{\infty} x(x-2)^{\underline{-3}}\delta x
 &amp; = -\frac{x}{(x-1)x} + \frac{1}{2}\sum_2^\infty
 (x-1)^{\underline{-2}}\delta x\\\\
 &amp; = \left. -\frac{1}{2(x-1)}-\frac{1}{2x}\right|_2^\infty\\\\
 &amp; = \frac{3}{4}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 ### $\sum_{k\ge 0}\min(k, x \dot{-} k)$
@@ -279,29 +305,35 @@ First, I replace the infinity sum by a finite one: as seen above, if
 $k\gt x$, $\min(k,x\dot{-}k)=0$, so
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{k\ge 0}\min(k,x\dot{-}k) &amp; = \sum_{0\le k \le x}\min(k,x-k)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 I then try to remove the $\min$ operator:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 k &amp; \le x - k\\\\
 2k &amp; \le x\\\\
 k &amp; \le \frac{x}{2}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 so that
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{0\le k \le x}\min(k,x-k)
 &amp; = \sum_{0\le k \le \frac{x}{2}} k
 &amp; + \sum_{\frac{x}{2}\lt k \le x} x - k
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The general idea here is to find a way to eliminate the $k$ terms, by
@@ -338,7 +370,8 @@ $\lfloor \frac{x+1}{2}\rfloor = \lfloor\frac{2n}{2}\rfloor = n$.
 Using this value to "shift" the terms of the second sum:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{0\le k \le \frac{x}{2}} k
 + \sum_{\frac{x}{2}\lt k \le x} x - k
 &amp; = \sum_{0\le k \le \frac{x}{2}} k
@@ -349,7 +382,8 @@ Using this value to "shift" the terms of the second sum:
 + \sum_{\frac{x}{2}-\lfloor \frac{x+1}{2}\rfloor\lt k\le \lfloor
 \frac{x}{2}\rfloor}
 (x-\left\lfloor \frac{x+1}{2}\right\rfloor)-k\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Now the question is whether the new $k$ in the second sum cancel the
@@ -371,20 +405,24 @@ $k$ in the first sum. Once again, let's check the cases:
 So we can safely rewrite the sum as
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{\frac{x}{2} - \lfloor \frac{x+1}{2}\rfloor \lt k \le 
 \lfloor\frac{x}{2}\rfloor}(x-\left\lfloor \frac{x+1}{2}\right\rfloor)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 And, as we already know the number of terms is 
 $\left\lfloor \frac{x+1}{2}\right\rfloor$, the sum value is
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \left\lfloor \frac{x+1}{2}\right\rfloor
 \left(x- \left\lfloor \frac{x+1}{2}\right\rfloor\right)
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### $\sum_{k\le 0}(x\dot{-}(2k+1))$
@@ -393,10 +431,12 @@ This sum is much easier than the previous one. First I remove the
 $\dot{-}$ operator. I need $2k+1\le x$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 2k+1 &amp; \le x\\\\
 k &amp; \le \frac{x-1}{2}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 This gives me $\lfloor \frac{x+1}{2}\rfloor$ number of terms.
@@ -404,7 +444,8 @@ This gives me $\lfloor \frac{x+1}{2}\rfloor$ number of terms.
 So I can extract $x$ and work only on $k$
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \left\lfloor \frac{x+1}{2}\right\rfloor(x-1) +
 2 \sum_{0\le k\lt \lfloor \frac{x+1}{2}\rfloor}k 
 &amp; = \left\lfloor \frac{x+1}{2}\right\rfloor(x-1)+
@@ -413,7 +454,8 @@ So I can extract $x$ and work only on $k$
 (x - 1 - \left\lfloor \frac{x-1}{2}\right\rfloor)\\\\
 &amp; = \left\lfloor \frac{x+1}{2}\right\rfloor
 (x - \left\lfloor \frac{x+1}{2}\right\rfloor)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So the both expressions have the same value.
@@ -445,28 +487,32 @@ of terms, there are always enough remaining terms to add up to an
 arbitrary amount.
 
 For instance, given $n$ even and $E_n=K^+\setminus F_{n-1}$,
-it is always true that I can find $E'_n\subset E_n$ such that
+it is always true that I can find $E\'_n\subset E_n$ such that
 
 <div markdown="0">
-\begin{align}
-\sum_{k\in E'_n}a_k \ge A^+ - \sum_{k\in F_{n-1}}a_k\\\\
-\end{align}
+$$
+\begin{aligned}
+\sum_{k\in E\'_n}a_k \ge A^+ - \sum_{k\in F_{n-1}}a_k\\\\
+\end{aligned}
+$$
 </div>
 
-So if I define $F_n = F_{n-1} \cup E'_n$, $\sum_{k\in F_n}a_k \ge A^+$.
+So if I define $F_n = F_{n-1} \cup E\'_n$, $\sum_{k \in F_n}a_k\ge A^+$.
 
 And when $n$ is odd, with $O_n=K^-\setminus F_{n-1}$, I can always
-find a subset $O'_n\subset O_n$ such that
+find a subset $O\'_n\subset O_n$ such that
 
 <div markdown="0">
-\begin{align}
-\sum_{k\in O'_n}a_k \le A^- - \sum_{k\in F_{n-1}}a_k\\\\
-\end{align}
+$$
+\begin{aligned}
+\sum_{k\in O\'_n}a_k \le A^- - \sum_{k\in F_{n-1}}a_k\\\\
+\end{aligned}
+$$
 </div>
 
 (with $K^-$, the $a_k$ are smaller than zero, so the sum can be
 arbitrarily small).
 
-If I define $F_n = F_{n-1} \cup O'_n$, $\sum_{k\in F_n}a_k \le A^-$.
+If I define $F_n = F_{n-1} \cup O\'_n$, $\sum_{k\in F_n}a_k \le A^-$.
 
 As I could not do the other bonus questions, this completes Chapter 2.

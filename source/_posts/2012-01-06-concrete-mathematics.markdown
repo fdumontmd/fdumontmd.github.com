@@ -46,10 +46,10 @@ good as the output of LaTeX, but for the Web it is acceptable.
 For instance, given the recurrence
 <div markdown="0">
 $$
-\begin{align}
+\begin{aligned}
 f(j) &amp; = \alpha_j, &amp;&amp;\text{for $1 \leq j \lt  d$}\\\\
 f(dn + j) &amp; = cf(n) + \beta_j, &amp;&amp;\text{for $0 \leq j \lt d$ and $n \geq 1$}
-\end{align}
+\end{aligned}
 $$
 </div>
 then the solution is

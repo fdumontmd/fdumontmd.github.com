@@ -89,9 +89,11 @@ difficulties.
 For instance, the solution to
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{1\le j\lt k\le n} \frac{1}{k-j}
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The index variable change $k \leftarrow k+j$ is explained as a
@@ -99,9 +101,11 @@ specific instance of the simplification of $k+f(j)$; more perplexing
 are the ranges for $j$ and $k$ when the sum is replaced by a sum of sum:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{1\le k\le n} \sum_{1\le j \le n-k} \frac{1}{k}
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The range for $j$ is built from $1\le j$ and $k+j\le n$, so there is
@@ -124,14 +128,16 @@ What happens if you don't see this possible simplification? As
 expected, the answer remains the same:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \sum_{1\le k\lt n} \sum_{1\le j \le n-k} \frac{1}{k} &amp; = \sum_{1\le k\lt n} \frac{n-k}{k}\\\\
 &amp; = \sum_{1\le k\lt n} \frac{n}{k} - \sum_{1\le k\lt n} \frac{k}{k}\\\\
 &amp; = \sum_{1\le k\lt n} \frac{n}{k} - (n-1)\\\\
 &amp; = \sum_{1\le k\lt n} \frac{n}{k} + \frac{n}{n} - n\\\\
 &amp; = \sum_{1\le k\le n} \frac{n}{k} - n\\\\
 &amp; = nH_n - n\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So to expend on the original advice of keeping the bounds as simple as
@@ -190,9 +196,11 @@ One thing that is causing me some trouble is the falling-power version
 of the law of exponents:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 x^{\underline{m+n}} &amp; = x^{\underline m}(x-m)^{\underline n}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 While the rule is easy to prove and to remember, it is less easy than
@@ -200,9 +208,11 @@ the general one to recognise in practice; I failed to see it when it
 came up in the solution to
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \Sigma xH_x\delta x\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Worse, even the explanation in the book, I had to write it down, play
@@ -212,17 +222,21 @@ So I'm thinking about a notation that would bring out the rule more
 clearly, an extension of the _shift operator_ $E$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 E_k f(x) &amp; = f(x-k)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 This would turn the exponent law into
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 x^{\underline{m+n}} &amp; = x^{\underline m} E_m x^{\underline n}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Whether this is useful, or whether I'll get used to the original
@@ -237,9 +251,9 @@ are still valid.
 
 Once again, this was not overly difficult; the only point I had
 trouble understanding was the existence of the subsets $F_j$ such that
-$\sum_{k\in F_j} a_{j,k} \gt (A/A')A_j$ when
-$\sum_{j\in G} A_j = A' \gt A$. But this last equation means that
-$A/A' \lt 1$, so $(A/A')A_j \lt A_j$. The first equation is therefore
+$\sum_{k\in F_j} a_{j,k} \gt (A/A\')A_j$ when
+$\sum_{j\in G} A_j = A\' \gt A$. But this last equation means that
+$A/A\' \lt 1$, so $(A/A\')A_j \lt A_j$. The first equation is therefore
 just a consequence of the fact that $A_j$ is a least upper bound.
 
 Next post, the warmups.

@@ -26,11 +26,13 @@ so that the unknown function can be expressed as a linear combination
 of other (unknown) functions where the coefficients are the parameters:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 g(1) &amp; = b(0, \alpha_1, \cdots, \alpha_m)\\\\
 g(n) &amp; = r_n(g_1, \cdots, g_{n-1}, \alpha_1, \cdots, \alpha_m)\\\\
 &amp; = \sum_{i=1}^m A_i(n)\alpha_i,
-\end{align}
+\end{aligned}
+$$
 </div>
 
 We can consider $g$ as a specific point in a $m$-dimensional function
@@ -53,9 +55,11 @@ First, we need to check that the recurrence equations accept a
 solution expressed as
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 g(n) &amp; = \sum_{i=1}^m A_i(n)\alpha_i
-\end{align}
+\end{aligned}
+$$
 </div>
 
 It is enough to plug this definition into the recurrence equations,
@@ -77,31 +81,37 @@ parameters, or set the parameters and solve for the function.
 Given
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 g(1) &amp; = \alpha\\\\
-g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j&amp;&amp;\text{for \(j=0, 1\) and \(n \gt 1 \)}\\\\
-\end{align}
+g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j&amp;&amp;\text{for $j=0, 1$ and $n \gt 1$}\\\\
+\end{aligned}
+$$
 </div>
 
 We need to check that $g$ can be written as
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 g(n) &amp; = \alpha A(n) + \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The base case is trivial. The recurrence case is
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
 &amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + \gamma n \beta_0\\\\
 &amp; = \alpha 3A(n) + \beta_0 (3 B_0(n) + 1) + \beta_1 3B_1(n) + \gamma (3C(n) + n)\\\\
 g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
 &amp; = 3(\alpha A(n) +  \beta_0 B_0(n) + \beta_1 B_1(n) + \gamma C(n)) + + \gamma n\beta_1\\\\
 &amp; = \alpha 3A(n) + \beta_0 3 B_0(n)+ \beta_1 (3B_1(n) + 1) + \gamma (3C(n) + n)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 so $g$ can be expressed as a linear combination of other functions,
@@ -119,13 +129,15 @@ below instead of just two as in the book.
 As the book suggests, I tried to solve for $g(n) = n$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
 2n = g(2n) &amp; = 3g(n) + \gamma n + \beta_0\\\\
 &amp; = 3n + \gamma n + \beta_0&amp;&amp;\gamma = -1, \beta_0 = 0\\\\
 2n+1 = g(2n+1) &amp; = 3g(n) + \gamma n + \beta_1\\\\
 &amp; = 3n - n + \beta_1&amp;&amp; \beta_1 = 1\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### $g(2^m+l) = 3^m$
@@ -134,13 +146,15 @@ As the recurrence equation looks like the generalised radix-based
 Josephus equation, I tried to solve for $g(2^m+1) = 3^m$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 1 = g(1) &amp; = \alpha&amp;&amp;\alpha = 1\\\\
 3^m = g(2^m+2l) &amp; = 3g(2^{m-1}+l) + \gamma (2^{m-1} + l) + \beta_0\\\\
 &amp; = 3\cdot 3^{m-1} + \gamma (2^{m-1} + l) + \beta_0&amp;&amp; \beta_0, \gamma = 0\\\\
 3^m = g(2^m+2l+1) &amp; = 3g(2^{m^1}+l) + \gamma (2^{m-1} + l) + \beta_1\\\\
 &amp; = 3\cdot 3^{m-1}&amp;&amp;\beta_1 = 0\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### $g(n) = 1$
@@ -150,11 +164,13 @@ constant (no linear combination of linearly independent non-constant
 functions can produce a constant function).
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 1 = g(1) &amp; = \alpha&amp;&amp; \alpha = 1\\\\
 1 = g(2n+j) &amp; = 3g(n) + \gamma n + \beta_j\\\\
 &amp; = 3 + \gamma n + \beta_j&amp;&amp; \gamma = 0, \beta_j = -2\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### $\alpha, \beta_1 = 1, \beta_0,  \gamma = 0$
@@ -165,11 +181,13 @@ radix-based Josephus solution.
 
 The recurrence equations 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 g(1) &amp; = 1\\\\
 g(2n) &amp; = 3g(n)\\\\
 g(2n+1) &amp; = 3g(n) + 1\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 have as solution $g(2^m + (b_m\cdots b_0)) = 3^m + (b_m\cdots b_0)_3$.
@@ -179,12 +197,14 @@ have as solution $g(2^m + (b_m\cdots b_0)) = 3^m + (b_m\cdots b_0)_3$.
 We have the equations
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 A(n) - C(n) &amp; = n\\\\
 A(2^m + l) &amp; = 3^m\\\\
 A(n) -2(B_0(n) + B_1(n)) &amp; = 1\\\\
-B_1(2^m+l) &amp; = h_3(l)&amp;&amp;\text{where \(h_3(b_m\cdots b_0) = (b_m\cdots b_0)_3\)}\\\\
-\end{align}
+B_1(2^m+l) &amp; = h_3(l)&amp;&amp;\text{where } h_3(b_m\cdots b_0) = (b_m\cdots b_0)_3\\\\
+\end{aligned}
+$$
 </div>
 
 We have two functions already defined ($A(n)$ and $B_1(n)$), and the
@@ -193,11 +213,13 @@ other two equations give us the remaining function.
 Now we can solve for $g(n)$:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 g(2^m+l) = \alpha 3^m &amp; + \beta_0 (\frac{3^m - 1}{2} - h_3(l))\\\\
 &amp; + \beta_1 h_3(l) \\\\
 &amp;+ \gamma (3^m + h_3(l) - 2^m - l)
-\end{align}
+\end{aligned}
+$$
 </div>
 
 The $\gamma$ term is really $h_3(n) - n$.
@@ -215,9 +237,11 @@ representation in base $3$ of $\frac{3^m-1}{2} - h_3(l)$.
 With these two observations, it is possible to rewrite $g$ as
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 g(1b_m\cdots b_0) &amp; = (\alpha\beta_{b_m}\cdots\beta_{b_0})_3 + \gamma ((1b_m\cdots b_0)_3 - (1b_m\cdots b_0)_2)
-\end{align}
+\end{aligned}
+$$
 </div>
 
 which is the book solution. 

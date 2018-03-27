@@ -23,7 +23,8 @@ improve the solution.
 Just computing the first few terms of the sequence:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 Q_0 &amp; = \alpha \\\\
 Q_1 &amp; = \beta \\\\
 Q_2 &amp; = \frac{1+\beta}{\alpha}\\\\
@@ -35,7 +36,8 @@ Q_5 &amp; = \frac{\alpha\beta\left(1+\alpha+\beta \right)}{\beta \left( 1+\alpha
 &amp; = \alpha\\\\
 Q_6 &amp; = \frac{\beta\left( 1+\alpha \right)}{1+\alpha}\\\\
 &amp; = \beta
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So the sequence is cyclic. I tried to find a closed formula, but the
@@ -55,35 +57,41 @@ So nothing fishy is going on.
 Assuming the given value for $x_n$, we have
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 \left( \frac{x_1 + \cdots + x_n}{n} \right)^n &amp; = \left( \frac{x_1 + \cdots + x_{n-1} + \frac{x_1+\cdots+x_{n-1}}{n-1}}{n}\right)^n\\\\
 &amp; = \left( \frac{(n-1)x_1 + \cdots + (n-1)x_{n-1}+x_1+\cdots + x_{n-1}}{n(n-1)}\right)^n\\\\
 &amp; = \left( \frac{n(x_1+\cdots+x_{n-1})}{n(n-1)}\right)^n\\\\
 &amp; = \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^n\\\\
 &amp; = x_n^n
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So, assuming $P(n)$, we have
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 x_1\cdots x_{n-1}x_n &amp;\le x_n^n\\\\
 x_1\cdots x_{n-1} &amp;\le x_n^{n-1}\\\\
 x_1\cdots x_{n-1} &amp;\le \left( \frac{x_1+\cdots+x_{n-1}}{n-1}\right)^{n-1}&amp;&amp;\text{i.e. $P(n-1)$}
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### $P(n)$ and $P(2)$ implies $P(2n)$
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 x_1\cdots x_{2n} &amp; = x_1\cdots x_{n}x_{n+1}\cdots x_{2n}&amp;&amp;\text{associativity}\\\\
 &amp; \le \left(\frac{x_1+\cdots+x_n}{n}\right)^n \left(\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n&amp;&amp;\text{applying $P(n)$ twice}\\\\
 &amp; = \left( \frac{x_1+\cdots+x_n}{n}\frac{x_{n+1}+\cdots+x_{2n}}{n}\right)^n\\\\
 &amp; \le \left( \left(\frac{\frac{x_1+\cdots+x_n}{n} + \frac{x_{n+1}+\cdots+x_{2n}}{n}}{2} \right)^2\right)^n&amp;&amp;\text{applying $P(2)$}\\\\
 &amp; = \left( \frac{x_1+\cdots+x_n+x_{n+1}+\cdots+x_{2n}}{2n}\right)^{2n}&amp;&amp;\text{i.e. $P(2n)$}\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### $P(n) \forall n \ge 1$
@@ -123,11 +131,13 @@ was to observe that to move $n$ discs from $B$ to $A$, you could move
 them from $B$ to $C$, then $C$ to $A$. In other words,
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 R_n &amp; \ge 2Q_n\\\\
-&amp; = Q_n + 2R_{n-1} + 1&amp;&amp;\text{Replacing one \(Q_n\) by \(2R_{n-1}+1\)}\\\\
-&amp; = Q_n + 4Q_{n-1} + 1&amp;&amp;\text{Replacing \(R_{n-1}\) by \(2Q_{n-1}\)}\\\\
-\end{align}
+&amp; = Q_n + 2R_{n-1} + 1&amp;&amp;\text{Replacing one } Q_n \text{ by } 2R_{n-1}+1\\\\
+&amp; = Q_n + 4Q_{n-1} + 1&amp;&amp;\text{Replacing } R_{n-1} \text{ by } 2Q_{n-1}\\\\
+\end{aligned}
+$$
 </div>
 
 But the $4Q_{n-1}$ means moving the stack of $n-1$ discs $4$ times,
@@ -152,11 +162,13 @@ from $B$ to $A$ (counter-clockwise).
 Or,
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 R_n &amp;= R_{n-1} + 1 + Q_{n-1} + 1 + R_{n-1}\\\\
 &amp; = 2R_{n-} + 1 + Q_{n-1} + 1\\\\
-&amp; = Q_n + Q_{n-1} + 1&amp;&amp;\text{definition of \(Q_n\)}\\\\
-\end{align}
+&amp; = Q_n + Q_{n-1} + 1&amp;&amp;\text{definition of } Q_n\\\\
+\end{aligned}
+$$
 </div>
 
 As the recurrence is expressed (initially) only in terms of necessary
@@ -177,23 +189,27 @@ More precisely, with $A(n)$ the number of moves required to solve a
 $2n$ Double Tower of Hanoi, we have:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 (1) &amp; = 2\\\\
 A(n) &amp; = A(n-1) + 2 + A(n-1)\\\\
 &amp; = 2A(n-1) + 2\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Using $A(n) + 2= U(n)$, we get
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 U(1) &amp; = 4\\\\
 U(n) &amp; = 2U(n-1)\\\\
 &amp; 2^{n+1}\\\\
 A(n) &amp; = 2^{n+1} -2\\\\
      &amp; = 2(T_n)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 #### Order Preserving
@@ -238,34 +254,40 @@ solution that was computed above (requiring $2T_{n-1}$ moves).
 At this stage, a bit of notation should clarify:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 B(1) &amp; = 3\\\\
 B(n) &amp; = A(n-1) + 2 + A(n-1) + 2 + B(n-1)\\\\
 &amp; = 2T_{n-1} + 2 + 2T_{n-1} + 2 + B(n-1)\\\\
 &amp; = 4T_{n-1}+4+B(n-1)\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 Trying to prove the guess above:
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 B(1) &amp; = 4(2^1-1) - 1\\\\
 &amp; = 3\\\\
 B(n) &amp; = 4(2^{n-1} -1) + 4 + B(n-1)\\\\
 &amp; = 4\cdot 2^{n-1} + 4(2^{n-1} - 1) -1\\\\
 &amp; = 4\cdot 2^n -4 -1\\\\
 &amp; = 4(2^n-1)-1
-\end{align}
+\end{aligned}
+$$
 </div>
 
 So the guess was right. It can also be rewritten as
 
 <div markdown="0">
-\begin{align}
+$$
+\begin{aligned}
 4(2^n-1)-1 &amp = 4\cdot 2^n - 4 -1\\\\
 &amp; = 2^{n+2} - 5\\\\
-\end{align}
+\end{aligned}
+$$
 </div>
 
 which is the book solution.
